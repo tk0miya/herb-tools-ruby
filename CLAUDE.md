@@ -1,0 +1,232 @@
+# herb-tools-ruby
+
+Ruby implementation of `@herb-tools/linter` and `@herb-tools/formatter` from the TypeScript ecosystem.
+
+## Project Overview
+
+This project provides two gems for working with ERB template files:
+
+- **herb-lint**: Static analysis tool for ERB templates
+- **herb-format**: Formatter for ERB templates
+
+Both tools maintain CLI compatibility with their TypeScript counterparts, sharing the same configuration file format (`.herb.yml`) and providing equivalent functionality.
+
+## Reference Implementation
+
+- Repository: https://github.com/marcoroth/herb
+- TypeScript packages: `javascript/packages/linter`, `javascript/packages/formatter`
+
+## Directory Structure
+
+```
+herb-tools-ruby/
+├── CLAUDE.md                    # This file
+├── docs/
+│   └── requirements/            # Specification documents
+│       ├── overview.md
+│       ├── herb-lint.md
+│       ├── herb-format.md
+│       └── config.md
+│
+├── herb-lint/                   # Linter gem
+│   ├── lib/
+│   │   └── herb/
+│   │       └── lint/
+│   │           ├── version.rb
+│   │           ├── cli.rb
+│   │           ├── runner.rb
+│   │           ├── config.rb
+│   │           ├── reporter.rb
+│   │           ├── rule_registry.rb
+│   │           └── rules/
+│   │               ├── base.rb
+│   │               ├── erb/
+│   │               ├── html/
+│   │               └── a11y/
+│   ├── exe/
+│   │   └── herb-lint
+│   ├── spec/
+│   └── herb-lint.gemspec
+│
+├── herb-format/                 # Formatter gem
+│   ├── lib/
+│   │   └── herb/
+│   │       └── format/
+│   │           ├── version.rb
+│   │           ├── cli.rb
+│   │           ├── formatter.rb
+│   │           ├── config.rb
+│   │           └── rewriters/
+│   │               └── base.rb
+│   ├── exe/
+│   │   └── herb-format
+│   ├── spec/
+│   └── herb-format.gemspec
+│
+└── Gemfile                      # Development dependencies
+```
+
+## Development Setup
+
+### Prerequisites
+
+- Ruby 3.3 or later
+- Bundler
+
+### Installation
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd herb-tools-ruby
+
+# Install dependencies
+bundle install
+
+# Run tests for all gems
+bundle exec rake spec
+```
+
+### Working with Individual Gems
+
+```bash
+# herb-lint
+cd herb-lint
+bundle install
+bundle exec rspec
+
+# herb-format
+cd herb-format
+bundle install
+bundle exec rspec
+```
+
+## Coding Conventions
+
+### Ruby Style
+
+- Follow [Ruby Style Guide](https://rubystyle.guide/)
+- Use RuboCop for style enforcement
+- Target Ruby 3.3+ features where appropriate
+
+### Naming Conventions
+
+| Type | Convention | Example |
+|------|------------|---------|
+| Classes | PascalCase | `RuleRegistry` |
+| Methods | snake_case | `run_checks` |
+| Constants | SCREAMING_SNAKE_CASE | `DEFAULT_CONFIG` |
+| Files | snake_case | `rule_registry.rb` |
+
+### Module Structure
+
+```ruby
+# lib/herb/lint/rules/html/alt_text.rb
+module Herb
+  module Lint
+    module Rules
+      module Html
+        class AltText < Base
+          # Implementation
+        end
+      end
+    end
+  end
+end
+```
+
+### Error Handling
+
+- Use custom exception classes derived from `StandardError`
+- Provide meaningful error messages
+- Handle file I/O errors gracefully
+
+## Testing Policy
+
+### Framework
+
+- Use RSpec for all tests
+
+### Test Organization
+
+Each gem has its own spec directory:
+
+```
+herb-lint/spec/
+├── spec_helper.rb
+├── herb/
+│   └── lint/
+│       ├── cli_spec.rb
+│       ├── runner_spec.rb
+│       ├── config_spec.rb
+│       └── rules/
+│           ├── erb/
+│           └── html/
+└── fixtures/
+    └── templates/
+
+herb-format/spec/
+├── spec_helper.rb
+├── herb/
+│   └── format/
+│       ├── cli_spec.rb
+│       ├── formatter_spec.rb
+│       ├── config_spec.rb
+│       └── rewriters/
+└── fixtures/
+    └── templates/
+```
+
+### Test Types
+
+1. **Unit Tests**: Test individual classes and methods in isolation
+2. **Integration Tests**: Test CLI commands and full workflows
+3. **Fixture Tests**: Test against real-world ERB template samples
+
+### Writing Tests
+
+```ruby
+RSpec.describe Herb::Lint::Rules::Html::AltText do
+  subject(:rule) { described_class.new }
+
+  describe "#check" do
+    context "when img tag has alt attribute" do
+      it "does not report an offense" do
+        template = '<img src="image.png" alt="Description">'
+        offenses = rule.check(parse(template))
+        expect(offenses).to be_empty
+      end
+    end
+
+    context "when img tag is missing alt attribute" do
+      it "reports an offense" do
+        template = '<img src="image.png">'
+        offenses = rule.check(parse(template))
+        expect(offenses.size).to eq(1)
+        expect(offenses.first.rule).to eq("alt-text")
+      end
+    end
+  end
+end
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+bundle exec rspec
+
+# Run specific test file
+bundle exec rspec spec/herb/lint/rules/html/alt_text_spec.rb
+```
+
+## Dependencies
+
+### Runtime Dependencies
+
+- `herb` gem: ERB parser providing AST for analysis
+
+### Development Dependencies
+
+- `rspec`: Testing framework
+- `rubocop`: Style enforcement
