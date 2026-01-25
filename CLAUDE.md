@@ -220,6 +220,43 @@ bundle exec rspec
 bundle exec rspec spec/herb/lint/rules/html/alt_text_spec.rb
 ```
 
+## Writing Type Annotations
+
+This project uses [rbs-inline](https://github.com/soutaro/rbs-inline) style annotations. Types are written as comments in Ruby source files:
+
+- **Argument types**: Use `@rbs argname: Type` comments before the method. Add `-- description` for documentation (e.g., `@rbs column: Integer -- 0-based column number`)
+- **Return types**: Use `#: Type` comment at the end of the `def` line
+- **Attributes**: Use `#: Type` comment at the end of `attr_accessor`/`attr_reader` (also defines instance variable type)
+- **Instance variables**: Use `@rbs @name: Type` comment (must have blank line before method definition)
+- **Data classes**: Use `#: Type` comment at the end of each member in `Data.define`
+
+```ruby
+# @rbs name: String -- the user's name
+# @rbs age: Integer -- the user's age in years
+def greet(name, age) #: String
+  "Hello, #{name}! You are #{age} years old."
+end
+
+attr_reader :name #: String
+
+# @rbs @count: Integer
+
+def initialize
+  @count = 0
+end
+
+# Data class with typed members
+Result = Data.define(
+  :parse_result, #: ParseResult
+  :code, #: String
+  :tags #: Hash[Integer, Tag]
+)
+```
+
+## Generating RBS Files
+
+Type definition files (`.rbs`) are generated automatically by the PostToolUse hook when `.rb` files in `lib/` are modified. **Never edit `.rbs` files directly** - always modify the inline annotations in Ruby source files.
+
 ## Dependencies
 
 ### Runtime Dependencies
@@ -230,3 +267,4 @@ bundle exec rspec spec/herb/lint/rules/html/alt_text_spec.rb
 
 - `rspec`: Testing framework
 - `rubocop`: Style enforcement
+- `rbs-inline`: Type annotation support
