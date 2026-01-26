@@ -9,5 +9,7 @@ target :lib do
 
   library "yaml"
 
-  configure_code_diagnostics(D::Ruby.default)
+  configure_code_diagnostics(D::Ruby.default) do |hash|
+    hash[D::Ruby::UnannotatedEmptyCollection] = :hint
+  end
 end
