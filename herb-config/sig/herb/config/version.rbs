@@ -1,0 +1,7 @@
+# Generated from lib/herb/config/version.rb with RBS::Inline
+
+module Herb
+  module Config
+    VERSION: ::String
+  end
+end

@@ -1,0 +1,26 @@
+# Generated from lib/herb/config/defaults.rb with RBS::Inline
+
+module Herb
+  module Config
+    # Provides default configuration values and merging behavior.
+    module Defaults
+      # Default file patterns to include
+      DEFAULT_INCLUDE: Array[String]
+
+      # Default file patterns to exclude
+      DEFAULT_EXCLUDE: Array[String]
+
+      # Returns the complete default configuration
+      def self.config: () -> Hash[String, untyped]
+
+      # Merges user configuration with defaults
+      # @rbs user_config: Hash[String, untyped]
+      def self.merge: (Hash[String, untyped] user_config) -> Hash[String, untyped]
+
+      # Deep merges two hashes recursively
+      # @rbs base: Hash[String, untyped]
+      # @rbs override: Hash[String, untyped]
+      def self.deep_merge: (Hash[String, untyped] base, Hash[String, untyped] override) -> Hash[String, untyped]
+    end
+  end
+end
