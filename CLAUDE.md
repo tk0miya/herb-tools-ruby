@@ -198,28 +198,29 @@ herb-format/spec/
 
 ### Writing Tests
 
+- Define the test subject using `subject` (without a name)
 - Use `context` blocks when preconditions or execution conditions differ
 - Consolidate multiple expectations into a single `it` block within the same context
 
 ```ruby
 RSpec.describe Herb::Lint::Rules::Html::AltText do
-  subject(:rule) { described_class.new }
-
   describe "#check" do
+    subject { described_class.new.check(parse(template)) }
+
     context "when img tag has alt attribute" do
+      let(:template) { '<img src="image.png" alt="Description">' }
+
       it "does not report an offense" do
-        template = '<img src="image.png" alt="Description">'
-        offenses = rule.check(parse(template))
-        expect(offenses).to be_empty
+        expect(subject).to be_empty
       end
     end
 
     context "when img tag is missing alt attribute" do
+      let(:template) { '<img src="image.png">' }
+
       it "reports an offense with correct rule name" do
-        template = '<img src="image.png">'
-        offenses = rule.check(parse(template))
-        expect(offenses.size).to eq(1)
-        expect(offenses.first.rule).to eq("alt-text")
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule).to eq("alt-text")
       end
     end
   end
