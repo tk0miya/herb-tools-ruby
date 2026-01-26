@@ -1,7 +1,10 @@
+plugins:
+  - rubocop-rake
+  - rubocop-rspec
+
 AllCops:
   TargetRubyVersion: 3.3
   NewCops: enable
-  SuggestExtensions: false
 
 # NOTE: Keep cops in ASCII order for maintainability
 
@@ -11,6 +14,12 @@ Layout/LeadingCommentSpace:
 Metrics/BlockLength:
   Exclude:
     - "spec/**/*"
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
 
 Style/EmptyLiteral:
   Enabled: false
