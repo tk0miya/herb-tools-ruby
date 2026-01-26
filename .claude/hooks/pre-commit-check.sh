@@ -57,7 +57,9 @@ find_affected_gems() {
     done
   done < <(git diff --cached --name-only 2>/dev/null)
 
-  printf '%s\n' "${gems[@]:-}"
+  if [[ ${#gems[@]} -gt 0 ]]; then
+    printf '%s\n' "${gems[@]}"
+  fi
 }
 
 # Get affected gems
@@ -72,6 +74,7 @@ echo "Running pre-commit checks..." >&2
 
 # Run rake in each affected gem directory
 for gem_dir in "${affected_gems[@]}"; do
+  [[ -z "$gem_dir" ]] && continue
   gem_name=$(basename "$gem_dir")
   echo "Checking $gem_name..." >&2
 
