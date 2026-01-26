@@ -80,15 +80,15 @@ module Herb
       # Load and return merged configuration
       # @raise [FileNotFoundError] When explicit path is not found
       # @raise [ParseError] When YAML parsing fails
-      def load: () -> Hash[Symbol, untyped]
+      def load: () -> Hash[String, untyped]
 
       # Locate configuration file path
       def find_config_path: () -> String?
 
       private
 
-      def load_from_file: (String path) -> Hash[Symbol, untyped]
-      def parse_yaml: (String content) -> Hash[Symbol, untyped]
+      def load_from_file: (String path) -> Hash[String, untyped]
+      def parse_yaml: (String content) -> Hash[String, untyped]
     end
   end
 end
@@ -119,11 +119,11 @@ module Herb
     class Validator
       attr_reader errors: Array[String]
 
-      @config: Hash[Symbol, untyped]
+      @config: Hash[String, untyped]
       @known_rules: Array[String]
       @errors: Array[String]
 
-      def initialize: (Hash[Symbol, untyped] config, ?known_rules: Array[String]) -> void
+      def initialize: (Hash[String, untyped] config, ?known_rules: Array[String]) -> void
 
       # Check if configuration is valid
       def valid?: () -> bool
@@ -204,13 +204,13 @@ module Herb
 
       DEFAULT_EXCLUDE: Array[String]
 
-      def self.config: () -> Hash[Symbol, untyped]
+      def self.config: () -> Hash[String, untyped]
 
-      def self.merge: (Hash[Symbol, untyped] user_config) -> Hash[Symbol, untyped]
+      def self.merge: (Hash[String, untyped] user_config) -> Hash[String, untyped]
 
       private
 
-      def self.deep_merge: (Hash[Symbol, untyped] base, Hash[Symbol, untyped] override) -> Hash[Symbol, untyped]
+      def self.deep_merge: (Hash[String, untyped] base, Hash[String, untyped] override) -> Hash[String, untyped]
     end
   end
 end
@@ -237,10 +237,10 @@ Provides convenient access to linter-specific configuration.
 module Herb
   module Config
     class LinterConfig
-      @config: Hash[Symbol, untyped]
-      @linter_config: Hash[Symbol, untyped]
+      @config: Hash[String, untyped]
+      @linter_config: Hash[String, untyped]
 
-      def initialize: (Hash[Symbol, untyped] config) -> void
+      def initialize: (Hash[String, untyped] config) -> void
 
       def enabled?: () -> bool
 
@@ -254,13 +254,13 @@ module Herb
 
       def rule_severity: (String rule_name, ?default: Symbol) -> Symbol
 
-      def rule_options: (String rule_name) -> Hash[Symbol, untyped]
+      def rule_options: (String rule_name) -> Hash[String, untyped]
 
       private
 
       def normalize_rule_name: (String | Symbol rule_name) -> String
-      def extract_severity: (String | Symbol | Hash[Symbol, untyped] rule_config) -> Symbol
-      def extract_options: (String | Symbol | Hash[Symbol, untyped] rule_config) -> Hash[Symbol, untyped]
+      def extract_severity: (String | Symbol | Hash[String, untyped] rule_config) -> Symbol
+      def extract_options: (String | Symbol | Hash[String, untyped] rule_config) -> Hash[String, untyped]
     end
   end
 end
@@ -286,10 +286,10 @@ Provides convenient access to formatter-specific configuration.
 module Herb
   module Config
     class FormatterConfig
-      @config: Hash[Symbol, untyped]
-      @formatter_config: Hash[Symbol, untyped]
+      @config: Hash[String, untyped]
+      @formatter_config: Hash[String, untyped]
 
-      def initialize: (Hash[Symbol, untyped] config) -> void
+      def initialize: (Hash[String, untyped] config) -> void
 
       def enabled?: () -> bool
 
@@ -307,7 +307,7 @@ module Herb
 
       private
 
-      def rewriter_config: () -> Hash[Symbol, untyped]
+      def rewriter_config: () -> Hash[String, untyped]
     end
   end
 end

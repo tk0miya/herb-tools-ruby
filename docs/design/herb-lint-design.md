@@ -377,24 +377,23 @@ end
 
 **Responsibility:** Provides contextual information during rule execution.
 
+**Design Note:** Directive parsing (inline disable comments) is handled by the Linter, not individual rules. Context provides read-only access to configuration and source information that rules need for their checks.
+
 ```rbs
 class Herb::Lint::Context
   @file_path: String
   @source: String
   @config: Herb::Config::LinterConfig
-  @directive_parser: Herb::Core::DirectiveParser
   @source_lines: Array[String]?
 
   attr_reader file_path: String
   attr_reader source: String
   attr_reader config: Herb::Config::LinterConfig
-  attr_reader directive_parser: Herb::Core::DirectiveParser
 
   def initialize: (
     file_path: String,
     source: String,
-    config: Herb::Config::LinterConfig,
-    directive_parser: Herb::Core::DirectiveParser
+    config: Herb::Config::LinterConfig
   ) -> void
 
   def severity_for: (String rule_name) -> Symbol
@@ -411,6 +410,35 @@ end
 ### Herb::Lint::RuleRegistry
 
 **Responsibility:** Central registry for rule classes (Registry Pattern).
+
+**MVP Implementation Note:**
+
+In the MVP release, RuleRegistry is implemented using class methods with a class variable (`@@rules`) instead of instance methods. This simplification is appropriate for the initial release with only 2-3 rules.
+
+```ruby
+# MVP Implementation (class methods)
+class RuleRegistry
+  @@rules = {}
+
+  def self.register(rule_class)
+    @@rules[rule_class.rule_name] = rule_class
+  end
+
+  def self.all
+    @@rules.values
+  end
+
+  def self.load_builtin_rules
+    # Manually register built-in rules
+    require_relative "rules/html/alt_text"
+    require_relative "rules/html/attribute_quotes"
+    register(Rules::Html::AltText)
+    register(Rules::Html::AttributeQuotes)
+  end
+end
+```
+
+The full implementation below uses instance methods for better testability and when rule count grows beyond ~10 rules.
 
 ```rbs
 class Herb::Lint::RuleRegistry
@@ -572,13 +600,16 @@ end
 **Responsibility:** Base class for rules that traverse the AST using Herb gem's Visitor Pattern.
 
 **Architecture:**
-- Inherits from `Herb::Visitor` to leverage the gem's traversal mechanism
+- Inherits from `Base` to implement the `_Rule` interface
+- Includes `Herb::Visitor` module to leverage the gem's traversal mechanism
 - Subclasses override specific `visit_*_node` methods for targeted node inspection
 - Uses instance variables to accumulate offenses during traversal
 - Provides `check` method that initializes traversal via `document.visit(self)`
 
+**Design Note:** Ruby supports single inheritance only. Since VisitorRule needs both the rule interface (from Base) and visitor functionality (from Herb::Visitor), we inherit from Base and include Herb::Visitor as a module.
+
 **Integration with Herb Gem:**
-- The Herb gem provides `Herb::Visitor` base class with built-in AST traversal
+- The Herb gem provides `Herb::Visitor` module with built-in AST traversal
 - Each node type has a corresponding `visit_*_node` method
 - Calling `super(node)` ensures child nodes are visited recursively
 - Rules can override specific visitor methods to inspect relevant node types
@@ -617,8 +648,8 @@ end
 - `visit_erb_in_node(node)` - ERB in clauses
 
 ```rbs
-class Herb::Lint::Rules::VisitorRule < Herb::Visitor
-  include _Rule
+class Herb::Lint::Rules::VisitorRule < Base
+  include Herb::Visitor
 
   @offenses: Array[Offense]
   @context: Context
