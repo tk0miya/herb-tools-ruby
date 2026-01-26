@@ -1,0 +1,21 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    logger (1.7.0)
+    prism (1.8.0)
+    rbs (3.10.2)
+      logger
+    rbs-inline (0.12.0)
+      prism (>= 0.29)
+      rbs (>= 3.8.0)
+
+PLATFORMS
+  ruby
+  x86_64-linux
+
+DEPENDENCIES
+  rbs
+  rbs-inline
+
+BUNDLED WITH
+   2.7.2

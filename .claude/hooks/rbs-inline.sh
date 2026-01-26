@@ -22,10 +22,11 @@ find_gem_dir() {
   local rb_file="$1"
   local dir="$rb_file"
 
-  # Walk up the directory tree to find a directory with a Gemfile
+  # Walk up the directory tree to find a directory with a .gemspec file
   while [[ "$dir" != "/" && "$dir" != "." ]]; do
     dir=$(dirname "$dir")
-    if [[ -f "$dir/Gemfile" ]]; then
+    # Check if any .gemspec file exists in this directory
+    if compgen -G "$dir/*.gemspec" > /dev/null 2>&1; then
       echo "$dir"
       return 0
     fi
@@ -39,7 +40,9 @@ generate_rbs() {
   if [[ -f "$rb_file" ]]; then
     local gem_dir
     if gem_dir=$(find_gem_dir "$rb_file"); then
-      (cd "$gem_dir" && bundle exec rbs-inline --opt-out --output=sig "$rb_file" 2>/dev/null) || true
+      # Run from gem directory with relative path for correct sig output
+      local rel_path="${rb_file#$gem_dir/}"
+      (cd "$gem_dir" && "$CLAUDE_PROJECT_DIR/bin/rbs-inline" --opt-out --output=sig "$rel_path" 2>/dev/null) || true
     fi
   fi
 }
