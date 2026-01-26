@@ -21,8 +21,5 @@ RSpec/ExampleLength:
 RSpec/MultipleExpectations:
   Enabled: false
 
-Style/EmptyLiteral:
-  Enabled: false
-
 Style/StringLiterals:
   EnforcedStyle: double_quotes
