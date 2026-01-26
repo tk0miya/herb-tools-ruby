@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  herb-config:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: herb-config
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+          working-directory: herb-config
+      - name: Run tests
+        run: bundle exec rspec
+      - name: Install RBS dependencies
+        run: bundle exec rbs collection install --frozen
+      - name: Run type check
+        run: bundle exec steep check
