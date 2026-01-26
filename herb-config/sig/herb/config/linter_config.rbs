@@ -14,8 +14,6 @@ module Herb
 
       @config: Hash[String, untyped]
 
-      @empty_hash: Hash[String, untyped]
-
       # Initialize with merged configuration hash
       # @rbs config: Hash[String, untyped]
       def initialize: (Hash[String, untyped] config) -> void

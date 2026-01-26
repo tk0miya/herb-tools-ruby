@@ -13,14 +13,12 @@ module Herb
       # @rbs @config: Hash[String, untyped]
       # @rbs @linter_config: Hash[String, untyped]
 
-      # @rbs @empty_hash: Hash[String, untyped]
-
       # Initialize with merged configuration hash
       # @rbs config: Hash[String, untyped]
       def initialize(config) #: void
         @config = config
-        @empty_hash = {} #: Hash[String, untyped]
-        @linter_config = config.fetch("linter", @empty_hash)
+        empty = {} #: Hash[String, untyped]
+        @linter_config = config.fetch("linter", empty)
       end
 
       # Check if linter is enabled
@@ -40,7 +38,8 @@ module Herb
 
       # Get all rule configurations
       def rules #: Hash[String, untyped]
-        @linter_config.fetch("rules", @empty_hash)
+        empty = {} #: Hash[String, untyped]
+        @linter_config.fetch("rules", empty)
       end
 
       # Check if a rule is enabled
@@ -96,10 +95,10 @@ module Herb
       # Extract options from rule configuration
       # @rbs rule_config: String | Symbol | Hash[String | Symbol, untyped] | nil
       def extract_options(rule_config) #: Hash[String, untyped]
-        return @empty_hash unless rule_config.is_a?(Hash)
+        return {} unless rule_config.is_a?(Hash)
 
         result = fetch_from_hash(rule_config, "options")
-        result.is_a?(Hash) ? result : @empty_hash
+        result.is_a?(Hash) ? result : {}
       end
 
       # Fetch value from hash supporting both string and symbol keys
