@@ -7,7 +7,5 @@ target :lib do
 
   check "lib"
 
-  configure_code_diagnostics do |hash|
-    hash[D::Ruby::UnknownConstant] = :hint
-  end
+  configure_code_diagnostics(D::Ruby.default)
 end

@@ -1,0 +1,7 @@
+module Psych
+  class Exception < ::RuntimeError
+  end
+
+  class SyntaxError < ::Psych::Exception
+  end
+end
