@@ -1,0 +1,48 @@
+# Generated from lib/herb/config/linter_config.rb with RBS::Inline
+
+module Herb
+  module Config
+    # Provides access to linter-specific configuration.
+    class LinterConfig
+      # Valid severity levels
+      SEVERITY_LEVELS: Array[String]
+
+      # Alias mapping for severity levels
+      SEVERITY_ALIASES: Hash[String, String]
+
+      # @rbs config_hash: Hash[String, untyped] -- the full configuration hash
+      def initialize: (Hash[String, untyped] config_hash) -> void
+
+      # Returns the file patterns to include in linting
+      def include_patterns: () -> Array[String]
+
+      # Returns the file patterns to exclude from linting
+      def exclude_patterns: () -> Array[String]
+
+      # Returns the rules configuration hash
+      def rules: () -> Hash[String, untyped]
+
+      # Returns the severity for a specific rule.
+      # Returns nil if the rule is not configured.
+      # @rbs rule_name: String -- the name of the rule
+      def rule_severity: (String rule_name) -> String?
+
+      # Returns the options for a specific rule.
+      # Returns an empty hash if no options are configured.
+      # @rbs rule_name: String -- the name of the rule
+      def rule_options: (String rule_name) -> Hash[String, untyped]
+
+      private
+
+      attr_reader config: Hash[String, untyped]
+
+      def linter_config: () -> Hash[String, untyped]
+
+      # @rbs rule_config: String | Hash[String, untyped]
+      def extract_severity: (String | Hash[String, untyped] rule_config) -> String?
+
+      # @rbs severity: String?
+      def normalize_severity: (String? severity) -> String?
+    end
+  end
+end
