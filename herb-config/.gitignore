@@ -12,3 +12,4 @@
 
 # RBS collection
 /.gem_rbs_collection/
+bin/
