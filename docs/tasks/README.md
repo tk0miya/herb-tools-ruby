@@ -29,15 +29,15 @@ The implementation is divided into 7 phases:
 
 | Phase | File | Tasks | Description |
 |-------|------|-------|-------------|
-| Phase 1 | [phase-1-herb-config.md](./phase-1-herb-config.md) | 4 | herb-config gem (configuration management) |
-| Phase 2 | [phase-2-herb-core.md](./phase-2-herb-core.md) | 2 | herb-core gem (shared utilities) |
-| Phase 3 | [phase-3-herb-lint-foundation.md](./phase-3-herb-lint-foundation.md) | 3 | herb-lint gem foundation |
+| Phase 1 | [phase-1-herb-config.md](./phase-1-herb-config.md) | 5 | herb-config gem & CI setup |
+| Phase 2 | [phase-2-herb-core.md](./phase-2-herb-core.md) | 3 | herb-core gem & CI setup |
+| Phase 3 | [phase-3-herb-lint-foundation.md](./phase-3-herb-lint-foundation.md) | 4 | herb-lint gem foundation & CI setup |
 | Phase 4 | [phase-4-rules.md](./phase-4-rules.md) | 2 | Lint rule implementation |
 | Phase 5 | [phase-5-linter-runner.md](./phase-5-linter-runner.md) | 4 | Linter & Runner implementation |
 | Phase 6 | [phase-6-reporter-cli.md](./phase-6-reporter-cli.md) | 2 | Reporter & CLI implementation |
 | Phase 7 | [phase-7-integration.md](./phase-7-integration.md) | 3 | Integration testing & documentation |
 
-**Total: 20 tasks**
+**Total: 23 tasks**
 
 ## Dependencies
 
@@ -66,13 +66,14 @@ Phase 1: herb-config gem
 
 The MVP is complete when all of the following conditions are met:
 
-1. ✅ All 3 gems (herb-config, herb-core, herb-lint) can be built
-2. ✅ All unit tests pass
-3. ✅ Integration tests pass
-4. ✅ `herb-lint` command can lint actual ERB files
-5. ✅ 2 or more rules are working
-6. ✅ Configuration file (.herb.yml) can be loaded
-7. ✅ README.md is complete
+1. ✅ CI passes (rspec tests and type checking)
+2. ✅ All 3 gems (herb-config, herb-core, herb-lint) can be built
+3. ✅ All unit tests pass
+4. ✅ Integration tests pass
+5. ✅ `herb-lint` command can lint actual ERB files
+6. ✅ 2 or more rules are working
+7. ✅ Configuration file (.herb.yml) can be loaded
+8. ✅ README.md is complete
 
 ## Important Notes
 

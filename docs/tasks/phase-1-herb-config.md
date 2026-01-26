@@ -6,7 +6,7 @@ Implementation of the gem responsible for configuration management. Loads `.herb
 
 **Dependencies:** None (first phase)
 
-**Task count:** 4
+**Task count:** 5
 
 ---
 
@@ -36,7 +36,74 @@ bundle exec rspec
 
 ---
 
-## Task 1.2: Implement Defaults Module
+## Task 1.2: Setup CI for herb-config
+
+### Overview
+
+Setup GitHub Actions CI to run tests and type checking for herb-config gem.
+
+### Implementation
+
+- [ ] Create `.github/workflows/ci.yml`
+  - [ ] Configure Ruby 3.3 setup
+  - [ ] Configure job for herb-config gem
+  - [ ] Run `bundle install`
+  - [ ] Run `bundle exec rspec`
+  - [ ] Run `bundle exec rbs collection install --frozen` to install RBS dependencies
+  - [ ] Run `bundle exec steep check` for type checking
+- [ ] Create `herb-config/Steepfile`
+  - [ ] Configure target directories
+  - [ ] Configure library dependencies
+- [ ] Create `herb-config/rbs_collection.yaml`
+  - [ ] Configure RBS collection dependencies
+
+### Workflow Structure
+
+```yaml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  herb-config:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: herb-config
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+          working-directory: herb-config
+      - name: Run tests
+        run: bundle exec rspec
+      - name: Install RBS dependencies
+        run: bundle exec rbs collection install --frozen
+      - name: Run type check
+        run: bundle exec steep check
+```
+
+### Verification
+
+```bash
+# Verify workflow syntax
+cat .github/workflows/ci.yml
+
+# Verify Steepfile exists
+ls herb-config/Steepfile
+```
+
+**Expected result:** CI workflow file and Steepfile are created, CI passes on GitHub
+
+---
+
+## Task 1.3: Implement Defaults Module
 
 ### Implementation
 
@@ -72,7 +139,7 @@ bundle exec rspec spec/herb/config/defaults_spec.rb
 
 ---
 
-## Task 1.3: Implement Loader (Minimal Version)
+## Task 1.4: Implement Loader (Minimal Version)
 
 ### Implementation
 
@@ -102,7 +169,7 @@ bundle exec rspec spec/herb/config/loader_spec.rb
 
 ---
 
-## Task 1.4: Implement LinterConfig
+## Task 1.5: Implement LinterConfig
 
 ### Implementation
 
@@ -129,7 +196,8 @@ bundle exec rspec spec/herb/config/linter_config_spec.rb
 
 ## Phase 1 Completion Criteria
 
-- [ ] All tasks (1.1–1.4) completed
+- [ ] All tasks (1.1–1.5) completed
+- [ ] CI passes for herb-config
 - [ ] `bundle exec rspec` passes all tests
 - [ ] `herb-config` gem builds successfully (`gem build herb-config.gemspec` succeeds)
 

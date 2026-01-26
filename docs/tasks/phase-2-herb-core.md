@@ -6,7 +6,7 @@ Implementation of the gem that provides common utilities. Provides file discover
 
 **Dependencies:** Phase 1 (herb-config) must be completed
 
-**Task count:** 2
+**Task count:** 3
 
 ---
 
@@ -36,7 +36,61 @@ bundle exec rspec
 
 ---
 
-## Task 2.2: Implement FileDiscovery (Simplified Version)
+## Task 2.2: Add herb-core to CI
+
+### Overview
+
+Add herb-core gem to the existing CI workflow.
+
+### Implementation
+
+- [ ] Update `.github/workflows/ci.yml`
+  - [ ] Add herb-core job (same structure as herb-config job)
+- [ ] Create `herb-core/Steepfile`
+  - [ ] Configure target directories
+  - [ ] Configure library dependencies
+- [ ] Create `herb-core/rbs_collection.yaml`
+  - [ ] Configure RBS collection dependencies
+
+### Updated Workflow Structure
+
+```yaml
+# Add this job to .github/workflows/ci.yml
+herb-core:
+  runs-on: ubuntu-latest
+  defaults:
+    run:
+      working-directory: herb-core
+  steps:
+    - uses: actions/checkout@v4
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3'
+        bundler-cache: true
+        working-directory: herb-core
+    - name: Run tests
+      run: bundle exec rspec
+    - name: Install RBS dependencies
+      run: bundle exec rbs collection install --frozen
+    - name: Run type check
+      run: bundle exec steep check
+```
+
+### Verification
+
+```bash
+# Verify Steepfile exists
+ls herb-core/Steepfile
+
+# Verify CI includes herb-core job
+grep -A5 "herb-core:" .github/workflows/ci.yml
+```
+
+**Expected result:** CI passes for herb-core on GitHub
+
+---
+
+## Task 2.3: Implement FileDiscovery (Simplified Version)
 
 ### Implementation
 
@@ -87,7 +141,8 @@ bundle exec rspec spec/herb/core/file_discovery_spec.rb
 
 ## Phase 2 Completion Criteria
 
-- [ ] All tasks (2.1–2.2) completed
+- [ ] All tasks (2.1–2.3) completed
+- [ ] CI passes for herb-core
 - [ ] `bundle exec rspec` passes all tests
 - [ ] `herb-core` gem builds successfully (`gem build herb-core.gemspec` succeeds)
 
