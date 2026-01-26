@@ -107,15 +107,15 @@ ls herb-config/Steepfile
 
 ### Implementation
 
-- [ ] Create `lib/herb/config/defaults.rb`
-  - [ ] Define `DEFAULT_INCLUDE` constant (`["**/*.html.erb"]`)
-  - [ ] Define `DEFAULT_EXCLUDE` constant (`[]`)
-  - [ ] Implement `Defaults.config` method (returns default settings Hash)
-  - [ ] Implement `Defaults.merge` method (deep merge logic)
-- [ ] Require in `lib/herb/config.rb`
-- [ ] Create `spec/herb/config/defaults_spec.rb`
-  - [ ] Test for `Defaults.config`
-  - [ ] Test for `Defaults.merge` (including deep merge tests)
+- [x] Create `lib/herb/config/defaults.rb`
+  - [x] Define `DEFAULT_INCLUDE` constant (`["**/*.html.erb"]`)
+  - [x] Define `DEFAULT_EXCLUDE` constant (`[]`)
+  - [x] Implement `Defaults.config` method (returns default settings Hash)
+  - [x] Implement `Defaults.merge` method (deep merge logic)
+- [x] Require in `lib/herb/config.rb`
+- [x] Create `spec/herb/config/defaults_spec.rb`
+  - [x] Test for `Defaults.config`
+  - [x] Test for `Defaults.merge` (including deep merge tests)
 
 ### Default Configuration Structure
 
@@ -143,16 +143,16 @@ bundle exec rspec spec/herb/config/defaults_spec.rb
 
 ### Implementation
 
-- [ ] Create `lib/herb/config/loader.rb`
-  - [ ] Search for `.herb.yml` in current directory
-  - [ ] Load YAML file (use `YAML.safe_load`)
-  - [ ] Merge with `Defaults`
-  - [ ] Error handling (file not found → return Defaults, invalid YAML → raise exception)
-- [ ] Require in `lib/herb/config.rb`
-- [ ] Create `spec/herb/config/loader_spec.rb`
-  - [ ] Test when `.herb.yml` exists
-  - [ ] Test when `.herb.yml` is absent (returns Defaults)
-  - [ ] Test with invalid YAML (raises exception)
+- [x] Create `lib/herb/config/loader.rb`
+  - [x] Search for `.herb.yml` in current directory
+  - [x] Load YAML file (use `YAML.safe_load`)
+  - [x] Merge with `Defaults`
+  - [x] Error handling (file not found → return Defaults, invalid YAML → raise exception)
+- [x] Require in `lib/herb/config.rb`
+- [x] Create `spec/herb/config/loader_spec.rb`
+  - [x] Test when `.herb.yml` exists
+  - [x] Test when `.herb.yml` is absent (returns Defaults)
+  - [x] Test with invalid YAML (raises exception)
 
 ### Search Path
 

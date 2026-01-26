@@ -1,0 +1,20 @@
+# Generated from lib/herb/config/loader.rb with RBS::Inline
+
+module Herb
+  module Config
+    # Loads configuration from .herb.yml files.
+    module Loader
+      # Default configuration file name
+      CONFIG_FILE_NAME: ::String
+
+      # Loads configuration from .herb.yml in the specified directory.
+      # Returns default configuration if file is not found.
+      # @rbs dir: String -- directory to search for configuration file
+      def self.load: (?dir: String) -> Hash[String, untyped]
+
+      # Loads configuration from a specific file path.
+      # @rbs path: String -- path to the configuration file
+      def self.load_file: (String path) -> Hash[String, untyped]
+    end
+  end
+end
