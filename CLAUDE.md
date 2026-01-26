@@ -185,6 +185,9 @@ herb-format/spec/
 
 ### Writing Tests
 
+- Use `context` blocks when preconditions or execution conditions differ
+- Consolidate multiple expectations into a single `it` block within the same context
+
 ```ruby
 RSpec.describe Herb::Lint::Rules::Html::AltText do
   subject(:rule) { described_class.new }
@@ -199,7 +202,7 @@ RSpec.describe Herb::Lint::Rules::Html::AltText do
     end
 
     context "when img tag is missing alt attribute" do
-      it "reports an offense" do
+      it "reports an offense with correct rule name" do
         template = '<img src="image.png">'
         offenses = rule.check(parse(template))
         expect(offenses.size).to eq(1)

@@ -17,23 +17,46 @@ tool_name=$(echo "$input" | jq -r '.tool_name // empty')
 file_path=$(echo "$input" | jq -r '.tool_input.file_path // empty')
 command=$(echo "$input" | jq -r '.tool_input.command // empty')
 
+# Function to find the gem directory containing the Ruby file
+find_gem_dir() {
+  local rb_file="$1"
+  local dir="$rb_file"
+
+  # Walk up the directory tree to find a directory with a Gemfile
+  while [[ "$dir" != "/" && "$dir" != "." ]]; do
+    dir=$(dirname "$dir")
+    if [[ -f "$dir/Gemfile" ]]; then
+      echo "$dir"
+      return 0
+    fi
+  done
+  return 1
+}
+
 # Function to generate .rbs file for a Ruby file
 generate_rbs() {
   local rb_file="$1"
   if [[ -f "$rb_file" ]]; then
-    bundle exec rbs-inline --output "$CLAUDE_PROJECT_DIR/sig" "$rb_file" 2>/dev/null || true
+    local gem_dir
+    if gem_dir=$(find_gem_dir "$rb_file"); then
+      (cd "$gem_dir" && bundle exec rbs-inline --opt-out --output=sig "$rb_file" 2>/dev/null) || true
+    fi
   fi
 }
 
 # Function to remove .rbs file corresponding to a Ruby file
 remove_rbs() {
   local rb_file="$1"
-  # Convert lib/path/to/file.rb to sig/path/to/file.rbs
-  local rbs_file="${rb_file/lib\//sig/}"
-  rbs_file="${rbs_file%.rb}.rbs"
-  local full_rbs_path="$CLAUDE_PROJECT_DIR/$rbs_file"
-  if [[ -f "$full_rbs_path" ]]; then
-    rm -f "$full_rbs_path"
+  local gem_dir
+  if gem_dir=$(find_gem_dir "$rb_file"); then
+    # Convert lib/path/to/file.rb to sig/path/to/file.rbs
+    local rel_path="${rb_file#$gem_dir/}"
+    local rbs_file="${rel_path/lib\//sig\/}"
+    rbs_file="${rbs_file%.rb}.rbs"
+    local full_rbs_path="$gem_dir/$rbs_file"
+    if [[ -f "$full_rbs_path" ]]; then
+      rm -f "$full_rbs_path"
+    fi
   fi
 }
 
