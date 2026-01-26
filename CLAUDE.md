@@ -98,8 +98,8 @@ This project provides binstubs in `bin/` for common development tools. Use these
 # Run tests
 bin/rspec herb-config/spec
 
-# Run type checker
-bin/steep check -C herb-config
+# Run type checker (from gem directory)
+(cd herb-config && ../bin/steep check)
 
 # Run linter
 bin/rubocop herb-config
