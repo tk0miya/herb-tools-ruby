@@ -44,18 +44,18 @@ Setup GitHub Actions CI to run tests and type checking for herb-config gem.
 
 ### Implementation
 
-- [ ] Create `.github/workflows/ci.yml`
-  - [ ] Configure Ruby 3.3 setup
-  - [ ] Configure job for herb-config gem
-  - [ ] Run `bundle install`
-  - [ ] Run `bundle exec rspec`
-  - [ ] Run `bundle exec rbs collection install --frozen` to install RBS dependencies
-  - [ ] Run `bundle exec steep check` for type checking
-- [ ] Create `herb-config/Steepfile`
-  - [ ] Configure target directories
-  - [ ] Configure library dependencies
-- [ ] Create `herb-config/rbs_collection.yaml`
-  - [ ] Configure RBS collection dependencies
+- [x] Create `.github/workflows/ci.yml`
+  - [x] Configure Ruby 3.3 setup
+  - [x] Configure job for herb-config gem
+  - [x] Run `bundle install`
+  - [x] Run `bundle exec rspec`
+  - [x] Run `bundle exec rbs collection install --frozen` to install RBS dependencies
+  - [x] Run `bundle exec steep check` for type checking
+- [x] Create `herb-config/Steepfile`
+  - [x] Configure target directories
+  - [x] Configure library dependencies
+- [x] Create `herb-config/rbs_collection.yaml`
+  - [x] Configure RBS collection dependencies
 
 ### Workflow Structure
 
