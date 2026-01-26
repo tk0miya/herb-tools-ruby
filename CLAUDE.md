@@ -21,6 +21,12 @@ Both tools maintain CLI compatibility with their TypeScript counterparts, sharin
 ```
 herb-tools-ruby/
 ├── CLAUDE.md                    # This file
+├── bin/                         # Binstubs for development tools
+│   ├── rspec
+│   ├── rbs
+│   ├── rbs-inline
+│   ├── steep
+│   └── rubocop
 ├── docs/
 │   └── requirements/            # Specification documents
 │       ├── overview.md
@@ -82,23 +88,24 @@ cd herb-tools-ruby
 
 # Install dependencies
 bundle install
-
-# Run tests for all gems
-bundle exec rake spec
 ```
 
-### Working with Individual Gems
+### Using Binstubs
+
+This project provides binstubs in `bin/` for common development tools. Use these instead of `bundle exec`:
 
 ```bash
-# herb-lint
-cd herb-lint
-bundle install
-bundle exec rspec
+# Run tests
+bin/rspec herb-config/spec
 
-# herb-format
-cd herb-format
-bundle install
-bundle exec rspec
+# Run type checker
+bin/steep check -C herb-config
+
+# Run linter
+bin/rubocop herb-config
+
+# Generate RBS files from inline annotations
+bin/rbs-inline --output lib
 ```
 
 ## Coding Conventions
@@ -216,11 +223,11 @@ end
 ### Running Tests
 
 ```bash
-# Run all tests
-bundle exec rspec
+# Run all tests for a gem (from project root)
+bin/rspec herb-config/spec
 
 # Run specific test file
-bundle exec rspec spec/herb/lint/rules/html/alt_text_spec.rb
+bin/rspec herb-config/spec/herb/config_spec.rb
 ```
 
 ## Writing Type Annotations
@@ -271,3 +278,4 @@ Type definition files (`.rbs`) are generated automatically by the PostToolUse ho
 - `rspec`: Testing framework
 - `rubocop`: Style enforcement
 - `rbs-inline`: Type annotation support
+- `steep`: Static type checker
