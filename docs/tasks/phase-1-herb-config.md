@@ -14,15 +14,15 @@ Implementation of the gem responsible for configuration management. Loads `.herb
 
 ### Implementation
 
-- [ ] Run `bundle gem herb-config --test=rspec --linter=rubocop`
-- [ ] Edit `herb-config.gemspec` file
-  - [ ] Remove TODO comments
-  - [ ] Fill in `summary`, `description`, `homepage`
-  - [ ] Set `required_ruby_version` to `">= 3.3.0"`
-  - [ ] Add dependency on `herb` gem (`spec.add_dependency "herb", "~> 0.1"`)
-- [ ] Delete unnecessary files
-  - [ ] Delete `bin/console`
-  - [ ] Delete `bin/setup`
+- [x] Run `bundle gem herb-config --test=rspec --linter=rubocop`
+- [x] Edit `herb-config.gemspec` file
+  - [x] Remove TODO comments
+  - [x] Fill in `summary`, `description`, `homepage`
+  - [x] Set `required_ruby_version` to `">= 3.3.0"`
+  - [x] Add dependency on `herb` gem (`spec.add_dependency "herb", "~> 0.1"`)
+- [x] Delete unnecessary files
+  - [x] Delete `bin/console`
+  - [x] Delete `bin/setup`
 
 ### Verification
 
