@@ -2,6 +2,7 @@
 
 # Require files in ASCII order
 require_relative "config/defaults"
+require_relative "config/loader"
 require_relative "config/version"
 
 module Herb
