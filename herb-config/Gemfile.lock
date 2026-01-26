@@ -115,6 +115,12 @@ GEM
     rubocop-ast (1.49.0)
       parser (>= 3.3.7.2)
       prism (~> 1.7)
+    rubocop-rake (0.7.1)
+      lint_roller (~> 1.1)
+      rubocop (>= 1.72.1)
+    rubocop-rspec (3.9.0)
+      lint_roller (~> 1.1)
+      rubocop (~> 1.81)
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
     steep (1.10.0)
@@ -167,6 +173,8 @@ DEPENDENCIES
   rbs-inline (~> 0.10)
   rspec (~> 3.0)
   rubocop (~> 1.21)
+  rubocop-rake
+  rubocop-rspec
   steep (~> 1.9)
 
 BUNDLED WITH
