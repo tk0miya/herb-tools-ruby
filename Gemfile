@@ -4,6 +4,7 @@ source "https://rubygems.org"
 
 # Development tools shared across all gems.
 # Binstubs are generated in bin/ for environments where bundle exec is unavailable.
+gem "rake"
 gem "rbs"
 gem "rbs-inline"
 gem "rspec"
