@@ -1,5 +1,19 @@
 AllCops:
   TargetRubyVersion: 3.3
+  NewCops: enable
+  SuggestExtensions: false
+
+# NOTE: Keep cops in ASCII order for maintainability
+
+Layout/LeadingCommentSpace:
+  AllowRBSInlineAnnotation: true
+
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*"
+
+Style/EmptyLiteral:
+  Enabled: false
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes

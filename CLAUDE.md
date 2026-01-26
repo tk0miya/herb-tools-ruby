@@ -22,11 +22,12 @@ Both tools maintain CLI compatibility with their TypeScript counterparts, sharin
 herb-tools-ruby/
 ├── CLAUDE.md                    # This file
 ├── bin/                         # Binstubs for development tools
-│   ├── rspec
+│   ├── rake
 │   ├── rbs
 │   ├── rbs-inline
-│   ├── steep
-│   └── rubocop
+│   ├── rspec
+│   ├── rubocop
+│   └── steep
 ├── docs/
 │   └── requirements/            # Specification documents
 │       ├── overview.md
@@ -95,7 +96,10 @@ bundle install
 This project provides binstubs in `bin/` for common development tools. Use these instead of `bundle exec`:
 
 ```bash
-# Run tests
+# Run all checks (spec, rubocop, steep) for a gem
+(cd herb-config && ../bin/rake)
+
+# Run tests only
 bin/rspec herb-config/spec
 
 # Run type checker (from gem directory)
@@ -107,6 +111,8 @@ bin/rubocop herb-config
 # Generate RBS files from inline annotations
 bin/rbs-inline --output lib
 ```
+
+Note: The `bin/rake` binstub automatically detects and uses the Gemfile in the current directory, making it suitable for running gem-specific rake tasks.
 
 ## Coding Conventions
 
@@ -275,6 +281,7 @@ Type definition files (`.rbs`) are generated automatically by the PostToolUse ho
 
 ### Development Dependencies
 
+- `rake`: Task runner for running all checks
 - `rspec`: Testing framework
 - `rubocop`: Style enforcement
 - `rbs-inline`: Type annotation support

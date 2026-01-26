@@ -19,9 +19,5 @@ jobs:
           ruby-version: '3.3'
           bundler-cache: true
           working-directory: herb-config
-      - name: Run tests
-        run: bundle exec rspec
-      - name: Install RBS dependencies
-        run: bundle exec rbs collection install --frozen
-      - name: Run type check
-        run: bundle exec steep check
+      - name: Run all checks
+        run: bundle exec rake
