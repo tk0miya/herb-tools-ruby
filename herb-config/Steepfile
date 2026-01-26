@@ -4,12 +4,8 @@ D = Steep::Diagnostic
 
 target :lib do
   signature "sig"
-  signature "sig/generated"
 
   check "lib"
-
-  library "yaml"
-  library "psych"
 
   configure_code_diagnostics do |hash|
     hash[D::Ruby::UnknownConstant] = :hint
