@@ -17,8 +17,7 @@ module Herb
       # @rbs config: Hash[String, untyped]
       def initialize(config) #: void
         @config = config
-        empty = {} #: Hash[String, untyped]
-        @linter_config = config.fetch("linter", empty)
+        @linter_config = config.fetch("linter", {})
       end
 
       # Check if linter is enabled
@@ -38,8 +37,7 @@ module Herb
 
       # Get all rule configurations
       def rules #: Hash[String, untyped]
-        empty = {} #: Hash[String, untyped]
-        @linter_config.fetch("rules", empty)
+        @linter_config.fetch("rules", {})
       end
 
       # Check if a rule is enabled
