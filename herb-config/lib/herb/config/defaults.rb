@@ -8,7 +8,7 @@ module Herb
       DEFAULT_INCLUDE = ["**/*.html.erb"].freeze #: Array[String]
 
       # Default file patterns to exclude
-      DEFAULT_EXCLUDE = Array.new.freeze #: Array[String]
+      DEFAULT_EXCLUDE = [].freeze #: Array[String]
 
       # Returns the complete default configuration
       def self.config #: Hash[String, untyped]
@@ -16,7 +16,7 @@ module Herb
           "linter" => {
             "include" => DEFAULT_INCLUDE.dup,
             "exclude" => DEFAULT_EXCLUDE.dup,
-            "rules" => Hash.new
+            "rules" => {}
           }
         }
       end
