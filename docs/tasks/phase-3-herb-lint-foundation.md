@@ -6,7 +6,7 @@ Implementation of foundational data structures and rule infrastructure for the l
 
 **Dependencies:** Phase 1 (herb-config) and Phase 2 (herb-core) must be completed
 
-**Task count:** 3
+**Task count:** 4
 
 ---
 
@@ -49,7 +49,61 @@ bundle exec rspec
 
 ---
 
-## Task 3.2: Implement Data Structures
+## Task 3.2: Add herb-lint to CI
+
+### Overview
+
+Add herb-lint gem to the existing CI workflow.
+
+### Implementation
+
+- [ ] Update `.github/workflows/ci.yml`
+  - [ ] Add herb-lint job (same structure as herb-config/herb-core jobs)
+- [ ] Create `herb-lint/Steepfile`
+  - [ ] Configure target directories
+  - [ ] Configure library dependencies (including herb-config, herb-core)
+- [ ] Create `herb-lint/rbs_collection.yaml`
+  - [ ] Configure RBS collection dependencies
+
+### Updated Workflow Structure
+
+```yaml
+# Add this job to .github/workflows/ci.yml
+herb-lint:
+  runs-on: ubuntu-latest
+  defaults:
+    run:
+      working-directory: herb-lint
+  steps:
+    - uses: actions/checkout@v4
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3'
+        bundler-cache: true
+        working-directory: herb-lint
+    - name: Run tests
+      run: bundle exec rspec
+    - name: Install RBS dependencies
+      run: bundle exec rbs collection install --frozen
+    - name: Run type check
+      run: bundle exec steep check
+```
+
+### Verification
+
+```bash
+# Verify Steepfile exists
+ls herb-lint/Steepfile
+
+# Verify CI includes herb-lint job
+grep -A5 "herb-lint:" .github/workflows/ci.yml
+```
+
+**Expected result:** CI passes for herb-lint on GitHub
+
+---
+
+## Task 3.3: Implement Data Structures
 
 ### Implementation
 
@@ -100,7 +154,7 @@ bundle exec rspec spec/herb/lint/aggregated_result_spec.rb
 
 ---
 
-## Task 3.3: Implement Rule Infrastructure
+## Task 3.4: Implement Rule Infrastructure
 
 ### Implementation
 
@@ -175,7 +229,8 @@ bundle exec rspec spec/herb/lint/rules/visitor_rule_spec.rb
 
 ## Phase 3 Completion Criteria
 
-- [ ] All tasks (3.1–3.3) completed
+- [ ] All tasks (3.1–3.4) completed
+- [ ] CI passes for herb-lint
 - [ ] `bundle exec rspec` passes all tests
 - [ ] Data structure classes work correctly
 - [ ] Rule infrastructure classes work correctly
