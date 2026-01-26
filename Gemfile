@@ -2,6 +2,10 @@
 
 source "https://rubygems.org"
 
-# Development tools shared across all gems (used by hooks)
+# Development tools shared across all gems.
+# Binstubs are generated in bin/ for environments where bundle exec is unavailable.
 gem "rbs"
 gem "rbs-inline"
+gem "rspec"
+gem "rubocop"
+gem "steep"
