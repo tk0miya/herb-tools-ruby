@@ -1,0 +1,72 @@
+# Generated from lib/herb/config/linter_config.rb with RBS::Inline
+
+module Herb
+  module Config
+    # Provides convenient access to linter-specific configuration.
+    class LinterConfig
+      # Valid severity levels
+      SEVERITY_LEVELS: Array[Symbol]
+
+      # Severity aliases mapping
+      SEVERITY_ALIASES: Hash[String, Symbol]
+
+      @linter_config: Hash[String, untyped]
+
+      @config: Hash[String, untyped]
+
+      @empty_hash: Hash[String, untyped]
+
+      # Initialize with merged configuration hash
+      # @rbs config: Hash[String, untyped]
+      def initialize: (Hash[String, untyped] config) -> void
+
+      # Check if linter is enabled
+      def enabled?: () -> bool
+
+      # Get file patterns to include
+      def include_patterns: () -> Array[String]
+
+      # Get file patterns to exclude
+      def exclude_patterns: () -> Array[String]
+
+      # Get all rule configurations
+      def rules: () -> Hash[String, untyped]
+
+      # Check if a rule is enabled
+      # @rbs rule_name: String
+      def rule_enabled?: (String rule_name) -> bool
+
+      # Get the severity level for a rule
+      # @rbs rule_name: String
+      # @rbs default: Symbol -- default severity if rule is not configured
+      def rule_severity: (String rule_name, ?default: Symbol) -> Symbol
+
+      # Get rule-specific options
+      # @rbs rule_name: String
+      def rule_options: (String rule_name) -> Hash[String, untyped]
+
+      private
+
+      # Normalize rule name to string with kebab-case
+      # @rbs rule_name: String | Symbol
+      def normalize_rule_name: (String | Symbol rule_name) -> String
+
+      # Extract severity from rule configuration
+      # @rbs rule_config: String | Symbol | Hash[String | Symbol, untyped] | nil
+      def extract_severity: (String | Symbol | Hash[String | Symbol, untyped] | nil rule_config) -> Symbol
+
+      # Extract options from rule configuration
+      # @rbs rule_config: String | Symbol | Hash[String | Symbol, untyped] | nil
+      def extract_options: (String | Symbol | Hash[String | Symbol, untyped] | nil rule_config) -> Hash[String, untyped]
+
+      # Fetch value from hash supporting both string and symbol keys
+      # @rbs hash: Hash[String | Symbol, untyped]
+      # @rbs key: String
+      def fetch_from_hash: (Hash[String | Symbol, untyped] hash, String key) -> untyped
+
+      # Normalize severity string to symbol
+      # @rbs severity: String
+      def normalize_severity: (String severity) -> Symbol
+    end
+  end
+end

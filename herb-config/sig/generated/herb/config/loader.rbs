@@ -1,0 +1,51 @@
+# Generated from lib/herb/config/loader.rb with RBS::Inline
+
+module Herb
+  module Config
+    # Loads and parses .herb.yml configuration files.
+    class Loader
+      # Default configuration filename
+      CONFIG_FILENAME: String
+
+      @explicit_path: String?
+
+      @working_dir: String
+
+      # Initialize a new Loader
+      # @rbs path: String? -- explicit path to configuration file
+      # @rbs working_dir: String -- directory to search for configuration
+      def initialize: (?path: String?, ?working_dir: String) -> void
+
+      # Load configuration from file and merge with defaults
+      # @raise [FileNotFoundError] when explicit path is not found
+      # @raise [ParseError] when YAML parsing fails
+      def load: () -> Hash[String, untyped]
+
+      # Locate configuration file path
+      def find_config_path: () -> String?
+
+      private
+
+      # Search for configuration file in directory and parent directories
+      # @rbs dir: String
+      def search_upward: (String dir) -> String?
+
+      # Load and parse YAML from file
+      # @rbs path: String
+      def load_from_file: (String path) -> Hash[String, untyped]
+
+      # Parse YAML content safely
+      # @rbs content: String
+      # @rbs path: String
+      def parse_yaml: (String content, String path) -> Hash[String, untyped]
+    end
+
+    # Raised when configuration file is not found
+    class FileNotFoundError < Error
+    end
+
+    # Raised when YAML parsing fails
+    class ParseError < Error
+    end
+  end
+end
