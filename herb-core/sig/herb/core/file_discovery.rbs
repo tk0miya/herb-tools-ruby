@@ -1,0 +1,56 @@
+# Generated from lib/herb/core/file_discovery.rb with RBS::Inline
+
+module Herb
+  module Core
+    # Discovers files based on include/exclude patterns or explicit paths.
+    #
+    # @example Discover from patterns (no paths provided)
+    #   discovery = Herb::Core::FileDiscovery.new(
+    #     base_dir: Dir.pwd,
+    #     include_patterns: ["**/*.html.erb"],
+    #     exclude_patterns: ["vendor/**/*"]
+    #   )
+    #   files = discovery.discover
+    #
+    # @example Discover from explicit paths only
+    #   files = discovery.discover(["app/views/users/show.html.erb"])
+    #   files = discovery.discover(["app/views/users"])  # directory
+    class FileDiscovery
+      attr_reader base_dir: String
+
+      attr_reader include_patterns: Array[String]
+
+      attr_reader exclude_patterns: Array[String]
+
+      # @rbs base_dir: String -- the base directory for file discovery
+      # @rbs include_patterns: Array[String] -- glob patterns to include
+      # @rbs exclude_patterns: Array[String] -- glob patterns to exclude
+      def initialize: (base_dir: String, include_patterns: Array[String], exclude_patterns: Array[String]) -> void
+
+      # Discovers files based on patterns or explicit paths.
+      # - No paths: uses include_patterns with exclude filtering
+      # - File paths: returns files directly without exclude filtering
+      # - Directory paths: discovers files in directory with exclude filtering
+      #
+      # @rbs paths: Array[String] -- explicit paths (files or directories) to include
+      def discover: (?Array[String] paths) -> Array[String]
+
+      private
+
+      def discover_from_patterns: () -> Set[String]
+
+      # @rbs paths: Array[String]
+      def discover_from_paths: (Array[String] paths) -> Set[String]
+
+      # @rbs full_path: String
+      # @rbs result: Set[String]
+      def collect_from_path: (String full_path, Set[String] result) -> void
+
+      # @rbs file: String
+      def excluded?: (String file) -> bool
+
+      # @rbs file: String
+      def relative_path: (String file) -> String
+    end
+  end
+end
