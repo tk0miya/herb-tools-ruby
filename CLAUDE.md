@@ -97,13 +97,13 @@ This project provides binstubs in `bin/` for common development tools. Use these
 
 ```bash
 # Run all checks (spec, rubocop, steep) for a gem
-(cd herb-config && ../bin/rake)
+(cd herb-config && bin/rake)
 
 # Run tests only
 bin/rspec herb-config/spec
 
 # Run type checker (from gem directory)
-(cd herb-config && ../bin/steep check)
+(cd herb-config && bin/steep check)
 
 # Run linter
 bin/rubocop herb-config
@@ -112,7 +112,7 @@ bin/rubocop herb-config
 bin/rbs-inline --output lib
 ```
 
-Note: The `bin/rake` binstub automatically detects and uses the Gemfile in the current directory, making it suitable for running gem-specific rake tasks.
+Note: `bin/rake` should be run from the gem directory (e.g., `cd herb-config && bin/rake`).
 
 ## Coding Conventions
 
