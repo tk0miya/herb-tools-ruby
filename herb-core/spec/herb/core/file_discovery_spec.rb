@@ -7,13 +7,7 @@ RSpec.describe Herb::Core::FileDiscovery do
   describe "#discover" do
     subject { discovery.discover(paths) }
 
-    let(:discovery) do
-      described_class.new(
-        base_dir: base_dir,
-        include_patterns: include_patterns,
-        exclude_patterns: exclude_patterns
-      )
-    end
+    let(:discovery) { described_class.new(base_dir:, include_patterns:, exclude_patterns:) }
     let(:base_dir) { Dir.mktmpdir }
     let(:include_patterns) { [] }
     let(:exclude_patterns) { [] }
