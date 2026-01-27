@@ -30,5 +30,8 @@ RSpec/MultipleExpectations:
 RSpec/NamedSubject:
   Enabled: false
 
+Style/HashSyntax:
+  EnforcedShorthandSyntax: always
+
 Style/StringLiterals:
   EnforcedStyle: double_quotes

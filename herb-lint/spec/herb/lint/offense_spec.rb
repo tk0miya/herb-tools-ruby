@@ -2,14 +2,7 @@
 
 RSpec.describe Herb::Lint::Offense do
   describe "#initialize" do
-    subject do
-      described_class.new(
-        rule_name: rule_name,
-        message: message,
-        severity: severity,
-        location: location
-      )
-    end
+    subject { described_class.new(rule_name:, message:, severity:, location:) }
 
     let(:rule_name) { "alt-text" }
     let(:message) { "Image missing alt attribute" }
@@ -32,7 +25,7 @@ RSpec.describe Herb::Lint::Offense do
         rule_name: "alt-text",
         message: "Image missing alt attribute",
         severity: "error",
-        location: location
+        location:
       )
     end
     let(:location) { build_location(line: 42, column: 10) }
@@ -50,7 +43,7 @@ RSpec.describe Herb::Lint::Offense do
         rule_name: "attribute-quotes",
         message: "Attribute should use double quotes",
         severity: "warning",
-        location: location
+        location:
       )
     end
     let(:location) { build_location(line: 1, column: 25) }

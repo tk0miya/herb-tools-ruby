@@ -50,12 +50,7 @@ module Herb
         # @rbs message: String -- description of the violation
         # @rbs location: Herb::Location -- location of the violation
         def create_offense(context:, message:, location:) #: Offense # rubocop:disable Lint/UnusedMethodArgument
-          Offense.new(
-            rule_name: self.class.rule_name,
-            message: message,
-            severity: severity,
-            location: location
-          )
+          Offense.new(rule_name: self.class.rule_name, message:, severity:, location:)
         end
       end
     end

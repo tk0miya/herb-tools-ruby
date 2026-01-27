@@ -40,7 +40,7 @@ module Herb
         # Add an offense for the current rule.
         # @rbs override
         def add_offense(message:, location:)
-          @offenses << create_offense(context: @context, message: message, location: location)
+          @offenses << create_offense(context: @context, message:, location:)
         end
       end
     end
