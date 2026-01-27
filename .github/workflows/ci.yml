@@ -21,3 +21,18 @@ jobs:
           working-directory: herb-config
       - name: Run all checks
         run: bundle exec rake
+
+  herb-core:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: herb-core
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+          working-directory: herb-core
+      - name: Run all checks
+        run: bundle exec rake
