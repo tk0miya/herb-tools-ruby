@@ -90,24 +90,24 @@ grep -A5 "herb-core:" .github/workflows/ci.yml
 
 ---
 
-## Task 2.3: Implement FileDiscovery (Simplified Version)
+## Task 2.3: Implement FileDiscovery (Simplified Version) ✅
 
 ### Implementation
 
-- [ ] Create `lib/herb/core/file_discovery.rb`
-  - [ ] Implement `initialize(base_dir:, include_patterns:, exclude_patterns:)`
-  - [ ] Implement `discover(paths = [])` instance method
-  - [ ] Implement file discovery using `Dir.glob`
-  - [ ] Discovery from patterns (`include_patterns` attribute)
-  - [ ] Discovery from path specification (`paths` parameter)
-  - [ ] Apply exclusion patterns (`exclude_patterns` attribute)
-  - [ ] Remove duplicate files
-- [ ] Require in `lib/herb/core.rb`
-- [ ] Create `spec/herb/core/file_discovery_spec.rb`
-  - [ ] Test file discovery from patterns
-  - [ ] Test file discovery from path specification
-  - [ ] Test exclusion patterns
-  - [ ] Test duplicate removal
+- [x] Create `lib/herb/core/file_discovery.rb`
+  - [x] Implement `initialize(base_dir:, include_patterns:, exclude_patterns:)`
+  - [x] Implement `discover(paths = [])` instance method
+  - [x] Implement file discovery using `Dir.glob`
+  - [x] Discovery from patterns (`include_patterns` attribute)
+  - [x] Discovery from path specification (`paths` parameter)
+  - [x] Apply exclusion patterns (`exclude_patterns` attribute)
+  - [x] Remove duplicate files
+- [x] Require in `lib/herb/core.rb`
+- [x] Create `spec/herb/core/file_discovery_spec.rb`
+  - [x] Test file discovery from patterns
+  - [x] Test file discovery from path specification
+  - [x] Test exclusion patterns
+  - [x] Test duplicate removal
 
 ### Implementation Specification
 
@@ -119,9 +119,22 @@ discovery = Herb::Core::FileDiscovery.new(
   exclude_patterns: ["vendor/**/*"]
 )
 
+# When no paths provided: discover from include patterns
+files = discovery.discover
+# => ["app/views/users/index.html.erb", "app/views/posts/index.html.erb", ...]
+
+# When paths provided: discover only from specified paths (files or directories)
 files = discovery.discover(["app/views/users/show.html.erb"])
-# => ["app/views/users/show.html.erb", "app/views/posts/index.html.erb", ...]
+# => ["app/views/users/show.html.erb"]
+
+files = discovery.discover(["app/views/users"])
+# => ["app/views/users/index.html.erb", "app/views/users/show.html.erb", ...]
 ```
+
+**Behavior:**
+- `paths` is empty: Use `include_patterns` to discover files, applying `exclude_patterns`
+- `paths` contains files: Return files directly **without** applying `exclude_patterns` (explicit file = user intent is clear)
+- `paths` contains directories: Discover files in directory **with** `exclude_patterns` applied (directory = automatic discovery within)
 
 ### Simplified Implementation for MVP Scope
 
@@ -141,10 +154,10 @@ bundle exec rspec spec/herb/core/file_discovery_spec.rb
 
 ## Phase 2 Completion Criteria
 
-- [ ] All tasks (2.1–2.3) completed
-- [ ] CI passes for herb-core
-- [ ] `bundle exec rspec` passes all tests
-- [ ] `herb-core` gem builds successfully (`gem build herb-core.gemspec` succeeds)
+- [x] All tasks (2.1–2.3) completed
+- [x] CI passes for herb-core
+- [x] `bundle exec rspec` passes all tests
+- [x] `herb-core` gem builds successfully (`gem build herb-core.gemspec` succeeds)
 
 ---
 

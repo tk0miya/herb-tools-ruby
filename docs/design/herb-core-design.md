@@ -51,7 +51,6 @@ class Herb::Core::FileDiscovery
   @base_dir: String
   @include_patterns: Array[String]
   @exclude_patterns: Array[String]
-  @pattern_matcher: Herb::Core::PatternMatcher
 
   attr_reader base_dir: String
   attr_reader include_patterns: Array[String]
@@ -69,10 +68,20 @@ end
 **Responsibilities:**
 - Expand glob patterns from include list
 - Process both file and directory paths from CLI
-- Delegate include/exclude filtering to PatternMatcher
+- Apply exclude pattern filtering based on path type
 - Return sorted, unique list of file paths
 
+**Exclude Pattern Application Rules:**
+
+| Input Type | Exclude Applied | Rationale |
+|------------|-----------------|-----------|
+| No paths (pattern-based) | Yes | Automatic discovery, filtering expected |
+| Explicit file path | No | User intent is clear, they want this specific file |
+| Directory path | Yes | Directory triggers automatic discovery within |
+
 ### Herb::Core::PatternMatcher
+
+> **MVP Note:** In the MVP implementation, PatternMatcher functionality is integrated within FileDiscovery (`excluded?` method). This class may be separated in a future enhancement for improved reusability.
 
 Responsible for determining if a file path matches include/exclude patterns using glob pattern matching.
 

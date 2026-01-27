@@ -1,7 +1,7 @@
+# Generated from lib/herb/core.rb with RBS::Inline
+
 module Herb
   module Core
-    VERSION: String
-
     class Error < StandardError
     end
   end
