@@ -9,14 +9,11 @@ gem "herb-config", path: "../herb-config"
 gem "herb-core", path: "../herb-core"
 
 gem "irb"
-gem "rake", "~> 13.0"
-
-gem "rspec", "~> 3.0"
-
-gem "rubocop", "~> 1.21"
+gem "rake"
+gem "rbs"
+gem "rbs-inline"
+gem "rspec"
+gem "rubocop"
 gem "rubocop-rake"
 gem "rubocop-rspec"
-
-gem "rbs", "~> 3.4"
-gem "rbs-inline", "~> 0.10"
-gem "steep", "~> 1.9"
+gem "steep"

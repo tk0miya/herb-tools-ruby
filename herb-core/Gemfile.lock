@@ -168,14 +168,14 @@ PLATFORMS
 DEPENDENCIES
   herb-core!
   irb
-  rake (~> 13.0)
-  rbs (~> 3.4)
-  rbs-inline (~> 0.10)
-  rspec (~> 3.0)
-  rubocop (~> 1.21)
+  rake
+  rbs
+  rbs-inline
+  rspec
+  rubocop
   rubocop-rake
   rubocop-rspec
-  steep (~> 1.9)
+  steep
 
 BUNDLED WITH
-   2.6.6
+   2.7.2
