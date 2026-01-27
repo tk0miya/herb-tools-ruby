@@ -173,16 +173,16 @@ bundle exec rspec spec/herb/config/loader_spec.rb
 
 ### Implementation
 
-- [ ] Create `lib/herb/config/linter_config.rb`
-  - [ ] Implement `initialize(config_hash)`
-  - [ ] Implement `include_patterns` method (returns `config["linter"]["include"]`)
-  - [ ] Implement `exclude_patterns` method (returns `config["linter"]["exclude"]`)
-  - [ ] Implement `rules` method (returns `config["linter"]["rules"]`)
-  - [ ] Implement `rule_severity(rule_name)` method (returns rule severity)
-- [ ] Require in `lib/herb/config.rb`
-- [ ] Create `spec/herb/config/linter_config_spec.rb`
-  - [ ] Test each method
-  - [ ] Test rule configuration retrieval
+- [x] Create `lib/herb/config/linter_config.rb`
+  - [x] Implement `initialize(config_hash)`
+  - [x] Implement `include_patterns` method (returns `config["linter"]["include"]`)
+  - [x] Implement `exclude_patterns` method (returns `config["linter"]["exclude"]`)
+  - [x] Implement `rules` method (returns `config["linter"]["rules"]`)
+  - [x] Implement `rule_severity(rule_name)` method (returns rule severity)
+- [x] Require in `lib/herb/config.rb`
+- [x] Create `spec/herb/config/linter_config_spec.rb`
+  - [x] Test each method
+  - [x] Test rule configuration retrieval
 
 ### Verification
 
@@ -196,10 +196,10 @@ bundle exec rspec spec/herb/config/linter_config_spec.rb
 
 ## Phase 1 Completion Criteria
 
-- [ ] All tasks (1.1–1.5) completed
-- [ ] CI passes for herb-config
-- [ ] `bundle exec rspec` passes all tests
-- [ ] `herb-config` gem builds successfully (`gem build herb-config.gemspec` succeeds)
+- [x] All tasks (1.1–1.5) completed
+- [x] CI passes for herb-config
+- [x] `bundle exec rspec` passes all tests
+- [x] `herb-config` gem builds successfully (`gem build herb-config.gemspec` succeeds)
 
 ---
 
