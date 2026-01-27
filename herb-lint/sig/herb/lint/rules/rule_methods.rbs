@@ -1,0 +1,40 @@
+# Generated from lib/herb/lint/rules/rule_methods.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Common functionality for all lint rules.
+      # Include this module in rule classes to get rule metadata and offense creation.
+      module RuleMethods
+        # @rbs base: Class
+        def self.included: (Class base) -> void
+
+        # Class methods for rule metadata.
+        module ClassMethods
+          def rule_name: () -> String
+
+          def description: () -> String
+
+          def default_severity: () -> String
+        end
+
+        # @rbs severity: String?
+        # @rbs options: Hash[Symbol, untyped]?
+        def initialize: (?severity: String?, ?options: Hash[Symbol, untyped]?) -> void
+
+        # Check the document for rule violations.
+        #
+        # @rbs document: Herb::ParseResult -- parsed document to check
+        # @rbs context: Context -- linting context with file information
+        def check: (Herb::ParseResult document, Context context) -> Array[Offense]
+
+        # Create an offense for a rule violation.
+        #
+        # @rbs context: Context -- linting context (reserved for future use)
+        # @rbs message: String -- description of the violation
+        # @rbs location: Herb::Location -- location of the violation
+        def create_offense: (context: Context, message: String, location: Herb::Location) -> Offense
+      end
+    end
+  end
+end
