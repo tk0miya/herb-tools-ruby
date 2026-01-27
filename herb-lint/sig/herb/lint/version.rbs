@@ -1,0 +1,7 @@
+# Generated from lib/herb/lint/version.rb with RBS::Inline
+
+module Herb
+  module Lint
+    VERSION: String
+  end
+end

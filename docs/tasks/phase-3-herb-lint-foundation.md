@@ -14,20 +14,20 @@ Implementation of foundational data structures and rule infrastructure for the l
 
 ### Implementation
 
-- [ ] Run `bundle gem herb-lint --test=rspec --linter=rubocop`
-- [ ] Edit `herb-lint.gemspec` file
-  - [ ] Remove TODO comments
-  - [ ] Fill in `summary`, `description`, `homepage`
-  - [ ] Set `required_ruby_version` to `">= 3.3.0"`
-  - [ ] Add dependencies
+- [x] Run `bundle gem herb-lint --test=rspec --linter=rubocop`
+- [x] Edit `herb-lint.gemspec` file
+  - [x] Remove TODO comments
+  - [x] Fill in `summary`, `description`, `homepage`
+  - [x] Set `required_ruby_version` to `">= 3.3.0"`
+  - [x] Add dependencies
     - [ ] `spec.add_dependency "herb", "~> 0.1"`
-    - [ ] `spec.add_dependency "herb-config", "~> 0.1.0"` (or local path)
-    - [ ] `spec.add_dependency "herb-core", "~> 0.1.0"` (or local path)
-- [ ] Create `exe/herb-lint` executable file
-  - [ ] Add shebang line (`#!/usr/bin/env ruby`)
-  - [ ] `require "herb/lint"`
-  - [ ] Call `Herb::Lint::CLI.new(ARGV).run`
-  - [ ] Grant execute permission with `chmod +x exe/herb-lint`
+    - [x] `spec.add_dependency "herb-config", "~> 0.1.0"` (or local path)
+    - [x] `spec.add_dependency "herb-core", "~> 0.1.0"` (or local path)
+- [x] Create `exe/herb-lint` executable file
+  - [x] Add shebang line (`#!/usr/bin/env ruby`)
+  - [x] `require "herb/lint"`
+  - [x] Call `Herb::Lint::CLI.new(ARGV).run`
+  - [x] Grant execute permission with `chmod +x exe/herb-lint`
 
 ### Example Local Dependency Setup in Gemfile
 
@@ -57,13 +57,13 @@ Add herb-lint gem to the existing CI workflow.
 
 ### Implementation
 
-- [ ] Update `.github/workflows/ci.yml`
-  - [ ] Add herb-lint job (same structure as herb-config/herb-core jobs)
-- [ ] Create `herb-lint/Steepfile`
-  - [ ] Configure target directories
-  - [ ] Configure library dependencies (including herb-config, herb-core)
-- [ ] Create `herb-lint/rbs_collection.yaml`
-  - [ ] Configure RBS collection dependencies
+- [x] Update `.github/workflows/ci.yml`
+  - [x] Add herb-lint job (same structure as herb-config/herb-core jobs)
+- [x] Create `herb-lint/Steepfile`
+  - [x] Configure target directories
+  - [x] Configure library dependencies (including herb-config, herb-core)
+- [x] Create `herb-lint/rbs_collection.yaml`
+  - [x] Configure RBS collection dependencies
 
 ### Updated Workflow Structure
 
