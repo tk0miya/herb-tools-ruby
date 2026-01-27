@@ -1,0 +1,10 @@
+# Generated from lib/herb/lint/context.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # Linting context with file information.
+    # Provides access to file path, source code, and configuration.
+    class Context
+    end
+  end
+end

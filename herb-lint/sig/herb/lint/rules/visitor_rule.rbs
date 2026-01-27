@@ -1,0 +1,39 @@
+# Generated from lib/herb/lint/rules/visitor_rule.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Base class for rules that use the visitor pattern to traverse AST.
+      # Inherits from Herb::Visitor and includes rule functionality.
+      # Subclasses should override specific visit_xxx methods to check nodes.
+      #
+      # Example:
+      #   class MyRule < VisitorRule
+      #     def self.rule_name = "my-rule"
+      #     def self.description = "My custom rule"
+      #
+      #     def visit_html_element_node(node)
+      #       add_offense(message: "Found element", location: node.location)
+      #       super
+      #     end
+      #   end
+      class VisitorRule < Herb::Visitor
+        include RuleMethods
+
+        extend RuleMethods::ClassMethods
+
+        @offenses: Array[Offense]
+
+        @context: Context
+
+        # Check the document for rule violations by visiting AST nodes.
+        # @rbs override
+        def check: ...
+
+        # Add an offense for the current rule.
+        # @rbs override
+        def add_offense: ...
+      end
+    end
+  end
+end

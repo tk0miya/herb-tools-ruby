@@ -1,0 +1,18 @@
+# Generated from lib/herb/lint/rules/base.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Abstract base class for non-visitor lint rules.
+      # Subclasses must implement `check` and class methods for rule metadata.
+      #
+      # For rules that traverse the AST using the visitor pattern,
+      # use VisitorRule instead.
+      class Base
+        include RuleMethods
+
+        extend RuleMethods::ClassMethods
+      end
+    end
+  end
+end
