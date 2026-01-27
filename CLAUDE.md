@@ -121,6 +121,7 @@ Note: The `bin/rake` binstub automatically detects and uses the Gemfile in the c
 - Follow [Ruby Style Guide](https://rubystyle.guide/)
 - Use RuboCop for style enforcement
 - Target Ruby 3.3+ features where appropriate
+- Sort lists of definitions in ASCII order unless there is a specific reason not to (e.g., `require` statements, `gem` declarations in Gemfile, constant definitions)
 
 ### Naming Conventions
 
