@@ -89,6 +89,10 @@ gems:
   version: '0'
   source:
     type: stdlib
+- name: herb
+  version: 0.8.9
+  source:
+    type: rubygems
 - name: herb-config
   version: 0.1.0
   source:

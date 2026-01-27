@@ -20,7 +20,7 @@ Implementation of foundational data structures and rule infrastructure for the l
   - [x] Fill in `summary`, `description`, `homepage`
   - [x] Set `required_ruby_version` to `">= 3.3.0"`
   - [x] Add dependencies
-    - [ ] `spec.add_dependency "herb", "~> 0.1"`
+    - [x] `spec.add_dependency "herb"`
     - [x] `spec.add_dependency "herb-config", "~> 0.1.0"` (or local path)
     - [x] `spec.add_dependency "herb-core", "~> 0.1.0"` (or local path)
 - [x] Create `exe/herb-lint` executable file
@@ -109,38 +109,38 @@ grep -A5 "herb-lint:" .github/workflows/ci.yml
 
 #### Offense Class
 
-- [ ] Create `lib/herb/lint/offense.rb`
-  - [ ] Implement `initialize(rule_name:, message:, severity:, location:)`
-  - [ ] `attr_reader :rule_name, :message, :severity, :location`
-  - [ ] Implement `line` method (returns `location.start_line`)
-  - [ ] Implement `column` method (returns `location.start_column`)
-- [ ] Create `spec/herb/lint/offense_spec.rb`
+- [x] Create `lib/herb/lint/offense.rb`
+  - [x] Implement `initialize(rule_name:, message:, severity:, location:)`
+  - [x] `attr_reader :rule_name, :message, :severity, :location`
+  - [x] Implement `line` method (returns `location.start.line`)
+  - [x] Implement `column` method (returns `location.start.column`)
+- [x] Create `spec/herb/lint/offense_spec.rb`
 
 #### LintResult Class
 
-- [ ] Create `lib/herb/lint/lint_result.rb`
-  - [ ] Implement `initialize(file_path:, offenses:, source:)`
-  - [ ] `attr_reader :file_path, :offenses, :source`
-  - [ ] Implement `error_count` method (count severity == "error")
-  - [ ] Implement `warning_count` method (count severity == "warning")
-  - [ ] Implement `offense_count` method (offenses.size)
-- [ ] Create `spec/herb/lint/lint_result_spec.rb`
+- [x] Create `lib/herb/lint/lint_result.rb`
+  - [x] Implement `initialize(file_path:, offenses:, source:)`
+  - [x] `attr_reader :file_path, :offenses, :source`
+  - [x] Implement `error_count` method (count severity == "error")
+  - [x] Implement `warning_count` method (count severity == "warning")
+  - [x] Implement `offense_count` method (offenses.size)
+- [x] Create `spec/herb/lint/lint_result_spec.rb`
 
 #### AggregatedResult Class
 
-- [ ] Create `lib/herb/lint/aggregated_result.rb`
-  - [ ] Implement `initialize(results)`
-  - [ ] `attr_reader :results`
-  - [ ] Implement `offense_count` method (total across all results)
-  - [ ] Implement `error_count` method (total across all results)
-  - [ ] Implement `warning_count` method (total across all results)
-  - [ ] Implement `file_count` method (results.size)
-  - [ ] Implement `success?` method (offense_count == 0)
-- [ ] Create `spec/herb/lint/aggregated_result_spec.rb`
+- [x] Create `lib/herb/lint/aggregated_result.rb`
+  - [x] Implement `initialize(results)`
+  - [x] `attr_reader :results`
+  - [x] Implement `offense_count` method (total across all results)
+  - [x] Implement `error_count` method (total across all results)
+  - [x] Implement `warning_count` method (total across all results)
+  - [x] Implement `file_count` method (results.size)
+  - [x] Implement `success?` method (offense_count == 0)
+- [x] Create `spec/herb/lint/aggregated_result_spec.rb`
 
 #### Entry Point
 
-- [ ] Require each class in `lib/herb/lint.rb`
+- [x] Require each class in `lib/herb/lint.rb`
 
 ### Verification
 
