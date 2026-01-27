@@ -28,8 +28,7 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  # TODO: Uncomment when herb gem is available
-  # spec.add_dependency "herb", "~> 0.1"
+  spec.add_dependency "herb"
   spec.add_dependency "herb-config", "~> 0.1.0"
   spec.add_dependency "herb-core", "~> 0.1.0"
 end

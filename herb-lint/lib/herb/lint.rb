@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
+require "herb"
+
 # Require files in ASCII order
+require_relative "lint/aggregated_result"
+require_relative "lint/lint_result"
+require_relative "lint/offense"
 require_relative "lint/version"
 
 module Herb
