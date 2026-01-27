@@ -10,19 +10,19 @@ Implementation of the gem that provides common utilities. Provides file discover
 
 ---
 
-## Task 2.1: Create Gem Skeleton
+## Task 2.1: Create Gem Skeleton ✅
 
 ### Implementation
 
-- [ ] Run `bundle gem herb-core --test=rspec --linter=rubocop`
-- [ ] Edit `herb-core.gemspec` file
-  - [ ] Remove TODO comments
-  - [ ] Fill in `summary`, `description`, `homepage`
-  - [ ] Set `required_ruby_version` to `">= 3.3.0"`
-  - [ ] Add dependency on `herb` gem (`spec.add_dependency "herb", "~> 0.1"`)
-- [ ] Delete unnecessary files
-  - [ ] Delete `bin/console`
-  - [ ] Delete `bin/setup`
+- [x] Run `bundle gem herb-core --test=rspec --linter=rubocop`
+- [x] Edit `herb-core.gemspec` file
+  - [x] Remove TODO comments
+  - [x] Fill in `summary`, `description`, `homepage`
+  - [x] Set `required_ruby_version` to `">= 3.3.0"`
+  - [x] Add dependency on `herb` gem (commented out until herb gem is available)
+- [x] Delete unnecessary files
+  - [x] Delete `bin/console`
+  - [x] Delete `bin/setup`
 
 ### Verification
 
@@ -36,7 +36,7 @@ bundle exec rspec
 
 ---
 
-## Task 2.2: Add herb-core to CI
+## Task 2.2: Add herb-core to CI ✅
 
 ### Overview
 
@@ -44,13 +44,13 @@ Add herb-core gem to the existing CI workflow.
 
 ### Implementation
 
-- [ ] Update `.github/workflows/ci.yml`
-  - [ ] Add herb-core job (same structure as herb-config job)
-- [ ] Create `herb-core/Steepfile`
-  - [ ] Configure target directories
-  - [ ] Configure library dependencies
-- [ ] Create `herb-core/rbs_collection.yaml`
-  - [ ] Configure RBS collection dependencies
+- [x] Update `.github/workflows/ci.yml`
+  - [x] Add herb-core job (same structure as herb-config job)
+- [x] Create `herb-core/Steepfile`
+  - [x] Configure target directories
+  - [x] Configure library dependencies
+- [x] Create `herb-core/rbs_collection.yaml`
+  - [x] Configure RBS collection dependencies
 
 ### Updated Workflow Structure
 
