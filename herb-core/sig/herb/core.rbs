@@ -1,0 +1,8 @@
+module Herb
+  module Core
+    VERSION: String
+
+    class Error < StandardError
+    end
+  end
+end
