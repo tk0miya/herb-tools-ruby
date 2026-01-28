@@ -1,0 +1,758 @@
+# herb-format Design Document
+
+Architectural design for the ERB template formatter.
+
+## Overview
+
+herb-format is a code formatter for ERB templates that provides a CLI interface compatible with the TypeScript version `@herb-tools/formatter`. This document describes the system architecture, component responsibilities, and public interfaces.
+
+## Directory Structure
+
+```
+herb-format/
+├── lib/
+│   └── herb/
+│       └── format/
+│           ├── version.rb
+│           ├── cli.rb
+│           ├── runner.rb
+│           ├── formatter.rb
+│           ├── formatter_factory.rb
+│           ├── context.rb
+│           ├── format_result.rb
+│           ├── aggregated_result.rb
+│           ├── engine.rb
+│           ├── rewriter_registry.rb
+│           ├── custom_rewriter_loader.rb
+│           ├── errors.rb
+│           └── rewriters/
+│               ├── base.rb
+│               ├── normalize_attributes.rb
+│               ├── sort_attributes.rb
+│               └── tailwind_class_sorter.rb
+├── exe/
+│   └── herb-format
+├── spec/
+│   └── herb/
+│       └── format/
+│           ├── cli_spec.rb
+│           ├── runner_spec.rb
+│           ├── formatter_spec.rb
+│           ├── context_spec.rb
+│           ├── format_result_spec.rb
+│           ├── engine_spec.rb
+│           ├── rewriter_registry_spec.rb
+│           └── rewriters/
+│               └── ...
+├── herb-format.gemspec
+└── Gemfile
+```
+
+## Class Design
+
+### Module Structure
+
+```
+Herb::Format
+├── CLI                  # Command line interface
+├── Runner               # Format execution orchestration
+├── Formatter            # Core formatting implementation
+├── FormatterFactory     # Formatter instance creation (Factory Pattern)
+├── Context              # Format execution context
+├── FormatResult         # Format result for a single file
+├── AggregatedResult     # Aggregated result for multiple files
+├── Engine               # AST rewriting and serialization
+├── RewriterRegistry     # Rewriter registration and lookup (Registry Pattern)
+├── CustomRewriterLoader # Custom rewriter loading
+├── Errors               # Custom exceptions
+└── Rewriters            # Rewriter implementations
+    ├── Base
+    ├── NormalizeAttributes
+    ├── SortAttributes
+    └── TailwindClassSorter
+```
+
+## Data Structures
+
+### Herb::Format::FormatResult
+
+Represents the formatting result for a single file.
+
+```rbs
+class Herb::Format::FormatResult
+  attr_reader file_path: String
+  attr_reader original: String
+  attr_reader formatted: String
+  attr_reader ignored: bool
+  attr_reader error: StandardError?
+
+  def initialize: (
+    file_path: String,
+    original: String,
+    formatted: String,
+    ?ignored: bool,
+    ?error: StandardError?
+  ) -> void
+
+  def ignored?: () -> bool
+  def error?: () -> bool
+  def changed?: () -> bool
+  def diff: () -> String?
+  def to_h: () -> Hash[Symbol, untyped]
+end
+```
+
+### Herb::Format::AggregatedResult
+
+Aggregates results across multiple files.
+
+```rbs
+class Herb::Format::AggregatedResult
+  attr_reader results: Array[FormatResult]
+
+  def initialize: (Array[FormatResult] results) -> void
+
+  def file_count: () -> Integer
+  def changed_count: () -> Integer
+  def ignored_count: () -> Integer
+  def error_count: () -> Integer
+  def all_formatted?: () -> bool
+  def to_h: () -> Hash[Symbol, untyped]
+end
+```
+
+## Component Details
+
+### Herb::Format::CLI
+
+**Responsibility:** Command-line interface orchestration.
+
+**Exit Codes:**
+- `EXIT_SUCCESS = 0` - All files formatted (or already formatted with `--check`)
+- `EXIT_FORMAT_NEEDED = 1` - Files need formatting (with `--check`) or formatting error
+- `EXIT_RUNTIME_ERROR = 2` - Configuration or runtime error
+
+```rbs
+class Herb::Format::CLI
+  EXIT_SUCCESS: Integer
+  EXIT_FORMAT_NEEDED: Integer
+  EXIT_RUNTIME_ERROR: Integer
+
+  @argv: Array[String]
+  @stdout: IO
+  @stderr: IO
+  @stdin: IO
+  @options: Hash[Symbol, untyped]
+
+  attr_reader argv: Array[String]
+  attr_reader stdout: IO
+  attr_reader stderr: IO
+  attr_reader stdin: IO
+
+  def initialize: (
+    ?Array[String] argv,
+    ?stdout: IO,
+    ?stderr: IO,
+    ?stdin: IO
+  ) -> void
+
+  def run: () -> Integer
+
+  private
+
+  def parse_options: () -> Hash[Symbol, untyped]
+  def handle_init: () -> Integer
+  def handle_version: () -> Integer
+  def handle_help: () -> Integer
+  def handle_stdin: () -> Integer
+  def load_config: () -> Herb::Config::FormatterConfig
+  def determine_exit_code: (AggregatedResult result, bool check_mode) -> Integer
+end
+```
+
+**Processing Flow:**
+1. Parse command-line options
+2. Handle special flags (--init, --version, --help)
+3. Handle --stdin mode (read from stdin, output to stdout)
+4. Load configuration via Herb::Config::Loader
+5. Create and run Runner
+6. Report results (diff output in check mode)
+7. Determine exit code based on formatting results
+
+**Command-Line Options:**
+- `--init` - Generate default .herb.yml
+- `--check` - Check if files are formatted without modifying them
+- `--write` - Write formatted output back to files (default behavior)
+- `--force` - Override inline ignore directives
+- `--stdin` - Read from standard input (output to stdout)
+- `--stdin-filepath PATH` - Path to use for configuration lookup when using stdin
+- `--config PATH` - Custom configuration file path
+- `--version` - Display version information
+- `--help` - Display help message
+
+### Herb::Format::Runner
+
+**Responsibility:** Orchestrates the formatting process across multiple files.
+
+```rbs
+class Herb::Format::Runner
+  @config: Herb::Config::FormatterConfig
+  @check: bool
+  @write: bool
+  @force: bool
+  @rewriter_registry: RewriterRegistry
+  @formatter: Formatter
+
+  attr_reader config: Herb::Config::FormatterConfig
+  attr_reader check: bool
+  attr_reader write: bool
+  attr_reader force: bool
+
+  def initialize: (
+    config: Herb::Config::FormatterConfig,
+    ?check: bool,
+    ?write: bool,
+    ?force: bool
+  ) -> void
+
+  def run: (?Array[String] files) -> AggregatedResult
+
+  private
+
+  def setup_rewriters: () -> void
+  def discover_files: (Array[String]? files) -> Array[String]
+  def format_file: (String file_path) -> FormatResult
+  def write_file: (FormatResult result) -> void
+end
+```
+
+**Processing Flow:**
+1. Setup: Load built-in and custom rewriters via RewriterRegistry
+2. File Discovery: Use Herb::Core::FileDiscovery to find target files
+3. Formatter Creation: Build Formatter instance via FormatterFactory
+4. Per-File Processing:
+   - Read source file
+   - Execute formatting via Formatter
+   - If write mode: update file
+   - Collect results
+5. Aggregation: Combine results into AggregatedResult
+
+**Dependencies:**
+- `Herb::Config::FormatterConfig` - Configuration
+- `RewriterRegistry` - Rewriter management
+- `CustomRewriterLoader` - Custom rewriter loading
+- `FormatterFactory` - Formatter instantiation
+- `Herb::Core::FileDiscovery` - File discovery
+
+### Herb::Format::Formatter
+
+**Responsibility:** Core single-file formatting implementation.
+
+```rbs
+class Herb::Format::Formatter
+  @engine: Engine
+  @pre_rewriters: Array[Rewriters::Base]
+  @post_rewriters: Array[Rewriters::Base]
+  @config: Herb::Config::FormatterConfig
+
+  attr_reader engine: Engine
+  attr_reader pre_rewriters: Array[Rewriters::Base]
+  attr_reader post_rewriters: Array[Rewriters::Base]
+  attr_reader config: Herb::Config::FormatterConfig
+
+  def initialize: (
+    Engine engine,
+    Array[Rewriters::Base] pre_rewriters,
+    Array[Rewriters::Base] post_rewriters,
+    Herb::Config::FormatterConfig config
+  ) -> void
+
+  def format: (String file_path, String source, ?force: bool) -> FormatResult
+
+  private
+
+  def parse_directives: (String source) -> Herb::Core::DirectiveParser
+  def should_ignore_file?: (Herb::Core::DirectiveParser directives, bool force) -> bool
+  def apply_rewriters: (Herb::AST::Document ast, Array[Rewriters::Base] rewriters, Context context) -> Herb::AST::Document
+end
+```
+
+**Processing Flow:**
+1. Parse inline directives (herb:formatter comments)
+2. Check for file-level ignore directive (unless `--force`)
+3. Parse ERB template into AST via `Herb.parse`
+4. Create Context with source and configuration
+5. Execute pre-rewriters (in order)
+6. Apply formatting rules via Engine
+7. Execute post-rewriters (in order)
+8. Serialize AST back to string
+9. Return FormatResult with original and formatted content
+
+**Dependencies:**
+- `Herb::Core::DirectiveParser` - Parse inline directives
+- `Herb.parse` - AST parsing (from herb gem)
+- `Context` - Execution context
+- `Engine` - Formatting engine
+- `Rewriters::Base` subclasses - Rewriter implementations
+
+### Herb::Format::FormatterFactory
+
+**Responsibility:** Creates configured Formatter instances (Factory Pattern).
+
+```rbs
+class Herb::Format::FormatterFactory
+  @config: Herb::Config::FormatterConfig
+  @rewriter_registry: RewriterRegistry
+
+  attr_reader config: Herb::Config::FormatterConfig
+  attr_reader rewriter_registry: RewriterRegistry
+
+  def initialize: (
+    Herb::Config::FormatterConfig config,
+    RewriterRegistry rewriter_registry
+  ) -> void
+
+  def create: () -> Formatter
+
+  private
+
+  def build_engine: () -> Engine
+  def build_pre_rewriters: () -> Array[Rewriters::Base]
+  def build_post_rewriters: () -> Array[Rewriters::Base]
+  def instantiate_rewriter: (singleton(Rewriters::Base) rewriter_class) -> Rewriters::Base
+end
+```
+
+**Processing:**
+1. Create Engine with indent_width and max_line_length configuration
+2. Query RewriterRegistry for configured pre-rewriters
+3. Query RewriterRegistry for configured post-rewriters
+4. Instantiate each rewriter
+5. Create Formatter with engine and rewriters
+
+### Herb::Format::Context
+
+**Responsibility:** Provides contextual information during formatting and rewriting.
+
+```rbs
+class Herb::Format::Context
+  @file_path: String
+  @source: String
+  @config: Herb::Config::FormatterConfig
+  @source_lines: Array[String]?
+
+  attr_reader file_path: String
+  attr_reader source: String
+  attr_reader config: Herb::Config::FormatterConfig
+
+  def initialize: (
+    file_path: String,
+    source: String,
+    config: Herb::Config::FormatterConfig
+  ) -> void
+
+  def indent_width: () -> Integer
+  def max_line_length: () -> Integer
+  def source_line: (Integer line) -> String
+  def line_count: () -> Integer
+
+  private
+
+  def split_source_lines: () -> Array[String]
+end
+```
+
+### Herb::Format::Engine
+
+**Responsibility:** Core formatting logic - traverses AST and applies formatting rules.
+
+```rbs
+class Herb::Format::Engine
+  @indent_width: Integer
+  @max_line_length: Integer
+
+  attr_reader indent_width: Integer
+  attr_reader max_line_length: Integer
+
+  def initialize: (indent_width: Integer, max_line_length: Integer) -> void
+
+  # Format AST and return formatted string
+  def format: (Herb::AST::Document ast, Context context) -> String
+
+  private
+
+  def visit: (Herb::AST::Node node, Integer depth) -> String
+  def format_document: (Herb::AST::DocumentNode node, Integer depth) -> String
+  def format_element: (Herb::AST::HTMLElementNode node, Integer depth) -> String
+  def format_attributes: (Array[Herb::AST::HTMLAttributeNode] attributes, Integer depth) -> String
+  def format_text: (Herb::AST::HTMLTextNode node, Integer depth) -> String
+  def format_erb_content: (Herb::AST::ERBContentNode node, Integer depth) -> String
+  def format_erb_block: (Herb::AST::ERBBlockNode node, Integer depth) -> String
+  def format_comment: (Herb::AST::HTMLCommentNode node, Integer depth) -> String
+  def indent: (Integer depth) -> String
+  def should_wrap_attributes?: (Array[Herb::AST::HTMLAttributeNode] attributes, Integer current_length) -> bool
+  def is_preserved_element?: (String tag_name) -> bool
+  def is_void_element?: (String tag_name) -> bool
+end
+```
+
+**Formatting Rules:**
+- **Indentation**: Uses spaces (configurable width), indents nested elements
+- **Line Length**: Wraps long lines at max_line_length, wraps attributes to separate lines when exceeded
+- **Attributes**: Single attribute on same line, multiple attributes with overflow get one per line
+- **Whitespace**: Removes trailing whitespace, normalizes line endings (LF)
+- **ERB Tags**: Consistent spacing inside ERB tags (`<%= %>` not `<%=  %>`)
+- **Void Elements**: Omits closing slash (`<br>` not `<br/>`)
+- **Preserved Content**: Does not reformat `<pre>`, `<code>`, `<script>`, `<style>` content
+
+### Herb::Format::RewriterRegistry
+
+**Responsibility:** Central registry for rewriter classes (Registry Pattern).
+
+```rbs
+class Herb::Format::RewriterRegistry
+  @rewriters: Hash[String, singleton(Rewriters::Base)]
+
+  def initialize: () -> void
+
+  def register: (singleton(Rewriters::Base) rewriter_class) -> void
+  def get: (String name) -> singleton(Rewriters::Base)?
+  def registered?: (String name) -> bool
+  def all: () -> Array[singleton(Rewriters::Base)]
+  def rewriter_names: () -> Array[String]
+  def load_builtin_rewriters: () -> void
+
+  private
+
+  def validate_rewriter_class: (singleton(Rewriters::Base) rewriter_class) -> bool
+end
+```
+
+**Built-in Rewriters:**
+- `normalize-attributes` (pre) - Normalize attribute formatting
+- `sort-attributes` (post) - Alphabetically sort attributes
+- `tailwind-class-sorter` (post) - Sort Tailwind CSS classes
+
+### Herb::Format::CustomRewriterLoader
+
+**Responsibility:** Loads custom rewriter implementations from configured paths.
+
+```rbs
+class Herb::Format::CustomRewriterLoader
+  DEFAULT_PATH: String  # ".herb/rewriters"
+
+  @config: Herb::Config::FormatterConfig
+  @registry: RewriterRegistry
+
+  attr_reader config: Herb::Config::FormatterConfig
+  attr_reader registry: RewriterRegistry
+
+  def initialize: (
+    Herb::Config::FormatterConfig config,
+    RewriterRegistry registry
+  ) -> void
+
+  def load: () -> void
+
+  private
+
+  def load_rewriters_from: (String path) -> void
+  def require_rewriter_file: (String file_path) -> void
+  def auto_register_rewriters: () -> void
+end
+```
+
+**Processing:**
+1. Reads custom rewriter path (default: `.herb/rewriters/*.rb`)
+2. Requires Ruby files containing rewriter classes
+3. Auto-registers newly loaded rewriter classes with RewriterRegistry
+4. Handles load errors gracefully
+
+### Herb::Format::Rewriters::Base
+
+**Responsibility:** Abstract base class defining the rewriter interface.
+
+```rbs
+# Abstract rewriter interface that all rewriters must implement
+interface _Rewriter
+  # Class methods (must override)
+  def self.rewriter_name: () -> String
+  def self.description: () -> String
+  def self.phase: () -> Symbol
+
+  # Instance interface
+  def initialize: (?options: Hash[Symbol, untyped]) -> void
+  def rewrite: (Herb::AST::Document ast, Context context) -> Herb::AST::Document
+end
+
+# Base class implementation providing common functionality
+class Herb::Format::Rewriters::Base
+  include _Rewriter
+
+  attr_reader options: Hash[Symbol, untyped]
+
+  def self.rewriter_name: () -> String
+  def self.description: () -> String
+  def self.phase: () -> Symbol  # :pre or :post
+
+  def initialize: (?options: Hash[Symbol, untyped]) -> void
+  def rewrite: (Herb::AST::Document ast, Context context) -> Herb::AST::Document
+
+  private
+
+  def traverse: (Herb::AST::Node node) { (Herb::AST::Node) -> Herb::AST::Node? } -> Herb::AST::Node
+end
+```
+
+**Phase Values:**
+- `:pre` - Runs before formatting rules (normalization)
+- `:post` - Runs after formatting rules (final transformations)
+
+## Rewriter Implementation Examples
+
+### Example: Rewriters::NormalizeAttributes
+
+**Purpose:** Normalize attribute formatting before main formatting pass.
+
+**Interface:**
+```rbs
+class Herb::Format::Rewriters::NormalizeAttributes < Base
+  def self.rewriter_name: () -> String  # "normalize-attributes"
+  def self.description: () -> String
+  def self.phase: () -> Symbol  # :pre
+
+  def rewrite: (Herb::AST::Document ast, Context context) -> Herb::AST::Document
+
+  private
+
+  def normalize_attribute: (Herb::AST::HTMLAttributeNode node) -> void
+end
+```
+
+**Responsibilities:**
+- Convert single quotes to double quotes
+- Normalize whitespace in attribute values
+- Run in pre phase before formatting
+
+### Example: Rewriters::SortAttributes
+
+**Purpose:** Alphabetically sort HTML attributes.
+
+**Interface:**
+```rbs
+class Herb::Format::Rewriters::SortAttributes < Base
+  def self.rewriter_name: () -> String  # "sort-attributes"
+  def self.description: () -> String
+  def self.phase: () -> Symbol  # :post
+
+  def rewrite: (Herb::AST::Document ast, Context context) -> Herb::AST::Document
+
+  private
+
+  def sort_element_attributes: (Herb::AST::HTMLElementNode node) -> void
+  def attribute_sort_key: (Herb::AST::HTMLAttributeNode attr) -> String
+end
+```
+
+**Responsibilities:**
+- Sort attributes alphabetically by name
+- Run in post phase after formatting
+
+### Example: Rewriters::TailwindClassSorter
+
+**Purpose:** Sort Tailwind CSS classes according to recommended order.
+
+**Interface:**
+```rbs
+class Herb::Format::Rewriters::TailwindClassSorter < Base
+  def self.rewriter_name: () -> String  # "tailwind-class-sorter"
+  def self.description: () -> String
+  def self.phase: () -> Symbol  # :post
+
+  def rewrite: (Herb::AST::Document ast, Context context) -> Herb::AST::Document
+
+  private
+
+  def sort_class_attribute: (Herb::AST::HTMLAttributeNode attr) -> void
+  def tailwind_sort_key: (String class_name) -> Integer
+end
+```
+
+**Responsibilities:**
+- Sort classes in `class` attributes according to Tailwind conventions
+- Run in post phase after formatting
+
+## Processing Flow
+
+```
+CLI#run
+  │
+  ├── parse_options
+  │
+  ├── (--stdin mode)
+  │   ├── Read from stdin
+  │   ├── Formatter#format
+  │   └── Output to stdout
+  │
+  ├── Config.load (herb-config)
+  │
+  ├── Runner.new(config)
+  │   ├── RewriterRegistry.load_builtin_rewriters
+  │   └── CustomRewriterLoader.load
+  │
+  ├── Runner#run(files)
+  │   ├── FileDiscovery.discover (herb-core)
+  │   │
+  │   └── files.each do |file|
+  │       ├── File.read(file)
+  │       │
+  │       └── Formatter#format(file, source)
+  │           ├── DirectiveParser.new(source, mode: :formatter) (herb-core)
+  │           ├── Check ignore_file? (unless --force)
+  │           ├── Herb.parse(source) (herb gem)
+  │           ├── Context.new
+  │           ├── pre_rewriters.each { |r| r.rewrite(ast, context) }
+  │           ├── Engine#format(ast, context)
+  │           ├── post_rewriters.each { |r| r.rewrite(ast, context) }
+  │           └── return FormatResult
+  │
+  ├── (--write mode) Write files
+  │
+  ├── (--check mode) Show diffs
+  │
+  ├── AggregatedResult.new(results)
+  │
+  └── Exit Code
+```
+
+## Inline Directives
+
+The formatter supports inline directives parsed by `Herb::Core::DirectiveParser`:
+
+| Directive | Description |
+|-----------|-------------|
+| `<%# herb:formatter ignore %>` | Ignore entire file |
+| `<%# herb:formatter off %>` | Start ignore range |
+| `<%# herb:formatter on %>` | End ignore range |
+
+**File-level Ignore:**
+```erb
+<%# herb:formatter ignore %>
+<!-- Rest of file is not formatted -->
+```
+
+**Range Ignore:**
+```erb
+<%# herb:formatter off %>
+<pre>
+  This    content   preserves
+  its     exact     formatting
+</pre>
+<%# herb:formatter on %>
+```
+
+## Error Handling
+
+### Custom Exceptions
+
+```ruby
+module Herb
+  module Format
+    module Errors
+      class Error < StandardError; end
+
+      class ConfigurationError < Error; end
+      class ParseError < Error; end
+      class RewriterError < Error; end
+      class FileNotFoundError < Error; end
+    end
+  end
+end
+```
+
+### Exit Code Convention
+
+| Code | Meaning | Used When |
+|------|---------|-----------|
+| 0 | Success | Files formatted successfully, or all files already formatted (check mode) |
+| 1 | Format needed | Files need formatting (check mode) or formatting error |
+| 2 | Runtime error | Configuration errors, file I/O errors, parser failures |
+
+## Testing Strategy
+
+### Unit Tests - Engine
+
+**Focus:** Core formatting logic in isolation
+
+**Test Structure:**
+- Parse sample ERB into AST using `Herb.parse`
+- Create Engine with test configuration
+- Execute engine's `format` method
+- Verify formatted output
+
+**Key Test Cases:**
+- Indentation normalization
+- Attribute wrapping at line length
+- ERB tag spacing normalization
+- Void element formatting
+- Preserved content (`<pre>`, `<code>`) not modified
+- Whitespace normalization
+
+### Unit Tests - Rewriters
+
+**Focus:** Individual rewriter logic in isolation
+
+**Test Structure:**
+- Parse sample ERB into AST using `Herb.parse`
+- Create mock Context with test configuration
+- Execute rewriter's `rewrite` method
+- Verify AST transformation
+
+**Key Test Cases:**
+- Rewriter name and phase are correct
+- AST is correctly transformed
+- Non-relevant nodes are unchanged
+- Options affect behavior appropriately
+
+### Integration Tests - Runner
+
+**Focus:** End-to-end formatting workflow
+
+**Test Structure:**
+- Create temporary test files
+- Configure formatter with specific rewriters
+- Execute Runner.run
+- Verify AggregatedResult and file contents
+
+**Key Test Cases:**
+- Multiple files are processed correctly
+- File discovery respects include/exclude patterns
+- Inline directives (herb:formatter off/on) work
+- Write mode updates files
+- Check mode does not modify files
+- Error handling for parse failures
+
+### Integration Tests - CLI
+
+**Focus:** Command-line interface behavior
+
+**Test Structure:**
+- Invoke CLI with test arguments and I/O streams
+- Verify exit codes
+- Verify output (formatted content, diffs)
+
+**Key Test Cases:**
+- Exit codes match formatting results
+- Check mode shows diff output
+- Stdin mode reads from stdin and outputs to stdout
+- Write mode modifies files
+- Force option overrides ignore directives
+- Configuration loading works
+
+## Related Documents
+
+- [Overall Architecture](./architecture.md)
+- [herb-config Design](./herb-config-design.md)
+- [herb-core Design](./herb-core-design.md)
+- [herb-lint Design](./herb-lint-design.md)
+- [Requirements: herb-format](../requirements/herb-format.md)
