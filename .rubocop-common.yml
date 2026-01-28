@@ -18,6 +18,9 @@ Metrics/BlockLength:
   Exclude:
     - "spec/**/*"
 
+Metrics/MethodLength:
+  Max: 20
+
 RSpec/ExampleLength:
   Enabled: false
 

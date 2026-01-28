@@ -7,13 +7,14 @@ This phase focuses on expanding herb-lint's rule coverage beyond the MVP's 3 rul
 | Category | Spec | Implemented | Remaining |
 |----------|------|-------------|-----------|
 | ERB rules | 13 | 0 | 13 |
-| HTML rules | 25+ | 2 | 23+ |
+| HTML rules | 25+ | 3 | 22+ |
 | A11y rules | 15+ | 1 | 14+ |
 
 **Implemented rules:**
-- `html/attribute-quotes`
-- `html/no-duplicate-id`
 - `a11y/alt-text`
+- `html/attribute-quotes`
+- `html/no-duplicate-attributes`
+- `html/no-duplicate-id`
 
 ## Task Organization
 
@@ -27,9 +28,9 @@ Rules are prioritized by:
 ## Batch 1: Simple HTML Rules (4 rules)
 
 ### Task 8.1: `html/no-duplicate-attributes`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow duplicate attributes on the same element.
 
