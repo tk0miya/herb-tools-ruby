@@ -121,9 +121,6 @@ cd herb-config && ./bin/steep check
 
 # Run linter
 cd herb-config && ./bin/rubocop
-
-# Generate RBS files from inline annotations
-cd herb-config && ./bin/rbs-inline --output lib
 ```
 
 Each gem's binstubs use that gem's Gemfile, ensuring proper dependency resolution.
