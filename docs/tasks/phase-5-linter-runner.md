@@ -76,16 +76,16 @@ bundle exec rspec spec/herb/lint/rule_registry_spec.rb
 
 ### Implementation
 
-- [ ] Create `lib/herb/lint/context.rb`
-  - [ ] Implement `initialize(file_path:, source:, config:)`
-  - [ ] `attr_reader :file_path, :source, :config`
-  - [ ] Implement `severity_for(rule_name)` method
-    - [ ] Get rule severity from configuration
-    - [ ] Use rule's default severity if not in configuration
-- [ ] Require in `lib/herb/lint.rb`
-- [ ] Create `spec/herb/lint/context_spec.rb`
-  - [ ] Test attribute retrieval
-  - [ ] Test `severity_for` (with/without configuration)
+- [x] Create `lib/herb/lint/context.rb`
+  - [x] Implement `initialize(file_path:, source:, config:)`
+  - [x] `attr_reader :file_path, :source, :config`
+  - [x] Implement `severity_for(rule_name)` method
+    - [x] Get rule severity from configuration
+    - [x] Use rule's default severity if not in configuration
+- [x] Require in `lib/herb/lint.rb`
+- [x] Create `spec/herb/lint/context_spec.rb`
+  - [x] Test attribute retrieval
+  - [x] Test `severity_for` (with/without configuration)
 
 ### Implementation Hints
 
@@ -113,22 +113,22 @@ bundle exec rspec spec/herb/lint/context_spec.rb
 
 ### Implementation
 
-- [ ] Create `lib/herb/lint/linter.rb`
-  - [ ] Implement `initialize(rules, config)`
-  - [ ] `attr_reader :rules, :config`
-  - [ ] Implement `lint(file_path:, source:)` method
-    - [ ] Generate AST with `Herb.parse(source)`
-    - [ ] Generate `Context`
-    - [ ] Call each rule's `check(document, context)`
-    - [ ] Collect all offenses
-    - [ ] Generate and return `LintResult`
-  - [ ] Parse error handling
-    - [ ] Generate special offense on parse error
-- [ ] Require in `lib/herb/lint.rb`
-- [ ] Create `spec/herb/lint/linter_spec.rb`
-  - [ ] Normal case: test offense detection
-  - [ ] Normal case: test no offenses
-  - [ ] Error case: test parse error handling
+- [x] Create `lib/herb/lint/linter.rb`
+  - [x] Implement `initialize(rules, config)`
+  - [x] `attr_reader :rules, :config`
+  - [x] Implement `lint(file_path:, source:)` method
+    - [x] Generate AST with `Herb.parse(source)`
+    - [x] Generate `Context`
+    - [x] Call each rule's `check(document, context)`
+    - [x] Collect all offenses
+    - [x] Generate and return `LintResult`
+  - [x] Parse error handling
+    - [x] Generate special offense on parse error
+- [x] Require in `lib/herb/lint.rb`
+- [x] Create `spec/herb/lint/linter_spec.rb`
+  - [x] Normal case: test offense detection
+  - [x] Normal case: test no offenses
+  - [x] Error case: test parse error handling
 
 ### Implementation Hints
 
