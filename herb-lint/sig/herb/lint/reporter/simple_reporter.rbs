@@ -1,0 +1,45 @@
+# Generated from lib/herb/lint/reporter/simple_reporter.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Reporter
+      # Simple reporter that outputs linting results in a human-readable format.
+      class SimpleReporter
+        attr_reader io: IO
+
+        # @rbs io: IO
+        def initialize: (?io: IO) -> void
+
+        # Reports the aggregated linting result.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def report: (AggregatedResult aggregated_result) -> void
+
+        private
+
+        # Prints offenses for a single file.
+        #
+        # @rbs result: LintResult
+        def print_offenses: (LintResult result) -> void
+
+        # Prints a single offense.
+        #
+        # @rbs offense: Offense
+        def print_offense: (Offense offense) -> void
+
+        # Prints the summary of all offenses.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_summary: (AggregatedResult aggregated_result) -> void
+
+        # Formats the summary string.
+        #
+        # @rbs total: Integer
+        # @rbs errors: Integer
+        # @rbs warnings: Integer
+        # @rbs files: Integer
+        def format_summary: (Integer total, Integer errors, Integer warnings, Integer files) -> String
+      end
+    end
+  end
+end

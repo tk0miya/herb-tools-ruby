@@ -14,21 +14,21 @@ Implementation of Reporter to display results and command-line interface. This e
 
 ### Implementation
 
-- [ ] Create `lib/herb/lint/reporter/simple_reporter.rb`
-  - [ ] Implement `initialize(io: $stdout)`
-  - [ ] `attr_reader :io`
-  - [ ] Implement `report(aggregated_result)` method
-    - [ ] Display offenses for each file
-    - [ ] Offense information (file name, line number, column number, rule name, message, severity)
-    - [ ] Display summary (file count, offense count, error count, warning count)
-  - [ ] Private methods
-    - [ ] `print_offenses(result)` - Display offenses for individual file
-    - [ ] `print_summary(aggregated_result)` - Display summary
-- [ ] Require in `lib/herb/lint.rb`
-- [ ] Create `spec/herb/lint/reporter/simple_reporter_spec.rb`
-  - [ ] Test offense display
-  - [ ] Test summary display
-  - [ ] Test case with no offenses
+- [x] Create `lib/herb/lint/reporter/simple_reporter.rb`
+  - [x] Implement `initialize(io: $stdout)`
+  - [x] `attr_reader :io`
+  - [x] Implement `report(aggregated_result)` method
+    - [x] Display offenses for each file
+    - [x] Offense information (file name, line number, column number, rule name, message, severity)
+    - [x] Display summary (file count, offense count, error count, warning count)
+  - [x] Private methods
+    - [x] `print_offenses(result)` - Display offenses for individual file
+    - [x] `print_summary(aggregated_result)` - Display summary
+- [x] Require in `lib/herb/lint.rb`
+- [x] Create `spec/herb/lint/reporter/simple_reporter_spec.rb`
+  - [x] Test offense display
+  - [x] Test summary display
+  - [x] Test case with no offenses
 
 ### Output Format Example
 
