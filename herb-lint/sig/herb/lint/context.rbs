@@ -5,6 +5,23 @@ module Herb
     # Linting context with file information.
     # Provides access to file path, source code, and configuration.
     class Context
+      attr_reader file_path: String
+
+      attr_reader source: String
+
+      attr_reader config: Herb::Config::LinterConfig
+
+      # @rbs file_path: String -- path to the file being linted
+      # @rbs source: String -- source code content of the file
+      # @rbs config: Herb::Config::LinterConfig -- linter configuration
+      # @rbs rule_registry: RuleRegistry? -- optional registry to look up rule defaults
+      def initialize: (file_path: String, source: String, config: Herb::Config::LinterConfig, ?rule_registry: RuleRegistry?) -> void
+
+      # Returns the severity for a specific rule.
+      # Checks configuration first, falls back to rule's default severity,
+      # then defaults to "error".
+      # @rbs rule_name: String -- the name of the rule
+      def severity_for: (String rule_name) -> String
     end
   end
 end
