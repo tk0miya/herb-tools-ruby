@@ -16,35 +16,35 @@ Create end-to-end integration tests and prepare documentation. This completes th
 
 #### Create Fixtures
 
-- [ ] Create `spec/fixtures/templates/` directory
-- [ ] Create test `.html.erb` files
-  - [ ] `valid.html.erb` - Template with no offenses
-  - [ ] `missing_alt.html.erb` - Template with missing alt attributes
-  - [ ] `unquoted_attributes.html.erb` - Template with unquoted attributes
-  - [ ] `mixed_issues.html.erb` - Template with multiple issues
-  - [ ] `parse_error.html.erb` - Template with parse error (invalid ERB syntax)
+- [x] Create `spec/fixtures/templates/` directory
+- [x] Create test `.html.erb` files
+  - [x] `valid.html.erb` - Template with no offenses
+  - [x] `missing_alt.html.erb` - Template with missing alt attributes
+  - [x] `unquoted_attributes.html.erb` - Template with unquoted attributes
+  - [x] `mixed_issues.html.erb` - Template with multiple issues
+  - [x] `parse_error.html.erb` - Template with parse error (invalid ERB syntax)
 
 #### Create Integration Tests
 
-- [ ] Create `spec/integration/linting_spec.rb`
-  - [ ] End-to-end integration tests
-    - [ ] Config loading
-    - [ ] File discovery and processing by Runner
-    - [ ] Output by Reporter
-    - [ ] Result verification
-  - [ ] Tests for each fixture
-    - [ ] valid.html.erb → 0 offenses
-    - [ ] missing_alt.html.erb → offense detected
-    - [ ] unquoted_attributes.html.erb → offense detected
-    - [ ] mixed_issues.html.erb → multiple offenses detected
-    - [ ] parse_error.html.erb → parse error detected
+- [x] Create `spec/integration/linting_spec.rb`
+  - [x] End-to-end integration tests
+    - [x] Config loading
+    - [x] File discovery and processing by Runner
+    - [x] Output by Reporter
+    - [x] Result verification
+  - [x] Tests for each fixture
+    - [x] valid.html.erb → 0 offenses
+    - [x] missing_alt.html.erb → offense detected
+    - [x] unquoted_attributes.html.erb → offense detected
+    - [x] mixed_issues.html.erb → multiple offenses detected
+    - [x] parse_error.html.erb → parse error detected
 
 #### CLI Integration Tests
 
-- [ ] Create `spec/integration/cli_spec.rb`
-  - [ ] Test CLI command execution
-  - [ ] Verify exit codes
-  - [ ] Verify output format
+- [x] Create `spec/integration/cli_spec.rb`
+  - [x] Test CLI command execution
+  - [x] Verify exit codes
+  - [x] Verify output format
 
 ### Fixture Examples
 
