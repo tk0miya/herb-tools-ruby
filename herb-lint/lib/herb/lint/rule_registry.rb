@@ -49,6 +49,7 @@ module Herb
       def load_builtin_rules #: void
         register(Rules::A11y::AltText)
         register(Rules::Html::AttributeQuotes)
+        register(Rules::Html::LowercaseAttributes)
         register(Rules::Html::LowercaseTags)
         register(Rules::Html::NoDuplicateAttributes)
         register(Rules::Html::NoDuplicateId)
