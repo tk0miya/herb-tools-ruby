@@ -9,11 +9,11 @@
 #
 
 # Use Gemfile in current directory if it exists, otherwise fall back to root
-if File.exist?(File.expand_path("Gemfile", Dir.pwd))
-  ENV["BUNDLE_GEMFILE"] ||= File.expand_path("Gemfile", Dir.pwd)
-else
-  ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../Gemfile", __dir__)
-end
+ENV["BUNDLE_GEMFILE"] ||= if File.exist?(File.expand_path("Gemfile", Dir.pwd))
+                            File.expand_path("Gemfile", Dir.pwd)
+                          else
+                            File.expand_path("../Gemfile", __dir__)
+                          end
 
 require "rubygems"
 require "bundler/setup"
