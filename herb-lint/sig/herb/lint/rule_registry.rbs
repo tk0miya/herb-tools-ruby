@@ -1,0 +1,43 @@
+# Generated from lib/herb/lint/rule_registry.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # Registry for managing lint rules.
+    # Provides registration, lookup, and loading of built-in and custom rules.
+    class RuleRegistry
+      @rules: Hash[String, singleton(Rules::Base) | singleton(Rules::VisitorRule)]
+
+      def initialize: () -> void
+
+      # Register a rule class in the registry.
+      # @rbs rule_class: singleton(Rules::Base) | singleton(Rules::VisitorRule)
+      def register: (singleton(Rules::Base) | singleton(Rules::VisitorRule) rule_class) -> void
+
+      # Get a rule class by its name.
+      # @rbs name: String
+      def get: (String name) -> (singleton(Rules::Base) | singleton(Rules::VisitorRule))?
+
+      # Check if a rule with the given name is registered.
+      # @rbs name: String
+      def registered?: (String name) -> bool
+
+      # Get all registered rule classes.
+      def all: () -> Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
+
+      # Get all registered rule names.
+      def rule_names: () -> Array[String]
+
+      # Number of registered rules.
+      def size: () -> Integer
+
+      # Load custom rules from a directory.
+      # @rbs path: String -- path to directory containing rule files
+      def load_custom_rules: (String path) -> void
+
+      private
+
+      # @rbs file: String
+      def load_rule_file: (String file) -> void
+    end
+  end
+end
