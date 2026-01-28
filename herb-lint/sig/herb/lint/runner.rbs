@@ -1,0 +1,29 @@
+# Generated from lib/herb/lint/runner.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # Runner orchestrates the linting process for multiple files.
+    # It handles file discovery, rule instantiation, and result aggregation.
+    class Runner
+      attr_reader config: Herb::Config::LinterConfig
+
+      # @rbs config: Herb::Config::LinterConfig
+      def initialize: (Herb::Config::LinterConfig config) -> void
+
+      # Run linting on the given paths and return aggregated results.
+      # @rbs paths: Array[String] -- explicit paths (files or directories) to lint
+      def run: (?Array[String] paths) -> AggregatedResult
+
+      private
+
+      # @rbs paths: Array[String]
+      def discover_files: (Array[String] paths) -> Array[String]
+
+      def rule_registry: () -> RuleRegistry
+
+      def build_rule_registry: () -> RuleRegistry
+
+      def instantiate_rules: () -> Array[Rules::Base | Rules::VisitorRule]
+    end
+  end
+end

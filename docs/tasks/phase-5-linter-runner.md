@@ -181,26 +181,26 @@ bundle exec rspec spec/herb/lint/linter_spec.rb
 
 ### Implementation
 
-- [ ] Create `lib/herb/lint/runner.rb`
-  - [ ] Implement `initialize(config)`
-  - [ ] `attr_reader :config`
-  - [ ] Implement `run(paths)` method
-    - [ ] Generate `FileDiscovery` instance and discover files
-      - [ ] Use `paths` parameter
-      - [ ] Use `config.include_patterns`
-      - [ ] Use `config.exclude_patterns`
-    - [ ] Get enabled rules (from `RuleRegistry`)
-    - [ ] Generate rule instances
-    - [ ] Generate `Linter` instance
-    - [ ] Read each file
-    - [ ] Process each file with `Linter#lint`
-    - [ ] Collect all results
-    - [ ] Generate and return `AggregatedResult`
-- [ ] Require in `lib/herb/lint.rb`
-- [ ] Create `spec/herb/lint/runner_spec.rb`
-  - [ ] Test file discovery
-  - [ ] Test processing multiple files
-  - [ ] Test result aggregation
+- [x] Create `lib/herb/lint/runner.rb`
+  - [x] Implement `initialize(config)`
+  - [x] `attr_reader :config`
+  - [x] Implement `run(paths)` method
+    - [x] Generate `FileDiscovery` instance and discover files
+      - [x] Use `paths` parameter
+      - [x] Use `config.include_patterns`
+      - [x] Use `config.exclude_patterns`
+    - [x] Get enabled rules (from `RuleRegistry`)
+    - [x] Generate rule instances
+    - [x] Generate `Linter` instance
+    - [x] Read each file
+    - [x] Process each file with `Linter#lint`
+    - [x] Collect all results
+    - [x] Generate and return `AggregatedResult`
+- [x] Require in `lib/herb/lint.rb`
+- [x] Create `spec/herb/lint/runner_spec.rb`
+  - [x] Test file discovery
+  - [x] Test processing multiple files
+  - [x] Test result aggregation
 
 ### Implementation Hints
 
@@ -243,9 +243,9 @@ bundle exec rspec spec/herb/lint/runner_spec.rb
 
 ## Phase 5 Completion Criteria
 
-- [ ] All tasks (5.1–5.4) completed
-- [ ] `bundle exec rspec` passes all tests
-- [ ] Complete flow from file discovery to lint execution works
+- [x] All tasks (5.1–5.4) completed
+- [x] `bundle exec rspec` passes all tests
+- [x] Complete flow from file discovery to lint execution works
 - [ ] Verify operation with integration tests
 
 ---
