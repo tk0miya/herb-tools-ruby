@@ -72,22 +72,22 @@ bundle exec rspec spec/herb/lint/rules/a11y/alt_text_spec.rb
 
 ### Implementation
 
-- [ ] Create `lib/herb/lint/rules/html/attribute_quotes.rb`
-  - [ ] Inherit from `VisitorRule`
-  - [ ] Set `rule_name` to `"html/attribute-quotes"`
-  - [ ] Set `description` ("Attribute values should be quoted")
-  - [ ] Set `default_severity` to `"warning"`
-  - [ ] Override `visit_html_attribute_node(node)`
-    - [ ] Check only when attribute value exists
-    - [ ] Check if attribute value is quoted
-    - [ ] Call `add_offense` if not quoted
-    - [ ] Call `super` to visit child nodes
-- [ ] Require in `lib/herb/lint.rb`
-- [ ] Create `spec/herb/lint/rules/html/attribute_quotes_spec.rb`
-  - [ ] Double-quoted attribute → no offense
-  - [ ] Single-quoted attribute → no offense
-  - [ ] Unquoted attribute → offense detected
-  - [ ] Boolean attribute (checked, etc.) → no offense
+- [x] Create `lib/herb/lint/rules/html/attribute_quotes.rb`
+  - [x] Inherit from `VisitorRule`
+  - [x] Set `rule_name` to `"html/attribute-quotes"`
+  - [x] Set `description` ("Attribute values should be quoted")
+  - [x] Set `default_severity` to `"warning"`
+  - [x] Override `visit_html_attribute_node(node)`
+    - [x] Check only when attribute value exists
+    - [x] Check if attribute value is quoted
+    - [x] Call `add_offense` if not quoted
+    - [x] Call `super` to visit child nodes
+- [x] Require in `lib/herb/lint.rb`
+- [x] Create `spec/herb/lint/rules/html/attribute_quotes_spec.rb`
+  - [x] Double-quoted attribute → no offense
+  - [x] Single-quoted attribute → no offense
+  - [x] Unquoted attribute → offense detected
+  - [x] Boolean attribute (checked, etc.) → no offense
 
 ### Implementation Hints
 
@@ -136,10 +136,10 @@ bundle exec rspec spec/herb/lint/rules/html/attribute_quotes_spec.rb
 
 ## Phase 4 Completion Criteria
 
-- [ ] All tasks (4.1–4.2) completed
-- [ ] Both rules work correctly
-- [ ] `bundle exec rspec` passes all tests
-- [ ] Manually verify that each rule can detect issues in actual ERB templates
+- [x] All tasks (4.1–4.2) completed
+- [x] Both rules work correctly
+- [x] `bundle exec rspec` passes all tests
+- [x] Manually verify that each rule can detect issues in actual ERB templates
 
 ---
 
