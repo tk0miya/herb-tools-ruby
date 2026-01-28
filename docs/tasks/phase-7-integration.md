@@ -101,25 +101,25 @@ bundle exec rspec spec/integration/cli_spec.rb
 
 ### Implementation
 
-- [ ] Create `herb-lint/README.md`
-  - [ ] Project overview
-  - [ ] Installation instructions
-    - [ ] Adding to Gemfile
-    - [ ] `bundle install`
-  - [ ] Basic usage
-    - [ ] CLI usage examples
-    - [ ] Option list
-  - [ ] `.herb.yml` configuration examples
-    - [ ] Basic configuration
-    - [ ] Rule configuration
-  - [ ] Clearly document MVP limitations
-    - [ ] Supported features
-    - [ ] Unsupported features (differences from full spec)
-  - [ ] List of available rules
-    - [ ] `html/alt-text`
-    - [ ] `html/attribute-quotes`
-  - [ ] License
-  - [ ] Contributing
+- [x] Create `herb-lint/README.md`
+  - [x] Project overview
+  - [x] Installation instructions
+    - [x] Adding to Gemfile
+    - [x] `bundle install`
+  - [x] Basic usage
+    - [x] CLI usage examples
+    - [x] Option list
+  - [x] `.herb.yml` configuration examples
+    - [x] Basic configuration
+    - [x] Rule configuration
+  - [x] Clearly document MVP limitations
+    - [x] Supported features
+    - [x] Unsupported features (differences from full spec)
+  - [x] List of available rules
+    - [x] `a11y/alt-text`
+    - [x] `html/attribute-quotes`
+  - [x] License
+  - [x] Contributing
 
 ### README Structure Example
 
@@ -212,8 +212,8 @@ Bug reports and pull requests are welcome on GitHub.
 
 ### Verification
 
-- [ ] Review README.md content
-- [ ] Test documented usage examples to verify they work
+- [x] Review README.md content
+- [x] Test documented usage examples to verify they work
 
 ---
 
