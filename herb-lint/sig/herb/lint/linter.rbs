@@ -1,0 +1,43 @@
+# Generated from lib/herb/lint/linter.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # Linter processes a single file and returns lint results.
+    # It applies a set of rules to a parsed document and collects offenses.
+    class Linter
+      attr_reader rules: Array[Rules::Base | Rules::VisitorRule]
+
+      attr_reader config: Herb::Config::LinterConfig
+
+      attr_reader rule_registry: RuleRegistry?
+
+      # @rbs rules: Array[Rules::Base | Rules::VisitorRule]
+      # @rbs config: Herb::Config::LinterConfig
+      # @rbs rule_registry: RuleRegistry? -- optional registry for severity lookup
+      def initialize: (Array[Rules::Base | Rules::VisitorRule] rules, Herb::Config::LinterConfig config, ?rule_registry: RuleRegistry?) -> void
+
+      # Lint a single file and return the result.
+      # @rbs file_path: String -- path to the file being linted
+      # @rbs source: String -- source code content of the file
+      def lint: (file_path: String, source: String) -> LintResult
+
+      private
+
+      # @rbs file_path: String
+      # @rbs source: String
+      def build_context: (String file_path, String source) -> Context
+
+      # @rbs document: Herb::ParseResult
+      # @rbs context: Context
+      def collect_offenses: (Herb::ParseResult document, Context context) -> Array[Offense]
+
+      # @rbs file_path: String
+      # @rbs source: String
+      # @rbs errors: Array[untyped]
+      def parse_error_result: (String file_path, String source, Array[untyped] errors) -> LintResult
+
+      # @rbs error: untyped
+      def parse_error_offense: (untyped error) -> Offense
+    end
+  end
+end
