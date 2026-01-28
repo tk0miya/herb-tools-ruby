@@ -2,7 +2,7 @@
 
 ## Overview
 
-Implementation of two actual lint rules: `Html::AltText` (checks for alt attributes on img tags) and `Html::AttributeQuotes` (checks for quoted attribute values).
+Implementation of two actual lint rules: `A11y::AltText` (checks for alt attributes on img tags) and `Html::AttributeQuotes` (checks for quoted attribute values).
 
 **Dependencies:** Phase 3 (herb-lint foundation) must be completed
 
@@ -10,26 +10,26 @@ Implementation of two actual lint rules: `Html::AltText` (checks for alt attribu
 
 ---
 
-## Task 4.1: Implement Html::AltText Rule
+## Task 4.1: Implement A11y::AltText Rule
 
 ### Implementation
 
-- [ ] Create `lib/herb/lint/rules/html/alt_text.rb`
-  - [ ] Inherit from `VisitorRule`
-  - [ ] Set `rule_name` to `"html/alt-text"`
-  - [ ] Set `description` ("img tags should have alt attributes")
-  - [ ] Set `default_severity` to `"error"`
-  - [ ] Override `visit_html_element_node(node)`
-    - [ ] Check only when `node.tag_name == "img"`
-    - [ ] Check for presence of `alt` attribute
-    - [ ] Call `add_offense` if `alt` attribute is missing
-    - [ ] Call `super` to visit child nodes
-- [ ] Require in `lib/herb/lint.rb`
-- [ ] Create `spec/herb/lint/rules/html/alt_text_spec.rb`
-  - [ ] With alt attribute → no offense
-  - [ ] Without alt attribute → offense detected
-  - [ ] Empty alt attribute → no offense (empty is OK)
-  - [ ] Non-img element → no offense
+- [x] Create `lib/herb/lint/rules/a11y/alt_text.rb`
+  - [x] Inherit from `VisitorRule`
+  - [x] Set `rule_name` to `"alt-text"`
+  - [x] Set `description` ("img tags should have alt attributes")
+  - [x] Set `default_severity` to `"error"`
+  - [x] Override `visit_html_element_node(node)`
+    - [x] Check only when `node.tag_name == "img"`
+    - [x] Check for presence of `alt` attribute
+    - [x] Call `add_offense` if `alt` attribute is missing
+    - [x] Call `super` to visit child nodes
+- [x] Require in `lib/herb/lint.rb`
+- [x] Create `spec/herb/lint/rules/a11y/alt_text_spec.rb`
+  - [x] With alt attribute → no offense
+  - [x] Without alt attribute → offense detected
+  - [x] Empty alt attribute → no offense (empty is OK)
+  - [x] Non-img element → no offense
 
 ### Implementation Hints
 
@@ -61,7 +61,7 @@ end
 ### Verification
 
 ```bash
-bundle exec rspec spec/herb/lint/rules/html/alt_text_spec.rb
+bundle exec rspec spec/herb/lint/rules/a11y/alt_text_spec.rb
 ```
 
 **Expected result:** All tests pass

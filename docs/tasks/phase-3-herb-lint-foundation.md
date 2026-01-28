@@ -160,32 +160,32 @@ bundle exec rspec spec/herb/lint/aggregated_result_spec.rb
 
 #### Base Class
 
-- [ ] Create `lib/herb/lint/rules/base.rb`
-  - [ ] Define class method `rule_name`
-  - [ ] Define class method `description`
-  - [ ] Define class method `default_severity`
-  - [ ] Implement `initialize` (accept optional `severity:` and `options:`)
-  - [ ] Define `check(document, context)` method interface (abstract method)
-  - [ ] Implement `create_offense(context:, message:, location:)` helper method
-- [ ] Create `spec/herb/lint/rules/base_spec.rb`
+- [x] Create `lib/herb/lint/rules/base.rb`
+  - [x] Define class method `rule_name`
+  - [x] Define class method `description`
+  - [x] Define class method `default_severity`
+  - [x] Implement `initialize` (accept optional `severity:` and `options:`)
+  - [x] Define `check(document, context)` method interface (abstract method)
+  - [x] Implement `create_offense(context:, message:, location:)` helper method
+- [x] Create `spec/herb/lint/rules/base_spec.rb`
 
 #### VisitorRule Class
 
-- [ ] Create `lib/herb/lint/rules/visitor_rule.rb`
-  - [ ] Inherit from `Base`
-  - [ ] Include `Herb::Visitor`
-  - [ ] Implement `initialize` (call `super`)
-  - [ ] Implement `check(document, context)` method
-    - [ ] Initialize `@offenses = []`, `@context = context`
-    - [ ] Call `document.visit(self)` to traverse AST
-    - [ ] Return `@offenses`
-  - [ ] Implement `add_offense(message:, location:)` helper method
-    - [ ] Call `create_offense` and add to `@offenses`
-- [ ] Create `spec/herb/lint/rules/visitor_rule_spec.rb`
+- [x] Create `lib/herb/lint/rules/visitor_rule.rb`
+  - [x] Inherit from `Base`
+  - [x] Include `Herb::Visitor`
+  - [x] Implement `initialize` (call `super`)
+  - [x] Implement `check(document, context)` method
+    - [x] Initialize `@offenses = []`, `@context = context`
+    - [x] Call `document.visit(self)` to traverse AST
+    - [x] Return `@offenses`
+  - [x] Implement `add_offense(message:, location:)` helper method
+    - [x] Call `create_offense` and add to `@offenses`
+- [x] Create `spec/herb/lint/rules/visitor_rule_spec.rb`
 
 #### Entry Point
 
-- [ ] Require each class in `lib/herb/lint.rb`
+- [x] Require each class in `lib/herb/lint.rb`
 
 ### Rule Implementation Example
 
@@ -229,11 +229,11 @@ bundle exec rspec spec/herb/lint/rules/visitor_rule_spec.rb
 
 ## Phase 3 Completion Criteria
 
-- [ ] All tasks (3.1–3.4) completed
-- [ ] CI passes for herb-lint
-- [ ] `bundle exec rspec` passes all tests
-- [ ] Data structure classes work correctly
-- [ ] Rule infrastructure classes work correctly
+- [x] All tasks (3.1–3.4) completed
+- [x] CI passes for herb-lint
+- [x] `bundle exec rspec` passes all tests
+- [x] Data structure classes work correctly
+- [x] Rule infrastructure classes work correctly
 
 ---
 
