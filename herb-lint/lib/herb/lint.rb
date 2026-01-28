@@ -4,6 +4,7 @@ require "herb"
 
 # Require files in ASCII order
 require_relative "lint/aggregated_result"
+require_relative "lint/cli"
 require_relative "lint/context"
 require_relative "lint/lint_result"
 require_relative "lint/linter"

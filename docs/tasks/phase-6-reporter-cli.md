@@ -95,35 +95,35 @@ bundle exec rspec spec/herb/lint/reporter/simple_reporter_spec.rb
 
 ### Implementation
 
-- [ ] Create `lib/herb/lint/cli.rb`
-  - [ ] Implement `initialize(argv)`
-  - [ ] Define exit code constants
-    - [ ] `EXIT_SUCCESS = 0` (no offenses)
-    - [ ] `EXIT_LINT_ERROR = 1` (offenses found)
-    - [ ] `EXIT_RUNTIME_ERROR = 2` (runtime error)
-  - [ ] Implement `run` method
-    - [ ] Parse arguments (`--version`, `--help`, path specification)
-    - [ ] `--version`: Display version and exit (exit code 0)
-    - [ ] `--help`: Display help and exit (exit code 0)
-    - [ ] Path specification: Execute lint
-    - [ ] No arguments: Execute lint in current directory
-  - [ ] Load Config (`Herb::Config::Loader.load`)
-  - [ ] Call `RuleRegistry.load_builtin_rules`
-  - [ ] Execute Runner
-  - [ ] Display Reporter
-  - [ ] Determine exit code
-    - [ ] No offenses: exit code 0
-    - [ ] Offenses found: exit code 1
-    - [ ] Runtime error: exit code 2 (configuration error, file I/O error, etc.)
-  - [ ] Implement error handling
-    - [ ] Catch configuration file errors, file I/O errors, etc.
-- [ ] Require in `lib/herb/lint.rb`
-- [ ] Create `spec/herb/lint/cli_spec.rb`
-  - [ ] Test `--version`
-  - [ ] Test `--help`
-  - [ ] Test path specification
-  - [ ] Test no arguments
-  - [ ] Test exit codes
+- [x] Create `lib/herb/lint/cli.rb`
+  - [x] Implement `initialize(argv)`
+  - [x] Define exit code constants
+    - [x] `EXIT_SUCCESS = 0` (no offenses)
+    - [x] `EXIT_LINT_ERROR = 1` (offenses found)
+    - [x] `EXIT_RUNTIME_ERROR = 2` (runtime error)
+  - [x] Implement `run` method
+    - [x] Parse arguments (`--version`, `--help`, path specification)
+    - [x] `--version`: Display version and exit (exit code 0)
+    - [x] `--help`: Display help and exit (exit code 0)
+    - [x] Path specification: Execute lint
+    - [x] No arguments: Execute lint in current directory
+  - [x] Load Config (`Herb::Config::Loader.load`)
+  - [x] Call `RuleRegistry.load_builtin_rules`
+  - [x] Execute Runner
+  - [x] Display Reporter
+  - [x] Determine exit code
+    - [x] No offenses: exit code 0
+    - [x] Offenses found: exit code 1
+    - [x] Runtime error: exit code 2 (configuration error, file I/O error, etc.)
+  - [x] Implement error handling
+    - [x] Catch configuration file errors, file I/O errors, etc.
+- [x] Require in `lib/herb/lint.rb`
+- [x] Create `spec/herb/lint/cli_spec.rb`
+  - [x] Test `--version`
+  - [x] Test `--help`
+  - [x] Test path specification
+  - [x] Test no arguments
+  - [x] Test exit codes
 
 ### Implementation Hints
 
@@ -230,11 +230,11 @@ bundle exec exe/herb-lint --help
 
 ## Phase 6 Completion Criteria
 
-- [ ] All tasks (6.1–6.2) completed
-- [ ] `bundle exec rspec` passes all tests
-- [ ] `bundle exec exe/herb-lint --version` works
-- [ ] `bundle exec exe/herb-lint --help` works
-- [ ] Can execute lint on actual ERB files
+- [x] All tasks (6.1–6.2) completed
+- [x] `bundle exec rspec` passes all tests
+- [x] `bundle exec exe/herb-lint --version` works
+- [x] `bundle exec exe/herb-lint --help` works
+- [x] Can execute lint on actual ERB files
 
 ---
 

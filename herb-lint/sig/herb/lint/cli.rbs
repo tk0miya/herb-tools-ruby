@@ -1,0 +1,36 @@
+# Generated from lib/herb/lint/cli.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # Command-line interface for herb-lint.
+    class CLI
+      EXIT_SUCCESS: Integer
+
+      EXIT_LINT_ERROR: Integer
+
+      EXIT_RUNTIME_ERROR: Integer
+
+      HELP_TEXT: String
+
+      # @rbs argv: Array[String]
+      def initialize: (Array[String] argv) -> void
+
+      def run: () -> Integer
+
+      private
+
+      attr_reader argv: Array[String]
+
+      # Returns true if an option was handled, false otherwise.
+      def handle_option?: () -> bool
+
+      # @rbs message: String
+      # @rbs backtrace: Array[String]?
+      def handle_error: (String message, ?Array[String]? backtrace) -> Integer
+
+      def execute_lint: () -> Integer
+
+      def print_help: () -> void
+    end
+  end
+end

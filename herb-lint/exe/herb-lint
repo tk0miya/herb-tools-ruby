@@ -3,4 +3,5 @@
 
 require "herb/lint"
 
-Herb::Lint::CLI.new(ARGV).run
+exit_code = Herb::Lint::CLI.new(ARGV).run
+exit exit_code
