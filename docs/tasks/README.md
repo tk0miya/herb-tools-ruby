@@ -1,84 +1,105 @@
-# herb-tools-ruby MVP Implementation Tasks
+# herb-tools-ruby Implementation Tasks
 
-This directory contains implementation tasks for the herb-tools-ruby MVP (Minimum Viable Product).
+This directory contains implementation tasks for herb-tools-ruby.
 
-## MVP Scope
+## MVP Status: ✅ Complete
 
-### Included (Must have)
+The MVP (Minimum Viable Product) has been completed with:
 
-✅ Basic `.herb.yml` loading (linter.rules section only)
-✅ Simple file discovery (`**/*.html.erb` patterns only)
-✅ 2-3 representative rule implementations
-✅ Basic CLI (`herb-lint <path>`, `--version`, `--help` only)
-✅ SimpleReporter (text output only)
-
-### Excluded (Won't have in MVP)
-
-❌ Custom rule loading
-❌ Inline directives (`# herb:disable`)
-❌ Multiple reporters (JSON, GitHub Actions, etc.)
-❌ `--fix` option (auto-fix)
-❌ Advanced configuration validation
-❌ Environment variable support
-❌ Complex glob exclusion rules
-❌ Parallel processing
+- ✅ Basic `.herb.yml` loading (linter.rules section only)
+- ✅ Simple file discovery (`**/*.html.erb` patterns only)
+- ✅ 3 rule implementations (alt-text, attribute-quotes, no-duplicate-id)
+- ✅ Basic CLI (`herb-lint <path>`, `--version`, `--help`)
+- ✅ SimpleReporter (text output only)
 
 ## Phase Structure
 
-The implementation is divided into 7 phases:
+### MVP Phases (Complete)
 
-| Phase | File | Tasks | Description |
-|-------|------|-------|-------------|
-| Phase 1 | [phase-1-herb-config.md](./phase-1-herb-config.md) | 5 | herb-config gem & CI setup |
-| Phase 2 | [phase-2-herb-core.md](./phase-2-herb-core.md) | 3 | herb-core gem & CI setup |
-| Phase 3 | [phase-3-herb-lint-foundation.md](./phase-3-herb-lint-foundation.md) | 4 | herb-lint gem foundation & CI setup |
-| Phase 4 | [phase-4-rules.md](./phase-4-rules.md) | 2 | Lint rule implementation |
-| Phase 5 | [phase-5-linter-runner.md](./phase-5-linter-runner.md) | 4 | Linter & Runner implementation |
-| Phase 6 | [phase-6-reporter-cli.md](./phase-6-reporter-cli.md) | 2 | Reporter & CLI implementation |
-| Phase 7 | [phase-7-integration.md](./phase-7-integration.md) | 3 | Integration testing & documentation |
+| Phase | File | Tasks | Description | Status |
+|-------|------|-------|-------------|--------|
+| Phase 1 | [phase-1-herb-config.md](./phase-1-herb-config.md) | 5 | herb-config gem & CI setup | ✅ |
+| Phase 2 | [phase-2-herb-core.md](./phase-2-herb-core.md) | 3 | herb-core gem & CI setup | ✅ |
+| Phase 3 | [phase-3-herb-lint-foundation.md](./phase-3-herb-lint-foundation.md) | 4 | herb-lint gem foundation & CI setup | ✅ |
+| Phase 4 | [phase-4-rules.md](./phase-4-rules.md) | 2 | Lint rule implementation | ✅ |
+| Phase 5 | [phase-5-linter-runner.md](./phase-5-linter-runner.md) | 4 | Linter & Runner implementation | ✅ |
+| Phase 6 | [phase-6-reporter-cli.md](./phase-6-reporter-cli.md) | 2 | Reporter & CLI implementation | ✅ |
+| Phase 7 | [phase-7-integration.md](./phase-7-integration.md) | 3 | Integration testing & documentation | ✅ |
 
-**Total: 23 tasks**
+**MVP Total: 23 tasks** ✅
 
-## Dependencies
+### Post-MVP Phases
 
-```
-Phase 1: herb-config gem
-  └─> Phase 2: herb-core gem
-        └─> Phase 3: herb-lint gem foundation
-              └─> Phase 4: Rule implementation
-                    └─> Phase 5: Linter & Runner
-                          └─> Phase 6: Reporter & CLI
-                                └─> Phase 7: Integration tests
-```
+| Phase | File | Tasks | Description | Status |
+|-------|------|-------|-------------|--------|
+| Phase 8 | [phase-8-rule-expansion.md](./phase-8-rule-expansion.md) | 16 | herb-lint rule expansion | 🚧 |
+| Phase 9 | [phase-9-inline-directives-autofix.md](./phase-9-inline-directives-autofix.md) | 7 | Inline directives & Auto-fix | 📋 |
+| Phase 10 | [phase-10-reporters-validation.md](./phase-10-reporters-validation.md) | 6 | Multiple reporters & Config validation | 📋 |
 
-**Important:** Each phase must be completed before starting the next phase.
+**Post-MVP Total: 29 tasks**
+
+Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
+
+## Phase Overview
+
+### Phase 8: Rule Expansion (16 rules)
+
+| Batch | Rules | Focus |
+|-------|-------|-------|
+| Batch 1 | 4 | Simple HTML rules |
+| Batch 2 | 4 | Void elements & A11y |
+| Batch 3 | 4 | HTML document structure |
+| Batch 4 | 4 | ERB rules (first set) |
+
+### Phase 9: Inline Directives & Auto-fix (7 tasks)
+
+| Part | Tasks | Description |
+|------|-------|-------------|
+| Part A | 3 | DirectiveParser, DisableTracker, Linter integration |
+| Part B | 4 | Fixer class, CLI options, Runner integration, fix methods |
+
+### Phase 10: Reporters & Validation (6 tasks)
+
+| Part | Tasks | Description |
+|------|-------|-------------|
+| Part A | 3 | JsonReporter, GithubReporter, CLI options |
+| Part B | 3 | Validator, Loader integration, search path extension |
 
 ## How to Proceed
 
-1. **Start with Phase 1**
-2. Open each phase's task file
-3. Implement tasks from top to bottom
-4. Test according to each task's verification method
-5. Check off completed tasks (`- [ ]` → `- [x]`)
-6. Move to the next phase when all tasks in the current phase are complete
+1. Open the current phase's task file
+2. Implement tasks from top to bottom
+3. Test according to each task's verification method
+4. Check off completed tasks (`- [ ]` → `- [x]`)
+5. Move to the next phase when all tasks are complete
 
-## MVP Completion Criteria
+## Unscheduled Tasks (Low Priority)
 
-The MVP is complete when all of the following conditions are met:
+The following features are not yet scheduled into phases. Consider adding them when needed:
 
-1. ✅ CI passes (rspec tests and type checking)
-2. ✅ All 3 gems (herb-config, herb-core, herb-lint) can be built
-3. ✅ All unit tests pass
-4. ✅ Integration tests pass
-5. ✅ `herb-lint` command can lint actual ERB files
-6. ✅ 2 or more rules are working
-7. ✅ Configuration file (.herb.yml) can be loaded
-8. ✅ README.md is complete
+### Custom Rule Loading
+- CustomRuleLoader implementation
+- Plugin mechanism for third-party rules
+- Dynamic rule discovery from `.herb/rules/` directory
 
-## Important Notes
+### RuleRegistry Dynamic Discovery
+- Automatic rule discovery by directory scanning
+- Dynamic loading using reflection
+- Consider when rule count exceeds 10
 
-- **No root Gemfile needed**: Develop each gem independently, using local path references in each gem's Gemfile as needed
-- **Comparison with full spec**: This MVP scope is **72% reduced** compared to the full specification (72 tasks)
+### Code Architecture Improvements
+- PatternMatcher class separation (currently integrated in FileDiscovery)
+- LinterFactory implementation (currently Runner creates Linter directly)
+
+### Performance
+- Parallel file processing
+- Caching for repeated lints
+
+### herb-format Implementation
+- Full formatter gem (see [herb-format requirements](../requirements/herb-format.md))
+- Formatter engine, rewriters, CLI
+
+See [future-enhancements.md](./future-enhancements.md) for detailed descriptions of each feature.
 
 ## Related Documentation
 
