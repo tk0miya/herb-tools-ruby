@@ -14,21 +14,21 @@ Implementation of RuleRegistry, Context, Linter, and Runner. These components co
 
 ### Implementation
 
-- [ ] Create `lib/herb/lint/rule_registry.rb`
-  - [ ] Manage registration with `@@rules = {}` class variable
-  - [ ] Implement `RuleRegistry.register(rule_class)` class method
-  - [ ] Implement `RuleRegistry.all` class method (returns all rules as array)
-  - [ ] Implement `RuleRegistry.get(rule_name)` class method (get rule by name)
-  - [ ] Implement `RuleRegistry.load_builtin_rules` class method
-    - [ ] Hard-code registration of rules implemented in Phase 4
-    - [ ] Register `Html::AltText`
-    - [ ] Register `Html::AttributeQuotes`
-- [ ] Require in `lib/herb/lint.rb`
-- [ ] Create `spec/herb/lint/rule_registry_spec.rb`
-  - [ ] Test `register`
-  - [ ] Test `all`
-  - [ ] Test `get`
-  - [ ] Test `load_builtin_rules`
+- [x] Create `lib/herb/lint/rule_registry.rb`
+  - [x] Manage registration with `@@rules = {}` class variable
+  - [x] Implement `RuleRegistry.register(rule_class)` class method
+  - [x] Implement `RuleRegistry.all` class method (returns all rules as array)
+  - [x] Implement `RuleRegistry.get(rule_name)` class method (get rule by name)
+  - [x] Implement `RuleRegistry.load_builtin_rules` class method
+    - [x] Hard-code registration of rules implemented in Phase 4
+    - [x] Register `A11y::AltText`
+    - [x] Register `Html::AttributeQuotes`
+- [x] Require in `lib/herb/lint.rb`
+- [x] Create `spec/herb/lint/rule_registry_spec.rb`
+  - [x] Test `register`
+  - [x] Test `all`
+  - [x] Test `get`
+  - [x] Test `load_builtin_rules`
 
 ### Implementation Example
 

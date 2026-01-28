@@ -45,6 +45,12 @@ module Herb
         @rules.size
       end
 
+      # Load all built-in rules into the registry.
+      def load_builtin_rules #: void
+        register(Rules::A11y::AltText)
+        register(Rules::Html::AttributeQuotes)
+      end
+
       # Load custom rules from a directory.
       # @rbs path: String -- path to directory containing rule files
       def load_custom_rules(path) #: void
