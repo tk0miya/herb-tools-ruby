@@ -26,36 +26,51 @@ fi
 
 cd "$CLAUDE_PROJECT_DIR" || exit 1
 
-# Find gem directories that have staged changes
+# Find gem directory for a given file path
+find_gem_for_file() {
+  local file="$1"
+  local dir="$CLAUDE_PROJECT_DIR/$file"
+
+  while [[ "$dir" != "$CLAUDE_PROJECT_DIR" && "$dir" != "/" ]]; do
+    dir=$(dirname "$dir")
+    if compgen -G "$dir/*.gemspec" > /dev/null 2>&1; then
+      echo "$dir"
+      return
+    fi
+  done
+}
+
+# Find gem directories that have changes (staged or unstaged)
+# Uses git status to detect all modified files
 find_affected_gems() {
   local gems=()
   local seen=()
 
-  # Get list of staged files
-  while IFS= read -r file; do
-    [[ -z "$file" ]] && continue
+  # Helper function to add a gem if not already seen
+  add_gem() {
+    local gem_dir="$1"
+    [[ -z "$gem_dir" ]] && return
 
-    # Walk up the directory tree to find a directory with a .gemspec file
-    local dir="$CLAUDE_PROJECT_DIR/$file"
-    while [[ "$dir" != "$CLAUDE_PROJECT_DIR" && "$dir" != "/" ]]; do
-      dir=$(dirname "$dir")
-      if compgen -G "$dir/*.gemspec" > /dev/null 2>&1; then
-        # Check if we've already seen this gem
-        local already_seen=false
-        for s in "${seen[@]:-}"; do
-          if [[ "$s" == "$dir" ]]; then
-            already_seen=true
-            break
-          fi
-        done
-        if [[ "$already_seen" == false ]]; then
-          gems+=("$dir")
-          seen+=("$dir")
-        fi
-        break
+    for s in "${seen[@]:-}"; do
+      if [[ "$s" == "$gem_dir" ]]; then
+        return
       fi
     done
-  done < <(git diff --cached --name-only 2>/dev/null)
+    gems+=("$gem_dir")
+    seen+=("$gem_dir")
+  }
+
+  # Get all changed files from git status (both staged and unstaged)
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    # git status --porcelain format: XY filename (filename starts at position 3)
+    local file="${line:3}"
+    [[ -z "$file" ]] && continue
+
+    local gem_dir
+    gem_dir=$(find_gem_for_file "$file")
+    add_gem "$gem_dir"
+  done < <(git status --porcelain 2>/dev/null)
 
   if [[ ${#gems[@]} -gt 0 ]]; then
     printf '%s\n' "${gems[@]}"
