@@ -10,6 +10,7 @@ require_relative "lint/offense"
 require_relative "lint/rule_registry"
 require_relative "lint/rules/base"
 require_relative "lint/rules/visitor_rule"
+require_relative "lint/rules/a11y/alt_text"
 require_relative "lint/version"
 
 module Herb
