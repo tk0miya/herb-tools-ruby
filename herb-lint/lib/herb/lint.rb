@@ -13,6 +13,7 @@ require_relative "lint/rules/base"
 require_relative "lint/rules/visitor_rule"
 require_relative "lint/rules/a11y/alt_text"
 require_relative "lint/rules/html/attribute_quotes"
+require_relative "lint/rules/html/no_duplicate_id"
 require_relative "lint/version"
 
 module Herb

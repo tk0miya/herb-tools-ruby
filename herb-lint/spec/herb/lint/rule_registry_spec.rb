@@ -115,16 +115,17 @@ RSpec.describe Herb::Lint::RuleRegistry do
     it "registers all built-in rules" do
       registry.load_builtin_rules
 
-      expect(registry.size).to eq(2)
+      expect(registry.size).to eq(3)
       expect(registry.get("alt-text")).to eq(Herb::Lint::Rules::A11y::AltText)
       expect(registry.get("html/attribute-quotes")).to eq(Herb::Lint::Rules::Html::AttributeQuotes)
+      expect(registry.get("html/no-duplicate-id")).to eq(Herb::Lint::Rules::Html::NoDuplicateId)
     end
 
     it "allows loading built-in rules multiple times without duplicates" do
       registry.load_builtin_rules
       registry.load_builtin_rules
 
-      expect(registry.size).to eq(2)
+      expect(registry.size).to eq(3)
     end
   end
 
