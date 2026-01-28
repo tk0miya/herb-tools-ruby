@@ -21,7 +21,7 @@ Both tools maintain CLI compatibility with their TypeScript counterparts, sharin
 ```
 herb-tools-ruby/
 ├── CLAUDE.md                    # This file
-├── bin/                         # Binstubs for development tools
+├── bin/                         # Root binstubs (uses root Gemfile)
 │   ├── rake
 │   ├── rbs
 │   ├── rbs-inline
@@ -35,7 +35,20 @@ herb-tools-ruby/
 │       ├── herb-format.md
 │       └── config.md
 │
+├── herb-config/                 # Configuration gem
+│   ├── bin/                     # Binstubs (uses herb-config/Gemfile)
+│   ├── lib/
+│   ├── spec/
+│   └── herb-config.gemspec
+│
+├── herb-core/                   # Core gem
+│   ├── bin/                     # Binstubs (uses herb-core/Gemfile)
+│   ├── lib/
+│   ├── spec/
+│   └── herb-core.gemspec
+│
 ├── herb-lint/                   # Linter gem
+│   ├── bin/                     # Binstubs (uses herb-lint/Gemfile)
 │   ├── lib/
 │   │   └── herb/
 │   │       └── lint/
@@ -56,6 +69,7 @@ herb-tools-ruby/
 │   └── herb-lint.gemspec
 │
 ├── herb-format/                 # Formatter gem
+│   ├── bin/                     # Binstubs (uses herb-format/Gemfile)
 │   ├── lib/
 │   │   └── herb/
 │   │       └── format/
@@ -93,26 +107,26 @@ bundle install
 
 ### Using Binstubs
 
-This project provides binstubs in `bin/` for common development tools. Use these instead of `bundle exec`:
+Each gem has its own binstubs in its `bin/` directory. Run commands from within the gem directory using `./bin/`:
 
 ```bash
 # Run all checks (spec, rubocop, steep) for a gem
-(cd herb-config && bin/rake)
+cd herb-config && ./bin/rake
 
 # Run tests only
-bin/rspec herb-config/spec
+cd herb-config && ./bin/rspec
 
-# Run type checker (from gem directory)
-(cd herb-config && bin/steep check)
+# Run type checker
+cd herb-config && ./bin/steep check
 
 # Run linter
-bin/rubocop herb-config
+cd herb-config && ./bin/rubocop
 
 # Generate RBS files from inline annotations
-bin/rbs-inline --output lib
+cd herb-config && ./bin/rbs-inline --output lib
 ```
 
-Note: `bin/rake` should be run from the gem directory (e.g., `cd herb-config && bin/rake`).
+Each gem's binstubs use that gem's Gemfile, ensuring proper dependency resolution.
 
 ## Coding Conventions
 
@@ -231,11 +245,11 @@ end
 ### Running Tests
 
 ```bash
-# Run all tests for a gem (from project root)
-bin/rspec herb-config/spec
+# Run all tests for a gem (from gem directory)
+cd herb-config && ./bin/rspec
 
 # Run specific test file
-bin/rspec herb-config/spec/herb/config_spec.rb
+cd herb-config && ./bin/rspec spec/herb/config_spec.rb
 ```
 
 ## Writing Type Annotations
