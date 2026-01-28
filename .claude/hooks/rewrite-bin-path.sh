@@ -15,24 +15,41 @@ fi
 
 COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
 
-# Check if command starts with bin/ and the file exists
+# Rewrite bin/ paths to absolute paths
+# Handles: "bin/rake", "cd foo && bin/rake", "cd foo; bin/rake"
+NEW_COMMAND="$COMMAND"
+MODIFIED=false
+
+# Pattern: command starts with bin/
 if [[ "$COMMAND" =~ ^bin/([^[:space:]]+) ]]; then
   BIN_FILE="${BASH_REMATCH[1]}"
-  ABSOLUTE_BIN="${PROJECT_ROOT}/bin/${BIN_FILE}"
-
-  if [ -f "$ABSOLUTE_BIN" ]; then
-    NEW_COMMAND="${PROJECT_ROOT}/${COMMAND}"
-
-    # Output JSON with updatedInput
-    jq -n --arg cmd "$NEW_COMMAND" '{
-      "hookSpecificOutput": {
-        "hookEventName": "PreToolUse",
-        "updatedInput": {
-          "command": $cmd
-        }
-      }
-    }'
+  if [ -f "${PROJECT_ROOT}/bin/${BIN_FILE}" ]; then
+    NEW_COMMAND="${PROJECT_ROOT}/bin/${BIN_FILE}${COMMAND#bin/${BIN_FILE}}"
+    MODIFIED=true
   fi
+fi
+
+# Pattern: && bin/ or ; bin/ (after cd or other commands)
+if [[ "$COMMAND" =~ (.*[&\;][[:space:]]*)bin/([^[:space:]]+)(.*) ]]; then
+  PREFIX="${BASH_REMATCH[1]}"
+  BIN_FILE="${BASH_REMATCH[2]}"
+  SUFFIX="${BASH_REMATCH[3]}"
+  if [ -f "${PROJECT_ROOT}/bin/${BIN_FILE}" ]; then
+    NEW_COMMAND="${PREFIX}${PROJECT_ROOT}/bin/${BIN_FILE}${SUFFIX}"
+    MODIFIED=true
+  fi
+fi
+
+if [ "$MODIFIED" = true ]; then
+  # Output JSON with updatedInput
+  jq -n --arg cmd "$NEW_COMMAND" '{
+    "hookSpecificOutput": {
+      "hookEventName": "PreToolUse",
+      "updatedInput": {
+        "command": $cmd
+      }
+    }
+  }'
 fi
 
 exit 0
