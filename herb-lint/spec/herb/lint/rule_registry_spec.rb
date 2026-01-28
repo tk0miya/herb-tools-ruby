@@ -111,6 +111,23 @@ RSpec.describe Herb::Lint::RuleRegistry do
     end
   end
 
+  describe "#load_builtin_rules" do
+    it "registers all built-in rules" do
+      registry.load_builtin_rules
+
+      expect(registry.size).to eq(2)
+      expect(registry.get("alt-text")).to eq(Herb::Lint::Rules::A11y::AltText)
+      expect(registry.get("html/attribute-quotes")).to eq(Herb::Lint::Rules::Html::AttributeQuotes)
+    end
+
+    it "allows loading built-in rules multiple times without duplicates" do
+      registry.load_builtin_rules
+      registry.load_builtin_rules
+
+      expect(registry.size).to eq(2)
+    end
+  end
+
   describe "#load_custom_rules" do
     let(:custom_rules_dir) { File.join(Dir.tmpdir, "herb_test_rules_#{Process.pid}") }
 
