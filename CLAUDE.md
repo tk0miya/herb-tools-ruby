@@ -166,6 +166,62 @@ end
 - Provide meaningful error messages
 - Handle file I/O errors gracefully
 
+## Writing Lint Rules
+
+### Rule Structure
+
+All lint rules inherit from `VisitorRule` and override `visit_*` methods to inspect AST nodes. Each rule must define three class methods: `rule_name`, `description`, and `default_severity`. Always call `super` at the end of visit methods to continue traversal.
+
+```ruby
+# lib/herb/lint/rules/html/my_rule.rb
+module Herb
+  module Lint
+    module Rules
+      module Html
+        class MyRule < VisitorRule
+          def self.rule_name = "html/my-rule"
+          def self.description = "Description of the rule"
+          def self.default_severity = "warning"
+
+          # @rbs override
+          def visit_html_element_node(node)
+            if some_condition?(node)
+              add_offense(message: "Explanation", location: node.location)
+            end
+            super
+          end
+        end
+      end
+    end
+  end
+end
+```
+
+### NodeHelpers
+
+`VisitorRule` includes the `NodeHelpers` module (`lib/herb/lint/rules/node_helpers.rb`), which provides common methods for working with HTML AST nodes. Use these helpers instead of accessing AST internals directly.
+
+| Method | Description |
+|--------|-------------|
+| `find_attribute(node, "name")` | Find an attribute by name (case-insensitive) on an element node. Returns `HTMLAttributeNode?` |
+| `attribute?(node, "name")` | Check if an element has an attribute (case-insensitive). Returns `bool` |
+| `attribute_name(attr_node)` | Extract the raw name string from an attribute node. Returns `String?` |
+| `attribute_value(attr_node)` | Extract the text value from an attribute node. Returns `String?` |
+
+`attribute_name` and `attribute_value` are nil-safe — they accept `nil` and return `nil`, enabling composition:
+
+```ruby
+attribute_value(find_attribute(node, "role"))
+```
+
+### Registering a New Rule
+
+When adding a new rule:
+
+1. Create the rule file under `lib/herb/lint/rules/{category}/`
+2. Add `require_relative` to `lib/herb/lint.rb` (in ASCII order)
+3. Add the class to `RuleRegistry.builtin_rules` in `lib/herb/lint/rule_registry.rb` (in ASCII order)
+
 ## Testing Policy
 
 ### Framework

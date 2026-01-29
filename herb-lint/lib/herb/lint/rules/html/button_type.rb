@@ -32,7 +32,7 @@ module Herb
 
           # @rbs override
           def visit_html_element_node(node)
-            if button_element?(node) && !type_attribute?(node)
+            if button_element?(node) && !attribute?(node, "type")
               add_offense(
                 message: "Missing type attribute on button element (defaults to 'submit')",
                 location: node.location
@@ -46,25 +46,6 @@ module Herb
           # @rbs node: Herb::AST::HTMLElementNode
           def button_element?(node) #: bool
             node.tag_name&.value&.downcase == "button"
-          end
-
-          # @rbs node: Herb::AST::HTMLElementNode
-          def type_attribute?(node) #: bool
-            return false unless node.open_tag
-
-            node.open_tag.children.any? do |child|
-              attribute_node?(child) && attribute_name(child) == "type"
-            end
-          end
-
-          # @rbs node: untyped
-          def attribute_node?(node) #: bool
-            node.is_a?(Herb::AST::HTMLAttributeNode)
-          end
-
-          # @rbs node: Herb::AST::HTMLAttributeNode
-          def attribute_name(node) #: String?
-            node.name.children.first&.content&.downcase
           end
         end
       end

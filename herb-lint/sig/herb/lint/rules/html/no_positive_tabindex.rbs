@@ -32,9 +32,6 @@ module Herb
           # @rbs node: Herb::AST::HTMLAttributeNode
           def tabindex_attribute?: (Herb::AST::HTMLAttributeNode node) -> bool
 
-          # @rbs node: Herb::AST::HTMLAttributeNode
-          def extract_value: (Herb::AST::HTMLAttributeNode node) -> String?
-
           # @rbs value: String?
           def positive_tabindex?: (String? value) -> bool
         end

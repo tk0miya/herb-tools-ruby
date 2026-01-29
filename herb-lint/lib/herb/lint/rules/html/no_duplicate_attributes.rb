@@ -43,7 +43,7 @@ module Herb
             seen_attributes = {} #: Hash[String, Herb::Location]
 
             node.open_tag.children.each do |child|
-              next unless attribute_node?(child)
+              next unless child.is_a?(Herb::AST::HTMLAttributeNode)
 
               name = attribute_name(child)
               next if name.nil?
@@ -58,16 +58,6 @@ module Herb
                 seen_attributes[normalized_name] = child.location
               end
             end
-          end
-
-          # @rbs node: untyped
-          def attribute_node?(node) #: bool
-            node.is_a?(Herb::AST::HTMLAttributeNode)
-          end
-
-          # @rbs node: Herb::AST::HTMLAttributeNode
-          def attribute_name(node) #: String?
-            node.name.children.first&.content
           end
         end
       end

@@ -29,12 +29,6 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLElementNode
           def check_duplicate_attributes: (Herb::AST::HTMLElementNode node) -> void
-
-          # @rbs node: untyped
-          def attribute_node?: (untyped node) -> bool
-
-          # @rbs node: Herb::AST::HTMLAttributeNode
-          def attribute_name: (Herb::AST::HTMLAttributeNode node) -> String?
         end
       end
     end

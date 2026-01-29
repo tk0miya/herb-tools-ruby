@@ -118,31 +118,7 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLElementNode
           def find_role_value(node) #: String?
-            role_attr = find_attribute(node, "role")
-            return nil unless role_attr
-
-            value = role_attr.value
-            return nil unless value
-
-            value.children.first&.content
-          end
-
-          # @rbs node: Herb::AST::HTMLElementNode
-          # @rbs attr_name: String
-          def find_attribute(node, attr_name) #: Herb::AST::HTMLAttributeNode?
-            return nil unless node.open_tag
-
-            node.open_tag.children.find do |child|
-              next false unless child.is_a?(Herb::AST::HTMLAttributeNode)
-
-              child.name.children.first&.content&.downcase == attr_name
-            end
-          end
-
-          # @rbs node: Herb::AST::HTMLElementNode
-          # @rbs attr_name: String
-          def attribute?(node, attr_name) #: bool
-            !find_attribute(node, attr_name).nil?
+            attribute_value(find_attribute(node, "role"))
           end
         end
       end

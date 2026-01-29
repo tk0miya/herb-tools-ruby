@@ -48,29 +48,8 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLElementNode
           def valid_title?(node) #: bool
-            title_attr = find_title_attribute(node)
-            return false unless title_attr
-
-            non_empty_value?(title_attr)
-          end
-
-          # @rbs node: Herb::AST::HTMLElementNode
-          def find_title_attribute(node) #: Herb::AST::HTMLAttributeNode?
-            return nil unless node.open_tag
-
-            node.open_tag.children.find do |child|
-              child.is_a?(Herb::AST::HTMLAttributeNode) &&
-                child.name.children.first&.content&.downcase == "title"
-            end
-          end
-
-          # @rbs attr: Herb::AST::HTMLAttributeNode
-          def non_empty_value?(attr) #: bool
-            value = attr.value
-            return false unless value
-
-            content = value.children.first&.content
-            !content.nil? && !content.strip.empty?
+            value = attribute_value(find_attribute(node, "title"))
+            !value.nil? && !value.strip.empty?
           end
         end
       end

@@ -31,15 +31,6 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLElementNode
           def button_element?: (Herb::AST::HTMLElementNode node) -> bool
-
-          # @rbs node: Herb::AST::HTMLElementNode
-          def type_attribute?: (Herb::AST::HTMLElementNode node) -> bool
-
-          # @rbs node: untyped
-          def attribute_node?: (untyped node) -> bool
-
-          # @rbs node: Herb::AST::HTMLAttributeNode
-          def attribute_name: (Herb::AST::HTMLAttributeNode node) -> String?
         end
       end
     end
