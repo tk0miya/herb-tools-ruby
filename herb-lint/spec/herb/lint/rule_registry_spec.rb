@@ -115,23 +115,16 @@ RSpec.describe Herb::Lint::RuleRegistry do
     it "registers all built-in rules" do
       registry.load_builtin_rules
 
-      expect(registry.size).to eq(9)
-      expect(registry.get("alt-text")).to eq(Herb::Lint::Rules::A11y::AltText)
-      expect(registry.get("a11y/no-redundant-role")).to eq(Herb::Lint::Rules::A11y::NoRedundantRole)
-      expect(registry.get("html/attribute-quotes")).to eq(Herb::Lint::Rules::Html::AttributeQuotes)
-      expect(registry.get("html/lowercase-attributes")).to eq(Herb::Lint::Rules::Html::LowercaseAttributes)
-      expect(registry.get("html/lowercase-tags")).to eq(Herb::Lint::Rules::Html::LowercaseTags)
-      expect(registry.get("html/no-duplicate-attributes")).to eq(Herb::Lint::Rules::Html::NoDuplicateAttributes)
-      expect(registry.get("html/no-duplicate-id")).to eq(Herb::Lint::Rules::Html::NoDuplicateId)
-      expect(registry.get("html/no-positive-tabindex")).to eq(Herb::Lint::Rules::Html::NoPositiveTabindex)
-      expect(registry.get("html/void-element-style")).to eq(Herb::Lint::Rules::Html::VoidElementStyle)
+      described_class.builtin_rules.each do |rule_class|
+        expect(registry.get(rule_class.rule_name)).to eq(rule_class)
+      end
     end
 
     it "allows loading built-in rules multiple times without duplicates" do
       registry.load_builtin_rules
       registry.load_builtin_rules
 
-      expect(registry.size).to eq(9)
+      expect(registry.size).to eq(described_class.builtin_rules.size)
     end
   end
 
