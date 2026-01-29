@@ -48,14 +48,6 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLElementNode
           def find_role_value: (Herb::AST::HTMLElementNode node) -> String?
-
-          # @rbs node: Herb::AST::HTMLElementNode
-          # @rbs attr_name: String
-          def find_attribute: (Herb::AST::HTMLElementNode node, String attr_name) -> Herb::AST::HTMLAttributeNode?
-
-          # @rbs node: Herb::AST::HTMLElementNode
-          # @rbs attr_name: String
-          def attribute?: (Herb::AST::HTMLElementNode node, String attr_name) -> bool
         end
       end
     end

@@ -25,11 +25,6 @@ module Herb
 
           # @rbs override
           def visit_html_element_node: ...
-
-          private
-
-          # @rbs node: Herb::AST::HTMLElementNode
-          def accesskey_attribute?: (Herb::AST::HTMLElementNode node) -> bool
         end
       end
     end

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "node_helpers"
 require_relative "rule_methods"
 
 module Herb
@@ -20,6 +21,7 @@ module Herb
       #     end
       #   end
       class VisitorRule < Herb::Visitor
+        include NodeHelpers
         include RuleMethods
 
         # @rbs!

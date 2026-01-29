@@ -32,26 +32,14 @@ module Herb
 
           # @rbs override
           def visit_html_attribute_node(node)
-            attr_name = extract_attribute_name(node)
-            if attr_name && uppercase?(attr_name)
+            name = attribute_name(node)
+            if name && name != name.downcase
               add_offense(
-                message: "Attribute name '#{attr_name}' should be lowercase",
+                message: "Attribute name '#{name}' should be lowercase",
                 location: node.name.location
               )
             end
             super
-          end
-
-          private
-
-          # @rbs node: Herb::AST::HTMLAttributeNode
-          def extract_attribute_name(node) #: String?
-            node.name.children.first&.content
-          end
-
-          # @rbs name: String
-          def uppercase?(name) #: bool
-            name != name.downcase
           end
         end
       end

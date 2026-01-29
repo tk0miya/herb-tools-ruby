@@ -30,7 +30,7 @@ module Herb
 
           # @rbs override
           def visit_html_element_node(node)
-            if img_element?(node) && !alt_attribute?(node)
+            if img_element?(node) && !attribute?(node, "alt")
               add_offense(
                 message: "Missing alt attribute on img tag",
                 location: node.location
@@ -44,25 +44,6 @@ module Herb
           # @rbs node: Herb::AST::HTMLElementNode
           def img_element?(node) #: bool
             node.tag_name&.value&.downcase == "img"
-          end
-
-          # @rbs node: Herb::AST::HTMLElementNode
-          def alt_attribute?(node) #: bool
-            return false unless node.open_tag
-
-            node.open_tag.children.any? do |child|
-              attribute_node?(child) && attribute_name(child) == "alt"
-            end
-          end
-
-          # @rbs node: untyped
-          def attribute_node?(node) #: bool
-            node.is_a?(Herb::AST::HTMLAttributeNode)
-          end
-
-          # @rbs node: Herb::AST::HTMLAttributeNode
-          def attribute_name(node) #: String?
-            node.name.children.first&.content&.downcase
           end
         end
       end

@@ -33,7 +33,7 @@ module Herb
           # @rbs override
           def visit_html_attribute_node(node)
             if tabindex_attribute?(node)
-              value = extract_value(node)
+              value = attribute_value(node)
               if positive_tabindex?(value)
                 add_offense(
                   message: "Avoid positive tabindex value '#{value}' (disrupts natural tab order)",
@@ -48,16 +48,7 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLAttributeNode
           def tabindex_attribute?(node) #: bool
-            name = node.name.children.first&.content&.downcase
-            name == "tabindex"
-          end
-
-          # @rbs node: Herb::AST::HTMLAttributeNode
-          def extract_value(node) #: String?
-            value = node.value
-            return nil if value.nil?
-
-            value.children.first&.content
+            attribute_name(node)&.downcase == "tabindex"
           end
 
           # @rbs value: String?

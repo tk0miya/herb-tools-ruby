@@ -32,12 +32,6 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLElementNode
           def valid_title?: (Herb::AST::HTMLElementNode node) -> bool
-
-          # @rbs node: Herb::AST::HTMLElementNode
-          def find_title_attribute: (Herb::AST::HTMLElementNode node) -> Herb::AST::HTMLAttributeNode?
-
-          # @rbs attr: Herb::AST::HTMLAttributeNode
-          def non_empty_value?: (Herb::AST::HTMLAttributeNode attr) -> bool
         end
       end
     end

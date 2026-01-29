@@ -39,7 +39,7 @@ module Herb
           # @rbs override
           def visit_html_attribute_node(node)
             if id_attribute?(node)
-              id_value = extract_id_value(node)
+              id_value = attribute_value(node)
               check_duplicate_id(id_value, node) if id_value && !id_value.empty?
             end
             super
@@ -49,17 +49,7 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLAttributeNode
           def id_attribute?(node) #: bool
-            name = node.name.children.first&.content&.downcase
-            name == "id"
-          end
-
-          # @rbs node: Herb::AST::HTMLAttributeNode
-          def extract_id_value(node) #: String?
-            value = node.value
-            return nil if value.nil?
-
-            # Extract text content from the value
-            value.children.first&.content
+            attribute_name(node)&.downcase == "id"
           end
 
           # @rbs id_value: String

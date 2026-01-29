@@ -31,7 +31,7 @@ module Herb
 
           # @rbs override
           def visit_html_element_node(node)
-            if accesskey_attribute?(node)
+            if attribute?(node, "accesskey")
               add_offense(
                 message: "Unexpected accesskey attribute. The accesskey attribute can cause " \
                          "accessibility issues due to conflicts with screen reader shortcuts",
@@ -39,19 +39,6 @@ module Herb
               )
             end
             super
-          end
-
-          private
-
-          # @rbs node: Herb::AST::HTMLElementNode
-          def accesskey_attribute?(node) #: bool
-            return false unless node.open_tag
-
-            node.open_tag.children.any? do |child|
-              next false unless child.is_a?(Herb::AST::HTMLAttributeNode)
-
-              child.name.children.first&.content&.downcase == "accesskey"
-            end
           end
         end
       end
