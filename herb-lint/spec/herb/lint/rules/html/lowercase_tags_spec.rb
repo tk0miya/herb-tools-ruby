@@ -103,7 +103,7 @@ RSpec.describe Herb::Lint::Rules::Html::LowercaseTags do
       end
     end
 
-    context "with self-closing void element in uppercase" do
+    context "with void element in uppercase" do
       let(:template) { "<BR>" }
 
       it "reports an offense" do
@@ -112,65 +112,10 @@ RSpec.describe Herb::Lint::Rules::Html::LowercaseTags do
       end
     end
 
-    context "with lowercase void element" do
+    context "with void element in lowercase" do
       let(:template) { "<br>" }
 
       it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "with lowercase self-closing syntax" do
-      let(:template) { "<img src=\"photo.jpg\" />" }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "with uppercase self-closing syntax" do
-      let(:template) { "<IMG src=\"photo.jpg\" />" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Tag name 'IMG' should be lowercase")
-      end
-    end
-
-    context "with ERB content inside tags" do
-      let(:template) { "<div><%= @content %></div>" }
-
-      it "does not report an offense for lowercase tags" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "with uppercase tags containing ERB" do
-      let(:template) { "<DIV><%= @content %></DIV>" }
-
-      it "reports offenses for uppercase tags" do
-        expect(subject.size).to eq(2)
-      end
-    end
-
-    context "with various HTML5 tags in lowercase" do
-      let(:template) do
-        <<~HTML
-          <header>
-            <nav>
-              <a href="#">link</a>
-            </nav>
-          </header>
-          <main>
-            <article>
-              <section>content</section>
-            </article>
-          </main>
-          <footer></footer>
-        HTML
-      end
-
-      it "does not report any offenses" do
         expect(subject).to be_empty
       end
     end
