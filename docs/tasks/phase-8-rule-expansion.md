@@ -19,6 +19,7 @@ This phase focuses on expanding herb-lint's rule coverage beyond the MVP's 3 rul
 - `html/button-type`
 - `html/no-duplicate-attributes`
 - `html/no-duplicate-id`
+- `html/no-inline-event-handlers`
 - `html/no-obsolete-tags`
 - `html/no-positive-tabindex`
 - `html/no-target-blank`
@@ -281,9 +282,9 @@ Rules are prioritized by:
 ---
 
 ### Task 8.12: `html/no-inline-event-handlers`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Discourage inline event handlers (onclick, onmouseover, etc.).
 
