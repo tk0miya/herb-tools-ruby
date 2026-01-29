@@ -115,9 +115,10 @@ RSpec.describe Herb::Lint::RuleRegistry do
     it "registers all built-in rules" do
       registry.load_builtin_rules
 
-      expect(registry.size).to eq(4)
+      expect(registry.size).to eq(5)
       expect(registry.get("alt-text")).to eq(Herb::Lint::Rules::A11y::AltText)
       expect(registry.get("html/attribute-quotes")).to eq(Herb::Lint::Rules::Html::AttributeQuotes)
+      expect(registry.get("html/lowercase-tags")).to eq(Herb::Lint::Rules::Html::LowercaseTags)
       expect(registry.get("html/no-duplicate-attributes")).to eq(Herb::Lint::Rules::Html::NoDuplicateAttributes)
       expect(registry.get("html/no-duplicate-id")).to eq(Herb::Lint::Rules::Html::NoDuplicateId)
     end
@@ -126,7 +127,7 @@ RSpec.describe Herb::Lint::RuleRegistry do
       registry.load_builtin_rules
       registry.load_builtin_rules
 
-      expect(registry.size).to eq(4)
+      expect(registry.size).to eq(5)
     end
   end
 
