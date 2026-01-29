@@ -3,7 +3,13 @@
 # PostToolUse hook for self-review after git push
 #
 # This script triggers a self-review process after git push operations.
-# The output is fed back to Claude, prompting it to perform a code review.
+# The output is fed back to Claude via JSON, prompting it to perform
+# a code review.
+#
+# NOTE: PostToolUse hooks with exit code 0 only show plain text stdout
+# in verbose mode. To ensure Claude receives the message, we output JSON
+# with "decision": "block" and "reason", which Claude Code delivers as
+# a system-reminder.
 #
 
 set -euo pipefail
@@ -24,7 +30,7 @@ if [[ ! "$command" =~ git[[:space:]]+push ]]; then
   exit 0
 fi
 
-# Check if push was successful
+# Check if push was successful (field may not exist; default to 0)
 exit_code=$(echo "$input" | jq -r '.tool_response.exit_code // 0')
 
 if [[ "$exit_code" != "0" ]]; then
@@ -32,22 +38,10 @@ if [[ "$exit_code" != "0" ]]; then
   exit 0
 fi
 
-# Output self-review prompt
-cat << 'EOF'
+# Output self-review prompt as JSON so Claude receives it
+review_prompt='SELF-REVIEW REQUIRED: A git push has been completed. Please use the Task tool with subagent_type Explore to perform a self-review of the changes. Use this prompt for the Explore subagent:
 
-==============================================================================
-SELF-REVIEW REQUIRED
-==============================================================================
-
-A git push has been completed. Please use the Task tool with subagent_type
-"Explore" to perform a self-review of the changes. This separates the review
-context from the main session.
-
-## Subagent Prompt
-
-Use the following prompt for the subagent:
-
-"First, read CLAUDE.md to understand the project rules and conventions.
+First, read CLAUDE.md to understand the project rules and conventions.
 Then review the recent git push. Run `git log origin/main..HEAD --stat` and
 `git diff origin/main...HEAD` to examine all changes from the branch point.
 Check for:
@@ -59,13 +53,12 @@ Check for:
    If there are minor fix commits (typos, forgotten changes, careless mistakes),
    suggest squashing them into the relevant commit before merging.
 
-Report findings and suggest fixes if needed."
+Report findings and suggest fixes if needed.
+After the subagent review, if issues are found, create follow-up commits to address them.'
 
-## After Review
-
-If the subagent reports issues, create follow-up commits to address them.
-
-==============================================================================
-EOF
+jq -n --arg reason "$review_prompt" '{
+  "decision": "block",
+  "reason": $reason
+}'
 
 exit 0
