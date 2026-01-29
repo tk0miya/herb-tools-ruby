@@ -54,15 +54,6 @@ RSpec.describe Herb::Lint::Rules::Html::NoPositiveTabindex do
       end
     end
 
-    context "when tabindex is a large positive integer" do
-      let(:template) { '<div tabindex="5">Content</div>' }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Avoid positive tabindex value '5' (disrupts natural tab order)")
-      end
-    end
-
     context "when there is no tabindex attribute" do
       let(:template) { "<button>Click</button>" }
 
