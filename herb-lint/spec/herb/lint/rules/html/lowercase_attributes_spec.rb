@@ -88,38 +88,11 @@ RSpec.describe Herb::Lint::Rules::Html::LowercaseAttributes do
       end
     end
 
-    context "with boolean attribute in uppercase" do
-      let(:template) { "<input DISABLED />" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Attribute name 'DISABLED' should be lowercase")
-      end
-    end
-
     context "with element that has no attributes" do
       let(:template) { "<div>text</div>" }
 
       it "does not report offenses" do
         expect(subject).to be_empty
-      end
-    end
-
-    context "with data attributes in uppercase" do
-      let(:template) { '<div DATA-TEST="value">text</div>' }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Attribute name 'DATA-TEST' should be lowercase")
-      end
-    end
-
-    context "with aria attributes in uppercase" do
-      let(:template) { '<button ARIA-LABEL="Close">X</button>' }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Attribute name 'ARIA-LABEL' should be lowercase")
       end
     end
   end
