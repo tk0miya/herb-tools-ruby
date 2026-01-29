@@ -1,0 +1,64 @@
+# Generated from lib/herb/lint/rules/erb/no_trailing_whitespace.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Erb
+        # Rule that disallows trailing whitespace after ERB tags.
+        #
+        # Detects spaces and tabs between the closing `%>` of an ERB tag
+        # and the end of the line. Such whitespace is unnecessary and
+        # produces extra whitespace in the rendered output.
+        #
+        # Good:
+        #   <%= @user.name %>
+        #   <% if @show %>
+        #
+        # Bad:
+        #   <%= @user.name %>··
+        #   <% if @show %>··
+        class NoTrailingWhitespace < VisitorRule
+          TRAILING_WHITESPACE_ONLY: ::Regexp
+
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # @rbs override
+          def check: ...
+
+          ERB_VISITOR_METHODS: untyped
+
+          private
+
+          @source_lines: Array[String]
+
+          # @rbs node: untyped -- an ERB AST node with tag_closing
+          def check_trailing_whitespace_after_tag: (untyped node) -> void
+
+          # Returns the content after the given column on the line, with
+          # the trailing newline stripped. Returns nil if nothing remains.
+          #
+          # @rbs line_index: Integer -- 0-based line index
+          # @rbs column: Integer -- 0-based column offset
+          def content_after: (Integer line_index, Integer column) -> String?
+
+          # Builds a Location from a line number and column range.
+          #
+          # @rbs line: Integer -- 1-based line number
+          # @rbs start_column: Integer -- 0-based start column
+          # @rbs end_column: Integer -- 0-based end column (exclusive)
+          def build_range: (Integer line, Integer start_column, Integer end_column) -> Herb::Location
+
+          # Returns a Location spanning the trailing whitespace after the given
+          # position on the same line, or nil if none is found.
+          #
+          # @rbs position: untyped -- a position with line and column
+          def trailing_whitespace_on_line: (untyped position) -> Herb::Location?
+        end
+      end
+    end
+  end
+end

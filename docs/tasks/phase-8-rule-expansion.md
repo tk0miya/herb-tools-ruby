@@ -329,9 +329,9 @@ Rules are prioritized by:
 ---
 
 ### Task 8.14: `erb/erb-no-trailing-whitespace`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** No trailing whitespace in ERB output.
 
