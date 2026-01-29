@@ -12,6 +12,7 @@ module Herb
         @builtin_rules ||= [
           Rules::A11y::AltText,
           Rules::A11y::IframeHasTitle,
+          Rules::A11y::NoAccessKey,
           Rules::A11y::NoRedundantRole,
           Rules::Html::AttributeQuotes,
           Rules::Html::ButtonType,

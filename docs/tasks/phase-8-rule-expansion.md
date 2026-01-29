@@ -13,6 +13,7 @@ This phase focuses on expanding herb-lint's rule coverage beyond the MVP's 3 rul
 **Implemented rules:**
 - `a11y/alt-text`
 - `a11y/iframe-has-title`
+- `a11y/no-access-key`
 - `a11y/no-redundant-role`
 - `html/attribute-quotes`
 - `html/button-type`
@@ -194,9 +195,9 @@ Rules are prioritized by:
 ---
 
 ### Task 8.8: `a11y/no-access-key`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Avoid accesskey attribute (accessibility issues with screen readers).
 
