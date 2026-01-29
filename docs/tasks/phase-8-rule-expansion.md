@@ -12,6 +12,7 @@ This phase focuses on expanding herb-lint's rule coverage beyond the MVP's 3 rul
 
 **Implemented rules:**
 - `a11y/alt-text`
+- `a11y/no-redundant-role`
 - `html/attribute-quotes`
 - `html/no-duplicate-attributes`
 - `html/no-duplicate-id`
@@ -145,9 +146,9 @@ Rules are prioritized by:
 ---
 
 ### Task 8.6: `a11y/no-redundant-role`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Avoid redundant ARIA roles that match implicit semantics.
 

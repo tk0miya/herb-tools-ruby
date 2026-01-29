@@ -48,6 +48,7 @@ module Herb
       # Load all built-in rules into the registry.
       def load_builtin_rules #: void
         register(Rules::A11y::AltText)
+        register(Rules::A11y::NoRedundantRole)
         register(Rules::Html::AttributeQuotes)
         register(Rules::Html::LowercaseAttributes)
         register(Rules::Html::LowercaseTags)
