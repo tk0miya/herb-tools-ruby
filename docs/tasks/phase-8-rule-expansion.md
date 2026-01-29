@@ -16,6 +16,7 @@ This phase focuses on expanding herb-lint's rule coverage beyond the MVP's 3 rul
 - `html/no-duplicate-attributes`
 - `html/no-duplicate-id`
 - `html/no-positive-tabindex`
+- `html/void-element-style`
 
 ## Task Organization
 
@@ -120,9 +121,9 @@ Rules are prioritized by:
 ## Batch 2: Void Elements & Basic A11y (4 rules)
 
 ### Task 8.5: `html/void-element-style`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Consistent self-closing style for void elements.
 
