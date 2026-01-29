@@ -54,6 +54,7 @@ module Herb
         register(Rules::Html::NoDuplicateAttributes)
         register(Rules::Html::NoDuplicateId)
         register(Rules::Html::NoPositiveTabindex)
+        register(Rules::Html::VoidElementStyle)
       end
 
       # Load custom rules from a directory.
