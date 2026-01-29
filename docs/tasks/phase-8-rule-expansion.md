@@ -15,6 +15,7 @@ This phase focuses on expanding herb-lint's rule coverage beyond the MVP's 3 rul
 - `a11y/iframe-has-title`
 - `a11y/no-redundant-role`
 - `html/attribute-quotes`
+- `html/button-type`
 - `html/no-duplicate-attributes`
 - `html/no-duplicate-id`
 - `html/no-positive-tabindex`
@@ -217,9 +218,9 @@ Rules are prioritized by:
 ## Batch 3: HTML Document Structure (4 rules)
 
 ### Task 8.9: `html/button-type`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Require type attribute on button elements.
 
