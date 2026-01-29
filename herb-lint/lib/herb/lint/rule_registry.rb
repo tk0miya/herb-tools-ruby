@@ -20,6 +20,7 @@ module Herb
           Rules::Html::NoDuplicateAttributes,
           Rules::Html::NoDuplicateId,
           Rules::Html::NoPositiveTabindex,
+          Rules::Html::NoTargetBlank,
           Rules::Html::VoidElementStyle
         ].freeze
       end

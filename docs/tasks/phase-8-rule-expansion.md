@@ -241,9 +241,9 @@ Rules are prioritized by:
 ---
 
 ### Task 8.10: `html/no-target-blank`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Warn about `target="_blank"` without `rel="noopener"` or `rel="noreferrer"`.
 
