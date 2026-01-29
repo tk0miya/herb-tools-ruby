@@ -53,6 +53,7 @@ module Herb
         register(Rules::Html::LowercaseTags)
         register(Rules::Html::NoDuplicateAttributes)
         register(Rules::Html::NoDuplicateId)
+        register(Rules::Html::NoPositiveTabindex)
       end
 
       # Load custom rules from a directory.

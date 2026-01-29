@@ -15,6 +15,7 @@ This phase focuses on expanding herb-lint's rule coverage beyond the MVP's 3 rul
 - `html/attribute-quotes`
 - `html/no-duplicate-attributes`
 - `html/no-duplicate-id`
+- `html/no-positive-tabindex`
 
 ## Task Organization
 
@@ -94,9 +95,9 @@ Rules are prioritized by:
 ---
 
 ### Task 8.4: `html/no-positive-tabindex`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow positive tabindex values (accessibility anti-pattern).
 
