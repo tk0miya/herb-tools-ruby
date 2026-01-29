@@ -20,6 +20,7 @@ require_relative "lint/rules/html/lowercase_attributes"
 require_relative "lint/rules/html/lowercase_tags"
 require_relative "lint/rules/html/no_duplicate_attributes"
 require_relative "lint/rules/html/no_duplicate_id"
+require_relative "lint/rules/html/no_positive_tabindex"
 require_relative "lint/version"
 
 module Herb
