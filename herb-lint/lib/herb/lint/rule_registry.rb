@@ -19,6 +19,7 @@ module Herb
           Rules::Html::LowercaseTags,
           Rules::Html::NoDuplicateAttributes,
           Rules::Html::NoDuplicateId,
+          Rules::Html::NoObsoleteTags,
           Rules::Html::NoPositiveTabindex,
           Rules::Html::NoTargetBlank,
           Rules::Html::VoidElementStyle

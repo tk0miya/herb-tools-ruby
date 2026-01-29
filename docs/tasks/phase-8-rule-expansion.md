@@ -18,7 +18,9 @@ This phase focuses on expanding herb-lint's rule coverage beyond the MVP's 3 rul
 - `html/button-type`
 - `html/no-duplicate-attributes`
 - `html/no-duplicate-id`
+- `html/no-obsolete-tags`
 - `html/no-positive-tabindex`
+- `html/no-target-blank`
 - `html/void-element-style`
 
 ## Task Organization
@@ -263,9 +265,9 @@ Rules are prioritized by:
 ---
 
 ### Task 8.11: `html/no-obsolete-tags`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow obsolete HTML tags.
 
