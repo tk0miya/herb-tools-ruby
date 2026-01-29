@@ -7,6 +7,21 @@ module Herb
     class RuleRegistry
       # @rbs @rules: Hash[String, singleton(Rules::Base) | singleton(Rules::VisitorRule)]
 
+      # Built-in rule classes shipped with herb-lint.
+      def self.builtin_rules #: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
+        @builtin_rules ||= [
+          Rules::A11y::AltText,
+          Rules::A11y::NoRedundantRole,
+          Rules::Html::AttributeQuotes,
+          Rules::Html::LowercaseAttributes,
+          Rules::Html::LowercaseTags,
+          Rules::Html::NoDuplicateAttributes,
+          Rules::Html::NoDuplicateId,
+          Rules::Html::NoPositiveTabindex,
+          Rules::Html::VoidElementStyle
+        ].freeze
+      end
+
       def initialize #: void
         @rules = {}
       end
@@ -47,15 +62,7 @@ module Herb
 
       # Load all built-in rules into the registry.
       def load_builtin_rules #: void
-        register(Rules::A11y::AltText)
-        register(Rules::A11y::NoRedundantRole)
-        register(Rules::Html::AttributeQuotes)
-        register(Rules::Html::LowercaseAttributes)
-        register(Rules::Html::LowercaseTags)
-        register(Rules::Html::NoDuplicateAttributes)
-        register(Rules::Html::NoDuplicateId)
-        register(Rules::Html::NoPositiveTabindex)
-        register(Rules::Html::VoidElementStyle)
+        self.class.builtin_rules.each { |rule_class| register(rule_class) }
       end
 
       # Load custom rules from a directory.

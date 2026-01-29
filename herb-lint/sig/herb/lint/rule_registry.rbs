@@ -7,6 +7,9 @@ module Herb
     class RuleRegistry
       @rules: Hash[String, singleton(Rules::Base) | singleton(Rules::VisitorRule)]
 
+      # Built-in rule classes shipped with herb-lint.
+      def self.builtin_rules: () -> Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
+
       def initialize: () -> void
 
       # Register a rule class in the registry.
