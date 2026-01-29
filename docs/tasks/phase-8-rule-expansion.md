@@ -12,6 +12,7 @@ This phase focuses on expanding herb-lint's rule coverage beyond the MVP's 3 rul
 
 **Implemented rules:**
 - `a11y/alt-text`
+- `a11y/iframe-has-title`
 - `a11y/no-redundant-role`
 - `html/attribute-quotes`
 - `html/no-duplicate-attributes`
@@ -170,9 +171,9 @@ Rules are prioritized by:
 ---
 
 ### Task 8.7: `a11y/iframe-has-title`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Require title attribute on iframe elements.
 

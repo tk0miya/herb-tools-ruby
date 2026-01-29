@@ -11,6 +11,7 @@ module Herb
       def self.builtin_rules #: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
         @builtin_rules ||= [
           Rules::A11y::AltText,
+          Rules::A11y::IframeHasTitle,
           Rules::A11y::NoRedundantRole,
           Rules::Html::AttributeQuotes,
           Rules::Html::LowercaseAttributes,
