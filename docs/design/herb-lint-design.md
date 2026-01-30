@@ -36,16 +36,18 @@ herb-lint/
 │               ├── base.rb
 │               ├── visitor_rule.rb
 │               ├── erb/
-│               │   ├── comment_syntax.rb
-│               │   ├── tag_spacing.rb
 │               │   └── ...
 │               ├── html/
 │               │   ├── attribute_quotes.rb
 │               │   ├── lowercase_tags.rb
+│               │   ├── no_duplicate_attributes.rb
+│               │   ├── no_duplicate_id.rb
+│               │   ├── no_positive_tabindex.rb
+│               │   ├── void_element_style.rb
 │               │   └── ...
 │               └── a11y/
 │                   ├── alt_text.rb
-│                   ├── aria_valid_attr.rb
+│                   ├── iframe_has_title.rb
 │                   └── ...
 ├── exe/
 │   └── herb-lint
@@ -464,6 +466,87 @@ end
 - `Rules::Erb::*` - ERB-specific rules
 - `Rules::Html::*` - HTML validation rules
 - `Rules::A11y::*` - Accessibility rules
+
+**Rule List (TypeScript herb-lint reference):**
+
+The following tables list all rules from the TypeScript `@herb-tools/linter`. The "Ruby rule name" column shows the corresponding name used in this Ruby implementation. Rules marked "—" are not yet implemented.
+
+ERB rules (13):
+
+| TypeScript rule name | Ruby rule name | Status |
+|---|---|---|
+| `erb-comment-syntax` | — | Not implemented |
+| `erb-no-case-node-children` | — | Not implemented |
+| `erb-no-empty-tags` | — | Not implemented |
+| `erb-no-extra-newline` | — | Not implemented |
+| `erb-no-extra-whitespace-inside-tags` | — | Not implemented |
+| `erb-no-output-control-flow` | — | Not implemented |
+| `erb-no-silent-tag-in-attribute-name` | — | Not implemented |
+| `erb-prefer-image-tag-helper` | — | Not implemented |
+| `erb-require-trailing-newline` | — | Not implemented |
+| `erb-require-whitespace-inside-tags` | — | Not implemented |
+| `erb-right-trim` | — | Not implemented |
+| `erb-strict-locals-comment-syntax` | — | Not implemented |
+| `erb-strict-locals-required` | — | Not implemented |
+
+HTML rules (31):
+
+| TypeScript rule name | Ruby rule name | Status |
+|---|---|---|
+| `html-anchor-require-href` | — | Not implemented |
+| `html-aria-attribute-must-be-valid` | — | Not implemented |
+| `html-aria-label-is-well-formatted` | — | Not implemented |
+| `html-aria-level-must-be-valid` | — | Not implemented |
+| `html-aria-role-heading-requires-level` | — | Not implemented |
+| `html-aria-role-must-be-valid` | — | Not implemented |
+| `html-attribute-double-quotes` | `html/attribute-quotes` | Implemented |
+| `html-attribute-equals-spacing` | — | Not implemented |
+| `html-attribute-values-require-quotes` | — | Not implemented |
+| `html-avoid-both-disabled-and-aria-disabled` | — | Not implemented |
+| `html-body-only-elements` | — | Not implemented |
+| `html-boolean-attributes-no-value` | — | Not implemented |
+| `html-head-only-elements` | — | Not implemented |
+| `html-iframe-has-title` | `a11y/iframe-has-title` | Implemented |
+| `html-img-require-alt` | `alt-text` | Implemented |
+| `html-input-require-autocomplete` | — | Not implemented |
+| `html-navigation-has-label` | — | Not implemented |
+| `html-no-aria-hidden-on-focusable` | — | Not implemented |
+| `html-no-block-inside-inline` | — | Not implemented |
+| `html-no-duplicate-attributes` | `html/no-duplicate-attributes` | Implemented |
+| `html-no-duplicate-ids` | `html/no-duplicate-id` | Implemented |
+| `html-no-duplicate-meta-names` | — | Not implemented |
+| `html-no-empty-attributes` | — | Not implemented |
+| `html-no-empty-headings` | — | Not implemented |
+| `html-no-nested-links` | — | Not implemented |
+| `html-no-positive-tab-index` | `html/no-positive-tabindex` | Implemented |
+| `html-no-self-closing` | `html/void-element-style` | Implemented |
+| `html-no-space-in-tag` | — | Not implemented |
+| `html-no-title-attribute` | — | Not implemented |
+| `html-no-underscores-in-attribute-names` | — | Not implemented |
+| `html-tag-name-lowercase` | `html/lowercase-tags` | Implemented |
+
+Herb disable comment rules (6):
+
+| TypeScript rule name | Ruby rule name | Status |
+|---|---|---|
+| `herb-disable-comment-malformed` | — | Not implemented |
+| `herb-disable-comment-missing-rules` | — | Not implemented |
+| `herb-disable-comment-no-duplicate-rules` | — | Not implemented |
+| `herb-disable-comment-no-redundant-all` | — | Not implemented |
+| `herb-disable-comment-unnecessary` | — | Not implemented |
+| `herb-disable-comment-valid-rule-name` | — | Not implemented |
+
+SVG rules (1):
+
+| TypeScript rule name | Ruby rule name | Status |
+|---|---|---|
+| `svg-tag-name-capitalization` | — | Not implemented |
+
+Parser rules (1):
+
+| TypeScript rule name | Ruby rule name | Status |
+|---|---|---|
+| `parser-no-errors` | — | Not implemented |
 
 **Processing:**
 - Discovers rules by scanning rules/ subdirectories

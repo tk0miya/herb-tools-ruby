@@ -12,18 +12,11 @@ module Herb
         @builtin_rules ||= [
           Rules::A11y::AltText,
           Rules::A11y::IframeHasTitle,
-          Rules::A11y::NoAccessKey,
-          Rules::A11y::NoRedundantRole,
           Rules::Html::AttributeQuotes,
-          Rules::Html::ButtonType,
-          Rules::Html::LowercaseAttributes,
           Rules::Html::LowercaseTags,
           Rules::Html::NoDuplicateAttributes,
           Rules::Html::NoDuplicateId,
-          Rules::Html::NoInlineEventHandlers,
-          Rules::Html::NoObsoleteTags,
           Rules::Html::NoPositiveTabindex,
-          Rules::Html::NoTargetBlank,
           Rules::Html::VoidElementStyle
         ].freeze
       end

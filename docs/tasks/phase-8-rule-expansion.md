@@ -1,6 +1,7 @@
 # Phase 8: herb-lint Rule Expansion
 
 This phase focuses on expanding herb-lint's rule coverage beyond the MVP's 3 rules.
+Only rules that have corresponding rules in the TypeScript herb-lint reference implementation are included.
 
 ## Current Status
 
@@ -11,18 +12,13 @@ This phase focuses on expanding herb-lint's rule coverage beyond the MVP's 3 rul
 | A11y rules | 15+ | 1 | 14+ |
 
 **Implemented rules:**
-- `a11y/alt-text`
+- `alt-text`
 - `a11y/iframe-has-title`
-- `a11y/no-access-key`
-- `a11y/no-redundant-role`
 - `html/attribute-quotes`
-- `html/button-type`
+- `html/lowercase-tags`
 - `html/no-duplicate-attributes`
 - `html/no-duplicate-id`
-- `html/no-inline-event-handlers`
-- `html/no-obsolete-tags`
 - `html/no-positive-tabindex`
-- `html/no-target-blank`
 - `html/void-element-style`
 
 ## Task Organization
@@ -34,7 +30,7 @@ Rules are prioritized by:
 
 ---
 
-## Batch 1: Simple HTML Rules (4 rules)
+## Batch 1: Simple HTML Rules (3 rules)
 
 ### Task 8.1: `html/no-duplicate-attributes`
 - [x] Implement rule
@@ -80,29 +76,7 @@ Rules are prioritized by:
 
 ---
 
-### Task 8.3: `html/lowercase-attributes`
-- [x] Implement rule
-- [x] Add tests
-- [x] Update RuleRegistry
-
-**Description:** Enforce lowercase attribute names.
-
-**Complexity:** Low
-
-**Fixable:** Yes
-
-**Example:**
-```html
-<!-- Bad -->
-<div CLASS="foo">
-
-<!-- Good -->
-<div class="foo">
-```
-
----
-
-### Task 8.4: `html/no-positive-tabindex`
+### Task 8.3: `html/no-positive-tabindex`
 - [x] Implement rule
 - [x] Add tests
 - [x] Update RuleRegistry
@@ -125,9 +99,9 @@ Rules are prioritized by:
 
 ---
 
-## Batch 2: Void Elements & Basic A11y (4 rules)
+## Batch 2: Void Elements & Basic A11y (2 rules)
 
-### Task 8.5: `html/void-element-style`
+### Task 8.4: `html/void-element-style`
 - [x] Implement rule
 - [x] Add tests
 - [x] Update RuleRegistry
@@ -151,31 +125,7 @@ Rules are prioritized by:
 
 ---
 
-### Task 8.6: `a11y/no-redundant-role`
-- [x] Implement rule
-- [x] Add tests
-- [x] Update RuleRegistry
-
-**Description:** Avoid redundant ARIA roles that match implicit semantics.
-
-**Complexity:** Medium
-
-**Fixable:** Yes
-
-**Example:**
-```html
-<!-- Bad -->
-<button role="button">Click</button>
-<a href="#" role="link">Link</a>
-
-<!-- Good -->
-<button>Click</button>
-<a href="#">Link</a>
-```
-
----
-
-### Task 8.7: `a11y/iframe-has-title`
+### Task 8.5: `a11y/iframe-has-title`
 - [x] Implement rule
 - [x] Add tests
 - [x] Update RuleRegistry
@@ -197,152 +147,9 @@ Rules are prioritized by:
 
 ---
 
-### Task 8.8: `a11y/no-access-key`
-- [x] Implement rule
-- [x] Add tests
-- [x] Update RuleRegistry
+## Batch 3: ERB Rules (1 rule)
 
-**Description:** Avoid accesskey attribute (accessibility issues with screen readers).
-
-**Complexity:** Low
-
-**Fixable:** No
-
-**Example:**
-```html
-<!-- Bad -->
-<button accesskey="s">Save</button>
-
-<!-- Good -->
-<button>Save</button>
-```
-
----
-
-## Batch 3: HTML Document Structure (4 rules)
-
-### Task 8.9: `html/button-type`
-- [x] Implement rule
-- [x] Add tests
-- [x] Update RuleRegistry
-
-**Description:** Require type attribute on button elements.
-
-**Complexity:** Low
-
-**Fixable:** Yes (add `type="button"`)
-
-**Example:**
-```html
-<!-- Bad -->
-<button>Click</button>
-
-<!-- Good -->
-<button type="button">Click</button>
-<button type="submit">Submit</button>
-```
-
----
-
-### Task 8.10: `html/no-target-blank`
-- [x] Implement rule
-- [x] Add tests
-- [x] Update RuleRegistry
-
-**Description:** Warn about `target="_blank"` without `rel="noopener"` or `rel="noreferrer"`.
-
-**Complexity:** Medium
-
-**Fixable:** Yes (add `rel="noopener noreferrer"`)
-
-**Example:**
-```html
-<!-- Bad -->
-<a href="https://example.com" target="_blank">Link</a>
-
-<!-- Good -->
-<a href="https://example.com" target="_blank" rel="noopener noreferrer">Link</a>
-```
-
----
-
-### Task 8.11: `html/no-obsolete-tags`
-- [x] Implement rule
-- [x] Add tests
-- [x] Update RuleRegistry
-
-**Description:** Disallow obsolete HTML tags.
-
-**Complexity:** Low
-
-**Fixable:** No
-
-**Obsolete tags:** `acronym`, `applet`, `basefont`, `big`, `blink`, `center`, `dir`, `font`, `frame`, `frameset`, `isindex`, `keygen`, `listing`, `marquee`, `menuitem`, `multicol`, `nextid`, `nobr`, `noembed`, `noframes`, `plaintext`, `spacer`, `strike`, `tt`, `xmp`
-
----
-
-### Task 8.12: `html/no-inline-event-handlers`
-- [x] Implement rule
-- [x] Add tests
-- [x] Update RuleRegistry
-
-**Description:** Discourage inline event handlers (onclick, onmouseover, etc.).
-
-**Complexity:** Low
-
-**Fixable:** No
-
-**Example:**
-```html
-<!-- Bad -->
-<button onclick="handleClick()">Click</button>
-
-<!-- Good (use unobtrusive JavaScript) -->
-<button data-action="click">Click</button>
-```
-
----
-
-## Batch 4: ERB Rules - First Set (4 rules)
-
-### Task 8.13: `erb/erb-tag-spacing`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
-
-**Description:** Consistent spacing inside ERB tags.
-
-**Complexity:** Medium
-
-**Fixable:** Yes
-
-**Example:**
-```erb
-<!-- Bad -->
-<%=@user.name%>
-<%   if @show   %>
-
-<!-- Good -->
-<%= @user.name %>
-<% if @show %>
-```
-
----
-
-### Task 8.14: `erb/erb-no-trailing-whitespace`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
-
-**Description:** No trailing whitespace in ERB output.
-
-**Complexity:** Low
-
-**Fixable:** Yes
-
----
-
-### Task 8.15: `erb/erb-comment-syntax`
+### Task 8.6: `erb/erb-comment-syntax`
 - [ ] Implement rule
 - [ ] Add tests
 - [ ] Update RuleRegistry
@@ -364,43 +171,20 @@ Rules are prioritized by:
 
 ---
 
-### Task 8.16: `erb/erb-simple-output`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
-
-**Description:** Simplify unnecessary `.to_s` calls in ERB output.
-
-**Complexity:** Medium
-
-**Fixable:** Yes
-
-**Example:**
-```erb
-<!-- Bad -->
-<%= @user.name.to_s %>
-
-<!-- Good -->
-<%= @user.name %>
-```
-
----
-
 ## Summary
 
 | Batch | Rules | Focus |
 |-------|-------|-------|
-| Batch 1 | 4 | Simple HTML rules |
-| Batch 2 | 4 | Void elements & A11y |
-| Batch 3 | 4 | HTML document structure |
-| Batch 4 | 4 | ERB rules (first set) |
+| Batch 1 | 3 | Simple HTML rules |
+| Batch 2 | 2 | Void elements & A11y |
+| Batch 3 | 1 | ERB rules |
 
-**Total: 16 new rules**
+**Total: 6 rules (5 completed, 1 remaining)**
 
 After completing these batches:
-- ERB rules: 4/13 implemented
-- HTML rules: 10/25+ implemented
-- A11y rules: 4/15+ implemented
+- ERB rules: 1/13 implemented
+- HTML rules: 6/25+ implemented
+- A11y rules: 2/15+ implemented
 
 ## Verification
 
