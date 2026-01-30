@@ -4,7 +4,7 @@ Detailed design document for the common component gem.
 
 ## Overview
 
-herb-core is a gem that provides common functionality shared by herb-lint and herb-format. It handles file discovery, pattern matching, and parsing of inline disable comments.
+herb-core is a gem that provides common functionality shared by herb-lint and herb-format. It handles file discovery and pattern matching.
 
 ## Directory Structure
 
@@ -15,14 +15,12 @@ herb-core/
 │       └── core/
 │           ├── version.rb
 │           ├── file_discovery.rb
-│           ├── pattern_matcher.rb
-│           └── directive_parser.rb
+│           └── pattern_matcher.rb
 ├── spec/
 │   └── herb/
 │       └── core/
 │           ├── file_discovery_spec.rb
-│           ├── pattern_matcher_spec.rb
-│           └── directive_parser_spec.rb
+│           └── pattern_matcher_spec.rb
 ├── herb-core.gemspec
 └── Gemfile
 ```
@@ -34,11 +32,10 @@ herb-core/
 ```
 Herb::Core
 ├── FileDiscovery    # File discovery, glob processing
-├── PatternMatcher   # include/exclude pattern matching
-└── DirectiveParser  # Parsing inline disable comments
-    ├── Directive    # Parsed directive
-    └── DirectiveType # Types of directives
+└── PatternMatcher   # include/exclude pattern matching
 ```
+
+> **Note:** Inline directive parsing (formerly planned as `DirectiveParser`) is implemented in each tool gem rather than herb-core. See [herb-lint Design](./herb-lint-design.md) for the linter's directive components.
 
 ## Component Details
 
@@ -114,102 +111,11 @@ end
 - Apply include/exclude logic (included AND NOT excluded)
 - Support advanced glob patterns (**, {}, [], etc.)
 
-### Herb::Core::DirectiveParser
+### Inline Directive Handling
 
-Responsible for parsing inline disable/enable comments (e.g., `<%# herb:disable alt-text %>`) from ERB templates. Supports both linter and formatter directives.
-
-#### Data Structures
-
-```rbs
-module Herb::Core::DirectiveParser::DirectiveType
-  DISABLE: Symbol
-  ENABLE: Symbol
-  DISABLE_ALL: Symbol
-  ENABLE_ALL: Symbol
-  IGNORE_FILE: Symbol
-  FORMATTER_OFF: Symbol
-  FORMATTER_ON: Symbol
-  FORMATTER_IGNORE: Symbol
-end
-
-class Herb::Core::DirectiveParser::Directive
-  @type: Symbol
-  @rules: Array[String]
-  @line: Integer
-  @scope: Symbol
-
-  attr_reader type: Symbol
-  attr_reader rules: Array[String]
-  attr_reader line: Integer
-  attr_reader scope: Symbol
-
-  def initialize: (type: Symbol, rules: Array[String], line: Integer, scope: Symbol) -> void
-end
-```
-
-#### Public Interface
-
-```rbs
-class Herb::Core::DirectiveParser
-  @source: String
-  @mode: Symbol
-  @directives: Array[Directive]
-
-  attr_reader source: String
-  attr_reader mode: Symbol
-
-  def initialize: (String source, ?mode: Symbol) -> void
-
-  # Parse all directives from source
-  def parse: () -> Array[Directive]
-
-  # Check if entire file should be ignored
-  def ignore_file?: () -> bool
-
-  # Check if rule is disabled at specific line
-  # rule_name: Rule name (nil for all rules)
-  def disabled_at?: (Integer line, ?String? rule_name) -> bool
-end
-```
-
-**Responsibilities:**
-- Parse ERB comments containing herb directives
-- Support linter directives (disable, enable, linter ignore)
-- Support formatter directives (formatter off, formatter on, formatter ignore)
-- Track directive scopes (:next_line, :range, :file)
-- Compute rule enable/disable state at any line
-- Handle multiple rules in a single directive (comma-separated)
-
-### Herb::Core::DisableTracker
-
-Helper class for tracking rule enable/disable state across a file. Provides a higher-level interface for querying whether rules are enabled at specific lines.
-
-```rbs
-class Herb::Core::DisableTracker
-  @directives: Array[Herb::Core::DirectiveParser::Directive]
-
-  attr_reader directives: Array[Herb::Core::DirectiveParser::Directive]
-
-  def initialize: (Array[Herb::Core::DirectiveParser::Directive] directives) -> void
-
-  # Check if entire file should be ignored
-  def ignore_file?: () -> bool
-
-  # Check if rule is enabled at specific line
-  def rule_enabled_at?: (Integer line, String rule_name) -> bool
-
-  # Filter enabled rules at specific line
-  # Returns list of enabled rule names
-  def filter_enabled_rules: (Integer line, Array[String] rule_names) -> Array[String]
-end
-```
-
-**Responsibilities:**
-- Track cumulative enable/disable state across directives
-- Compute rule state at any line by processing all prior directives
-- Handle file-level ignore directives
-- Apply directive scopes correctly (file, next_line, range)
-- Support both "all rules" and "specific rules" disable/enable
+> **Design Decision:** Inline directive parsing is implemented in each tool gem (herb-lint, herb-format) rather than in herb-core. This follows the TypeScript reference implementation where `herb-disable-comment-utils.ts` and `linter-ignore.ts` reside in the linter package. Each tool has its own directive format (e.g., `herb:disable` for the linter, `herb:formatter off` for the formatter), so tool-specific implementations are more appropriate than a shared abstraction.
+>
+> See [herb-lint Design](./herb-lint-design.md) for the linter directive components: `DisableComment`, `DisableCommentParser`, and `LinterIgnore`.
 
 ## Public API
 
@@ -248,51 +154,9 @@ matcher.match?("/path/to/project/app/views/index.html.erb")  # => true
 matcher.match?("/path/to/project/vendor/gems/template.html.erb")  # => false
 ```
 
-### Using DirectiveParser
+### Inline Directives
 
-```ruby
-require "herb/core"
-
-source = <<~ERB
-  <%# herb:disable alt-text %>
-  <img src="decorative.png">
-  <%# herb:disable all %>
-  <div onclick="handler()">Click</div>
-ERB
-
-parser = Herb::Core::DirectiveParser.new(source, mode: :linter)
-
-# Parse all directives
-directives = parser.parse
-# => [Directive(...), Directive(...)]
-
-# Check if file should be ignored
-parser.ignore_file?  # => false
-
-# Check if rule is disabled at specific line
-parser.disabled_at?(2, "alt-text")  # => true
-parser.disabled_at?(4, "valid-tag-nesting")  # => true (all disabled)
-```
-
-### Using DisableTracker
-
-```ruby
-require "herb/core"
-
-parser = Herb::Core::DirectiveParser.new(source, mode: :linter)
-tracker = Herb::Core::DisableTracker.new(parser.parse)
-
-# Check if file should be ignored
-tracker.ignore_file?  # => false
-
-# Check if rule is enabled at line
-tracker.rule_enabled_at?(2, "alt-text")  # => false
-tracker.rule_enabled_at?(2, "attribute-quotes")  # => true
-
-# Filter rules that are enabled
-enabled = tracker.filter_enabled_rules(2, ["alt-text", "attribute-quotes"])
-# => ["attribute-quotes"]
-```
+Inline directive parsing is handled by each tool gem. See [herb-lint Design](./herb-lint-design.md) for linter directive usage examples.
 
 ## Glob Pattern Support
 
@@ -326,20 +190,7 @@ Tests should verify the public interface of each component:
 - Combined include/exclude logic
 - Relative path conversion
 
-**DirectiveParser Tests:**
-- Parsing linter directives (disable, enable, disable all, enable all)
-- Parsing formatter directives (off, on, ignore)
-- Multiple rules in single directive
-- File-level ignore detection
-- Line-level disable state computation
-- Directive scope handling (next_line, range, file)
-
-**DisableTracker Tests:**
-- File-level ignore state
-- Rule enable/disable tracking across lines
-- Filtering enabled rules
-- Handling "disable all" / "enable all"
-- Range-based enable/disable
+Inline directive tests are located in each tool gem. See [herb-lint Design](./herb-lint-design.md) for linter directive test strategy.
 
 ## Related Documentation
 

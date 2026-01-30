@@ -87,6 +87,80 @@ RSpec.describe Herb::Lint::Linter do
         expect(subject.offenses.first.severity).to eq("error")
       end
     end
+
+    context "when source contains a linter ignore directive" do
+      let(:rules) { [Herb::Lint::Rules::A11y::AltText.new] }
+      let(:source) do
+        <<~ERB
+          <%# herb:linter ignore %>
+          <img src="test.png">
+        ERB
+      end
+
+      it "returns an ignored result with no offenses" do
+        expect(subject.offenses).to be_empty
+        expect(subject.ignored?).to be true
+      end
+    end
+
+    context "when source contains a disable comment for a specific rule" do
+      let(:rules) { [Herb::Lint::Rules::A11y::AltText.new] }
+      let(:source) do
+        <<~ERB
+          <%# herb:disable alt-text %>
+          <img src="test.png">
+        ERB
+      end
+
+      it "filters out the disabled offense" do
+        expect(subject.offenses).to be_empty
+        expect(subject.ignored?).to be false
+      end
+    end
+
+    context "when source contains a disable-all comment" do
+      let(:rules) { [Herb::Lint::Rules::A11y::AltText.new] }
+      let(:source) do
+        <<~ERB
+          <%# herb:disable all %>
+          <img src="test.png">
+        ERB
+      end
+
+      it "filters out all offenses on the next line" do
+        expect(subject.offenses).to be_empty
+      end
+    end
+
+    context "when disable comment does not cover the offense rule" do
+      let(:rules) { [Herb::Lint::Rules::A11y::AltText.new] }
+      let(:source) do
+        <<~ERB
+          <%# herb:disable html/lowercase-tags %>
+          <img src="test.png">
+        ERB
+      end
+
+      it "keeps the offense" do
+        expect(subject.offenses.size).to eq(1)
+        expect(subject.offenses.first.rule_name).to eq("alt-text")
+      end
+    end
+
+    context "when disable comment only applies to the next line" do
+      let(:rules) { [Herb::Lint::Rules::A11y::AltText.new] }
+      let(:source) do
+        <<~ERB
+          <%# herb:disable alt-text %>
+          <img src="ok.png">
+          <img src="should-still-report.png">
+        ERB
+      end
+
+      it "filters the offense on the next line but not subsequent lines" do
+        expect(subject.offenses.size).to eq(1)
+      end
+    end
   end
 
   describe "#rules" do

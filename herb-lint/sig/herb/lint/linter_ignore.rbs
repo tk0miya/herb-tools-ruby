@@ -1,0 +1,17 @@
+# Generated from lib/herb/lint/linter_ignore.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # Detects file-level `<%# herb:linter ignore %>` directives.
+    # When present anywhere in the source, the entire file is skipped.
+    module LinterIgnore
+      # Pattern matching the exact linter ignore directive.
+      IGNORE_PATTERN: Regexp
+
+      # Returns true if the source contains a linter ignore directive.
+      #
+      # @rbs source: String
+      def self.ignore_file?: (String source) -> bool
+    end
+  end
+end

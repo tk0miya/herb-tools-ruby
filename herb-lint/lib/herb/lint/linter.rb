@@ -3,7 +3,8 @@
 module Herb
   module Lint
     # Linter processes a single file and returns lint results.
-    # It applies a set of rules to a parsed document and collects offenses.
+    # It applies a set of rules to a parsed document, collects offenses,
+    # and filters them based on inline disable directives.
     class Linter
       attr_reader :rules #: Array[Rules::Base | Rules::VisitorRule]
       attr_reader :config #: Herb::Config::LinterConfig
@@ -22,14 +23,24 @@ module Herb
       # @rbs file_path: String -- path to the file being linted
       # @rbs source: String -- source code content of the file
       def lint(file_path:, source:) #: LintResult
+        return ignored_result(file_path, source) if LinterIgnore.ignore_file?(source)
+
         document = Herb.parse(source)
         return parse_error_result(file_path, source, document.errors) if document.failed?
 
         offenses = collect_offenses(document, build_context(file_path, source))
-        LintResult.new(file_path:, offenses:, source:)
+        disable_cache = DisableCommentParser.parse_source(source)
+        filtered = filter_offenses(offenses, disable_cache)
+        LintResult.new(file_path:, offenses: filtered, source:)
       end
 
       private
+
+      # @rbs file_path: String
+      # @rbs source: String
+      def ignored_result(file_path, source) #: LintResult
+        LintResult.new(file_path:, offenses: [], source:, ignored: true)
+      end
 
       # @rbs file_path: String
       # @rbs source: String
@@ -41,6 +52,18 @@ module Herb
       # @rbs context: Context
       def collect_offenses(document, context) #: Array[Offense]
         rules.flat_map { |rule| rule.check(document, context) }
+      end
+
+      # Filter offenses based on disable comments.
+      # Each disable comment suppresses offenses on the next line.
+      #
+      # @rbs offenses: Array[Offense]
+      # @rbs disable_cache: Hash[Integer, DisableComment]
+      def filter_offenses(offenses, disable_cache) #: Array[Offense]
+        offenses.reject do |offense|
+          comment = disable_cache[offense.line]
+          comment&.disables_rule?(offense.rule_name)
+        end
       end
 
       # @rbs file_path: String

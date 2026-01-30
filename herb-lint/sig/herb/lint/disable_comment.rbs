@@ -1,0 +1,20 @@
+# Generated from lib/herb/lint/disable_comment.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # Represents a parsed `<%# herb:disable ... %>` comment.
+    # This is a pure data container with no parsing or filtering logic.
+    class DisableComment < Data
+      attr_reader rule_names(): Array[String]
+
+      attr_reader line(): Integer
+
+      def self.new: (Array[String] rule_names, Integer line) -> instance
+                  | (rule_names: Array[String], line: Integer) -> instance
+
+      def self.members: () -> [ :rule_names, :line ]
+
+      def members: () -> [ :rule_names, :line ]
+    end
+  end
+end

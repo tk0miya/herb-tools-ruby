@@ -96,21 +96,19 @@ For detailed design, see [herb-config Design](./herb-config-design.md).
 
 **Responsibilities**:
 - File discovery and filtering based on patterns
-- Processing inline directive comments (e.g., `# herb-disable`)
 - Common utilities that don't belong in configuration
 
 **Key Components**:
 ```
 Herb::Core
 ├── FileDiscovery    # File discovery and glob processing
-├── PatternMatcher   # Include/exclude pattern matching
-└── DirectiveParser  # Parse inline disable comments
+└── PatternMatcher   # Include/exclude pattern matching
 ```
 
 **Design Decisions**:
 - Keeps file system operations separate from tool logic
 - PatternMatcher handles both include and exclude patterns consistently
-- DirectiveParser provides generic comment parsing, usable by any tool
+- Inline directive parsing is implemented in each tool gem (not in herb-core), following the TypeScript reference implementation
 
 For detailed design, see [herb-core Design](./herb-core-design.md).
 
@@ -128,26 +126,29 @@ For detailed design, see [herb-core Design](./herb-core-design.md).
 **Key Components**:
 ```
 Herb::Lint
-├── CLI              # Command-line interface
-├── Runner           # Orchestrate linting workflow
-├── Linter           # Core linting logic per file
-├── RuleRegistry     # Rule registration and lookup
-├── Context          # Execution context passed to rules
-├── Offense          # Violation representation
-├── Reporter         # Output formatting strategy
+├── CLI                   # Command-line interface
+├── Runner                # Orchestrate linting workflow
+├── Linter                # Core linting logic per file
+├── LinterIgnore          # File-level ignore directive detection
+├── DisableComment        # Data class for parsed disable comments
+├── DisableCommentParser  # Parser for herb:disable comments
+├── RuleRegistry          # Rule registration and lookup
+├── Context               # Execution context passed to rules
+├── Offense               # Violation representation
+├── Reporter              # Output formatting strategy
 │   ├── BaseReporter
 │   ├── DetailedReporter
 │   ├── SimpleReporter
 │   ├── JsonReporter
 │   └── GithubReporter
-├── CustomRuleLoader # Custom rule discovery and loading
-├── Rules            # Rule implementations
-│   ├── Base         # Rule interface definition
-│   ├── VisitorRule  # AST traversal support
-│   ├── Erb/         # ERB-specific rules
-│   ├── Html/        # HTML-specific rules
-│   └── A11y/        # Accessibility rules
-└── Errors           # Custom exceptions
+├── CustomRuleLoader      # Custom rule discovery and loading
+├── Rules                 # Rule implementations
+│   ├── Base              # Rule interface definition
+│   ├── VisitorRule       # AST traversal support
+│   ├── Erb/              # ERB-specific rules
+│   ├── Html/             # HTML-specific rules
+│   └── A11y/             # Accessibility rules
+└── Errors                # Custom exceptions
 ```
 
 **Design Decisions**:
@@ -220,10 +221,11 @@ The linting process follows a linear pipeline with clear separation of concerns:
                                  ▼
 ┌─────────────────────────────────────────────────────────────────────┐
 │ 4. Lint Each File                                                    │
+│    - Check file-level ignore (LinterIgnore)                          │
 │    - Parse template to AST (herb parser)                             │
-│    - Parse inline directives (herb-core)                             │
 │    - Execute each enabled rule                                       │
-│    - Filter offenses based on directives                             │
+│    - Parse disable comments (DisableCommentParser)                   │
+│    - Filter offenses based on disable cache                          │
 │    - Collect results                                                 │
 └────────────────────────────────┬────────────────────────────────────┘
                                  │

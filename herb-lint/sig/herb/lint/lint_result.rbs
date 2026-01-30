@@ -10,10 +10,16 @@ module Herb
 
       attr_reader source: String
 
+      attr_reader ignored: bool
+
       # @rbs file_path: String
       # @rbs offenses: Array[Offense]
       # @rbs source: String
-      def initialize: (file_path: String, offenses: Array[Offense], source: String) -> void
+      # @rbs ignored: bool
+      def initialize: (file_path: String, offenses: Array[Offense], source: String, ?ignored: bool) -> void
+
+      # Returns true if the file was ignored via a linter ignore directive.
+      def ignored?: () -> bool
 
       # Returns the count of errors.
       def error_count: () -> Integer

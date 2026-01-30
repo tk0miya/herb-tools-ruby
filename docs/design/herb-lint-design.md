@@ -18,8 +18,11 @@ herb-lint/
 │           ├── runner.rb
 │           ├── linter.rb
 │           ├── linter_factory.rb
+│           ├── linter_ignore.rb
 │           ├── context.rb
 │           ├── offense.rb
+│           ├── disable_comment.rb
+│           ├── disable_comment_parser.rb
 │           ├── lint_result.rb
 │           ├── aggregated_result.rb
 │           ├── rule_registry.rb
@@ -57,6 +60,9 @@ herb-lint/
 │           ├── cli_spec.rb
 │           ├── runner_spec.rb
 │           ├── linter_spec.rb
+│           ├── linter_ignore_spec.rb
+│           ├── disable_comment_spec.rb
+│           ├── disable_comment_parser_spec.rb
 │           ├── context_spec.rb
 │           ├── offense_spec.rb
 │           ├── rule_registry_spec.rb
@@ -74,25 +80,28 @@ herb-lint/
 
 ```
 Herb::Lint
-├── CLI              # Command line interface
-├── Runner           # Lint execution orchestration
-├── Linter           # Core linting implementation
-├── LinterFactory    # Linter instance creation (Factory Pattern)
-├── Context          # Lint execution context
-├── Offense          # Offense representation
-├── LintResult       # Lint result for a single file
-├── AggregatedResult # Aggregated result for multiple files
-├── RuleRegistry     # Rule registration and lookup (Registry Pattern)
-├── CustomRuleLoader # Custom rule loading
-├── Fixer            # Automatic fix application
-├── Errors           # Custom exceptions
-├── Reporter         # Output formatter
+├── CLI                   # Command line interface
+├── Runner                # Lint execution orchestration
+├── Linter                # Core linting implementation
+├── LinterFactory         # Linter instance creation (Factory Pattern)
+├── LinterIgnore          # File-level ignore directive detection
+├── DisableComment        # Data class for parsed disable comments
+├── DisableCommentParser  # Parser for herb:disable comments
+├── Context               # Lint execution context
+├── Offense               # Offense representation
+├── LintResult            # Lint result for a single file
+├── AggregatedResult      # Aggregated result for multiple files
+├── RuleRegistry          # Rule registration and lookup (Registry Pattern)
+├── CustomRuleLoader      # Custom rule loading
+├── Fixer                 # Automatic fix application
+├── Errors                # Custom exceptions
+├── Reporter              # Output formatter
 │   ├── BaseReporter
 │   ├── DetailedReporter
 │   ├── SimpleReporter
 │   ├── JsonReporter
 │   └── GithubReporter
-└── Rules            # Rule implementations
+└── Rules                 # Rule implementations
     ├── Base
     ├── VisitorRule
     ├── Erb::*
@@ -300,9 +309,63 @@ end
 - `Herb::Core::FileDiscovery` - File discovery
 - `Fixer` - Auto-fix application
 
+### Herb::Lint::DisableComment
+
+**Responsibility:** Data class representing a parsed `<%# herb:disable ... %>` comment. Container responsibility only — no parsing or filtering logic.
+
+This follows the TypeScript `HerbDisableComment` interface from `herb-disable-comment-utils.ts`.
+
+```rbs
+class Herb::Lint::DisableComment
+  attr_reader rule_names: Array[String]
+  attr_reader line: Integer
+
+  def disables_all?: () -> bool
+  def disables_rule?: (String rule_name) -> bool
+end
+```
+
+**Design Decision:** Uses `Data.define` for immutability and value equality. The `rule_names` array contains `"all"` for disable-all directives, or specific rule names for selective disabling.
+
+### Herb::Lint::DisableCommentParser
+
+**Responsibility:** Parses `<%# herb:disable ... %>` comments from ERB source text. Collection responsibility only — extracts data but does not decide how directives affect offenses.
+
+This follows the TypeScript `parseHerbDisableLine` / `parseHerbDisableContent` utility functions from `herb-disable-comment-utils.ts`.
+
+```rbs
+module Herb::Lint::DisableCommentParser
+  DISABLE_PATTERN: Regexp
+
+  def self.parse_line: (String line, line_number: Integer) -> DisableComment?
+  def self.parse_source: (String source) -> Hash[Integer, DisableComment]
+end
+```
+
+**Key behaviors:**
+- `parse_line` returns `nil` for non-directive lines
+- `parse_source` returns a cache mapping **target line** (the line after the comment) to `DisableComment`
+- Supports single rule (`herb:disable alt-text`), multiple rules (`herb:disable alt-text, html/lowercase-tags`), and all rules (`herb:disable all`)
+
+> **Note:** The `enable` directive is intentionally not supported. The TypeScript reference implementation only supports `disable`, which applies to the next line. There is no range-based disable/enable mechanism.
+
+### Herb::Lint::LinterIgnore
+
+**Responsibility:** Detects file-level `<%# herb:linter ignore %>` directives. When present anywhere in the source, the entire file is skipped from linting.
+
+This follows the TypeScript `linter-ignore.ts` module.
+
+```rbs
+module Herb::Lint::LinterIgnore
+  IGNORE_PATTERN: Regexp
+
+  def self.ignore_file?: (String source) -> bool
+end
+```
+
 ### Herb::Lint::Linter
 
-**Responsibility:** Core single-file linting implementation.
+**Responsibility:** Core single-file linting implementation. Also serves as the **judgment** layer that uses parsed directives to filter offenses.
 
 ```rbs
 class Herb::Lint::Linter
@@ -317,28 +380,32 @@ class Herb::Lint::Linter
     Herb::Config::LinterConfig config
   ) -> void
 
-  def lint: (String file_path, String source) -> LintResult
+  def lint: (file_path: String, source: String) -> LintResult
 
   private
 
-  def parse_directives: (String source) -> Herb::Core::DirectiveParser
-  def should_ignore_file?: (Herb::Core::DirectiveParser directives) -> bool
-  def filter_by_directives: (Array[Offense] offenses, Herb::Core::DirectiveParser directives) -> Array[Offense]
+  def ignored_result: (String file_path, String source) -> LintResult
+  def filter_offenses: (Array[Offense] offenses, Hash[Integer, DisableComment] disable_cache) -> Array[Offense]
 end
 ```
 
 **Processing Flow:**
-1. Parse inline directives (herb-lint-disable comments)
-2. Check for file-level ignore directive
-3. Parse ERB template into AST via `Herb.parse`
-4. Create Context with source and configuration
-5. Execute each enabled rule against the AST
-6. Filter offenses based on inline disable directives
-7. Return LintResult with offenses
+1. Check for file-level ignore directive (`LinterIgnore.ignore_file?`)
+2. Parse ERB template into AST via `Herb.parse`
+3. Create Context with source and configuration
+4. Execute each enabled rule against the AST
+5. Build disable cache from source (`DisableCommentParser.parse_source`)
+6. Filter offenses based on disable cache
+7. Return LintResult with filtered offenses
+
+**Responsibility Separation:**
+- **Container**: `DisableComment` holds parsed data
+- **Collection**: `DisableCommentParser` extracts directives from source
+- **Judgment**: `Linter#filter_offenses` decides which offenses to suppress
 
 **Dependencies:**
-- `Herb::Core::DirectiveParser` - Parse inline directives
-- `Herb::Core::DisableTracker` - Track disabled rules
+- `DisableCommentParser` - Parse disable comments from source
+- `LinterIgnore` - Detect file-level ignore directive
 - `Herb.parse` - AST parsing (from herb gem)
 - `Context` - Execution context
 - `Rules::Base` subclasses - Rule implementations
@@ -969,12 +1036,13 @@ CLI#run
   │       ├── File.read(file)
   │       │
   │       └── Linter#lint(file, source)
-  │           ├── DirectiveParser.new(source) (herb-core)
-  │           ├── Check ignore_file?
+  │           ├── LinterIgnore.ignore_file?(source)
+  │           │   └── return ignored result if true
   │           ├── Herb.parse(source) (herb gem)
   │           ├── Context.new
   │           ├── rules.each { |r| r.check(document, context) }
-  │           ├── filter_by_directives
+  │           ├── DisableCommentParser.parse_source(source)
+  │           ├── filter_offenses(offenses, disable_cache)
   │           └── return LintResult
   │
   ├── AggregatedResult.new(results)

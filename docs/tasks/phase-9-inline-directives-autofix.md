@@ -18,15 +18,43 @@ This phase implements high-priority post-MVP features: inline directive support 
 
 ## Part A: Inline Directives
 
-### Task 9.1: DirectiveParser Implementation
+> **Design Decision:** Inline directive parsing is implemented in herb-lint (not herb-core), following the TypeScript reference implementation where `herb-disable-comment-utils.ts` and `linter-ignore.ts` reside in the linter package. The `enable` directive is not supported (it does not exist in the TS version). Responsibilities are clearly separated: container (DisableComment), collection (DisableCommentParser), judgment (Linter#filter_offenses).
 
-**Location:** `herb-core/lib/herb/core/directive_parser.rb`
+### Task 9.1: DisableComment Data Class
 
-- [ ] Implement DirectiveParser class
-- [ ] Implement Directive data class
-- [ ] Implement DirectiveType constants
-- [ ] Add unit tests
-- [ ] Generate RBS types
+**Location:** `herb-lint/lib/herb/lint/disable_comment.rb`
+
+- [x] Implement DisableComment data class using Data.define
+- [x] Add unit tests
+- [x] Generate RBS types
+
+**Interface:**
+
+```ruby
+module Herb
+  module Lint
+    DisableComment = Data.define(:rule_names, :line) do
+      def disables_all?  # => bool
+      def disables_rule?(rule_name)  # => bool
+    end
+  end
+end
+```
+
+**Test Cases:**
+- Value equality
+- disables_all? with "all" in rule_names
+- disables_rule? with specific and all rules
+
+---
+
+### Task 9.2: DisableCommentParser Module
+
+**Location:** `herb-lint/lib/herb/lint/disable_comment_parser.rb`
+
+- [x] Implement DisableCommentParser module
+- [x] Add unit tests
+- [x] Generate RBS types
 
 **Directive Types to Support:**
 
@@ -34,24 +62,18 @@ This phase implements high-priority post-MVP features: inline directive support 
 |-----------|---------|-------|
 | disable | `<%# herb:disable alt-text %>` | next line |
 | disable all | `<%# herb:disable all %>` | next line |
-| enable | `<%# herb:enable alt-text %>` | range end |
-| enable all | `<%# herb:enable all %>` | range end |
-| linter ignore | `<%# herb:linter ignore %>` | file |
+| disable multiple | `<%# herb:disable alt-text, html/lowercase-tags %>` | next line |
+
+> **Note:** The `enable` directive is intentionally omitted. It does not exist in the TypeScript reference implementation.
 
 **Interface:**
 
 ```ruby
 module Herb
-  module Core
-    class DirectiveParser
-      def initialize(source, mode: :linter)
-      def parse  # => Array[Directive]
-      def ignore_file?  # => bool
-      def disabled_at?(line, rule_name = nil)  # => bool
-    end
-
-    class Directive
-      attr_reader :type, :rules, :line, :scope
+  module Lint
+    module DisableCommentParser
+      def self.parse_line(line, line_number:)  # => DisableComment?
+      def self.parse_source(source)  # => Hash[Integer, DisableComment]
     end
   end
 end
@@ -61,43 +83,36 @@ end
 - Parse single rule disable
 - Parse multiple rules disable (comma-separated)
 - Parse disable all
-- Parse enable/enable all
-- Parse file-level ignore
 - Ignore non-directive comments
-- Handle malformed directives gracefully
+- Handle whitespace variations
+- parse_source maps target line (next line) correctly
 
 ---
 
-### Task 9.2: DisableTracker Implementation
+### Task 9.2b: LinterIgnore Module
 
-**Location:** `herb-core/lib/herb/core/disable_tracker.rb`
+**Location:** `herb-lint/lib/herb/lint/linter_ignore.rb`
 
-- [ ] Implement DisableTracker class
-- [ ] Add unit tests
-- [ ] Generate RBS types
+- [x] Implement LinterIgnore module
+- [x] Add unit tests
+- [x] Generate RBS types
 
 **Interface:**
 
 ```ruby
 module Herb
-  module Core
-    class DisableTracker
-      def initialize(directives)
-      def ignore_file?  # => bool
-      def rule_enabled_at?(line, rule_name)  # => bool
-      def filter_enabled_rules(line, rule_names)  # => Array[String]
+  module Lint
+    module LinterIgnore
+      def self.ignore_file?(source)  # => bool
     end
   end
 end
 ```
 
 **Test Cases:**
-- File-level ignore detection
-- Single rule disable at specific line
-- All rules disable at specific line
-- Enable after disable (range)
-- Multiple overlapping directives
-- Rule enabled when no directives present
+- Detect `<%# herb:linter ignore %>` anywhere in source
+- Return false for non-ignore content
+- Handle whitespace variations
 
 ---
 
@@ -105,30 +120,26 @@ end
 
 **Location:** `herb-lint/lib/herb/lint/linter.rb`
 
-- [ ] Parse directives in `lint` method
-- [ ] Check file-level ignore before processing
-- [ ] Filter offenses by directive state
-- [ ] Add integration tests
-- [ ] Update RBS types
+- [x] Check file-level ignore before processing
+- [x] Build disable cache from source
+- [x] Filter offenses by disable cache
+- [x] Add integration tests
+- [x] Update RBS types
 
 **Changes to Linter#lint:**
 
 ```ruby
-def lint(file_path, source)
-  # 1. Parse directives
-  parser = Herb::Core::DirectiveParser.new(source, mode: :linter)
-  tracker = Herb::Core::DisableTracker.new(parser.parse)
+def lint(file_path:, source:)
+  # 1. Check file-level ignore
+  return ignored_result(file_path, source) if LinterIgnore.ignore_file?(source)
 
-  # 2. Check file-level ignore
-  return LintResult.new(file_path:, offenses: [], source:, ignored: true) if tracker.ignore_file?
+  # 2. Parse and run rules
+  document = Herb.parse(source)
+  offenses = collect_offenses(document, build_context(file_path, source))
 
-  # 3. Run rules and collect offenses
-  offenses = run_rules(source)
-
-  # 4. Filter offenses by directives
-  filtered = offenses.reject do |offense|
-    !tracker.rule_enabled_at?(offense.line, offense.rule_name)
-  end
+  # 3. Filter offenses by disable comments
+  disable_cache = DisableCommentParser.parse_source(source)
+  filtered = filter_offenses(offenses, disable_cache)
 
   LintResult.new(file_path:, offenses: filtered, source:)
 end
@@ -137,7 +148,8 @@ end
 **Test Cases:**
 - File with ignore directive returns ignored: true
 - Disabled rule offenses are filtered out
-- Enabled rules still report offenses
+- Non-matching disable rules still report offenses
+- Disable only applies to next line
 - Integration with actual rules
 
 ---
@@ -274,14 +286,14 @@ end
 
 ```bash
 # Unit tests
-cd herb-core && ./bin/rspec spec/herb/core/directive_parser_spec.rb
-cd herb-core && ./bin/rspec spec/herb/core/disable_tracker_spec.rb
+cd herb-lint && ./bin/rspec spec/herb/lint/disable_comment_spec.rb
+cd herb-lint && ./bin/rspec spec/herb/lint/disable_comment_parser_spec.rb
+cd herb-lint && ./bin/rspec spec/herb/lint/linter_ignore_spec.rb
 
 # Integration test
 cd herb-lint && ./bin/rspec spec/herb/lint/linter_spec.rb
 
 # Type check
-cd herb-core && ./bin/steep check
 cd herb-lint && ./bin/steep check
 ```
 
@@ -332,18 +344,19 @@ cat test.html.erb
 
 | Task | Component | Description |
 |------|-----------|-------------|
-| 9.1 | herb-core | DirectiveParser implementation |
-| 9.2 | herb-core | DisableTracker implementation |
+| 9.1 | herb-lint | DisableComment data class |
+| 9.2 | herb-lint | DisableCommentParser module |
+| 9.2b | herb-lint | LinterIgnore module |
 | 9.3 | herb-lint | Integrate directives into Linter |
 | 9.4 | herb-lint | Fixer class implementation |
 | 9.5 | herb-lint | CLI --fix option |
 | 9.6 | herb-lint | Runner fix integration |
 | 9.7 | herb-lint | Add fix methods to existing rules |
 
-**Total: 7 tasks**
+**Total: 8 tasks**
 
 ## Related Documents
 
-- [herb-core Design](../design/herb-core-design.md) - DirectiveParser, DisableTracker specs
-- [herb-lint Design](../design/herb-lint-design.md) - Fixer spec
+- [herb-lint Design](../design/herb-lint-design.md) - DisableComment, DisableCommentParser, LinterIgnore, Fixer specs
+- [herb-core Design](../design/herb-core-design.md) - Shared infrastructure (file discovery)
 - [Future Enhancements](./future-enhancements.md) - Priority list
