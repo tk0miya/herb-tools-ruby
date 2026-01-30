@@ -32,24 +32,23 @@ The MVP (Minimum Viable Product) has been completed with:
 
 | Phase | File | Tasks | Description | Status |
 |-------|------|-------|-------------|--------|
-| Phase 8 | [phase-8-rule-expansion.md](./phase-8-rule-expansion.md) | 16 | herb-lint rule expansion | 🚧 |
+| Phase 8 | [phase-8-rule-expansion.md](./phase-8-rule-expansion.md) | 6 | herb-lint rule expansion | 🚧 |
 | Phase 9 | [phase-9-inline-directives-autofix.md](./phase-9-inline-directives-autofix.md) | 7 | Inline directives & Auto-fix | 📋 |
 | Phase 10 | [phase-10-reporters-validation.md](./phase-10-reporters-validation.md) | 6 | Multiple reporters & Config validation | 📋 |
 
-**Post-MVP Total: 29 tasks**
+**Post-MVP Total: 19 tasks**
 
 Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
 ## Phase Overview
 
-### Phase 8: Rule Expansion (16 rules)
+### Phase 8: Rule Expansion (6 rules)
 
 | Batch | Rules | Focus |
 |-------|-------|-------|
-| Batch 1 | 4 | Simple HTML rules |
-| Batch 2 | 4 | Void elements & A11y |
-| Batch 3 | 4 | HTML document structure |
-| Batch 4 | 4 | ERB rules (first set) |
+| Batch 1 | 3 | Simple HTML rules |
+| Batch 2 | 2 | Void elements & A11y |
+| Batch 3 | 1 | ERB rules |
 
 ### Phase 9: Inline Directives & Auto-fix (7 tasks)
 
