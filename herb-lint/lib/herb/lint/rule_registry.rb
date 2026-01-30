@@ -14,6 +14,7 @@ module Herb
           Rules::A11y::IframeHasTitle,
           Rules::A11y::NoAccessKey,
           Rules::A11y::NoRedundantRole,
+          Rules::Erb::ErbTagSpacing,
           Rules::Html::AttributeQuotes,
           Rules::Html::ButtonType,
           Rules::Html::LowercaseAttributes,

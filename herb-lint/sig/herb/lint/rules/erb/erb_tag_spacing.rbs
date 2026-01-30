@@ -1,0 +1,45 @@
+# Generated from lib/herb/lint/rules/erb/erb_tag_spacing.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Erb
+        # Rule that enforces consistent spacing inside ERB tags.
+        #
+        # ERB tags should have exactly one space after the opening tag
+        # and one space before the closing tag.
+        #
+        # Good:
+        #   <%= @user.name %>
+        #   <% if @show %>
+        #
+        # Bad:
+        #   <%=@user.name%>
+        #   <%   if @show   %>
+        class ErbTagSpacing < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # @rbs override
+          def visit_child_nodes: ...
+
+          private
+
+          # @rbs node: Herb::AST::Node
+          def check_spacing: (Herb::AST::Node node) -> void
+
+          # @rbs node: Herb::AST::Node
+          # @rbs value: String
+          def check_leading_space: (Herb::AST::Node node, String value) -> void
+
+          # @rbs node: Herb::AST::Node
+          # @rbs value: String
+          def check_trailing_space: (Herb::AST::Node node, String value) -> void
+        end
+      end
+    end
+  end
+end

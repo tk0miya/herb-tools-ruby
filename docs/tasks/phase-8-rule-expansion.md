@@ -15,6 +15,7 @@ This phase focuses on expanding herb-lint's rule coverage beyond the MVP's 3 rul
 - `a11y/iframe-has-title`
 - `a11y/no-access-key`
 - `a11y/no-redundant-role`
+- `erb/erb-tag-spacing`
 - `html/attribute-quotes`
 - `html/button-type`
 - `html/no-duplicate-attributes`
@@ -305,9 +306,9 @@ Rules are prioritized by:
 ## Batch 4: ERB Rules - First Set (4 rules)
 
 ### Task 8.13: `erb/erb-tag-spacing`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Consistent spacing inside ERB tags.
 
