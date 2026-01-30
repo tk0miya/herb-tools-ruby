@@ -62,8 +62,8 @@ herb-tools-ruby/
 │   │               ├── base.rb
 │   │               ├── visitor_rule.rb
 │   │               ├── node_helpers.rb
-│   │               ├── html_*.rb
-│   │               └── erb_*.rb
+│   │               ├── html_*.rb      # e.g., html_img_require_alt.rb
+│   │               └── erb_*.rb       # e.g., erb_no_empty_tags.rb
 │   ├── exe/
 │   │   └── herb-lint
 │   ├── spec/
@@ -151,10 +151,8 @@ Each gem's binstubs use that gem's Gemfile, ensuring proper dependency resolutio
 module Herb
   module Lint
     module Rules
-      module Html
-        class ImgRequireAlt < Base
-          # Implementation
-        end
+      class HtmlImgRequireAlt < VisitorRule
+        # Implementation
       end
     end
   end
@@ -178,19 +176,17 @@ All lint rules inherit from `VisitorRule` and override `visit_*` methods to insp
 module Herb
   module Lint
     module Rules
-      module Html
-        class MyRule < VisitorRule
-          def self.rule_name = "html-my-rule"
-          def self.description = "Description of the rule"
-          def self.default_severity = "warning"
+      class HtmlMyRule < VisitorRule
+        def self.rule_name = "html-my-rule"
+        def self.description = "Description of the rule"
+        def self.default_severity = "warning"
 
-          # @rbs override
-          def visit_html_element_node(node)
-            if some_condition?(node)
-              add_offense(message: "Explanation", location: node.location)
-            end
-            super
+        # @rbs override
+        def visit_html_element_node(node)
+          if some_condition?(node)
+            add_offense(message: "Explanation", location: node.location)
           end
+          super
         end
       end
     end

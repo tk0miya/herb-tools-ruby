@@ -1,35 +1,33 @@
-# Generated from lib/herb/lint/rules/html/no_duplicate_attributes.rb with RBS::Inline
+# Generated from lib/herb/lint/rules/html_no_duplicate_attributes.rb with RBS::Inline
 
 module Herb
   module Lint
     module Rules
-      module Html
-        # Rule that disallows duplicate attributes on the same element.
-        #
-        # HTML elements should not have multiple attributes with the same name.
-        # Duplicate attributes can cause unexpected behavior as browsers only
-        # use the first occurrence.
-        #
-        # Good:
-        #   <div class="foo bar">content</div>
-        #
-        # Bad:
-        #   <div class="foo" class="bar">content</div>
-        class NoDuplicateAttributes < VisitorRule
-          def self.rule_name: () -> String
+      # Rule that disallows duplicate attributes on the same element.
+      #
+      # HTML elements should not have multiple attributes with the same name.
+      # Duplicate attributes can cause unexpected behavior as browsers only
+      # use the first occurrence.
+      #
+      # Good:
+      #   <div class="foo bar">content</div>
+      #
+      # Bad:
+      #   <div class="foo" class="bar">content</div>
+      class HtmlNoDuplicateAttributes < VisitorRule
+        def self.rule_name: () -> String
 
-          def self.description: () -> String
+        def self.description: () -> String
 
-          def self.default_severity: () -> String
+        def self.default_severity: () -> String
 
-          # @rbs override
-          def visit_html_element_node: ...
+        # @rbs override
+        def visit_html_element_node: ...
 
-          private
+        private
 
-          # @rbs node: Herb::AST::HTMLElementNode
-          def check_duplicate_attributes: (Herb::AST::HTMLElementNode node) -> void
-        end
+        # @rbs node: Herb::AST::HTMLElementNode
+        def check_duplicate_attributes: (Herb::AST::HTMLElementNode node) -> void
       end
     end
   end

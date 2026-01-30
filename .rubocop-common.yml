@@ -27,11 +27,6 @@ RSpec/ExampleLength:
 RSpec/NestedGroups:
   Max: 6
 
-RSpec/SpecFilePathFormat:
-  Exclude:
-    - "**/spec/**/rules/html_*_spec.rb"
-    - "**/spec/**/rules/erb_*_spec.rb"
-
 RSpec/MultipleExpectations:
   Enabled: false
 

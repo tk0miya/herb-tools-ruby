@@ -2,7 +2,7 @@
 
 require_relative "../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::Html::NoSelfClosing do
+RSpec.describe Herb::Lint::Rules::HtmlNoSelfClosing do
   subject { described_class.new.check(document, context) }
 
   let(:document) { Herb.parse(template) }

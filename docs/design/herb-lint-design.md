@@ -458,8 +458,8 @@ end
 ```
 
 **Rule Categories:**
-- `Rules::Erb::*` - ERB-specific rules
-- `Rules::Html::*` - HTML validation and accessibility rules
+- `Rules::Erb*` - ERB-specific rules (e.g., `Rules::ErbNoEmptyTags`)
+- `Rules::Html*` - HTML validation and accessibility rules (e.g., `Rules::HtmlImgRequireAlt`)
 
 **Rule List (TypeScript herb-lint reference):**
 

@@ -3,35 +3,33 @@
 module Herb
   module Lint
     module Rules
-      module Html
-        # Rule that requires attribute values to be quoted.
-        #
-        # Unquoted attribute values are valid HTML5, but quoting them improves
-        # readability and prevents issues with special characters.
-        #
-        # Good:
-        #   <div class="container">
-        #   <input type='text'>
-        #   <input disabled>
-        #
-        # Bad:
-        #   <div class=container>
-        #   <input type=text>
-        class AttributeDoubleQuotes < VisitorRule
-          def self.rule_name: () -> String
+      # Rule that requires attribute values to be quoted.
+      #
+      # Unquoted attribute values are valid HTML5, but quoting them improves
+      # readability and prevents issues with special characters.
+      #
+      # Good:
+      #   <div class="container">
+      #   <input type='text'>
+      #   <input disabled>
+      #
+      # Bad:
+      #   <div class=container>
+      #   <input type=text>
+      class HtmlAttributeDoubleQuotes < VisitorRule
+        def self.rule_name: () -> String
 
-          def self.description: () -> String
+        def self.description: () -> String
 
-          def self.default_severity: () -> String
+        def self.default_severity: () -> String
 
-          # @rbs override
-          def visit_html_attribute_node: ...
+        # @rbs override
+        def visit_html_attribute_node: ...
 
-          private
+        private
 
-          # @rbs node: Herb::AST::HTMLAttributeNode
-          def unquoted_value?: (Herb::AST::HTMLAttributeNode node) -> bool
-        end
+        # @rbs node: Herb::AST::HTMLAttributeNode
+        def unquoted_value?: (Herb::AST::HTMLAttributeNode node) -> bool
       end
     end
   end
