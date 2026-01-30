@@ -4,7 +4,7 @@ Align the Ruby lint rule directory structure and naming conventions with the Typ
 
 ## Background
 
-The current Ruby implementation diverges from the TypeScript reference in rule directory layout, category structure, and rule naming. Since both implementations share the same `.herb.yml` configuration file format, rule names must be compatible.
+The current Ruby implementation diverges from the TypeScript reference in rule directory layout, category structure, and rule naming. Since both implementations share the same `.herb.yml` configuration file format, rule names must be identical.
 
 ## Current Problems
 
@@ -52,52 +52,133 @@ rules/
 
 `alt-text` has no category prefix while all other Ruby rules do. This is inconsistent even within the Ruby implementation.
 
+### 5. Directory structure differs
+
+TypeScript uses a flat `rules/` directory. Ruby uses category subdirectories (`rules/html/`, `rules/a11y/`).
+
+## Design Decisions
+
+### Separator Character
+
+Use `-` (hyphen) as the sole separator in rule names, matching TypeScript exactly.
+
+- TypeScript: `html-no-duplicate-ids`
+- Ruby (new): `html-no-duplicate-ids`
+
+This ensures rule names are identical across both implementations. Users can use the same rule names in `.herb.yml` regardless of which tool they use.
+
+### Directory Layout
+
+Use a flat `rules/` directory, matching TypeScript. File names follow the rule name in snake_case:
+
+```
+# Target structure
+rules/
+  base.rb
+  visitor_rule.rb
+  rule_methods.rb
+  node_helpers.rb
+  html_img_require_alt.rb
+  html_iframe_has_title.rb
+  html_attribute_double_quotes.rb
+  html_tag_name_lowercase.rb
+  html_no_duplicate_attributes.rb
+  html_no_duplicate_ids.rb
+  html_no_positive_tab_index.rb
+  html_no_self_closing.rb
+```
+
+### Module Namespace
+
+Remove category sub-modules (`Html::`, `A11y::`) and place rule classes directly under `Rules::`:
+
+```ruby
+# Before
+module Herb::Lint::Rules::Html
+  class NoDuplicateIds < VisitorRule
+    def self.rule_name = "html/no-duplicate-ids"
+  end
+end
+
+# After
+module Herb::Lint::Rules
+  class HtmlNoDuplicateIds < VisitorRule
+    def self.rule_name = "html-no-duplicate-ids"
+  end
+end
+```
+
+Class names embed the category prefix (e.g., `HtmlNoDuplicateIds`), keeping them self-descriptive without requiring a sub-module.
+
+## Rule Name Mapping
+
+Complete mapping from current Ruby names to target names (= TypeScript names):
+
+| Current Ruby | Target Ruby (= TypeScript) | File name (new) | Class name (new) |
+|---|---|---|---|
+| `alt-text` | `html-img-require-alt` | `html_img_require_alt.rb` | `HtmlImgRequireAlt` |
+| `a11y/iframe-has-title` | `html-iframe-has-title` | `html_iframe_has_title.rb` | `HtmlIframeHasTitle` |
+| `html/attribute-quotes` | `html-attribute-double-quotes` | `html_attribute_double_quotes.rb` | `HtmlAttributeDoubleQuotes` |
+| `html/lowercase-tags` | `html-tag-name-lowercase` | `html_tag_name_lowercase.rb` | `HtmlTagNameLowercase` |
+| `html/no-duplicate-attributes` | `html-no-duplicate-attributes` | `html_no_duplicate_attributes.rb` | `HtmlNoDuplicateAttributes` |
+| `html/no-duplicate-id` | `html-no-duplicate-ids` | `html_no_duplicate_ids.rb` | `HtmlNoDuplicateIds` |
+| `html/no-positive-tabindex` | `html-no-positive-tab-index` | `html_no_positive_tab_index.rb` | `HtmlNoPositiveTabIndex` |
+| `html/void-element-style` | `html-no-self-closing` | `html_no_self_closing.rb` | `HtmlNoSelfClosing` |
+
 ## Tasks
 
-### Task 1: Move `a11y/` rules to `html/`
+### Task 1: Flatten directory structure
 
-- [ ] Move `rules/a11y/alt_text.rb` to `rules/html/` with appropriate rename
-- [ ] Move `rules/a11y/iframe_has_title.rb` to `rules/html/`
+- [ ] Move `rules/a11y/alt_text.rb` → `rules/html_img_require_alt.rb`
+- [ ] Move `rules/a11y/iframe_has_title.rb` → `rules/html_iframe_has_title.rb`
+- [ ] Move `rules/html/attribute_quotes.rb` → `rules/html_attribute_double_quotes.rb`
+- [ ] Move `rules/html/lowercase_tags.rb` → `rules/html_tag_name_lowercase.rb`
+- [ ] Move `rules/html/no_duplicate_attributes.rb` → `rules/html_no_duplicate_attributes.rb`
+- [ ] Move `rules/html/no_duplicate_id.rb` → `rules/html_no_duplicate_ids.rb`
+- [ ] Move `rules/html/no_positive_tabindex.rb` → `rules/html_no_positive_tab_index.rb`
+- [ ] Move `rules/html/void_element_style.rb` → `rules/html_no_self_closing.rb`
 - [ ] Remove empty `rules/a11y/` directory
+- [ ] Remove empty `rules/html/` directory
 - [ ] Update `require_relative` statements in `lib/herb/lint.rb`
-- [ ] Update module namespace from `Rules::A11y::` to `Rules::Html::`
-- [ ] Update `RuleRegistry.builtin_rules`
-- [ ] Move and update corresponding spec files
-- [ ] Move and update corresponding RBS type definition files
 
-### Task 2: Rename rule names to match TypeScript
+### Task 2: Update module namespaces and class names
 
-- [ ] `alt-text` → `html/img-require-alt`
-- [ ] `a11y/iframe-has-title` → `html/iframe-has-title`
-- [ ] `html/attribute-quotes` → `html/attribute-double-quotes`
-- [ ] `html/lowercase-tags` → `html/tag-name-lowercase`
-- [ ] `html/no-duplicate-id` → `html/no-duplicate-ids`
-- [ ] `html/no-positive-tabindex` → `html/no-positive-tab-index`
-- [ ] `html/void-element-style` → `html/no-self-closing`
-- [ ] `html/no-duplicate-attributes` — no change needed (separator only)
+- [ ] Remove `Rules::A11y` module; move classes to `Rules::`
+- [ ] Remove `Rules::Html` module; move classes to `Rules::`
+- [ ] Rename classes with category prefix (e.g., `AltText` → `HtmlImgRequireAlt`)
+- [ ] Update `RuleRegistry.builtin_rules` with new class references
+
+### Task 3: Rename rule names to match TypeScript
+
+- [ ] `alt-text` → `html-img-require-alt`
+- [ ] `a11y/iframe-has-title` → `html-iframe-has-title`
+- [ ] `html/attribute-quotes` → `html-attribute-double-quotes`
+- [ ] `html/lowercase-tags` → `html-tag-name-lowercase`
+- [ ] `html/no-duplicate-attributes` → `html-no-duplicate-attributes`
+- [ ] `html/no-duplicate-id` → `html-no-duplicate-ids`
+- [ ] `html/no-positive-tabindex` → `html-no-positive-tab-index`
+- [ ] `html/void-element-style` → `html-no-self-closing`
 - [ ] Update all `rule_name` method return values
-- [ ] Update all test assertions that reference rule names
-- [ ] Rename Ruby source files to match new rule names where appropriate
 
-### Task 3: Update documentation
+### Task 4: Update tests
+
+- [ ] Move and rename spec files to match new rule file names
+- [ ] Remove empty `spec/rules/a11y/` directory
+- [ ] Remove empty `spec/rules/html/` directory
+- [ ] Update all test assertions that reference rule names
+- [ ] Update RBS type definition files
+
+### Task 5: Update documentation
 
 - [ ] Update rule reference table in `docs/design/herb-lint-design.md`
 - [ ] Update `docs/tasks/phase-8-rule-expansion.md` rule names
 - [ ] Update `docs/tasks/README.md` if it references specific rule names
 
-### Task 4: Verify
+### Task 6: Verify
 
 - [ ] `cd herb-lint && ./bin/rspec` — all tests pass
 - [ ] `cd herb-lint && ./bin/steep check` — type checking passes
 - [ ] `cd herb-lint && ./bin/rubocop` — no offenses
-
-## Design Decision: Separator Character
-
-TypeScript uses `-` (hyphen) as the sole separator: `html-no-duplicate-ids`.
-
-Ruby currently uses `/` (slash) between category and name: `html/no-duplicate-id`.
-
-**Recommendation:** Keep the `/` separator in Ruby rule names (e.g., `html/no-duplicate-ids` instead of `html-no-duplicate-ids`). The slash-separated format is idiomatic for Ruby tools (similar to RuboCop's `Style/FrozenStringLiteralComment`) and is already established in the codebase. The mapping between Ruby (`html/`) and TypeScript (`html-`) separators is straightforward and can be handled at the configuration layer if cross-tool compatibility is needed.
 
 ## References
 
