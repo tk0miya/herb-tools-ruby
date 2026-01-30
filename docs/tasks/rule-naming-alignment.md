@@ -129,17 +129,17 @@ Complete mapping from current Ruby names to target names (= TypeScript names):
 
 ### Task 1: Flatten directory structure
 
-- [ ] Move `rules/a11y/alt_text.rb` → `rules/html_img_require_alt.rb`
-- [ ] Move `rules/a11y/iframe_has_title.rb` → `rules/html_iframe_has_title.rb`
-- [ ] Move `rules/html/attribute_quotes.rb` → `rules/html_attribute_double_quotes.rb`
-- [ ] Move `rules/html/lowercase_tags.rb` → `rules/html_tag_name_lowercase.rb`
-- [ ] Move `rules/html/no_duplicate_attributes.rb` → `rules/html_no_duplicate_attributes.rb`
-- [ ] Move `rules/html/no_duplicate_id.rb` → `rules/html_no_duplicate_ids.rb`
-- [ ] Move `rules/html/no_positive_tabindex.rb` → `rules/html_no_positive_tab_index.rb`
-- [ ] Move `rules/html/void_element_style.rb` → `rules/html_no_self_closing.rb`
-- [ ] Remove empty `rules/a11y/` directory
-- [ ] Remove empty `rules/html/` directory
-- [ ] Update `require_relative` statements in `lib/herb/lint.rb`
+- [x] Move `rules/a11y/alt_text.rb` → `rules/html_img_require_alt.rb`
+- [x] Move `rules/a11y/iframe_has_title.rb` → `rules/html_iframe_has_title.rb`
+- [x] Move `rules/html/attribute_quotes.rb` → `rules/html_attribute_double_quotes.rb`
+- [x] Move `rules/html/lowercase_tags.rb` → `rules/html_tag_name_lowercase.rb`
+- [x] Move `rules/html/no_duplicate_attributes.rb` → `rules/html_no_duplicate_attributes.rb`
+- [x] Move `rules/html/no_duplicate_id.rb` → `rules/html_no_duplicate_ids.rb`
+- [x] Move `rules/html/no_positive_tabindex.rb` → `rules/html_no_positive_tab_index.rb`
+- [x] Move `rules/html/void_element_style.rb` → `rules/html_no_self_closing.rb`
+- [x] Remove empty `rules/a11y/` directory
+- [x] Remove empty `rules/html/` directory
+- [x] Update `require_relative` statements in `lib/herb/lint.rb`
 
 ### Task 2: Update module namespaces and class names
 

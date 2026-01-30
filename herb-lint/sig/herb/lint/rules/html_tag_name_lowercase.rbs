@@ -1,4 +1,4 @@
-# Generated from lib/herb/lint/rules/html/lowercase_tags.rb with RBS::Inline
+# Generated from lib/herb/lint/rules/html_tag_name_lowercase.rb with RBS::Inline
 
 module Herb
   module Lint

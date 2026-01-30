@@ -1,4 +1,4 @@
-# Generated from lib/herb/lint/rules/html/no_positive_tabindex.rb with RBS::Inline
+# Generated from lib/herb/lint/rules/html_no_positive_tab_index.rb with RBS::Inline
 
 module Herb
   module Lint
