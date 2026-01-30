@@ -1,0 +1,101 @@
+# Generated from lib/herb/core/directive_parser.rb with RBS::Inline
+
+module Herb
+  module Core
+    # Constants for directive types.
+    module DirectiveType
+      DISABLE: String
+
+      ENABLE: String
+
+      IGNORE_FILE: String
+    end
+
+    # Constants for directive scopes.
+    module DirectiveScope
+      FILE: String
+
+      NEXT_LINE: String
+
+      RANGE_END: String
+    end
+
+    # Represents a parsed inline directive from an ERB comment.
+    class Directive < Data
+      attr_reader type(): String
+
+      attr_reader rules(): Array[String]
+
+      attr_reader line(): Integer
+
+      attr_reader scope(): String
+
+      def self.new: (String type, Array[String] rules, Integer line, String scope) -> instance
+                  | (type: String, rules: Array[String], line: Integer, scope: String) -> instance
+
+      def self.members: () -> [ :type, :rules, :line, :scope ]
+
+      def members: () -> [ :type, :rules, :line, :scope ]
+    end
+
+    # Parses inline directives by traversing the herb AST for ERB comment nodes.
+    #
+    # Supports the following directive formats:
+    #   <%# herb:disable rule-name %>          - Disable a rule for the next line
+    #   <%# herb:disable rule1, rule2 %>       - Disable multiple rules for the next line
+    #   <%# herb:disable all %>                - Disable all rules for the next line
+    #   <%# herb:enable rule-name %>           - Re-enable a rule
+    #   <%# herb:enable all %>                 - Re-enable all rules
+    #   <%# herb:linter ignore %>              - Ignore the entire file (in linter mode)
+    class DirectiveParser < Herb::Visitor
+      DIRECTIVE_PATTERN: Regexp
+
+      IGNORE_PATTERN: Regexp
+
+      attr_reader document: Herb::ParseResult
+
+      attr_reader mode: Symbol
+
+      @collected_directives: Array[Directive]
+
+      @parse: Array[Directive]?
+
+      # @rbs document: Herb::ParseResult -- the parsed document from Herb.parse
+      # @rbs mode: Symbol -- the tool mode (:linter or :formatter)
+      def initialize: (Herb::ParseResult document, ?mode: Symbol) -> void
+
+      # Parses all directives from the document AST.
+      def parse: () -> Array[Directive]
+
+      # Returns true if the file should be ignored entirely.
+      def ignore_file?: () -> bool
+
+      # Returns true if the given rule (or all rules) is disabled at the specified line.
+      #
+      # @rbs line: Integer -- 1-based line number
+      # @rbs rule_name: String? -- the rule name to check, or nil to check if any rule is disabled
+      def disabled_at?: (Integer line, ?String? rule_name) -> bool
+
+      # @rbs override
+      def visit_erb_content_node: ...
+
+      private
+
+      def parse_directives: () -> Array[Directive]
+
+      # @rbs node: Herb::AST::ERBContentNode
+      def parse_comment: (Herb::AST::ERBContentNode node) -> Directive?
+
+      # @rbs content: String
+      # @rbs line: Integer
+      def parse_ignore_content: (String content, Integer line) -> Directive?
+
+      # @rbs content: String
+      # @rbs line: Integer
+      def parse_disable_enable_content: (String content, Integer line) -> Directive?
+
+      # @rbs rules_part: String
+      def parse_rules: (String rules_part) -> Array[String]
+    end
+  end
+end

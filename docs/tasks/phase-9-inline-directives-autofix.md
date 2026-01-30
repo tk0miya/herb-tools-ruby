@@ -22,11 +22,11 @@ This phase implements high-priority post-MVP features: inline directive support 
 
 **Location:** `herb-core/lib/herb/core/directive_parser.rb`
 
-- [ ] Implement DirectiveParser class
-- [ ] Implement Directive data class
-- [ ] Implement DirectiveType constants
-- [ ] Add unit tests
-- [ ] Generate RBS types
+- [x] Implement DirectiveParser class
+- [x] Implement Directive data class
+- [x] Implement DirectiveType constants
+- [x] Add unit tests
+- [x] Generate RBS types
 
 **Directive Types to Support:**
 
