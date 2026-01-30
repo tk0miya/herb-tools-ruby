@@ -1,4 +1,4 @@
-# Generated from lib/herb/lint/rules/html/no_duplicate_id.rb with RBS::Inline
+# Generated from lib/herb/lint/rules/html_no_duplicate_ids.rb with RBS::Inline
 
 module Herb
   module Lint

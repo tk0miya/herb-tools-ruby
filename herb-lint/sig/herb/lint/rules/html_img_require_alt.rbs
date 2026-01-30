@@ -1,4 +1,4 @@
-# Generated from lib/herb/lint/rules/a11y/alt_text.rb with RBS::Inline
+# Generated from lib/herb/lint/rules/html_img_require_alt.rb with RBS::Inline
 
 module Herb
   module Lint
