@@ -2,13 +2,21 @@
 
 module Herb
   module Lint
-    # Parses `<%# herb:disable ... %>` comments from ERB source text.
-    # This module handles collection only — it extracts DisableComment
-    # data from source but does not decide how they affect offenses.
+    # Parses directive comments from ERB source text.
+    # This module handles parsing only — it extracts data from source
+    # but does not decide how directives affect offenses.
     module DisableCommentParser
       # Pattern matching an ERB comment containing a herb:disable directive.
       # Captures the rule list (e.g. "alt-text, html/no-duplicate-id" or "all").
       DISABLE_PATTERN: Regexp
+
+      # Pattern matching the file-level linter ignore directive.
+      IGNORE_PATTERN: Regexp
+
+      # Parse an entire source string and return a DisableDirectives object.
+      #
+      # @rbs source: String
+      def self.parse: (String source) -> DisableDirectives
 
       # Parse a single source line for a disable comment.
       # Returns nil if the line does not contain a disable directive.
@@ -16,14 +24,6 @@ module Herb
       # @rbs line: String -- a single line of source text
       # @rbs line_number: Integer -- 1-based line number
       def self.parse_line: (String line, line_number: Integer) -> DisableComment?
-
-      # Parse an entire source string and return a disable cache.
-      # The cache maps each target line number (the line *after* the comment)
-      # to its DisableComment, following the TS convention where
-      # `herb:disable` applies to the next line.
-      #
-      # @rbs source: String
-      def self.parse_source: (String source) -> Hash[Integer, DisableComment]
     end
   end
 end

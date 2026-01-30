@@ -129,9 +129,9 @@ Herb::Lint
 ├── CLI                   # Command-line interface
 ├── Runner                # Orchestrate linting workflow
 ├── Linter                # Core linting logic per file
-├── LinterIgnore          # File-level ignore directive detection
-├── DisableComment        # Data class for parsed disable comments
-├── DisableCommentParser  # Parser for herb:disable comments
+├── DisableComment        # Data class for individual disable comments
+├── DisableCommentParser  # Parser for directive comments (parsing only)
+├── DisableDirectives     # Parsed directive data + judgment
 ├── RuleRegistry          # Rule registration and lookup
 ├── Context               # Execution context passed to rules
 ├── Offense               # Violation representation
@@ -221,11 +221,11 @@ The linting process follows a linear pipeline with clear separation of concerns:
                                  ▼
 ┌─────────────────────────────────────────────────────────────────────┐
 │ 4. Lint Each File                                                    │
-│    - Check file-level ignore (LinterIgnore)                          │
+│    - Parse directives (DisableCommentParser → DisableDirectives)     │
+│    - Check file-level ignore (DisableDirectives)                     │
 │    - Parse template to AST (herb parser)                             │
 │    - Execute each enabled rule                                       │
-│    - Parse disable comments (DisableCommentParser)                   │
-│    - Filter offenses based on disable cache                          │
+│    - Filter offenses (DisableDirectives)                             │
 │    - Collect results                                                 │
 └────────────────────────────────┬────────────────────────────────────┘
                                  │

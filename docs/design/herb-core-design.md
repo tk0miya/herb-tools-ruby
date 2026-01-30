@@ -115,7 +115,7 @@ end
 
 > **Design Decision:** Inline directive parsing is implemented in each tool gem (herb-lint, herb-format) rather than in herb-core. This follows the TypeScript reference implementation where `herb-disable-comment-utils.ts` and `linter-ignore.ts` reside in the linter package. Each tool has its own directive format (e.g., `herb:disable` for the linter, `herb:formatter off` for the formatter), so tool-specific implementations are more appropriate than a shared abstraction.
 >
-> See [herb-lint Design](./herb-lint-design.md) for the linter directive components: `DisableComment`, `DisableCommentParser`, and `LinterIgnore`.
+> See [herb-lint Design](./herb-lint-design.md) for the linter directive components: `DisableComment`, `DisableCommentParser`, and `DisableDirectives`.
 
 ## Public API
 

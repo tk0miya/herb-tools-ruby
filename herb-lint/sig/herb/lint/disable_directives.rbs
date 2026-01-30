@@ -1,0 +1,31 @@
+# Generated from lib/herb/lint/disable_directives.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # Holds parsed directive data and provides judgment methods.
+    # This is the data management + judgment layer — it holds the
+    # collection of DisableComment objects and answers questions
+    # about which rules are disabled at which lines.
+    class DisableDirectives
+      attr_reader comments: Array[DisableComment]
+
+      # @rbs comments: Array[DisableComment]
+      # @rbs ignore_file: bool
+      def initialize: (comments: Array[DisableComment], ignore_file: bool) -> void
+
+      # Returns true if the file should be skipped entirely.
+      def ignore_file?: () -> bool
+
+      # Returns true if the given rule is disabled at the given line.
+      # @rbs line: Integer -- 1-based line number
+      # @rbs rule_name: String
+      def rule_disabled?: (Integer line, String rule_name) -> bool
+
+      private
+
+      # Build a cache mapping target line (the line after each comment)
+      # to its DisableComment.
+      def build_cache: () -> Hash[Integer, DisableComment]
+    end
+  end
+end

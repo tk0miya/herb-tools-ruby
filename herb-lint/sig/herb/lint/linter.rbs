@@ -4,7 +4,7 @@ module Herb
   module Lint
     # Linter processes a single file and returns lint results.
     # It applies a set of rules to a parsed document, collects offenses,
-    # and filters them based on inline disable directives.
+    # and delegates directive-based filtering to DisableDirectives.
     class Linter
       attr_reader rules: Array[Rules::Base | Rules::VisitorRule]
 
@@ -35,13 +35,6 @@ module Herb
       # @rbs document: Herb::ParseResult
       # @rbs context: Context
       def collect_offenses: (Herb::ParseResult document, Context context) -> Array[Offense]
-
-      # Filter offenses based on disable comments.
-      # Each disable comment suppresses offenses on the next line.
-      #
-      # @rbs offenses: Array[Offense]
-      # @rbs disable_cache: Hash[Integer, DisableComment]
-      def filter_offenses: (Array[Offense] offenses, Hash[Integer, DisableComment] disable_cache) -> Array[Offense]
 
       # @rbs file_path: String
       # @rbs source: String
