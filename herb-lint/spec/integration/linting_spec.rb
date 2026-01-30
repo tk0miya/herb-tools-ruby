@@ -20,7 +20,7 @@ RSpec.describe "End-to-end linting integration" do # rubocop:disable RSpec/Descr
 
       it "detects missing alt attribute offense" do
         expect(subject[:exit_code]).to eq(Herb::Lint::CLI::EXIT_LINT_ERROR)
-        expect(subject[:stdout]).to include("alt-text")
+        expect(subject[:stdout]).to include("html-img-require-alt")
         expect(subject[:stdout]).to include("Missing alt attribute")
       end
     end
@@ -30,7 +30,7 @@ RSpec.describe "End-to-end linting integration" do # rubocop:disable RSpec/Descr
 
       it "detects unquoted attribute offenses" do
         expect(subject[:exit_code]).to eq(Herb::Lint::CLI::EXIT_LINT_ERROR)
-        expect(subject[:stdout]).to include("html/attribute-quotes")
+        expect(subject[:stdout]).to include("html-attribute-double-quotes")
       end
     end
 
@@ -39,8 +39,8 @@ RSpec.describe "End-to-end linting integration" do # rubocop:disable RSpec/Descr
 
       it "detects multiple offenses from different rules" do
         expect(subject[:exit_code]).to eq(Herb::Lint::CLI::EXIT_LINT_ERROR)
-        expect(subject[:stdout]).to include("alt-text")
-        expect(subject[:stdout]).to include("html/attribute-quotes")
+        expect(subject[:stdout]).to include("html-img-require-alt")
+        expect(subject[:stdout]).to include("html-attribute-double-quotes")
       end
     end
 

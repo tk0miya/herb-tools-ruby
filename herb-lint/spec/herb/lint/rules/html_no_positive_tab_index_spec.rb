@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require_relative "../../../../spec_helper"
+require_relative "../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::Html::NoPositiveTabindex do
+RSpec.describe Herb::Lint::Rules::HtmlNoPositiveTabIndex do
   subject { described_class.new.check(document, context) }
 
   let(:document) { Herb.parse(template) }
   let(:context) { instance_double(Herb::Lint::Context) }
 
   describe ".rule_name" do
-    it "returns 'html/no-positive-tabindex'" do
-      expect(described_class.rule_name).to eq("html/no-positive-tabindex")
+    it "returns 'html-no-positive-tab-index'" do
+      expect(described_class.rule_name).to eq("html-no-positive-tab-index")
     end
   end
 
@@ -48,7 +48,7 @@ RSpec.describe Herb::Lint::Rules::Html::NoPositiveTabindex do
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html/no-positive-tabindex")
+        expect(subject.first.rule_name).to eq("html-no-positive-tab-index")
         expect(subject.first.message).to eq("Avoid positive tabindex value '1' (disrupts natural tab order)")
         expect(subject.first.severity).to eq("warning")
       end
@@ -112,7 +112,7 @@ RSpec.describe Herb::Lint::Rules::Html::NoPositiveTabindex do
 
       it "reports an offense (case-insensitive check)" do
         expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html/no-positive-tabindex")
+        expect(subject.first.rule_name).to eq("html-no-positive-tab-index")
       end
     end
 

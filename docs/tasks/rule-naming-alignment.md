@@ -143,42 +143,42 @@ Complete mapping from current Ruby names to target names (= TypeScript names):
 
 ### Task 2: Update module namespaces and class names
 
-- [ ] Remove `Rules::A11y` module; move classes to `Rules::`
-- [ ] Remove `Rules::Html` module; move classes to `Rules::`
-- [ ] Rename classes with category prefix (e.g., `AltText` → `HtmlImgRequireAlt`)
-- [ ] Update `RuleRegistry.builtin_rules` with new class references
+- [x] Remove `Rules::A11y` module; move classes to `Rules::`
+- [x] Remove `Rules::Html` module; move classes to `Rules::`
+- [x] Rename classes with category prefix (e.g., `AltText` → `HtmlImgRequireAlt`)
+- [x] Update `RuleRegistry.builtin_rules` with new class references
 
 ### Task 3: Rename rule names to match TypeScript
 
-- [ ] `alt-text` → `html-img-require-alt`
-- [ ] `a11y/iframe-has-title` → `html-iframe-has-title`
-- [ ] `html/attribute-quotes` → `html-attribute-double-quotes`
-- [ ] `html/lowercase-tags` → `html-tag-name-lowercase`
-- [ ] `html/no-duplicate-attributes` → `html-no-duplicate-attributes`
-- [ ] `html/no-duplicate-id` → `html-no-duplicate-ids`
-- [ ] `html/no-positive-tabindex` → `html-no-positive-tab-index`
-- [ ] `html/void-element-style` → `html-no-self-closing`
-- [ ] Update all `rule_name` method return values
+- [x] `alt-text` → `html-img-require-alt`
+- [x] `a11y/iframe-has-title` → `html-iframe-has-title`
+- [x] `html/attribute-quotes` → `html-attribute-double-quotes`
+- [x] `html/lowercase-tags` → `html-tag-name-lowercase`
+- [x] `html/no-duplicate-attributes` → `html-no-duplicate-attributes`
+- [x] `html/no-duplicate-id` → `html-no-duplicate-ids`
+- [x] `html/no-positive-tabindex` → `html-no-positive-tab-index`
+- [x] `html/void-element-style` → `html-no-self-closing`
+- [x] Update all `rule_name` method return values
 
 ### Task 4: Update tests
 
-- [ ] Move and rename spec files to match new rule file names
-- [ ] Remove empty `spec/rules/a11y/` directory
-- [ ] Remove empty `spec/rules/html/` directory
-- [ ] Update all test assertions that reference rule names
-- [ ] Update RBS type definition files
+- [x] Move and rename spec files to match new rule file names
+- [x] Remove empty `spec/rules/a11y/` directory
+- [x] Remove empty `spec/rules/html/` directory
+- [x] Update all test assertions that reference rule names
+- [x] Update RBS type definition files
 
 ### Task 5: Update documentation
 
-- [ ] Update rule reference table in `docs/design/herb-lint-design.md`
-- [ ] Update `docs/tasks/phase-8-rule-expansion.md` rule names
-- [ ] Update `docs/tasks/README.md` if it references specific rule names
+- [x] Update rule reference table in `docs/design/herb-lint-design.md`
+- [x] Update `docs/tasks/phase-8-rule-expansion.md` rule names
+- [x] Update `docs/tasks/README.md` if it references specific rule names
 
 ### Task 6: Verify
 
-- [ ] `cd herb-lint && ./bin/rspec` — all tests pass
-- [ ] `cd herb-lint && ./bin/steep check` — type checking passes
-- [ ] `cd herb-lint && ./bin/rubocop` — no offenses
+- [x] `cd herb-lint && ./bin/rspec` — all tests pass
+- [x] `cd herb-lint && ./bin/steep check` — type checking passes
+- [x] `cd herb-lint && ./bin/rubocop` — no offenses
 
 ## References
 

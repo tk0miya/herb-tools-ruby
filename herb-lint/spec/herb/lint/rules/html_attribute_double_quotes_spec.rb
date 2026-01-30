@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require_relative "../../../../spec_helper"
+require_relative "../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::Html::AttributeQuotes do
+RSpec.describe Herb::Lint::Rules::HtmlAttributeDoubleQuotes do
   subject { described_class.new.check(document, context) }
 
   let(:document) { Herb.parse(template) }
   let(:context) { instance_double(Herb::Lint::Context) }
 
   describe ".rule_name" do
-    it "returns 'html/attribute-quotes'" do
-      expect(described_class.rule_name).to eq("html/attribute-quotes")
+    it "returns 'html-attribute-double-quotes'" do
+      expect(described_class.rule_name).to eq("html-attribute-double-quotes")
     end
   end
 
@@ -48,7 +48,7 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeQuotes do
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html/attribute-quotes")
+        expect(subject.first.rule_name).to eq("html-attribute-double-quotes")
         expect(subject.first.message).to eq("Attribute value should be quoted")
         expect(subject.first.severity).to eq("warning")
       end
@@ -75,7 +75,7 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeQuotes do
 
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
-        expect(subject.map(&:rule_name)).to all(eq("html/attribute-quotes"))
+        expect(subject.map(&:rule_name)).to all(eq("html-attribute-double-quotes"))
       end
     end
 

@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require_relative "../../../../spec_helper"
+require_relative "../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::Html::VoidElementStyle do
+RSpec.describe Herb::Lint::Rules::HtmlNoSelfClosing do
   subject { described_class.new.check(document, context) }
 
   let(:document) { Herb.parse(template) }
   let(:context) { instance_double(Herb::Lint::Context) }
 
   describe ".rule_name" do
-    it "returns 'html/void-element-style'" do
-      expect(described_class.rule_name).to eq("html/void-element-style")
+    it "returns 'html-no-self-closing'" do
+      expect(described_class.rule_name).to eq("html-no-self-closing")
     end
   end
 
@@ -40,7 +40,7 @@ RSpec.describe Herb::Lint::Rules::Html::VoidElementStyle do
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html/void-element-style")
+        expect(subject.first.rule_name).to eq("html-no-self-closing")
         expect(subject.first.message).to eq("Void element 'br' should not have a self-closing slash")
         expect(subject.first.severity).to eq("warning")
       end

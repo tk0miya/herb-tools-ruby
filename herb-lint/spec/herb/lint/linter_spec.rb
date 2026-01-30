@@ -14,7 +14,7 @@ RSpec.describe Herb::Lint::Linter do
     let(:file_path) { "app/views/users/index.html.erb" }
 
     context "with rules that detect offenses" do
-      let(:rules) { [Herb::Lint::Rules::A11y::AltText.new] }
+      let(:rules) { [Herb::Lint::Rules::HtmlImgRequireAlt.new] }
       let(:source) { '<img src="test.png">' }
 
       it "returns a LintResult with offenses" do
@@ -22,12 +22,12 @@ RSpec.describe Herb::Lint::Linter do
         expect(subject.file_path).to eq(file_path)
         expect(subject.source).to eq(source)
         expect(subject.offenses.size).to eq(1)
-        expect(subject.offenses.first.rule_name).to eq("alt-text")
+        expect(subject.offenses.first.rule_name).to eq("html-img-require-alt")
       end
     end
 
     context "with rules that find no offenses" do
-      let(:rules) { [Herb::Lint::Rules::A11y::AltText.new] }
+      let(:rules) { [Herb::Lint::Rules::HtmlImgRequireAlt.new] }
       let(:source) { '<img src="test.png" alt="A test image">' }
 
       it "returns a LintResult with empty offenses" do
@@ -40,7 +40,7 @@ RSpec.describe Herb::Lint::Linter do
     context "with multiple rules" do
       let(:rules) do
         [
-          Herb::Lint::Rules::A11y::AltText.new,
+          Herb::Lint::Rules::HtmlImgRequireAlt.new,
           test_rule_class.new
         ]
       end
@@ -61,7 +61,7 @@ RSpec.describe Herb::Lint::Linter do
         expect(subject.offenses.size).to eq(2)
 
         rule_names = subject.offenses.map(&:rule_name)
-        expect(rule_names).to contain_exactly("alt-text", "test-rule")
+        expect(rule_names).to contain_exactly("html-img-require-alt", "test-rule")
       end
     end
 
@@ -75,7 +75,7 @@ RSpec.describe Herb::Lint::Linter do
     end
 
     context "when source has parse errors" do
-      let(:rules) { [Herb::Lint::Rules::A11y::AltText.new] }
+      let(:rules) { [Herb::Lint::Rules::HtmlImgRequireAlt.new] }
       let(:source) { "<%= unclosed" }
 
       it "returns a LintResult with parse-error offenses" do
@@ -90,7 +90,7 @@ RSpec.describe Herb::Lint::Linter do
   end
 
   describe "#rules" do
-    let(:rules) { [Herb::Lint::Rules::A11y::AltText.new] }
+    let(:rules) { [Herb::Lint::Rules::HtmlImgRequireAlt.new] }
 
     it "returns the rules passed to the initializer" do
       expect(linter.rules).to eq(rules)
