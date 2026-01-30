@@ -3,7 +3,7 @@
 module Herb
   module Lint
     module Rules
-      module A11y
+      module Html
         # Rule that requires title attribute on iframe elements.
         #
         # Iframes must have a title attribute to provide an accessible name
@@ -17,7 +17,7 @@ module Herb
         #   <iframe src="content.html" title=""></iframe>
         class IframeHasTitle < VisitorRule
           def self.rule_name #: String
-            "a11y/iframe-has-title"
+            "html/iframe-has-title"
           end
 
           def self.description #: String

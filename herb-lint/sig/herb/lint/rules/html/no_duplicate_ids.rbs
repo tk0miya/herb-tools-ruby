@@ -1,4 +1,4 @@
-# Generated from lib/herb/lint/rules/html/no_duplicate_id.rb with RBS::Inline
+# Generated from lib/herb/lint/rules/html/no_duplicate_ids.rb with RBS::Inline
 
 module Herb
   module Lint
@@ -17,7 +17,7 @@ module Herb
         # Bad:
         #   <div id="content">...</div>
         #   <div id="content">...</div>
-        class NoDuplicateId < VisitorRule
+        class NoDuplicateIds < VisitorRule
           def self.rule_name: () -> String
 
           def self.description: () -> String

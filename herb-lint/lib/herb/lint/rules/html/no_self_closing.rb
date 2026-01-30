@@ -19,7 +19,7 @@ module Herb
         #   <br/>
         #   <img src="photo.jpg" />
         #   <input type="text" />
-        class VoidElementStyle < VisitorRule
+        class NoSelfClosing < VisitorRule
           VOID_ELEMENTS = %w[
             area
             base
@@ -38,7 +38,7 @@ module Herb
           ].freeze #: Array[String]
 
           def self.rule_name #: String
-            "html/void-element-style"
+            "html/no-self-closing"
           end
 
           def self.description #: String

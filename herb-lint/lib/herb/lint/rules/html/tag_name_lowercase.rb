@@ -16,9 +16,9 @@ module Herb
         # Bad:
         #   <DIV></DIV>
         #   <Span>text</Span>
-        class LowercaseTags < VisitorRule
+        class TagNameLowercase < VisitorRule
           def self.rule_name #: String
-            "html/lowercase-tags"
+            "html/tag-name-lowercase"
           end
 
           def self.description #: String

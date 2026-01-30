@@ -17,9 +17,9 @@ module Herb
         # Bad:
         #   <div id="content">...</div>
         #   <div id="content">...</div>
-        class NoDuplicateId < VisitorRule
+        class NoDuplicateIds < VisitorRule
           def self.rule_name #: String
-            "html/no-duplicate-id"
+            "html/no-duplicate-ids"
           end
 
           def self.description #: String

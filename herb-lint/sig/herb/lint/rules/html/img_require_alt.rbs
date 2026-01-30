@@ -1,9 +1,9 @@
-# Generated from lib/herb/lint/rules/a11y/alt_text.rb with RBS::Inline
+# Generated from lib/herb/lint/rules/html/img_require_alt.rb with RBS::Inline
 
 module Herb
   module Lint
     module Rules
-      module A11y
+      module Html
         # Rule that requires alt attributes on img tags.
         #
         # Images must have an alt attribute to provide a text alternative
@@ -15,7 +15,7 @@ module Herb
         #
         # Bad:
         #   <img src="photo.jpg">
-        class AltText < VisitorRule
+        class ImgRequireAlt < VisitorRule
           def self.rule_name: () -> String
 
           def self.description: () -> String

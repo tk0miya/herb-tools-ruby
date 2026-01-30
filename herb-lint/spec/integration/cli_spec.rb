@@ -38,7 +38,7 @@ RSpec.describe "CLI integration" do # rubocop:disable RSpec/DescribeClass
       subject { run_cli(fixture_path("missing_alt.html.erb")) }
 
       it "reports offenses and exits with lint error code" do
-        expect(subject[:stdout]).to include("alt-text")
+        expect(subject[:stdout]).to include("html/img-require-alt")
         expect(subject[:stdout]).to include("1 problem")
         expect(subject[:status].exitstatus).to eq(Herb::Lint::CLI::EXIT_LINT_ERROR)
       end
@@ -61,7 +61,7 @@ RSpec.describe "CLI integration" do # rubocop:disable RSpec/DescribeClass
       expect(subject[:stdout]).to include("mixed_issues.html.erb")
       expect(subject[:stdout]).to match(/\d+:\d+/)
       expect(subject[:stdout]).to match(/error|warning/)
-      expect(subject[:stdout]).to match(%r{alt-text|html/attribute-quotes})
+      expect(subject[:stdout]).to match(%r{html/img-require-alt|html/attribute-double-quotes})
       expect(subject[:stdout]).to match(/\d+ problems?\s+\(\d+ errors?,\s+\d+ warnings?\)/)
     end
   end

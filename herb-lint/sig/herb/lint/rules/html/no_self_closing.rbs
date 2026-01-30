@@ -1,4 +1,4 @@
-# Generated from lib/herb/lint/rules/html/void_element_style.rb with RBS::Inline
+# Generated from lib/herb/lint/rules/html/no_self_closing.rb with RBS::Inline
 
 module Herb
   module Lint
@@ -19,7 +19,7 @@ module Herb
         #   <br/>
         #   <img src="photo.jpg" />
         #   <input type="text" />
-        class VoidElementStyle < VisitorRule
+        class NoSelfClosing < VisitorRule
           VOID_ELEMENTS: Array[String]
 
           def self.rule_name: () -> String

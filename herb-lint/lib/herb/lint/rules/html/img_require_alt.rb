@@ -3,7 +3,7 @@
 module Herb
   module Lint
     module Rules
-      module A11y
+      module Html
         # Rule that requires alt attributes on img tags.
         #
         # Images must have an alt attribute to provide a text alternative
@@ -15,9 +15,9 @@ module Herb
         #
         # Bad:
         #   <img src="photo.jpg">
-        class AltText < VisitorRule
+        class ImgRequireAlt < VisitorRule
           def self.rule_name #: String
-            "alt-text"
+            "html/img-require-alt"
           end
 
           def self.description #: String

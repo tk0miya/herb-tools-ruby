@@ -1,4 +1,4 @@
-# Generated from lib/herb/lint/rules/html/attribute_quotes.rb with RBS::Inline
+# Generated from lib/herb/lint/rules/html/attribute_double_quotes.rb with RBS::Inline
 
 module Herb
   module Lint
@@ -17,7 +17,7 @@ module Herb
         # Bad:
         #   <div class=container>
         #   <input type=text>
-        class AttributeQuotes < VisitorRule
+        class AttributeDoubleQuotes < VisitorRule
           def self.rule_name: () -> String
 
           def self.description: () -> String

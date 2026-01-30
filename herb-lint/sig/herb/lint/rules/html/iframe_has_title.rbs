@@ -1,9 +1,9 @@
-# Generated from lib/herb/lint/rules/a11y/iframe_has_title.rb with RBS::Inline
+# Generated from lib/herb/lint/rules/html/iframe_has_title.rb with RBS::Inline
 
 module Herb
   module Lint
     module Rules
-      module A11y
+      module Html
         # Rule that requires title attribute on iframe elements.
         #
         # Iframes must have a title attribute to provide an accessible name

@@ -10,14 +10,14 @@ module Herb
       # Built-in rule classes shipped with herb-lint.
       def self.builtin_rules #: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
         @builtin_rules ||= [
-          Rules::A11y::AltText,
-          Rules::A11y::IframeHasTitle,
-          Rules::Html::AttributeQuotes,
-          Rules::Html::LowercaseTags,
+          Rules::Html::AttributeDoubleQuotes,
+          Rules::Html::IframeHasTitle,
+          Rules::Html::ImgRequireAlt,
           Rules::Html::NoDuplicateAttributes,
-          Rules::Html::NoDuplicateId,
-          Rules::Html::NoPositiveTabindex,
-          Rules::Html::VoidElementStyle
+          Rules::Html::NoDuplicateIds,
+          Rules::Html::NoPositiveTabIndex,
+          Rules::Html::NoSelfClosing,
+          Rules::Html::TagNameLowercase
         ].freeze
       end
 

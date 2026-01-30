@@ -1,4 +1,4 @@
-# Generated from lib/herb/lint/rules/html/lowercase_tags.rb with RBS::Inline
+# Generated from lib/herb/lint/rules/html/tag_name_lowercase.rb with RBS::Inline
 
 module Herb
   module Lint
@@ -16,7 +16,7 @@ module Herb
         # Bad:
         #   <DIV></DIV>
         #   <Span>text</Span>
-        class LowercaseTags < VisitorRule
+        class TagNameLowercase < VisitorRule
           def self.rule_name: () -> String
 
           def self.description: () -> String

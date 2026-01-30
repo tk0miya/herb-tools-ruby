@@ -16,14 +16,14 @@ RSpec.describe Herb::Lint::Reporter::SimpleReporter do
             offenses: [
               build_offense(
                 severity: "error",
-                rule_name: "html/alt-text",
+                rule_name: "html/img-require-alt",
                 message: "img tag should have an alt attribute",
                 line: 5,
                 column: 10
               ),
               build_offense(
                 severity: "warning",
-                rule_name: "html/attribute-quotes",
+                rule_name: "html/attribute-double-quotes",
                 message: "Attribute value should be quoted",
                 line: 12,
                 column: 3
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Reporter::SimpleReporter do
             offenses: [
               build_offense(
                 severity: "error",
-                rule_name: "html/alt-text",
+                rule_name: "html/img-require-alt",
                 message: "img tag should have an alt attribute",
                 line: 8,
                 column: 15
@@ -50,11 +50,11 @@ RSpec.describe Herb::Lint::Reporter::SimpleReporter do
       let(:expected_output) do
         <<~OUTPUT
           app/views/users/show.html.erb
-            5:10  error    img tag should have an alt attribute  html/alt-text
-            12:3  warning  Attribute value should be quoted  html/attribute-quotes
+            5:10  error    img tag should have an alt attribute  html/img-require-alt
+            12:3  warning  Attribute value should be quoted  html/attribute-double-quotes
 
           app/views/posts/index.html.erb
-            8:15  error    img tag should have an alt attribute  html/alt-text
+            8:15  error    img tag should have an alt attribute  html/img-require-alt
 
           3 problems (2 errors, 1 warning) in 2 files
         OUTPUT

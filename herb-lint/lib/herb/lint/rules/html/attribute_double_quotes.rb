@@ -17,9 +17,9 @@ module Herb
         # Bad:
         #   <div class=container>
         #   <input type=text>
-        class AttributeQuotes < VisitorRule
+        class AttributeDoubleQuotes < VisitorRule
           def self.rule_name #: String
-            "html/attribute-quotes"
+            "html/attribute-double-quotes"
           end
 
           def self.description #: String

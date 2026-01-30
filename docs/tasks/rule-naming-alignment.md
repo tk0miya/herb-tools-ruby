@@ -56,34 +56,34 @@ rules/
 
 ### Task 1: Move `a11y/` rules to `html/`
 
-- [ ] Move `rules/a11y/alt_text.rb` to `rules/html/` with appropriate rename
-- [ ] Move `rules/a11y/iframe_has_title.rb` to `rules/html/`
-- [ ] Remove empty `rules/a11y/` directory
-- [ ] Update `require_relative` statements in `lib/herb/lint.rb`
-- [ ] Update module namespace from `Rules::A11y::` to `Rules::Html::`
-- [ ] Update `RuleRegistry.builtin_rules`
-- [ ] Move and update corresponding spec files
-- [ ] Move and update corresponding RBS type definition files
+- [x] Move `rules/a11y/alt_text.rb` to `rules/html/` with appropriate rename
+- [x] Move `rules/a11y/iframe_has_title.rb` to `rules/html/`
+- [x] Remove empty `rules/a11y/` directory
+- [x] Update `require_relative` statements in `lib/herb/lint.rb`
+- [x] Update module namespace from `Rules::A11y::` to `Rules::Html::`
+- [x] Update `RuleRegistry.builtin_rules`
+- [x] Move and update corresponding spec files
+- [x] Move and update corresponding RBS type definition files
 
 ### Task 2: Rename rule names to match TypeScript
 
-- [ ] `alt-text` → `html/img-require-alt`
-- [ ] `a11y/iframe-has-title` → `html/iframe-has-title`
-- [ ] `html/attribute-quotes` → `html/attribute-double-quotes`
-- [ ] `html/lowercase-tags` → `html/tag-name-lowercase`
-- [ ] `html/no-duplicate-id` → `html/no-duplicate-ids`
-- [ ] `html/no-positive-tabindex` → `html/no-positive-tab-index`
-- [ ] `html/void-element-style` → `html/no-self-closing`
-- [ ] `html/no-duplicate-attributes` — no change needed (separator only)
-- [ ] Update all `rule_name` method return values
-- [ ] Update all test assertions that reference rule names
-- [ ] Rename Ruby source files to match new rule names where appropriate
+- [x] `alt-text` → `html/img-require-alt`
+- [x] `a11y/iframe-has-title` → `html/iframe-has-title`
+- [x] `html/attribute-quotes` → `html/attribute-double-quotes`
+- [x] `html/lowercase-tags` → `html/tag-name-lowercase`
+- [x] `html/no-duplicate-id` → `html/no-duplicate-ids`
+- [x] `html/no-positive-tabindex` → `html/no-positive-tab-index`
+- [x] `html/void-element-style` → `html/no-self-closing`
+- [x] `html/no-duplicate-attributes` — no change needed (separator only)
+- [x] Update all `rule_name` method return values
+- [x] Update all test assertions that reference rule names
+- [x] Rename Ruby source files to match new rule names where appropriate
 
 ### Task 3: Update documentation
 
-- [ ] Update rule reference table in `docs/design/herb-lint-design.md`
-- [ ] Update `docs/tasks/phase-8-rule-expansion.md` rule names
-- [ ] Update `docs/tasks/README.md` if it references specific rule names
+- [x] Update rule reference table in `docs/design/herb-lint-design.md`
+- [x] Update `docs/tasks/phase-8-rule-expansion.md` rule names
+- [x] Update `docs/tasks/README.md` if it references specific rule names
 
 ### Task 4: Verify
 

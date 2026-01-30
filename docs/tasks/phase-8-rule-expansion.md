@@ -8,18 +8,17 @@ Only rules that have corresponding rules in the TypeScript herb-lint reference i
 | Category | Spec | Implemented | Remaining |
 |----------|------|-------------|-----------|
 | ERB rules | 13 | 0 | 13 |
-| HTML rules | 25+ | 3 | 22+ |
-| A11y rules | 15+ | 1 | 14+ |
+| HTML rules | 31 | 8 | 23 |
 
 **Implemented rules:**
-- `alt-text`
-- `a11y/iframe-has-title`
-- `html/attribute-quotes`
-- `html/lowercase-tags`
+- `html/attribute-double-quotes`
+- `html/iframe-has-title`
+- `html/img-require-alt`
 - `html/no-duplicate-attributes`
-- `html/no-duplicate-id`
-- `html/no-positive-tabindex`
-- `html/void-element-style`
+- `html/no-duplicate-ids`
+- `html/no-positive-tab-index`
+- `html/no-self-closing`
+- `html/tag-name-lowercase`
 
 ## Task Organization
 
@@ -54,7 +53,7 @@ Rules are prioritized by:
 
 ---
 
-### Task 8.2: `html/lowercase-tags`
+### Task 8.2: `html/tag-name-lowercase`
 - [x] Implement rule
 - [x] Add tests
 - [x] Update RuleRegistry
@@ -76,7 +75,7 @@ Rules are prioritized by:
 
 ---
 
-### Task 8.3: `html/no-positive-tabindex`
+### Task 8.3: `html/no-positive-tab-index`
 - [x] Implement rule
 - [x] Add tests
 - [x] Update RuleRegistry
@@ -101,7 +100,7 @@ Rules are prioritized by:
 
 ## Batch 2: Void Elements & Basic A11y (2 rules)
 
-### Task 8.4: `html/void-element-style`
+### Task 8.4: `html/no-self-closing`
 - [x] Implement rule
 - [x] Add tests
 - [x] Update RuleRegistry
@@ -125,7 +124,7 @@ Rules are prioritized by:
 
 ---
 
-### Task 8.5: `a11y/iframe-has-title`
+### Task 8.5: `html/iframe-has-title`
 - [x] Implement rule
 - [x] Add tests
 - [x] Update RuleRegistry
@@ -176,15 +175,14 @@ Rules are prioritized by:
 | Batch | Rules | Focus |
 |-------|-------|-------|
 | Batch 1 | 3 | Simple HTML rules |
-| Batch 2 | 2 | Void elements & A11y |
+| Batch 2 | 2 | Void elements & accessibility |
 | Batch 3 | 1 | ERB rules |
 
 **Total: 6 rules (5 completed, 1 remaining)**
 
 After completing these batches:
 - ERB rules: 1/13 implemented
-- HTML rules: 6/25+ implemented
-- A11y rules: 2/15+ implemented
+- HTML rules: 9/31 implemented
 
 ## Verification
 
