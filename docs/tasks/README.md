@@ -8,7 +8,7 @@ The MVP (Minimum Viable Product) has been completed with:
 
 - ✅ Basic `.herb.yml` loading (linter.rules section only)
 - ✅ Simple file discovery (`**/*.html.erb` patterns only)
-- ✅ 3 rule implementations (html-img-require-alt, html-attribute-double-quotes, html-no-duplicate-ids)
+- ✅ 3 rule implementations (alt-text, attribute-quotes, no-duplicate-id)
 - ✅ Basic CLI (`herb-lint <path>`, `--version`, `--help`)
 - ✅ SimpleReporter (text output only)
 
