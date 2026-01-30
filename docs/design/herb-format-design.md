@@ -18,6 +18,7 @@ herb-format/
 │           ├── runner.rb
 │           ├── formatter.rb
 │           ├── formatter_factory.rb
+│           ├── format_ignore.rb
 │           ├── context.rb
 │           ├── format_result.rb
 │           ├── aggregated_result.rb
@@ -38,6 +39,7 @@ herb-format/
 │           ├── cli_spec.rb
 │           ├── runner_spec.rb
 │           ├── formatter_spec.rb
+│           ├── format_ignore_spec.rb
 │           ├── context_spec.rb
 │           ├── format_result_spec.rb
 │           ├── engine_spec.rb
@@ -58,6 +60,7 @@ Herb::Format
 ├── Runner               # Format execution orchestration
 ├── Formatter            # Core formatting implementation
 ├── FormatterFactory     # Formatter instance creation (Factory Pattern)
+├── FormatIgnore         # Ignore directive detection (AST-based)
 ├── Context              # Format execution context
 ├── FormatResult         # Format result for a single file
 ├── AggregatedResult     # Aggregated result for multiple files
@@ -271,25 +274,25 @@ class Herb::Format::Formatter
 
   private
 
-  def parse_directives: (String source) -> Herb::Core::DirectiveParser
-  def should_ignore_file?: (Herb::Core::DirectiveParser directives, bool force) -> bool
   def apply_rewriters: (Herb::AST::Document ast, Array[Rewriters::Base] rewriters, Context context) -> Herb::AST::Document
 end
 ```
 
 **Processing Flow:**
-1. Parse inline directives (herb:formatter comments)
-2. Check for file-level ignore directive (unless `--force`)
-3. Parse ERB template into AST via `Herb.parse`
-4. Create Context with source and configuration
-5. Execute pre-rewriters (in order)
-6. Apply formatting rules via Engine
-7. Execute post-rewriters (in order)
-8. Serialize AST back to string
+1. Parse ERB template into AST via `Herb.parse`
+2. If parsing fails, return source unchanged
+3. Check for ignore directive via `FormatIgnore.ignore?` (unless `--force`)
+4. If ignored, return source unchanged
+5. Create Context with source and configuration
+6. Execute pre-rewriters (in order)
+7. Apply formatting rules via Engine
+8. Execute post-rewriters (in order)
 9. Return FormatResult with original and formatted content
 
+**Design Note:** The ignore directive check happens after parsing, not before. This follows the TypeScript reference implementation where the AST is parsed first, then the Visitor pattern is used to detect `<%# herb:formatter ignore %>` comments in the AST. If the directive is found, the original source is returned unchanged without any formatting applied.
+
 **Dependencies:**
-- `Herb::Core::DirectiveParser` - Parse inline directives
+- `FormatIgnore` - Detect ignore directives in AST
 - `Herb.parse` - AST parsing (from herb gem)
 - `Context` - Execution context
 - `Engine` - Formatting engine
@@ -329,6 +332,47 @@ end
 3. Query RewriterRegistry for configured post-rewriters
 4. Instantiate each rewriter
 5. Create Formatter with engine and rewriters
+
+### Herb::Format::FormatIgnore
+
+**Responsibility:** Detects `<%# herb:formatter ignore %>` directives in a parsed AST.
+
+**Design Note:** The TypeScript reference implementation (`format-ignore.ts`) handles formatter directive detection within the formatter package itself. The Ruby implementation follows this same pattern, keeping the ignore detection logic self-contained in `FormatIgnore`.
+
+```rbs
+module Herb::Format::FormatIgnore
+  FORMATTER_IGNORE_COMMENT: String  # "herb:formatter ignore"
+
+  # Check if the AST contains a herb:formatter ignore directive.
+  # Traverses ERB comment nodes looking for an exact match.
+  def self.ignore?: (Herb::AST::Document document) -> bool
+
+  # Check if a single node is a herb:formatter ignore comment.
+  def self.ignore_comment?: (Herb::AST::Node node) -> bool
+
+  private
+
+  # Internal Visitor subclass that traverses the AST to detect
+  # the ignore directive. Sets a flag when found.
+  class IgnoreDetector
+    include Herb::Visitor
+
+    @ignore_directive_found: bool
+
+    attr_reader ignore_directive_found: bool
+
+    def initialize: () -> void
+    def visit_erb_content_node: (Herb::AST::ERBContentNode node) -> void
+  end
+end
+```
+
+**Detection Algorithm:**
+1. Create `IgnoreDetector` (a `Herb::Visitor` subclass)
+2. Traverse AST via `document.visit(detector)`
+3. For each `ERBContentNode`, check if it is an ERB comment (`<%#`)
+4. If comment content (trimmed) equals `"herb:formatter ignore"`, set flag
+5. Return flag value
 
 ### Herb::Format::Context
 
@@ -607,9 +651,10 @@ CLI#run
   │       ├── File.read(file)
   │       │
   │       └── Formatter#format(file, source)
-  │           ├── DirectiveParser.new(source, mode: :formatter) (herb-core)
-  │           ├── Check ignore_file? (unless --force)
   │           ├── Herb.parse(source) (herb gem)
+  │           ├── (parse failed?) return source unchanged
+  │           ├── FormatIgnore.ignore?(ast) (unless --force)
+  │           ├── (ignored?) return source unchanged
   │           ├── Context.new
   │           ├── pre_rewriters.each { |r| r.rewrite(ast, context) }
   │           ├── Engine#format(ast, context)
@@ -627,13 +672,11 @@ CLI#run
 
 ## Inline Directives
 
-The formatter supports inline directives parsed by `Herb::Core::DirectiveParser`:
+The formatter supports a single inline directive, detected by `Herb::Format::FormatIgnore` via AST traversal:
 
 | Directive | Description |
 |-----------|-------------|
 | `<%# herb:formatter ignore %>` | Ignore entire file |
-| `<%# herb:formatter off %>` | Start ignore range |
-| `<%# herb:formatter on %>` | End ignore range |
 
 **File-level Ignore:**
 ```erb
@@ -641,15 +684,9 @@ The formatter supports inline directives parsed by `Herb::Core::DirectiveParser`
 <!-- Rest of file is not formatted -->
 ```
 
-**Range Ignore:**
-```erb
-<%# herb:formatter off %>
-<pre>
-  This    content   preserves
-  its     exact     formatting
-</pre>
-<%# herb:formatter on %>
-```
+When the ignore directive is found anywhere in the file, the entire file's original source is returned unchanged. No rewriters or formatting engine run.
+
+**Note:** The formatter only supports file-level ignore. This matches the TypeScript reference implementation. Range-based ignore (`off`/`on`) is not supported.
 
 ## Error Handling
 
@@ -714,6 +751,22 @@ end
 - Non-relevant nodes are unchanged
 - Options affect behavior appropriately
 
+### Unit Tests - FormatIgnore
+
+**Focus:** Ignore directive detection logic
+
+**Test Structure:**
+- Parse sample ERB into AST using `Herb.parse`
+- Execute `FormatIgnore.ignore?` on the AST
+- Verify detection result
+
+**Key Test Cases:**
+- File with `<%# herb:formatter ignore %>` returns true
+- File without directive returns false
+- Directive with extra whitespace (e.g., `<%#  herb:formatter ignore  %>`) handled correctly
+- Directive not at the beginning of file still detected
+- Non-ignore comments (e.g., `<%# herb:formatter something %>`) do not trigger
+
 ### Integration Tests - Runner
 
 **Focus:** End-to-end formatting workflow
@@ -727,7 +780,8 @@ end
 **Key Test Cases:**
 - Multiple files are processed correctly
 - File discovery respects include/exclude patterns
-- Inline directives (herb:formatter off/on) work
+- File with `herb:formatter ignore` directive is skipped
+- `--force` overrides ignore directive
 - Write mode updates files
 - Check mode does not modify files
 - Error handling for parse failures
