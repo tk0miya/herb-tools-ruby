@@ -54,6 +54,19 @@ Detailed design for the ERB template linter.
 
 **Audience:** Developers implementing linter features, custom rules, or reporters.
 
+### [herb-format-design.md](./herb-format-design.md)
+Detailed design for the ERB template formatter.
+
+**Contents:**
+- Component structure (CLI, Runner, Formatter, RewriterRegistry, Engine, Rewriters)
+- Data structures (FormatResult, AggregatedResult)
+- RBS interface definitions for all classes
+- Rewriter implementation patterns (pre/post phases)
+- Engine formatting rules and serialization
+- Processing flow and component interactions
+
+**Audience:** Developers implementing formatter features, custom rewriters, or formatting rules.
+
 ## Design Principles
 
 All design documents follow these principles:

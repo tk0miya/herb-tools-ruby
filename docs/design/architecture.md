@@ -159,7 +159,7 @@ Herb::Lint
 
 For detailed design, see [herb-lint Design](./herb-lint-design.md).
 
-### herb-format (future)
+### herb-format
 
 **Purpose**: Code formatter for ERB templates, automatically fixing style and formatting issues.
 
@@ -187,6 +187,8 @@ Herb::Format
 - Rewriters operate on AST for reliable transformations
 - Registry Pattern enables custom rewriter loading
 - Check mode allows CI integration without modification
+
+For detailed design, see [herb-format Design](./herb-format-design.md).
 
 ## Processing Flow Overview
 

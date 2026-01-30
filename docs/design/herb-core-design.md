@@ -116,7 +116,7 @@ end
 
 ### Herb::Core::DirectiveParser
 
-Responsible for parsing inline disable/enable comments (e.g., `<%# herb:disable alt-text %>`) from ERB templates. Supports both linter and formatter directives.
+Responsible for parsing inline disable/enable comments (e.g., `<%# herb:disable alt-text %>`) from ERB templates.
 
 #### Data Structures
 
@@ -127,9 +127,6 @@ module Herb::Core::DirectiveParser::DirectiveType
   DISABLE_ALL: Symbol
   ENABLE_ALL: Symbol
   IGNORE_FILE: Symbol
-  FORMATTER_OFF: Symbol
-  FORMATTER_ON: Symbol
-  FORMATTER_IGNORE: Symbol
 end
 
 class Herb::Core::DirectiveParser::Directive
@@ -152,13 +149,11 @@ end
 ```rbs
 class Herb::Core::DirectiveParser
   @source: String
-  @mode: Symbol
   @directives: Array[Directive]
 
   attr_reader source: String
-  attr_reader mode: Symbol
 
-  def initialize: (String source, ?mode: Symbol) -> void
+  def initialize: (String source) -> void
 
   # Parse all directives from source
   def parse: () -> Array[Directive]
@@ -173,9 +168,8 @@ end
 ```
 
 **Responsibilities:**
-- Parse ERB comments containing herb directives
-- Support linter directives (disable, enable, linter ignore)
-- Support formatter directives (formatter off, formatter on, formatter ignore)
+- Parse ERB comments containing herb linter directives
+- Support disable, enable, disable all, enable all, and linter ignore directives
 - Track directive scopes (:next_line, :range, :file)
 - Compute rule enable/disable state at any line
 - Handle multiple rules in a single directive (comma-separated)
@@ -260,7 +254,7 @@ source = <<~ERB
   <div onclick="handler()">Click</div>
 ERB
 
-parser = Herb::Core::DirectiveParser.new(source, mode: :linter)
+parser = Herb::Core::DirectiveParser.new(source)
 
 # Parse all directives
 directives = parser.parse
@@ -279,7 +273,7 @@ parser.disabled_at?(4, "valid-tag-nesting")  # => true (all disabled)
 ```ruby
 require "herb/core"
 
-parser = Herb::Core::DirectiveParser.new(source, mode: :linter)
+parser = Herb::Core::DirectiveParser.new(source)
 tracker = Herb::Core::DisableTracker.new(parser.parse)
 
 # Check if file should be ignored
@@ -328,9 +322,8 @@ Tests should verify the public interface of each component:
 
 **DirectiveParser Tests:**
 - Parsing linter directives (disable, enable, disable all, enable all)
-- Parsing formatter directives (off, on, ignore)
+- Linter file-level ignore detection
 - Multiple rules in single directive
-- File-level ignore detection
 - Line-level disable state computation
 - Directive scope handling (next_line, range, file)
 
@@ -345,4 +338,6 @@ Tests should verify the public interface of each component:
 
 - [Overall Architecture](./architecture.md)
 - [herb-lint Design](./herb-lint-design.md)
+- [herb-format Design](./herb-format-design.md)
 - [Requirements: herb-lint](../requirements/herb-lint.md)
+- [Requirements: herb-format](../requirements/herb-format.md)
