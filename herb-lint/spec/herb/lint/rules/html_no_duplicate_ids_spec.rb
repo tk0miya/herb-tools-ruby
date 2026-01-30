@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "../../../../spec_helper"
+require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::Html::NoDuplicateIds do
   subject { described_class.new.check(document, context) }
@@ -9,8 +9,8 @@ RSpec.describe Herb::Lint::Rules::Html::NoDuplicateIds do
   let(:context) { instance_double(Herb::Lint::Context) }
 
   describe ".rule_name" do
-    it "returns 'html/no-duplicate-ids'" do
-      expect(described_class.rule_name).to eq("html/no-duplicate-ids")
+    it "returns 'html-no-duplicate-ids'" do
+      expect(described_class.rule_name).to eq("html-no-duplicate-ids")
     end
   end
 
@@ -51,7 +51,7 @@ RSpec.describe Herb::Lint::Rules::Html::NoDuplicateIds do
 
       it "reports an offense for the duplicate with first occurrence line number" do
         expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html/no-duplicate-ids")
+        expect(subject.first.rule_name).to eq("html-no-duplicate-ids")
         expect(subject.first.message).to include("Duplicate id 'content'")
         expect(subject.first.message).to include("first defined at line 1")
         expect(subject.first.severity).to eq("error")

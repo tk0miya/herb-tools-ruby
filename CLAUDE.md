@@ -60,9 +60,10 @@ herb-tools-ruby/
 │   │           ├── rule_registry.rb
 │   │           └── rules/
 │   │               ├── base.rb
-│   │               ├── erb/
-│   │               ├── html/
-│   │               └── a11y/
+│   │               ├── visitor_rule.rb
+│   │               ├── node_helpers.rb
+│   │               ├── html_*.rb
+│   │               └── erb_*.rb
 │   ├── exe/
 │   │   └── herb-lint
 │   ├── spec/
@@ -146,12 +147,12 @@ Each gem's binstubs use that gem's Gemfile, ensuring proper dependency resolutio
 ### Module Structure
 
 ```ruby
-# lib/herb/lint/rules/html/alt_text.rb
+# lib/herb/lint/rules/html_img_require_alt.rb
 module Herb
   module Lint
     module Rules
       module Html
-        class AltText < Base
+        class ImgRequireAlt < Base
           # Implementation
         end
       end
@@ -173,13 +174,13 @@ end
 All lint rules inherit from `VisitorRule` and override `visit_*` methods to inspect AST nodes. Each rule must define three class methods: `rule_name`, `description`, and `default_severity`. Always call `super` at the end of visit methods to continue traversal.
 
 ```ruby
-# lib/herb/lint/rules/html/my_rule.rb
+# lib/herb/lint/rules/html_my_rule.rb
 module Herb
   module Lint
     module Rules
       module Html
         class MyRule < VisitorRule
-          def self.rule_name = "html/my-rule"
+          def self.rule_name = "html-my-rule"
           def self.description = "Description of the rule"
           def self.default_severity = "warning"
 
@@ -218,7 +219,7 @@ attribute_value(find_attribute(node, "role"))
 
 When adding a new rule:
 
-1. Create the rule file under `lib/herb/lint/rules/{category}/`
+1. Create the rule file under `lib/herb/lint/rules/` (flat structure, e.g., `html_my_rule.rb`)
 2. Add `require_relative` to `lib/herb/lint.rb` (in ASCII order)
 3. Add the class to `RuleRegistry.builtin_rules` in `lib/herb/lint/rule_registry.rb` (in ASCII order)
 
@@ -241,8 +242,8 @@ herb-lint/spec/
 │       ├── runner_spec.rb
 │       ├── config_spec.rb
 │       └── rules/
-│           ├── erb/
-│           └── html/
+│           ├── html_*_spec.rb
+│           └── erb_*_spec.rb
 └── fixtures/
     └── templates/
 

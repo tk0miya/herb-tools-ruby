@@ -18,7 +18,7 @@ module Herb
         #   <Span>text</Span>
         class TagNameLowercase < VisitorRule
           def self.rule_name #: String
-            "html/tag-name-lowercase"
+            "html-tag-name-lowercase"
           end
 
           def self.description #: String

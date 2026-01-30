@@ -17,7 +17,7 @@ module Herb
         #   <div class="foo" class="bar">content</div>
         class NoDuplicateAttributes < VisitorRule
           def self.rule_name #: String
-            "html/no-duplicate-attributes"
+            "html-no-duplicate-attributes"
           end
 
           def self.description #: String

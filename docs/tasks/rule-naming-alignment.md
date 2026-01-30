@@ -67,14 +67,14 @@ rules/
 
 ### Task 2: Rename rule names to match TypeScript
 
-- [x] `alt-text` → `html/img-require-alt`
-- [x] `a11y/iframe-has-title` → `html/iframe-has-title`
-- [x] `html/attribute-quotes` → `html/attribute-double-quotes`
-- [x] `html/lowercase-tags` → `html/tag-name-lowercase`
-- [x] `html/no-duplicate-id` → `html/no-duplicate-ids`
-- [x] `html/no-positive-tabindex` → `html/no-positive-tab-index`
-- [x] `html/void-element-style` → `html/no-self-closing`
-- [x] `html/no-duplicate-attributes` — no change needed (separator only)
+- [x] `alt-text` → `html-img-require-alt`
+- [x] `a11y/iframe-has-title` → `html-iframe-has-title`
+- [x] `html/attribute-quotes` → `html-attribute-double-quotes`
+- [x] `html/lowercase-tags` → `html-tag-name-lowercase`
+- [x] `html/no-duplicate-id` → `html-no-duplicate-ids`
+- [x] `html/no-positive-tabindex` → `html-no-positive-tab-index`
+- [x] `html/void-element-style` → `html-no-self-closing`
+- [x] `html/no-duplicate-attributes` → `html-no-duplicate-attributes`
 - [x] Update all `rule_name` method return values
 - [x] Update all test assertions that reference rule names
 - [x] Rename Ruby source files to match new rule names where appropriate
@@ -85,19 +85,31 @@ rules/
 - [x] Update `docs/tasks/phase-8-rule-expansion.md` rule names
 - [x] Update `docs/tasks/README.md` if it references specific rule names
 
-### Task 4: Verify
+### Task 4: Flatten directory structure
 
-- [ ] `cd herb-lint && ./bin/rspec` — all tests pass
-- [ ] `cd herb-lint && ./bin/steep check` — type checking passes
-- [ ] `cd herb-lint && ./bin/rubocop` — no offenses
+- [x] Move rule files from `rules/html/` to flat `rules/` directory (e.g., `rules/html_img_require_alt.rb`)
+- [x] Move spec files from `spec/rules/html/` to flat `spec/rules/` directory
+- [x] Move RBS files from `sig/rules/html/` to flat `sig/rules/` directory
+- [x] Update all `require_relative` paths in `lib/herb/lint.rb` and spec files
+- [x] Remove empty `html/` subdirectories
+
+### Task 5: Verify
+
+- [x] `cd herb-lint && ./bin/rspec` — all tests pass
+- [x] `cd herb-lint && ./bin/steep check` — type checking passes
+- [x] `cd herb-lint && ./bin/rubocop` — no offenses
 
 ## Design Decision: Separator Character
 
 TypeScript uses `-` (hyphen) as the sole separator: `html-no-duplicate-ids`.
 
-Ruby currently uses `/` (slash) between category and name: `html/no-duplicate-id`.
+**Decision:** Use `-` (hyphen) separator matching TypeScript exactly (e.g., `html-no-duplicate-ids`). This ensures `.herb.yml` configuration files can be shared between TypeScript and Ruby implementations without any mapping layer. Rule names are identical across both implementations.
 
-**Recommendation:** Keep the `/` separator in Ruby rule names (e.g., `html/no-duplicate-ids` instead of `html-no-duplicate-ids`). The slash-separated format is idiomatic for Ruby tools (similar to RuboCop's `Style/FrozenStringLiteralComment`) and is already established in the codebase. The mapping between Ruby (`html/`) and TypeScript (`html-`) separators is straightforward and can be handled at the configuration layer if cross-tool compatibility is needed.
+## Design Decision: Directory Structure
+
+TypeScript uses a flat `rules/` directory with rule files named by their full rule name (e.g., `html-no-duplicate-ids.ts`).
+
+**Decision:** Use a flat `rules/` directory matching TypeScript's layout. Rule files use the Ruby-idiomatic underscore naming (e.g., `html_no_duplicate_ids.rb`). The Ruby `Rules::Html::` module namespace is preserved for Ruby-idiomatic class organization, but the directory structure is flat.
 
 ## References
 

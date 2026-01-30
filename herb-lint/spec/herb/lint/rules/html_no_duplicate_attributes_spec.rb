@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "../../../../spec_helper"
+require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::Html::NoDuplicateAttributes do
   subject { described_class.new.check(document, context) }
@@ -9,8 +9,8 @@ RSpec.describe Herb::Lint::Rules::Html::NoDuplicateAttributes do
   let(:context) { instance_double(Herb::Lint::Context) }
 
   describe ".rule_name" do
-    it "returns 'html/no-duplicate-attributes'" do
-      expect(described_class.rule_name).to eq("html/no-duplicate-attributes")
+    it "returns 'html-no-duplicate-attributes'" do
+      expect(described_class.rule_name).to eq("html-no-duplicate-attributes")
     end
   end
 
@@ -40,7 +40,7 @@ RSpec.describe Herb::Lint::Rules::Html::NoDuplicateAttributes do
 
       it "reports an offense for the duplicate" do
         expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html/no-duplicate-attributes")
+        expect(subject.first.rule_name).to eq("html-no-duplicate-attributes")
         expect(subject.first.message).to eq("Duplicate attribute 'class'")
         expect(subject.first.severity).to eq("error")
       end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "../../../../spec_helper"
+require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::Html::IframeHasTitle do
   subject { described_class.new.check(document, context) }
@@ -9,8 +9,8 @@ RSpec.describe Herb::Lint::Rules::Html::IframeHasTitle do
   let(:context) { instance_double(Herb::Lint::Context) }
 
   describe ".rule_name" do
-    it "returns 'html/iframe-has-title'" do
-      expect(described_class.rule_name).to eq("html/iframe-has-title")
+    it "returns 'html-iframe-has-title'" do
+      expect(described_class.rule_name).to eq("html-iframe-has-title")
     end
   end
 
@@ -40,7 +40,7 @@ RSpec.describe Herb::Lint::Rules::Html::IframeHasTitle do
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html/iframe-has-title")
+        expect(subject.first.rule_name).to eq("html-iframe-has-title")
         expect(subject.first.message).to eq("Missing or empty title attribute on iframe element")
         expect(subject.first.severity).to eq("error")
       end
@@ -51,7 +51,7 @@ RSpec.describe Herb::Lint::Rules::Html::IframeHasTitle do
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html/iframe-has-title")
+        expect(subject.first.rule_name).to eq("html-iframe-has-title")
         expect(subject.first.message).to eq("Missing or empty title attribute on iframe element")
       end
     end
@@ -85,7 +85,7 @@ RSpec.describe Herb::Lint::Rules::Html::IframeHasTitle do
 
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
-        expect(subject.map(&:rule_name)).to all(eq("html/iframe-has-title"))
+        expect(subject.map(&:rule_name)).to all(eq("html-iframe-has-title"))
       end
     end
 

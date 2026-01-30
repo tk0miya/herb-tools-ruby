@@ -11,14 +11,14 @@ Only rules that have corresponding rules in the TypeScript herb-lint reference i
 | HTML rules | 31 | 8 | 23 |
 
 **Implemented rules:**
-- `html/attribute-double-quotes`
-- `html/iframe-has-title`
-- `html/img-require-alt`
-- `html/no-duplicate-attributes`
-- `html/no-duplicate-ids`
-- `html/no-positive-tab-index`
-- `html/no-self-closing`
-- `html/tag-name-lowercase`
+- `html-attribute-double-quotes`
+- `html-iframe-has-title`
+- `html-img-require-alt`
+- `html-no-duplicate-attributes`
+- `html-no-duplicate-ids`
+- `html-no-positive-tab-index`
+- `html-no-self-closing`
+- `html-tag-name-lowercase`
 
 ## Task Organization
 
@@ -31,7 +31,7 @@ Rules are prioritized by:
 
 ## Batch 1: Simple HTML Rules (3 rules)
 
-### Task 8.1: `html/no-duplicate-attributes`
+### Task 8.1: `html-no-duplicate-attributes`
 - [x] Implement rule
 - [x] Add tests
 - [x] Update RuleRegistry
@@ -53,7 +53,7 @@ Rules are prioritized by:
 
 ---
 
-### Task 8.2: `html/tag-name-lowercase`
+### Task 8.2: `html-tag-name-lowercase`
 - [x] Implement rule
 - [x] Add tests
 - [x] Update RuleRegistry
@@ -75,7 +75,7 @@ Rules are prioritized by:
 
 ---
 
-### Task 8.3: `html/no-positive-tab-index`
+### Task 8.3: `html-no-positive-tab-index`
 - [x] Implement rule
 - [x] Add tests
 - [x] Update RuleRegistry
@@ -100,7 +100,7 @@ Rules are prioritized by:
 
 ## Batch 2: Void Elements & Basic A11y (2 rules)
 
-### Task 8.4: `html/no-self-closing`
+### Task 8.4: `html-no-self-closing`
 - [x] Implement rule
 - [x] Add tests
 - [x] Update RuleRegistry
@@ -124,7 +124,7 @@ Rules are prioritized by:
 
 ---
 
-### Task 8.5: `html/iframe-has-title`
+### Task 8.5: `html-iframe-has-title`
 - [x] Implement rule
 - [x] Add tests
 - [x] Update RuleRegistry

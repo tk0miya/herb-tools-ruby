@@ -17,7 +17,7 @@ module Herb
         #   <img src="photo.jpg">
         class ImgRequireAlt < VisitorRule
           def self.rule_name #: String
-            "html/img-require-alt"
+            "html-img-require-alt"
           end
 
           def self.description #: String
