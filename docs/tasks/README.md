@@ -72,6 +72,14 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 4. Check off completed tasks (`- [ ]` → `- [x]`)
 5. Move to the next phase when all tasks are complete
 
+## Prerequisite Tasks
+
+The following tasks should be completed before continuing with new rule implementations:
+
+### Rule Naming Alignment
+
+- [rule-naming-alignment.md](./rule-naming-alignment.md) — Align rule directory structure and naming with TypeScript reference
+
 ## Unscheduled Tasks (Low Priority)
 
 The following features are not yet scheduled into phases. Consider adding them when needed:
