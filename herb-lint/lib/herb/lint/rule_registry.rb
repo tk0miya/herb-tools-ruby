@@ -21,6 +21,7 @@ module Herb
           Rules::HtmlNoDuplicateAttributes,
           Rules::HtmlNoDuplicateIds,
           Rules::HtmlNoEmptyAttributes,
+          Rules::HtmlNoTitleAttribute,
           Rules::HtmlNoUnderscoresInAttributeNames,
           Rules::HtmlNoPositiveTabIndex,
           Rules::HtmlNoSelfClosing,
