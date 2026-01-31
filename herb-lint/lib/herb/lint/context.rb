@@ -20,6 +20,12 @@ module Herb
         @rule_registry = rule_registry
       end
 
+      # Returns the list of valid rule names from the registry.
+      # Used by herb-disable-comment-valid-rule-name meta-rule.
+      def valid_rule_names #: Array[String]
+        @rule_registry&.rule_names || []
+      end
+
       # Returns the severity for a specific rule.
       # Checks configuration first, falls back to rule's default severity,
       # then defaults to "error".

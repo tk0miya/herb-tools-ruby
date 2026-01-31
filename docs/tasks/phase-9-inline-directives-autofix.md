@@ -267,10 +267,10 @@ All meta-rules are **non-excludable** (cannot be suppressed by `herb:disable` di
 
 **Location:** `herb-lint/lib/herb/lint/rules/herb_disable_comment_valid_rule_name.rb`
 
-- [ ] Implement rule class
-- [ ] Register in `RuleRegistry`
-- [ ] Add unit tests
-- [ ] Generate RBS types
+- [x] Implement rule class
+- [x] Register in `RuleRegistry`
+- [x] Add unit tests
+- [x] Generate RBS types
 
 | Property | Value |
 |----------|-------|

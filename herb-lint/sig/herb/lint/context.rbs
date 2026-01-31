@@ -17,6 +17,10 @@ module Herb
       # @rbs rule_registry: RuleRegistry? -- optional registry to look up rule defaults
       def initialize: (file_path: String, source: String, config: Herb::Config::LinterConfig, ?rule_registry: RuleRegistry?) -> void
 
+      # Returns the list of valid rule names from the registry.
+      # Used by herb-disable-comment-valid-rule-name meta-rule.
+      def valid_rule_names: () -> Array[String]
+
       # Returns the severity for a specific rule.
       # Checks configuration first, falls back to rule's default severity,
       # then defaults to "error".
