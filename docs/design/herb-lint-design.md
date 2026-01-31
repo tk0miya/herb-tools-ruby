@@ -26,6 +26,7 @@ herb-lint/
 │           ├── custom_rule_loader.rb
 │           ├── fixer.rb
 │           ├── errors.rb
+│           ├── directive_parser.rb
 │           ├── reporter/
 │           │   ├── base_reporter.rb
 │           │   ├── detailed_reporter.rb
@@ -69,25 +70,26 @@ herb-lint/
 
 ```
 Herb::Lint
-├── CLI              # Command line interface
-├── Runner           # Lint execution orchestration
-├── Linter           # Core linting implementation
-├── LinterFactory    # Linter instance creation (Factory Pattern)
-├── Context          # Lint execution context
-├── Offense          # Offense representation
-├── LintResult       # Lint result for a single file
-├── AggregatedResult # Aggregated result for multiple files
-├── RuleRegistry     # Rule registration and lookup (Registry Pattern)
-├── CustomRuleLoader # Custom rule loading
-├── Fixer            # Automatic fix application
-├── Errors           # Custom exceptions
-├── Reporter         # Output formatter
+├── CLI                       # Command line interface
+├── Runner                    # Lint execution orchestration
+├── Linter                    # Core linting implementation
+├── LinterFactory             # Linter instance creation (Factory Pattern)
+├── Context                   # Lint execution context
+├── Offense                   # Offense representation
+├── LintResult                # Lint result for a single file
+├── AggregatedResult          # Aggregated result for multiple files
+├── RuleRegistry              # Rule registration and lookup (Registry Pattern)
+├── CustomRuleLoader          # Custom rule loading
+├── Fixer                     # Automatic fix application
+├── Errors                    # Custom exceptions
+├── DirectiveParser           # Directive parsing (herb:disable, herb:linter ignore)
+├── Reporter                  # Output formatter
 │   ├── BaseReporter
 │   ├── DetailedReporter
 │   ├── SimpleReporter
 │   ├── JsonReporter
 │   └── GithubReporter
-└── Rules            # Rule implementations
+└── Rules                     # Rule implementations
     ├── Base
     ├── VisitorRule
     ├── HtmlAttributeDoubleQuotes
@@ -246,6 +248,7 @@ end
 - `--github` - GitHub Actions annotation format
 - `--fail-level LEVEL` - Minimum severity to trigger failure (error, warning, info, hint)
 - `--config PATH` - Custom configuration file path
+- `--ignore-disable-comments` - Report offenses even when suppressed with `<%# herb:disable %>` comments
 - `--version` - Display version information
 - `--help` - Display help message
 
@@ -303,7 +306,7 @@ end
 
 ### Herb::Lint::Linter
 
-**Responsibility:** Core single-file linting implementation.
+**Responsibility:** Core single-file linting implementation. Uses `DirectiveParser` for directive processing and offense filtering.
 
 ```rbs
 class Herb::Lint::Linter
@@ -318,28 +321,47 @@ class Herb::Lint::Linter
     Herb::Config::LinterConfig config
   ) -> void
 
-  def lint: (String file_path, String source) -> LintResult
+  def lint: (String file_path, String source, ?Context context) -> LintResult
 
   private
 
-  def parse_directives: (String source) -> Herb::Core::DirectiveParser
-  def should_ignore_file?: (Herb::Core::DirectiveParser directives) -> bool
-  def filter_by_directives: (Array[Offense] offenses, Herb::Core::DirectiveParser directives) -> Array[Offense]
+  # Filter offenses using the herb:disable cache from Directives.
+  # Returns a tuple of [kept_offenses, ignored_offenses].
+  # Also populates ignored_offenses_by_line to track which rule names
+  # were actually used to suppress offenses (needed by the "unnecessary" meta-rule).
+  def filter_offenses: (
+    Array[Offense] offenses,
+    String rule_name,
+    DirectiveParser::Directives directives,
+    Hash[Integer, Set[String]] ignored_offenses_by_line
+  ) -> [Array[Offense], Array[Offense]]
 end
 ```
 
 **Processing Flow:**
-1. Parse inline directives (herb-lint-disable comments)
-2. Check for file-level ignore directive
-3. Parse ERB template into AST via `Herb.parse`
-4. Create Context with source and configuration
+1. Parse ERB template into AST via `Herb.parse`
+2. Parse directives via `DirectiveParser.parse(parse_result, source)` → `directives`
+3. Check for file-level ignore via `directives.ignore_file?`; return empty result if found
+4. Create Context with source, configuration, and directive-related fields
 5. Execute each enabled rule against the AST
-6. Filter offenses based on inline disable directives
-7. Return LintResult with offenses
+6. For each rule's offenses, call `filter_offenses` using `directives`
+7. Execute non-excludable meta-rules (herb-disable-comment-\* rules); these always run and cannot be suppressed by `herb:disable`
+8. Execute `herb-disable-comment-unnecessary` last (requires `ignored_offenses_by_line` from step 6)
+9. Return LintResult with kept offenses and ignored count
+
+**Non-Excludable Rules:**
+
+The following meta-rules validate `herb:disable` comments themselves and cannot be suppressed by `herb:disable` directives:
+
+- `herb-disable-comment-malformed`
+- `herb-disable-comment-missing-rules`
+- `herb-disable-comment-valid-rule-name`
+- `herb-disable-comment-no-duplicate-rules`
+- `herb-disable-comment-no-redundant-all`
+- `herb-disable-comment-unnecessary`
 
 **Dependencies:**
-- `Herb::Core::DirectiveParser` - Parse inline directives
-- `Herb::Core::DisableTracker` - Track disabled rules
+- `DirectiveParser` - Parse directives; returns `Directives` data object
 - `Herb.parse` - AST parsing (from herb gem)
 - `Context` - Execution context
 - `Rules::Base` subclasses - Rule implementations
@@ -380,7 +402,7 @@ end
 
 **Responsibility:** Provides contextual information during rule execution.
 
-**Design Note:** Directive parsing (inline disable comments) is handled by the Linter, not individual rules. Context provides read-only access to configuration and source information that rules need for their checks.
+**Design Note:** Directive parsing (inline disable comments) is handled by the Linter, not individual rules. Context provides read-only access to configuration and source information that rules need. It also carries directive-related fields needed by the herb-disable-comment meta-rules.
 
 ```rbs
 class Herb::Lint::Context
@@ -393,10 +415,27 @@ class Herb::Lint::Context
   attr_reader source: String
   attr_reader config: Herb::Config::LinterConfig
 
+  # List of valid rule names registered in the system.
+  # Used by herb-disable-comment-valid-rule-name to check if directive
+  # rule names are real.
+  attr_reader valid_rule_names: Array[String]?
+
+  # Tracks which rule names were actually used to suppress offenses per line.
+  # Populated by Linter#filter_offenses, consumed by herb-disable-comment-unnecessary
+  # to detect directives that did not suppress any offense.
+  attr_reader ignored_offenses_by_line: Hash[Integer, Set[String]]?
+
+  # When true, report offenses even when suppressed by herb:disable comments.
+  # Controlled by the --ignore-disable-comments CLI flag.
+  attr_reader ignore_disable_comments: bool
+
   def initialize: (
     file_path: String,
     source: String,
-    config: Herb::Config::LinterConfig
+    config: Herb::Config::LinterConfig,
+    ?valid_rule_names: Array[String]?,
+    ?ignored_offenses_by_line: Hash[Integer, Set[String]]?,
+    ?ignore_disable_comments: bool
   ) -> void
 
   def severity_for: (String rule_name) -> Symbol
@@ -763,6 +802,116 @@ class Herb::Lint::Rules::VisitorRule < Base
 end
 ```
 
+## Directive Handling
+
+### Overview
+
+herb-lint supports two types of inline directives in ERB templates:
+
+| Directive | Syntax | Scope | Purpose |
+|-----------|--------|-------|---------|
+| Line disable (specific) | `<%# herb:disable rule1, rule2 %>` | Same line | Suppress specific rules on that line |
+| Line disable (all) | `<%# herb:disable all %>` | Same line | Suppress all rules on that line |
+| File ignore | `<%# herb:linter ignore %>` | Entire file | Skip the entire file from linting |
+
+**Design Note:** This design matches the TypeScript reference implementation. Directives are line-scoped only — there is no `herb:enable`, no range-based disable, and no `next_line` scope. The `herb:disable` comment must appear on the **same line** as the offense it suppresses.
+
+### Herb::Lint::DirectiveParser
+
+**Responsibility:** Parse directive comments from an ERB template. Stateless parser that takes a parse result and source, and returns a `Directives` data object.
+
+**Reference:** Corresponds to `herb-disable-comment-utils.ts` and `linter-ignore.ts` in the TypeScript implementation. The TS version keeps these as separate files, but since both operate on ERB comments, they are unified here.
+
+#### Data Structures
+
+```rbs
+# Represents a parsed rule name with position information for error reporting.
+class Herb::Lint::DirectiveParser::DisableRuleName
+  attr_reader name: String
+  attr_reader offset: Integer
+  attr_reader length: Integer
+
+  def initialize: (name: String, offset: Integer, length: Integer) -> void
+end
+
+# Represents a parsed herb:disable comment.
+class Herb::Lint::DirectiveParser::DisableComment
+  attr_reader match: String
+  attr_reader rule_names: Array[String]
+  attr_reader rule_name_details: Array[DisableRuleName]
+  attr_reader rules_string: String
+
+  def initialize: (
+    match: String,
+    rule_names: Array[String],
+    rule_name_details: Array[DisableRuleName],
+    rules_string: String
+  ) -> void
+end
+
+# Parse result holding all directive information for a file.
+# Provides query methods for the Linter to check disable state.
+class Herb::Lint::DirectiveParser::Directives
+  attr_reader herb_disable_cache: Hash[Integer, Array[String]]
+
+  def initialize: (
+    ignore_file: bool,
+    herb_disable_cache: Hash[Integer, Array[String]]
+  ) -> void
+
+  # Whether the file contains a <%# herb:linter ignore %> directive.
+  def ignore_file?: () -> bool
+
+  # Check if a specific rule is disabled at a given line number (1-based).
+  # Returns true if the line has a herb:disable comment listing the rule name or "all".
+  def disabled_at?: (Integer line, String rule_name) -> bool
+end
+```
+
+#### Public Interface
+
+```rbs
+class Herb::Lint::DirectiveParser
+  HERB_DISABLE_PREFIX: String         # "herb:disable"
+  HERB_LINTER_IGNORE_PREFIX: String   # "herb:linter ignore"
+
+  # Parse all directives from a template.
+  # Detects <%# herb:linter ignore %> via AST traversal and builds
+  # the herb:disable cache via line-by-line source scan.
+  def self.parse: (Herb::ParseResult parse_result, String source) -> Directives
+
+  # Parse the content inside <%# ... %> delimiters.
+  # Used by meta-rules for AST-based analysis of disable comments.
+  # Returns nil if the content is not a valid herb:disable comment.
+  def self.parse_disable_comment_content: (String content) -> DisableComment?
+
+  # Check if content (inside delimiters) is a herb:disable comment.
+  def self.disable_comment_content?: (String content) -> bool
+end
+```
+
+**Design Note:**
+- `DirectiveParser` is stateless. All methods are class methods.
+- `parse` is the main entry point: it returns a `Directives` object that holds the parsed state and provides query methods (`ignore_file?`, `disabled_at?`).
+- `parse_disable_comment_content` and `disable_comment_content?` are separate class methods used by meta-rules to inspect individual AST nodes during traversal.
+
+### Herb Disable Comment Meta-Rules
+
+The following six meta-rules validate `herb:disable` comments themselves. They are **non-excludable** — they cannot be suppressed by `herb:disable` directives. Each inherits from `VisitorRule` directly.
+
+| Rule Name | Severity | What It Detects |
+|-----------|----------|-----------------|
+| `herb-disable-comment-malformed` | error | Missing space after prefix, trailing/leading/consecutive commas |
+| `herb-disable-comment-missing-rules` | error | `<%# herb:disable %>` with no rule names |
+| `herb-disable-comment-valid-rule-name` | warning | Unknown rule names (with "did you mean?" suggestions using `valid_rule_names` from Context) |
+| `herb-disable-comment-no-duplicate-rules` | warning | Same rule listed twice in one comment |
+| `herb-disable-comment-no-redundant-all` | warning | `all` used alongside specific rules (redundant) |
+| `herb-disable-comment-unnecessary` | warning | Directive that does not suppress any actual offense (uses `ignored_offenses_by_line` from Context) |
+
+All meta-rules override `visit_erb_content_node` to filter for ERB comment nodes (`<%#`), then use `DirectiveParser.parse_disable_comment_content` to parse and validate the content.
+
+**Execution Order:** `herb-disable-comment-unnecessary` must execute **after** all other rules and after offense filtering, because it needs to know which offenses were actually suppressed.
+
 ## Rule Implementation Examples
 
 ### Example: HtmlImgRequireAlt
@@ -956,7 +1105,7 @@ Features:
 ```
 CLI#run
   │
-  ├── parse_options
+  ├── parse_options (including --ignore-disable-comments)
   │
   ├── Config.load (herb-config)
   │
@@ -970,14 +1119,34 @@ CLI#run
   │   └── files.each do |file|
   │       ├── File.read(file)
   │       │
-  │       └── Linter#lint(file, source)
-  │           ├── DirectiveParser.new(source) (herb-core)
-  │           ├── Check ignore_file?
+  │       └── Linter#lint(file, source, context)
+  │           │
   │           ├── Herb.parse(source) (herb gem)
-  │           ├── Context.new
-  │           ├── rules.each { |r| r.check(document, context) }
-  │           ├── filter_by_directives
-  │           └── return LintResult
+  │           │
+  │           ├── directives = DirectiveParser.parse(parse_result, source)
+  │           │   ├── Detect <%# herb:linter ignore %> via AST traversal
+  │           │   └── Build herb_disable_cache via line-by-line scan
+  │           │
+  │           ├── directives.ignore_file?
+  │           │   └── (return empty LintResult if file ignored)
+  │           │
+  │           ├── Context.new (with valid_rule_names, ignore_disable_comments)
+  │           │
+  │           ├── Execute regular rules
+  │           │   └── rules.each do |rule|
+  │           │       ├── rule.check(document, context)
+  │           │       └── filter_offenses(offenses, rule_name,
+  │           │           directives, ignored_offenses_by_line)
+  │           │           → kept[] + ignored[]
+  │           │
+  │           ├── Execute non-excludable meta-rules
+  │           │   └── herb-disable-comment-* rules (except unnecessary)
+  │           │       (these run against the AST, not filtered by herb:disable)
+  │           │
+  │           ├── Execute herb-disable-comment-unnecessary (last)
+  │           │   └── (uses ignored_offenses_by_line to detect unused directives)
+  │           │
+  │           └── return LintResult (offenses + ignored count)
   │
   ├── AggregatedResult.new(results)
   │
@@ -1037,7 +1206,7 @@ end
 **Key Test Cases:**
 - Multiple files are processed correctly
 - File discovery respects include/exclude patterns
-- Inline directives (herb-lint-disable) work
+- Inline directives (`herb:disable`, `herb:linter ignore`) work
 - Auto-fix writes corrected files
 - Error handling for parse failures
 
