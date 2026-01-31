@@ -149,9 +149,9 @@ Rules are prioritized by:
 ## Batch 3: ERB Rules (1 rule)
 
 ### Task 8.6: `erb-comment-syntax`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Enforce ERB comment style (`<%#` vs `<% #`).
 
@@ -178,7 +178,7 @@ Rules are prioritized by:
 | Batch 2 | 2 | Void elements & A11y |
 | Batch 3 | 1 | ERB rules |
 
-**Total: 6 rules (5 completed, 1 remaining)**
+**Total: 6 rules (6 completed, 0 remaining)**
 
 After completing these batches:
 - ERB rules: 1/13 implemented
