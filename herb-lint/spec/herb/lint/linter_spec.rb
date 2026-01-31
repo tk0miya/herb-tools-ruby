@@ -22,7 +22,7 @@ RSpec.describe Herb::Lint::Linter do
         expect(subject.file_path).to eq(file_path)
         expect(subject.source).to eq(source)
         expect(subject.offenses.size).to eq(1)
-        expect(subject.offenses.first.rule_name).to eq("alt-text")
+        expect(subject.offenses.first.rule_name).to eq("html-img-require-alt")
       end
     end
 
@@ -61,7 +61,7 @@ RSpec.describe Herb::Lint::Linter do
         expect(subject.offenses.size).to eq(2)
 
         rule_names = subject.offenses.map(&:rule_name)
-        expect(rule_names).to contain_exactly("alt-text", "test-rule")
+        expect(rule_names).to contain_exactly("html-img-require-alt", "test-rule")
       end
     end
 

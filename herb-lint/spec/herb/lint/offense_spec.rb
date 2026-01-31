@@ -4,13 +4,13 @@ RSpec.describe Herb::Lint::Offense do
   describe "#initialize" do
     subject { described_class.new(rule_name:, message:, severity:, location:) }
 
-    let(:rule_name) { "alt-text" }
+    let(:rule_name) { "html-img-require-alt" }
     let(:message) { "Image missing alt attribute" }
     let(:severity) { "error" }
     let(:location) { build_location(line: 10, column: 5) }
 
     it "sets all attributes correctly" do
-      expect(subject.rule_name).to eq("alt-text")
+      expect(subject.rule_name).to eq("html-img-require-alt")
       expect(subject.message).to eq("Image missing alt attribute")
       expect(subject.severity).to eq("error")
       expect(subject.location).to eq(location)
@@ -22,7 +22,7 @@ RSpec.describe Herb::Lint::Offense do
 
     let(:offense) do
       described_class.new(
-        rule_name: "alt-text",
+        rule_name: "html-img-require-alt",
         message: "Image missing alt attribute",
         severity: "error",
         location:
@@ -40,7 +40,7 @@ RSpec.describe Herb::Lint::Offense do
 
     let(:offense) do
       described_class.new(
-        rule_name: "attribute-quotes",
+        rule_name: "html-attribute-double-quotes",
         message: "Attribute should use double quotes",
         severity: "warning",
         location:

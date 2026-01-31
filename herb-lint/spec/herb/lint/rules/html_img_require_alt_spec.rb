@@ -9,8 +9,8 @@ RSpec.describe Herb::Lint::Rules::HtmlImgRequireAlt do
   let(:context) { instance_double(Herb::Lint::Context) }
 
   describe ".rule_name" do
-    it "returns 'alt-text'" do
-      expect(described_class.rule_name).to eq("alt-text")
+    it "returns 'html-img-require-alt'" do
+      expect(described_class.rule_name).to eq("html-img-require-alt")
     end
   end
 
@@ -48,7 +48,7 @@ RSpec.describe Herb::Lint::Rules::HtmlImgRequireAlt do
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("alt-text")
+        expect(subject.first.rule_name).to eq("html-img-require-alt")
         expect(subject.first.message).to eq("Missing alt attribute on img tag")
         expect(subject.first.severity).to eq("error")
       end
@@ -59,7 +59,7 @@ RSpec.describe Herb::Lint::Rules::HtmlImgRequireAlt do
 
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
-        expect(subject.map(&:rule_name)).to all(eq("alt-text"))
+        expect(subject.map(&:rule_name)).to all(eq("html-img-require-alt"))
       end
     end
 

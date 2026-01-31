@@ -18,7 +18,7 @@ module Herb
       #   <div tabindex="5">Content</div>
       class HtmlNoPositiveTabIndex < VisitorRule
         def self.rule_name #: String
-          "html/no-positive-tabindex"
+          "html-no-positive-tab-index"
         end
 
         def self.description #: String

@@ -9,8 +9,8 @@ RSpec.describe Herb::Lint::Rules::HtmlTagNameLowercase do
   let(:context) { instance_double(Herb::Lint::Context) }
 
   describe ".rule_name" do
-    it "returns 'html/lowercase-tags'" do
-      expect(described_class.rule_name).to eq("html/lowercase-tags")
+    it "returns 'html-tag-name-lowercase'" do
+      expect(described_class.rule_name).to eq("html-tag-name-lowercase")
     end
   end
 
@@ -40,7 +40,7 @@ RSpec.describe Herb::Lint::Rules::HtmlTagNameLowercase do
 
       it "reports an offense for the open tag" do
         expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html/lowercase-tags")
+        expect(subject.first.rule_name).to eq("html-tag-name-lowercase")
         expect(subject.first.message).to eq("Tag name 'DIV' should be lowercase")
         expect(subject.first.severity).to eq("warning")
       end
@@ -51,7 +51,7 @@ RSpec.describe Herb::Lint::Rules::HtmlTagNameLowercase do
 
       it "reports an offense for the close tag" do
         expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html/lowercase-tags")
+        expect(subject.first.rule_name).to eq("html-tag-name-lowercase")
         expect(subject.first.message).to eq("Tag name 'DIV' should be lowercase")
       end
     end
