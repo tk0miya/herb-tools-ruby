@@ -231,4 +231,89 @@ RSpec.describe Herb::Lint::DirectiveParser do
       end
     end
   end
+
+  describe "Directives#filter_offenses" do
+    let(:directives) do
+      described_class::Directives.new(ignore_file: false, disable_comments:)
+    end
+
+    def build_offense(rule_name:, line:)
+      location = Herb::Location.new(
+        Herb::Position.new(line, 0),
+        Herb::Position.new(line, 0)
+      )
+      Herb::Lint::Offense.new(rule_name:, message: "msg", severity: "error", location:)
+    end
+
+    context "when no disable comments exist" do
+      let(:disable_comments) { {} }
+
+      it "keeps all offenses" do
+        offenses = [build_offense(rule_name: "rule1", line: 1)]
+        kept, ignored = directives.filter_offenses(offenses)
+        expect(kept).to eq(offenses)
+        expect(ignored).to be_empty
+      end
+    end
+
+    context "when offense is disabled on its line" do
+      let(:disable_comments) do
+        {
+          1 => described_class::DisableComment.new(
+            match: true, rule_names: ["rule1"], rule_name_details: [], rules_string: "rule1"
+          )
+        }
+      end
+
+      it "moves the offense to ignored" do
+        offenses = [build_offense(rule_name: "rule1", line: 1)]
+        kept, ignored = directives.filter_offenses(offenses)
+        expect(kept).to be_empty
+        expect(ignored).to eq(offenses)
+      end
+    end
+
+    context "when disable all is used" do
+      let(:disable_comments) do
+        {
+          1 => described_class::DisableComment.new(
+            match: true, rule_names: ["all"], rule_name_details: [], rules_string: "all"
+          )
+        }
+      end
+
+      it "moves all offenses on that line to ignored" do
+        offenses = [
+          build_offense(rule_name: "rule1", line: 1),
+          build_offense(rule_name: "rule2", line: 1)
+        ]
+        kept, ignored = directives.filter_offenses(offenses)
+        expect(kept).to be_empty
+        expect(ignored.size).to eq(2)
+      end
+    end
+
+    context "with mixed disabled and non-disabled offenses" do
+      let(:disable_comments) do
+        {
+          1 => described_class::DisableComment.new(
+            match: true, rule_names: ["rule1"], rule_name_details: [], rules_string: "rule1"
+          )
+        }
+      end
+
+      it "partitions offenses correctly" do
+        offenses = [
+          build_offense(rule_name: "rule1", line: 1),
+          build_offense(rule_name: "rule2", line: 1),
+          build_offense(rule_name: "rule1", line: 2)
+        ]
+        kept, ignored = directives.filter_offenses(offenses)
+        expect(kept.size).to eq(2)
+        expect(ignored.size).to eq(1)
+        expect(ignored.first.rule_name).to eq("rule1")
+        expect(ignored.first.line).to eq(1)
+      end
+    end
+  end
 end

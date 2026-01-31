@@ -126,6 +126,44 @@ RSpec.describe Herb::Lint::CLI do
           expect(subject).to eq(described_class::EXIT_SUCCESS)
         end
       end
+
+      context "when offense is suppressed by herb:disable" do
+        let(:argv) { [] }
+
+        before do
+          create_file("app/views/disabled.html.erb", '<img src="test.png"> <%# herb:disable html-img-require-alt %>')
+        end
+
+        it "returns EXIT_SUCCESS when all offenses are suppressed" do
+          expect(subject).to eq(described_class::EXIT_SUCCESS)
+        end
+      end
+
+      context "with --ignore-disable-comments flag" do
+        let(:argv) { ["--ignore-disable-comments"] }
+
+        before do
+          create_file("app/views/disabled.html.erb", '<img src="test.png"> <%# herb:disable html-img-require-alt %>')
+        end
+
+        it "reports suppressed offenses and returns EXIT_LINT_ERROR" do
+          output = capture_stdout { subject }
+          expect(subject).to eq(described_class::EXIT_LINT_ERROR)
+          expect(output).to include("html-img-require-alt")
+        end
+      end
+
+      context "when file has herb:linter ignore" do
+        let(:argv) { [] }
+
+        before do
+          create_file("app/views/ignored.html.erb", "<%# herb:linter ignore %>\n<img src=\"test.png\">")
+        end
+
+        it "returns EXIT_SUCCESS as the file is entirely ignored" do
+          expect(subject).to eq(described_class::EXIT_SUCCESS)
+        end
+      end
     end
 
     describe "error handling" do

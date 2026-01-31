@@ -14,8 +14,9 @@ module Herb
         Usage: herb-lint [options] [paths...]
 
         Options:
-          --version    Show version
-          --help       Show this help
+          --version                    Show version
+          --help                       Show this help
+          --ignore-disable-comments    Report offenses even when suppressed by herb:disable
 
         Examples:
           herb-lint                          # Lint all files in current directory
@@ -75,8 +76,9 @@ module Herb
         config = Herb::Config::LinterConfig.new(config_hash)
 
         paths = argv.reject { |arg| arg.start_with?("-") }
+        ignore_disable_comments = argv.include?("--ignore-disable-comments")
 
-        runner = Runner.new(config)
+        runner = Runner.new(config, ignore_disable_comments:)
         result = runner.run(paths)
 
         reporter = Reporter::SimpleReporter.new

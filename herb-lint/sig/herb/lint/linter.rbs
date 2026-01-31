@@ -11,12 +11,24 @@ module Herb
 
       attr_reader rule_registry: RuleRegistry?
 
+      attr_reader ignore_disable_comments: bool
+
       # @rbs rules: Array[Rules::Base | Rules::VisitorRule]
       # @rbs config: Herb::Config::LinterConfig
       # @rbs rule_registry: RuleRegistry? -- optional registry for severity lookup
-      def initialize: (Array[Rules::Base | Rules::VisitorRule] rules, Herb::Config::LinterConfig config, ?rule_registry: RuleRegistry?) -> void
+      # @rbs ignore_disable_comments: bool -- when true, report offenses even when suppressed
+      def initialize: (Array[Rules::Base | Rules::VisitorRule] rules, Herb::Config::LinterConfig config, ?rule_registry: RuleRegistry?, ?ignore_disable_comments: bool) -> void
 
       # Lint a single file and return the result.
+      #
+      # Processing flow:
+      # 1. Parse ERB template into AST
+      # 2. Parse directives via DirectiveParser
+      # 3. Check for file-level ignore
+      # 4. Create Context and execute each enabled rule against the AST
+      # 5. Filter offenses using directives (unless ignore_disable_comments)
+      # 6. Return LintResult with kept offenses and ignored count
+      #
       # @rbs file_path: String -- path to the file being linted
       # @rbs source: String -- source code content of the file
       def lint: (file_path: String, source: String) -> LintResult

@@ -8,10 +8,13 @@ module Herb
     # It handles file discovery, rule instantiation, and result aggregation.
     class Runner
       attr_reader :config #: Herb::Config::LinterConfig
+      attr_reader :ignore_disable_comments #: bool
 
       # @rbs config: Herb::Config::LinterConfig
-      def initialize(config) #: void
+      # @rbs ignore_disable_comments: bool -- when true, report offenses even when suppressed
+      def initialize(config, ignore_disable_comments: false) #: void
         @config = config
+        @ignore_disable_comments = ignore_disable_comments
       end
 
       # Run linting on the given paths and return aggregated results.
@@ -19,7 +22,7 @@ module Herb
       def run(paths = []) #: AggregatedResult
         files = discover_files(paths)
         rules = instantiate_rules
-        linter = Linter.new(rules, config, rule_registry:)
+        linter = Linter.new(rules, config, rule_registry:, ignore_disable_comments:)
 
         results = files.map do |file_path|
           source = File.read(file_path)
