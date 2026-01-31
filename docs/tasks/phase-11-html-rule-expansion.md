@@ -121,9 +121,9 @@ Rules are grouped by theme and sorted by complexity within each batch.
 ---
 
 ### Task 11.5: `html-no-underscores-in-attribute-names`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow underscores in HTML attribute names (use hyphens instead).
 
