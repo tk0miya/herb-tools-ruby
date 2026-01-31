@@ -18,7 +18,7 @@ module Herb
       #   <div id="content">...</div>
       class HtmlNoDuplicateIds < VisitorRule
         def self.rule_name #: String
-          "html/no-duplicate-id"
+          "html-no-duplicate-ids"
         end
 
         def self.description #: String

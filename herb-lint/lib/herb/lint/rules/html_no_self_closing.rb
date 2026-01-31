@@ -37,7 +37,7 @@ module Herb
         ].freeze #: Array[String]
 
         def self.rule_name #: String
-          "html/void-element-style"
+          "html-no-self-closing"
         end
 
         def self.description #: String

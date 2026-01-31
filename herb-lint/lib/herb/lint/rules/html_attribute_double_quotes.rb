@@ -18,7 +18,7 @@ module Herb
       #   <input type=text>
       class HtmlAttributeDoubleQuotes < VisitorRule
         def self.rule_name #: String
-          "html/attribute-quotes"
+          "html-attribute-double-quotes"
         end
 
         def self.description #: String

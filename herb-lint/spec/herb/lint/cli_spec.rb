@@ -115,7 +115,7 @@ RSpec.describe Herb::Lint::CLI do
           output = capture_stdout { subject }
           expect(subject).to eq(described_class::EXIT_LINT_ERROR)
           expect(output).to include("app/views/invalid.html.erb")
-          expect(output).to include("alt-text")
+          expect(output).to include("html-img-require-alt")
         end
       end
 

@@ -150,22 +150,22 @@ Complete mapping from current Ruby names to target names (= TypeScript names):
 
 ### Task 3: Rename rule names to match TypeScript
 
-- [ ] `alt-text` → `html-img-require-alt`
-- [ ] `a11y/iframe-has-title` → `html-iframe-has-title`
-- [ ] `html/attribute-quotes` → `html-attribute-double-quotes`
-- [ ] `html/lowercase-tags` → `html-tag-name-lowercase`
-- [ ] `html/no-duplicate-attributes` → `html-no-duplicate-attributes`
-- [ ] `html/no-duplicate-id` → `html-no-duplicate-ids`
-- [ ] `html/no-positive-tabindex` → `html-no-positive-tab-index`
-- [ ] `html/void-element-style` → `html-no-self-closing`
-- [ ] Update all `rule_name` method return values
+- [x] `alt-text` → `html-img-require-alt`
+- [x] `a11y/iframe-has-title` → `html-iframe-has-title`
+- [x] `html/attribute-quotes` → `html-attribute-double-quotes`
+- [x] `html/lowercase-tags` → `html-tag-name-lowercase`
+- [x] `html/no-duplicate-attributes` → `html-no-duplicate-attributes`
+- [x] `html/no-duplicate-id` → `html-no-duplicate-ids`
+- [x] `html/no-positive-tabindex` → `html-no-positive-tab-index`
+- [x] `html/void-element-style` → `html-no-self-closing`
+- [x] Update all `rule_name` method return values
 
 ### Task 4: Update tests
 
 - [x] Move and rename spec files to match new rule file names
 - [x] Remove empty `spec/rules/a11y/` directory
 - [x] Remove empty `spec/rules/html/` directory
-- [ ] Update all test assertions that reference rule names
+- [x] Update all test assertions that reference rule names
 - [x] Update RBS type definition files
 
 ### Task 5: Update documentation

@@ -16,7 +16,7 @@ module Herb
       #   <iframe src="content.html" title=""></iframe>
       class HtmlIframeHasTitle < VisitorRule
         def self.rule_name #: String
-          "a11y/iframe-has-title"
+          "html-iframe-has-title"
         end
 
         def self.description #: String
