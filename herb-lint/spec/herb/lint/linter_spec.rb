@@ -87,6 +87,85 @@ RSpec.describe Herb::Lint::Linter do
         expect(subject.offenses.first.severity).to eq("error")
       end
     end
+
+    context "when file has herb:linter ignore directive" do
+      let(:rules) { [Herb::Lint::Rules::HtmlImgRequireAlt.new] }
+      let(:source) { "<%# herb:linter ignore %>\n<img src=\"test.png\">" }
+
+      it "returns an empty result" do
+        expect(subject.offenses).to be_empty
+        expect(subject.ignored_count).to eq(0)
+      end
+    end
+
+    context "when offense is disabled on the same line" do
+      let(:rules) { [Herb::Lint::Rules::HtmlImgRequireAlt.new] }
+      let(:source) { '<img src="test.png"> <%# herb:disable html-img-require-alt %>' }
+
+      it "filters out the disabled offense" do
+        expect(subject.offenses).to be_empty
+        expect(subject.ignored_count).to eq(1)
+      end
+    end
+
+    context "when offense is disabled with all" do
+      let(:rules) { [Herb::Lint::Rules::HtmlImgRequireAlt.new] }
+      let(:source) { '<img src="test.png"> <%# herb:disable all %>' }
+
+      it "filters out all offenses on that line" do
+        expect(subject.offenses).to be_empty
+        expect(subject.ignored_count).to eq(1)
+      end
+    end
+
+    context "when a different rule is disabled" do
+      let(:rules) { [Herb::Lint::Rules::HtmlImgRequireAlt.new] }
+      let(:source) { '<img src="test.png"> <%# herb:disable html-no-self-closing %>' }
+
+      it "does not filter the offense" do
+        expect(subject.offenses.size).to eq(1)
+        expect(subject.offenses.first.rule_name).to eq("html-img-require-alt")
+        expect(subject.ignored_count).to eq(0)
+      end
+    end
+
+    context "when disable is on a different line" do
+      let(:rules) { [Herb::Lint::Rules::HtmlImgRequireAlt.new] }
+      let(:source) { "<%# herb:disable html-img-require-alt %>\n<img src=\"test.png\">" }
+
+      it "does not filter the offense on the other line" do
+        expect(subject.offenses.size).to eq(1)
+        expect(subject.ignored_count).to eq(0)
+      end
+    end
+
+    context "with ignore_disable_comments option" do
+      let(:linter) { described_class.new(rules, config, rule_registry:, ignore_disable_comments: true) }
+      let(:rules) { [Herb::Lint::Rules::HtmlImgRequireAlt.new] }
+      let(:source) { '<img src="test.png"> <%# herb:disable html-img-require-alt %>' }
+
+      it "reports all offenses regardless of directives" do
+        expect(subject.offenses.size).to eq(1)
+        expect(subject.offenses.first.rule_name).to eq("html-img-require-alt")
+        expect(subject.ignored_count).to eq(0)
+      end
+    end
+
+    context "with mixed disabled and enabled offenses" do
+      let(:rules) { [Herb::Lint::Rules::HtmlImgRequireAlt.new] }
+      let(:source) do
+        <<~ERB.chomp
+          <img src="a.png"> <%# herb:disable html-img-require-alt %>
+          <img src="b.png">
+        ERB
+      end
+
+      it "only reports the non-disabled offense" do
+        expect(subject.offenses.size).to eq(1)
+        expect(subject.offenses.first.line).to eq(2)
+        expect(subject.ignored_count).to eq(1)
+      end
+    end
   end
 
   describe "#rules" do

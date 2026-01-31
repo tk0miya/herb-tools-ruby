@@ -10,10 +10,13 @@ module Herb
 
       attr_reader source: String
 
+      attr_reader ignored_count: Integer
+
       # @rbs file_path: String
       # @rbs offenses: Array[Offense]
       # @rbs source: String
-      def initialize: (file_path: String, offenses: Array[Offense], source: String) -> void
+      # @rbs ignored_count: Integer -- number of offenses suppressed by directives
+      def initialize: (file_path: String, offenses: Array[Offense], source: String, ?ignored_count: Integer) -> void
 
       # Returns the count of errors.
       def error_count: () -> Integer

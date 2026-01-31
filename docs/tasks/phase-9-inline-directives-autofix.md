@@ -108,12 +108,12 @@ end
 
 **Location:** `herb-lint/lib/herb/lint/linter.rb`, `herb-lint/lib/herb/lint/context.rb`, `herb-lint/lib/herb/lint/cli.rb`
 
-- [ ] Call `DirectiveParser.parse` in `Linter#lint` method
-- [ ] Implement `Linter#filter_offenses` private method
-- [ ] Update `Context` to carry `directives`, `valid_rule_names`, `ignored_offenses_by_line`, and `ignore_disable_comments`
-- [ ] Add `--ignore-disable-comments` CLI option
-- [ ] Add integration tests
-- [ ] Update RBS types
+- [x] Call `DirectiveParser.parse` in `Linter#lint` method
+- [x] Implement `Linter#filter_offenses` private method
+- [x] Update `Context` to carry `directives`, `valid_rule_names`, `ignored_offenses_by_line`, and `ignore_disable_comments`
+- [x] Add `--ignore-disable-comments` CLI option
+- [x] Add integration tests
+- [x] Update RBS types
 
 **Linter#lint Processing Flow:**
 

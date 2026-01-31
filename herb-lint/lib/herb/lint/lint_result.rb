@@ -7,14 +7,17 @@ module Herb
       attr_reader :file_path #: String
       attr_reader :offenses #: Array[Offense]
       attr_reader :source #: String
+      attr_reader :ignored_count #: Integer
 
       # @rbs file_path: String
       # @rbs offenses: Array[Offense]
       # @rbs source: String
-      def initialize(file_path:, offenses:, source:) #: void
+      # @rbs ignored_count: Integer -- number of offenses suppressed by directives
+      def initialize(file_path:, offenses:, source:, ignored_count: 0) #: void
         @file_path = file_path
         @offenses = offenses
         @source = source
+        @ignored_count = ignored_count
       end
 
       # Returns the count of errors.

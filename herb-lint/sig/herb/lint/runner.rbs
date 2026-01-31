@@ -7,8 +7,11 @@ module Herb
     class Runner
       attr_reader config: Herb::Config::LinterConfig
 
+      attr_reader ignore_disable_comments: bool
+
       # @rbs config: Herb::Config::LinterConfig
-      def initialize: (Herb::Config::LinterConfig config) -> void
+      # @rbs ignore_disable_comments: bool -- when true, report offenses even when suppressed
+      def initialize: (Herb::Config::LinterConfig config, ?ignore_disable_comments: bool) -> void
 
       # Run linting on the given paths and return aggregated results.
       # @rbs paths: Array[String] -- explicit paths (files or directories) to lint

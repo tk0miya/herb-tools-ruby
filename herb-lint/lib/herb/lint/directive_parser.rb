@@ -52,6 +52,14 @@ module Herb
 
           comment.rule_names.include?(rule_name) || comment.rule_names.include?("all")
         end
+
+        # Filter offenses by disable comments.
+        # Returns a tuple of [kept_offenses, ignored_offenses].
+        #
+        # @rbs offenses: Array[Herb::Lint::Offense]
+        def filter_offenses(offenses) #: [Array[Herb::Lint::Offense], Array[Herb::Lint::Offense]]
+          offenses.partition { |offense| !disabled_at?(offense.line, offense.rule_name) }
+        end
       end
 
       # Parse all directives from a template.
