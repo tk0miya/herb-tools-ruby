@@ -170,9 +170,9 @@ Complete mapping from current Ruby names to target names (= TypeScript names):
 
 ### Task 5: Update documentation
 
-- [ ] Update rule reference table in `docs/design/herb-lint-design.md`
-- [ ] Update `docs/tasks/phase-8-rule-expansion.md` rule names
-- [ ] Update `docs/tasks/README.md` if it references specific rule names
+- [x] Update rule reference table in `docs/design/herb-lint-design.md`
+- [x] Update `docs/tasks/phase-8-rule-expansion.md` rule names
+- [x] Update `docs/tasks/README.md` if it references specific rule names
 
 ### Task 6: Verify
 
