@@ -1,0 +1,122 @@
+# Generated from lib/herb/lint/directive_parser.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # Stateless parser for ERB directive comments.
+    # Detects <%# herb:linter ignore %> and <%# herb:disable ... %> directives.
+    #
+    # DirectiveParser.parse is the only public entry point for full-file parsing.
+    # parse_disable_comment_content and disable_comment_content? are also public
+    # for use by meta-rules that inspect individual ERB comment nodes.
+    class DirectiveParser
+      HERB_DISABLE_PREFIX: String
+
+      HERB_LINTER_IGNORE_PREFIX: String
+
+      # Parsed rule name with position information for error reporting.
+      # offset is relative to the start of the ERB content token value.
+      class DisableRuleName < Data
+        attr_reader name(): String
+
+        attr_reader offset(): Integer
+
+        attr_reader length(): Integer
+
+        def self.new: (String name, Integer offset, Integer length) -> instance
+                    | (name: String, offset: Integer, length: Integer) -> instance
+
+        def self.members: () -> [ :name, :offset, :length ]
+
+        def members: () -> [ :name, :offset, :length ]
+      end
+
+      # Parsed herb:disable comment (including malformed ones).
+      # match is true when the comment has a valid herb:disable format.
+      # Malformed comments (match=false) are still stored for meta-rule validation.
+      class DisableComment < Data
+        attr_reader match(): bool
+
+        attr_reader rule_names(): Array[String]
+
+        attr_reader rule_name_details(): Array[DisableRuleName]
+
+        attr_reader rules_string(): String?
+
+        def self.new: (bool match, Array[String] rule_names, Array[DisableRuleName] rule_name_details, String? rules_string) -> instance
+                    | (match: bool, rule_names: Array[String], rule_name_details: Array[DisableRuleName], rules_string: String?) -> instance
+
+        def self.members: () -> [ :match, :rule_names, :rule_name_details, :rules_string ]
+
+        def members: () -> [ :match, :rule_names, :rule_name_details, :rules_string ]
+      end
+
+      # Parse result holding all directive information for a file.
+      # Meta-rules access disable_comments directly for validation.
+      class Directives < Data
+        attr_reader ignore_file(): bool
+
+        attr_reader disable_comments(): Hash[Integer, DisableComment]
+
+        def self.new: (bool ignore_file, Hash[Integer, DisableComment] disable_comments) -> instance
+                    | (ignore_file: bool, disable_comments: Hash[Integer, DisableComment]) -> instance
+
+        def self.members: () -> [ :ignore_file, :disable_comments ]
+
+        def members: () -> [ :ignore_file, :disable_comments ]
+      end
+
+      # Parse all directives from a template.
+      #
+      # @rbs parse_result: Herb::ParseResult -- parsed document
+      # @rbs source: String -- source code (reserved for future use)
+      def self.parse: (Herb::ParseResult parse_result, String source) -> Directives
+
+      # Parse the content inside <%# ... %> delimiters.
+      # Returns a DisableComment if the content starts with herb:disable prefix,
+      # nil otherwise.
+      #
+      # @rbs content: String -- the text between <%# and %>
+      def self.parse_disable_comment_content: (String content) -> DisableComment?
+
+      # Check if content (inside <%# ... %> delimiters) is a herb:disable comment.
+      #
+      # @rbs content: String -- the text between <%# and %>
+      def self.disable_comment_content?: (String content) -> bool
+
+      # Build a DisableComment for herb:disable with no rules.
+      def self.build_empty_disable_comment: () -> DisableComment
+
+      # Build a DisableComment for a malformed directive (no space after prefix).
+      # @rbs rest: String
+      def self.build_malformed_disable_comment: (String rest) -> DisableComment
+
+      # Build a DisableComment for a valid herb:disable directive.
+      # @rbs content: String -- full content value for offset calculation
+      # @rbs rules_string: String -- the portion after "herb:disable "
+      def self.build_matched_disable_comment: (String content, String rules_string) -> DisableComment
+
+      # Extract rule names with position information from the rules string.
+      #
+      # @rbs content: String -- full content value for offset calculation
+      # @rbs rules_string: String -- the portion after "herb:disable "
+      def self.extract_rule_names: (String content, String rules_string) -> Array[DisableRuleName]
+
+      # Private visitor for AST traversal to collect directive comments.
+      class Collector < Herb::Visitor
+        attr_reader ignore_file: bool
+
+        attr_reader disable_comments: Hash[Integer, DisableComment]
+
+        def initialize: () -> void
+
+        # @rbs override
+        def visit_erb_content_node: ...
+
+        private
+
+        # @rbs node: Herb::AST::ERBContentNode
+        def process_erb_comment: (Herb::AST::ERBContentNode node) -> void
+      end
+    end
+  end
+end
