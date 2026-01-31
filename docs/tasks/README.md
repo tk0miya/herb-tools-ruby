@@ -33,10 +33,10 @@ The MVP (Minimum Viable Product) has been completed with:
 | Phase | File | Tasks | Description | Status |
 |-------|------|-------|-------------|--------|
 | Phase 8 | [phase-8-rule-expansion.md](./phase-8-rule-expansion.md) | 6 | herb-lint rule expansion | 🚧 |
-| Phase 9 | [phase-9-inline-directives-autofix.md](./phase-9-inline-directives-autofix.md) | 7 | Inline directives & Auto-fix | 📋 |
+| Phase 9 | [phase-9-inline-directives-autofix.md](./phase-9-inline-directives-autofix.md) | 11 | Inline directives & Auto-fix | 📋 |
 | Phase 10 | [phase-10-reporters-validation.md](./phase-10-reporters-validation.md) | 6 | Multiple reporters & Config validation | 📋 |
 
-**Post-MVP Total: 19 tasks**
+**Post-MVP Total: 23 tasks**
 
 Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
@@ -50,12 +50,13 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 | Batch 2 | 2 | Void elements & A11y |
 | Batch 3 | 1 | ERB rules |
 
-### Phase 9: Inline Directives & Auto-fix (7 tasks)
+### Phase 9: Inline Directives & Auto-fix (11 tasks)
 
 | Part | Tasks | Description |
 |------|-------|-------------|
-| Part A | 3 | DirectiveParser, DisableTracker, Linter integration |
-| Part B | 4 | Fixer class, CLI options, Runner integration, fix methods |
+| Part A | 2 | DirectiveParser implementation, Linter integration |
+| Part B | 6 | herb-disable-comment meta-rules (one task per rule) |
+| Part C | 3 | Fixer class, CLI/Runner integration, fix methods |
 
 ### Phase 10: Reporters & Validation (6 tasks)
 

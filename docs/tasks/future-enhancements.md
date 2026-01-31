@@ -62,24 +62,23 @@ These features are implemented as simplified versions in the MVP. Consider expan
 
 ---
 
-### 4. herb-core: DirectiveParser & DisableTracker Implementation
+### 4. herb-lint: DirectiveParser & herb-disable-comment Meta-Rules
 
 **Current State (MVP):**
-- Inline directives (`# herb:disable`) not implemented
+- Inline directives (`herb:disable`) not implemented
 
 **Future Enhancements:**
-- [ ] DirectiveParser implementation (comment parsing)
-- [ ] DisableTracker implementation (track enabled/disabled state)
-- [ ] File-level disable
-- [ ] Line-level disable
-- [ ] Next line only disable
-- [ ] Specific rule disable
+- [ ] DirectiveParser implementation (stateless class methods in herb-lint)
+- [ ] Directives data object with `ignore_file?` and `disabled_at?` queries
+- [ ] Linter integration with `filter_offenses` and Context updates
+- [ ] `--ignore-disable-comments` CLI option
+- [ ] 6 herb-disable-comment meta-rules (non-excludable)
 
 **Priority:** High (important feature)
 
 **Implementation Complexity:** Medium
 
-**Reference:** `docs/design/herb-core-design.md` - DirectiveParser, DisableTracker sections
+**Reference:** `docs/design/herb-lint-design.md` - Directive Handling section; `docs/tasks/phase-9-inline-directives-autofix.md` - Tasks 9.1–9.8
 
 ---
 
@@ -197,7 +196,7 @@ These features are implemented as simplified versions in the MVP. Consider expan
 ## Priority Summary
 
 ### High Priority (Consider immediately after MVP)
-1. DirectiveParser & DisableTracker (inline directives)
+1. DirectiveParser & herb-disable-comment meta-rules (inline directives)
 2. Auto-fix functionality (`--fix` option)
 
 ### Medium Priority (As needed)
