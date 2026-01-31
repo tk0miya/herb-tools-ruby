@@ -13,6 +13,7 @@ module Herb
           Rules::ErbCommentSyntax,
           Rules::HtmlAttributeDoubleQuotes,
           Rules::HtmlAttributeEqualsSpacing,
+          Rules::HtmlAttributeValuesRequireQuotes,
           Rules::HtmlIframeHasTitle,
           Rules::HtmlImgRequireAlt,
           Rules::HtmlNoDuplicateAttributes,
