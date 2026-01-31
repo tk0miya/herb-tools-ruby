@@ -35,8 +35,11 @@ The MVP (Minimum Viable Product) has been completed with:
 | Phase 8 | [phase-8-rule-expansion.md](./phase-8-rule-expansion.md) | 6 | herb-lint rule expansion | 🚧 |
 | Phase 9 | [phase-9-inline-directives-autofix.md](./phase-9-inline-directives-autofix.md) | 11 | Inline directives & Auto-fix | 📋 |
 | Phase 10 | [phase-10-reporters-validation.md](./phase-10-reporters-validation.md) | 6 | Multiple reporters & Config validation | 📋 |
+| Phase 11 | [phase-11-html-rule-expansion.md](./phase-11-html-rule-expansion.md) | 23 | Remaining HTML rules | 📋 |
+| Phase 12 | [phase-12-erb-rule-expansion.md](./phase-12-erb-rule-expansion.md) | 12 | Remaining ERB rules | 📋 |
+| Phase 13 | [phase-13-svg-parser-rules.md](./phase-13-svg-parser-rules.md) | 2 | SVG & Parser rules | 📋 |
 
-**Post-MVP Total: 23 tasks**
+**Post-MVP Total: 60 tasks**
 
 Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
@@ -64,6 +67,31 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 |------|-------|-------------|
 | Part A | 3 | JsonReporter, GithubReporter, CLI options |
 | Part B | 3 | Validator, Loader integration, search path extension |
+
+### Phase 11: HTML Rule Expansion (23 rules)
+
+| Batch | Rules | Focus |
+|-------|-------|-------|
+| Batch 1 | 5 | Attribute rules |
+| Batch 2 | 5 | Element structure rules |
+| Batch 3 | 6 | ARIA accessibility rules |
+| Batch 4 | 4 | Other accessibility rules |
+| Batch 5 | 3 | Document structure rules |
+
+### Phase 12: ERB Rule Expansion (12 rules)
+
+| Batch | Rules | Focus |
+|-------|-------|-------|
+| Batch 1 | 4 | Tag spacing & whitespace rules |
+| Batch 2 | 4 | Control flow & output rules |
+| Batch 3 | 4 | Convention & strict locals rules |
+
+### Phase 13: SVG & Parser Rules (2 rules)
+
+| Task | Rule | Category |
+|------|------|----------|
+| 13.1 | `svg-tag-name-capitalization` | SVG |
+| 13.2 | `parser-no-errors` | Parser |
 
 ## How to Proceed
 
