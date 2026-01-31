@@ -1,0 +1,37 @@
+# Generated from lib/herb/lint/rules/herb_disable_comment_missing_rules.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Rule that detects `herb:disable` comments with no rule names specified.
+      #
+      # A `herb:disable` comment must specify at least one rule name or `all`.
+      # An empty `herb:disable` comment has no effect and is likely a mistake.
+      #
+      # Good:
+      #   <%# herb:disable rule-name %>
+      #   <%# herb:disable all %>
+      #
+      # Bad:
+      #   <%# herb:disable %>
+      class HerbDisableCommentMissingRules < VisitorRule
+        def self.rule_name: () -> String
+
+        def self.description: () -> String
+
+        def self.default_severity: () -> String
+
+        # @rbs override
+        def visit_erb_content_node: ...
+
+        private
+
+        # @rbs node: Herb::AST::ERBContentNode
+        def comment_tag?: (Herb::AST::ERBContentNode node) -> bool
+
+        # @rbs node: Herb::AST::ERBContentNode
+        def check_disable_comment: (Herb::AST::ERBContentNode node) -> void
+      end
+    end
+  end
+end
