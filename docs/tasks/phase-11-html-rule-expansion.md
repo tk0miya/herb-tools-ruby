@@ -27,9 +27,9 @@ Rules are grouped by theme and sorted by complexity within each batch.
 ## Batch 1: Attribute Rules (5 rules)
 
 ### Task 11.1: `html-attribute-equals-spacing`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow spaces around `=` in attribute assignments.
 
