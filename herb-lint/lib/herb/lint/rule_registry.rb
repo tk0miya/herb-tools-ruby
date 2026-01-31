@@ -10,6 +10,7 @@ module Herb
       # Built-in rule classes shipped with herb-lint.
       def self.builtin_rules #: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
         @builtin_rules ||= [
+          Rules::ErbCommentSyntax,
           Rules::HtmlAttributeDoubleQuotes,
           Rules::HtmlIframeHasTitle,
           Rules::HtmlImgRequireAlt,
