@@ -23,12 +23,12 @@ This phase implements high-priority post-MVP features: inline directive support,
 
 **Location:** `herb-lint/lib/herb/lint/directive_parser.rb`
 
-- [ ] Implement `DisableRuleName` Data class (name, offset, length)
-- [ ] Implement `DisableComment` Data class (match, rule_names, rule_name_details, rules_string)
-- [ ] Implement `Directives` Data class with `ignore_file?` and `disabled_at?` query methods
-- [ ] Implement `DirectiveParser.parse` class method (the only public method)
-- [ ] Add unit tests
-- [ ] Generate RBS types
+- [x] Implement `DisableRuleName` Data class (name, offset, length)
+- [x] Implement `DisableComment` Data class (match, rule_names, rule_name_details, rules_string)
+- [x] Implement `Directives` Data class with `ignore_file?` and `disabled_at?` query methods
+- [x] Implement `DirectiveParser.parse` class method (the only public method)
+- [x] Add unit tests
+- [x] Generate RBS types
 
 **Design Notes:**
 
