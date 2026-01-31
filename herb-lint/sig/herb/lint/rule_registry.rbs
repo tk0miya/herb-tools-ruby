@@ -8,6 +8,7 @@ module Herb
       @rules: Hash[String, singleton(Rules::Base) | singleton(Rules::VisitorRule)]
 
       # Built-in rule classes shipped with herb-lint.
+      # rubocop:disable Metrics/MethodLength
       def self.builtin_rules: () -> Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
 
       def initialize: () -> void

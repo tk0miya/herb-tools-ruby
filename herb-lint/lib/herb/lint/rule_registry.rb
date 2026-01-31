@@ -8,11 +8,13 @@ module Herb
       # @rbs @rules: Hash[String, singleton(Rules::Base) | singleton(Rules::VisitorRule)]
 
       # Built-in rule classes shipped with herb-lint.
+      # rubocop:disable Metrics/MethodLength
       def self.builtin_rules #: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
         @builtin_rules ||= [
           Rules::ErbCommentSyntax,
           Rules::HerbDisableCommentMalformed,
           Rules::HerbDisableCommentMissingRules,
+          Rules::HerbDisableCommentNoDuplicateRules,
           Rules::HtmlAnchorRequireHref,
           Rules::HtmlAttributeDoubleQuotes,
           Rules::HtmlAttributeEqualsSpacing,
@@ -30,6 +32,7 @@ module Herb
           Rules::HtmlTagNameLowercase
         ].freeze
       end
+      # rubocop:enable Metrics/MethodLength
 
       def initialize #: void
         @rules = {}
