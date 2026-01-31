@@ -1,0 +1,46 @@
+# Generated from lib/herb/lint/rules/html_no_empty_attributes.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Rule that disallows empty attribute values.
+      #
+      # Empty attribute values are typically mistakes and should either
+      # be removed or given a meaningful value. Some attributes like
+      # `alt=""` are semantically valid (indicates a decorative image)
+      # and are allowed.
+      #
+      # Good:
+      #   <div class="container">
+      #   <img alt="">
+      #
+      # Bad:
+      #   <div class="">
+      #   <input type="">
+      class HtmlNoEmptyAttributes < VisitorRule
+        # Attributes where an empty value is semantically valid.
+        ALLOWED_EMPTY_ATTRIBUTES: Array[String]
+
+        def self.rule_name: () -> String
+
+        def self.description: () -> String
+
+        def self.default_severity: () -> String
+
+        # @rbs override
+        def visit_html_element_node: ...
+
+        private
+
+        # @rbs node: Herb::AST::HTMLElementNode
+        def check_empty_attributes: (Herb::AST::HTMLElementNode node) -> void
+
+        # Check if an attribute has an explicit but empty value.
+        # Boolean attributes (no value) return false.
+        #
+        # @rbs node: Herb::AST::HTMLAttributeNode
+        def empty_value?: (Herb::AST::HTMLAttributeNode node) -> bool
+      end
+    end
+  end
+end

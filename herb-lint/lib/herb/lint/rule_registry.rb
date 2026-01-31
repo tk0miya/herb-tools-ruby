@@ -19,6 +19,7 @@ module Herb
           Rules::HtmlImgRequireAlt,
           Rules::HtmlNoDuplicateAttributes,
           Rules::HtmlNoDuplicateIds,
+          Rules::HtmlNoEmptyAttributes,
           Rules::HtmlNoPositiveTabIndex,
           Rules::HtmlNoSelfClosing,
           Rules::HtmlTagNameLowercase
