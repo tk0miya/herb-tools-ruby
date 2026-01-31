@@ -11,6 +11,7 @@ module Herb
       def self.builtin_rules #: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
         @builtin_rules ||= [
           Rules::ErbCommentSyntax,
+          Rules::HtmlAnchorRequireHref,
           Rules::HtmlAttributeDoubleQuotes,
           Rules::HtmlAttributeEqualsSpacing,
           Rules::HtmlAttributeValuesRequireQuotes,
