@@ -10,15 +10,15 @@ Only rules that have corresponding rules in the TypeScript herb-lint reference i
 | ERB rules | 13 | 0 | 13 |
 | HTML rules | 31 | 8 | 23 |
 
-**Implemented rules (current names → target names after [rule-naming-alignment](./rule-naming-alignment.md)):**
-- `alt-text` → `html-img-require-alt`
-- `a11y/iframe-has-title` → `html-iframe-has-title`
-- `html/attribute-quotes` → `html-attribute-double-quotes`
-- `html/lowercase-tags` → `html-tag-name-lowercase`
-- `html/no-duplicate-attributes` → `html-no-duplicate-attributes`
-- `html/no-duplicate-id` → `html-no-duplicate-ids`
-- `html/no-positive-tabindex` → `html-no-positive-tab-index`
-- `html/void-element-style` → `html-no-self-closing`
+**Implemented rules:**
+- `html-attribute-double-quotes`
+- `html-iframe-has-title`
+- `html-img-require-alt`
+- `html-no-duplicate-attributes`
+- `html-no-duplicate-ids`
+- `html-no-positive-tab-index`
+- `html-no-self-closing`
+- `html-tag-name-lowercase`
 
 ## Task Organization
 
