@@ -1,0 +1,42 @@
+# Generated from lib/herb/lint/rules/html_no_duplicate_meta_names.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Rule that disallows duplicate <meta> elements with the same name attribute.
+      #
+      # Each meta name should only appear once in a document. Duplicate meta
+      # elements with the same name can cause unpredictable behavior as search
+      # engines and browsers may use different values.
+      #
+      # Good:
+      #   <meta name="description" content="Page description">
+      #   <meta name="viewport" content="width=device-width">
+      #
+      # Bad:
+      #   <meta name="description" content="First">
+      #   <meta name="description" content="Second">
+      class HtmlNoDuplicateMetaNames < VisitorRule
+        def self.rule_name: () -> String
+
+        def self.description: () -> String
+
+        def self.default_severity: () -> String
+
+        # @rbs override
+        def check: ...
+
+        # @rbs override
+        def visit_html_element_node: ...
+
+        private
+
+        # @rbs node: Herb::AST::HTMLElementNode
+        def meta_element?: (Herb::AST::HTMLElementNode node) -> bool
+
+        # @rbs node: Herb::AST::HTMLElementNode
+        def check_duplicate_meta_name: (Herb::AST::HTMLElementNode node) -> void
+      end
+    end
+  end
+end

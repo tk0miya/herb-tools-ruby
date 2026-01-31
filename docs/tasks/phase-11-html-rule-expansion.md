@@ -213,9 +213,9 @@ Rules are grouped by theme and sorted by complexity within each batch.
 ---
 
 ### Task 11.9: `html-no-duplicate-meta-names`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow duplicate `<meta>` elements with the same `name` attribute.
 
