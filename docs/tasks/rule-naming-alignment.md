@@ -176,9 +176,9 @@ Complete mapping from current Ruby names to target names (= TypeScript names):
 
 ### Task 6: Verify
 
-- [ ] `cd herb-lint && ./bin/rspec` — all tests pass
-- [ ] `cd herb-lint && ./bin/steep check` — type checking passes
-- [ ] `cd herb-lint && ./bin/rubocop` — no offenses
+- [x] `cd herb-lint && ./bin/rspec` — all tests pass
+- [x] `cd herb-lint && ./bin/steep check` — type checking passes
+- [x] `cd herb-lint && ./bin/rubocop` — no offenses
 
 ## References
 
