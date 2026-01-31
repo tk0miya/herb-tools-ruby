@@ -33,13 +33,12 @@ Detailed design for the configuration management gem.
 Detailed design for the shared core utilities gem.
 
 **Contents:**
-- Component structure (FileDiscovery, PatternMatcher, DirectiveParser, DisableTracker)
+- Component structure (FileDiscovery, PatternMatcher)
 - RBS interface definitions for all classes
 - Glob pattern matching behavior
-- Directive parsing and state tracking
 - Public API usage patterns
 
-**Audience:** Developers implementing file discovery, pattern matching, or directive handling features.
+**Audience:** Developers implementing file discovery or pattern matching features.
 
 ### [herb-lint-design.md](./herb-lint-design.md)
 Detailed design for the ERB template linter.
@@ -48,11 +47,12 @@ Detailed design for the ERB template linter.
 - Component structure (CLI, Runner, Linter, RuleRegistry, Rules, Reporters)
 - Data structures (Offense, LintResult, AggregatedResult)
 - RBS interface definitions for all classes
+- Directive handling (`herb:disable`, `herb:linter ignore`, meta-rules)
 - Rule implementation patterns using Herb::Visitor
 - Reporter interface and implementations
 - Processing flow and component interactions
 
-**Audience:** Developers implementing linter features, custom rules, or reporters.
+**Audience:** Developers implementing linter features, custom rules, directive handling, or reporters.
 
 ### [herb-format-design.md](./herb-format-design.md)
 Detailed design for the ERB template formatter.
