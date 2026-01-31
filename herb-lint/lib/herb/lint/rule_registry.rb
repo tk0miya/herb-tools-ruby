@@ -21,6 +21,7 @@ module Herb
           Rules::HtmlImgRequireAlt,
           Rules::HtmlNoDuplicateAttributes,
           Rules::HtmlNoDuplicateIds,
+          Rules::HtmlNoDuplicateMetaNames,
           Rules::HtmlNoEmptyAttributes,
           Rules::HtmlNoUnderscoresInAttributeNames,
           Rules::HtmlNoPositiveTabIndex,
