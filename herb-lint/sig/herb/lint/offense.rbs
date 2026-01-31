@@ -12,11 +12,20 @@ module Herb
 
       attr_reader location: Herb::Location
 
+      attr_reader fix: Proc?
+
+      attr_reader unsafe: bool
+
       # @rbs rule_name: String
       # @rbs message: String
       # @rbs severity: String
       # @rbs location: Herb::Location
-      def initialize: (rule_name: String, message: String, severity: String, location: Herb::Location) -> void
+      # @rbs fix: Proc? -- proc that takes source string and returns fixed source
+      # @rbs unsafe: bool -- whether the fix is potentially unsafe
+      def initialize: (rule_name: String, message: String, severity: String, location: Herb::Location, ?fix: Proc?, ?unsafe: bool) -> void
+
+      # Returns whether this offense has an auto-fix available.
+      def fixable?: () -> bool
 
       # Returns the starting line number of the offense.
       def line: () -> Integer

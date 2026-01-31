@@ -49,8 +49,10 @@ module Herb
         # @rbs context: Context -- linting context (reserved for future use)
         # @rbs message: String -- description of the violation
         # @rbs location: Herb::Location -- location of the violation
-        def create_offense(context:, message:, location:) #: Offense # rubocop:disable Lint/UnusedMethodArgument
-          Offense.new(rule_name: self.class.rule_name, message:, severity:, location:)
+        # @rbs fix: Proc? -- proc that takes source string and returns fixed source
+        # @rbs unsafe: bool -- whether the fix is potentially unsafe
+        def create_offense(context:, message:, location:, fix: nil, unsafe: false) #: Offense # rubocop:disable Lint/UnusedMethodArgument
+          Offense.new(rule_name: self.class.rule_name, message:, severity:, location:, fix:, unsafe:)
         end
       end
     end

@@ -52,4 +52,54 @@ RSpec.describe Herb::Lint::Offense do
       expect(subject).to eq(25)
     end
   end
+
+  describe "#fixable?" do
+    let(:location) { build_location(line: 1, column: 0) }
+
+    context "when fix is nil" do
+      subject do
+        described_class.new(rule_name: "test-rule", message: "msg", severity: "warning", location:)
+      end
+
+      it "returns false" do
+        expect(subject.fixable?).to be(false)
+      end
+    end
+
+    context "when fix is provided" do
+      subject do
+        described_class.new(rule_name: "test-rule", message: "msg", severity: "warning", location:,
+                            fix: ->(src) { src })
+      end
+
+      it "returns true" do
+        expect(subject.fixable?).to be(true)
+      end
+    end
+  end
+
+  describe "#unsafe" do
+    let(:location) { build_location(line: 1, column: 0) }
+
+    context "when unsafe is not specified" do
+      subject do
+        described_class.new(rule_name: "test-rule", message: "msg", severity: "warning", location:)
+      end
+
+      it "defaults to false" do
+        expect(subject.unsafe).to be(false)
+      end
+    end
+
+    context "when unsafe is true" do
+      subject do
+        described_class.new(rule_name: "test-rule", message: "msg", severity: "warning", location:,
+                            unsafe: true)
+      end
+
+      it "returns true" do
+        expect(subject.unsafe).to be(true)
+      end
+    end
+  end
 end

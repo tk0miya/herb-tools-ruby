@@ -1,0 +1,42 @@
+# Generated from lib/herb/lint/fixer.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # Applies automatic fixes from offense fix procs to source code.
+    #
+    # Fixes are applied in reverse document order (end of file first) to
+    # maintain correct character positions for earlier fixes.
+    class Fixer
+      attr_reader source: String
+
+      attr_reader offenses: Array[Offense]
+
+      attr_reader fix_unsafely: bool
+
+      # @rbs source: String -- original source code
+      # @rbs offenses: Array[Offense] -- offenses to attempt to fix
+      # @rbs fix_unsafely: bool -- when true, also apply unsafe fixes
+      def initialize: (String source, Array[Offense] offenses, ?fix_unsafely: bool) -> void
+
+      # Apply all applicable fixes and return the modified source.
+      # Returns the original source if no fixes are applicable.
+      def apply_fixes: () -> String
+
+      private
+
+      # Filter offenses to those that can be fixed.
+      # When fix_unsafely is false, excludes unsafe fixes.
+      def fixable_offenses: () -> Array[Offense]
+
+      # Sort offenses in reverse document order (end of file first).
+      # This ensures that applying fixes doesn't invalidate the positions
+      # of subsequent fixes.
+      def sort_by_location: (untyped offenses) -> Array[Offense]
+
+      # Apply a single offense's fix proc to the source.
+      # @rbs offense: Offense
+      # @rbs current_source: String
+      def apply_fix: (Offense offense, String current_source) -> String
+    end
+  end
+end

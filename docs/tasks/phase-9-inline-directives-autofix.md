@@ -321,9 +321,9 @@ Uses `Context#ignored_offenses_by_line` (populated by `Linter#filter_offenses`) 
 
 **Location:** `herb-lint/lib/herb/lint/fixer.rb`
 
-- [ ] Implement Fixer class
-- [ ] Add unit tests
-- [ ] Generate RBS types
+- [x] Implement Fixer class
+- [x] Add unit tests
+- [x] Generate RBS types
 
 **Interface:**
 
