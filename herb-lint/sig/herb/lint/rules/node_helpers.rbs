@@ -6,6 +6,11 @@ module Herb
       # Helper methods for working with HTML AST nodes.
       # Provides common attribute and element queries used across lint rules.
       module NodeHelpers
+        # Return all attribute nodes for an element node.
+        #
+        # @rbs node: Herb::AST::HTMLElementNode -- element to inspect
+        def attributes: (Herb::AST::HTMLElementNode node) -> Array[Herb::AST::HTMLAttributeNode]
+
         # Find an HTML attribute by name on an element node.
         # The comparison is case-insensitive.
         #

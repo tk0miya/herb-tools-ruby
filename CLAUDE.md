@@ -203,6 +203,7 @@ end
 
 | Method | Description |
 |--------|-------------|
+| `attributes(node)` | Return all attribute nodes for an element node. Returns `Array[HTMLAttributeNode]` |
 | `find_attribute(node, "name")` | Find an attribute by name (case-insensitive) on an element node. Returns `HTMLAttributeNode?` |
 | `attribute?(node, "name")` | Check if an element has an attribute (case-insensitive). Returns `bool` |
 | `attribute_name(attr_node)` | Extract the raw name string from an attribute node. Returns `String?` |

@@ -37,24 +37,20 @@ module Herb
 
         # @rbs node: Herb::AST::HTMLElementNode
         def check_duplicate_attributes(node) #: void
-          return unless node.open_tag
-
           seen_attributes = {} #: Hash[String, Herb::Location]
 
-          node.open_tag.children.each do |child|
-            next unless child.is_a?(Herb::AST::HTMLAttributeNode)
-
-            name = attribute_name(child)
+          attributes(node).each do |attr|
+            name = attribute_name(attr)
             next if name.nil?
 
             normalized_name = name.downcase
             if seen_attributes.key?(normalized_name)
               add_offense(
                 message: "Duplicate attribute '#{name}'",
-                location: child.location
+                location: attr.location
               )
             else
-              seen_attributes[normalized_name] = child.location
+              seen_attributes[normalized_name] = attr.location
             end
           end
         end
