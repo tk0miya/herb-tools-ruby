@@ -3,33 +3,31 @@
 module Herb
   module Lint
     module Rules
-      module A11y
-        # Rule that requires alt attributes on img tags.
-        #
-        # Images must have an alt attribute to provide a text alternative
-        # for screen readers and when images fail to load.
-        #
-        # Good:
-        #   <img src="photo.jpg" alt="A sunset over the ocean">
-        #   <img src="decorative.png" alt="">
-        #
-        # Bad:
-        #   <img src="photo.jpg">
-        class AltText < VisitorRule
-          def self.rule_name: () -> String
+      # Rule that requires alt attributes on img tags.
+      #
+      # Images must have an alt attribute to provide a text alternative
+      # for screen readers and when images fail to load.
+      #
+      # Good:
+      #   <img src="photo.jpg" alt="A sunset over the ocean">
+      #   <img src="decorative.png" alt="">
+      #
+      # Bad:
+      #   <img src="photo.jpg">
+      class HtmlImgRequireAlt < VisitorRule
+        def self.rule_name: () -> String
 
-          def self.description: () -> String
+        def self.description: () -> String
 
-          def self.default_severity: () -> String
+        def self.default_severity: () -> String
 
-          # @rbs override
-          def visit_html_element_node: ...
+        # @rbs override
+        def visit_html_element_node: ...
 
-          private
+        private
 
-          # @rbs node: Herb::AST::HTMLElementNode
-          def img_element?: (Herb::AST::HTMLElementNode node) -> bool
-        end
+        # @rbs node: Herb::AST::HTMLElementNode
+        def img_element?: (Herb::AST::HTMLElementNode node) -> bool
       end
     end
   end

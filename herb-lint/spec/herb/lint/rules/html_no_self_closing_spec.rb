@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "../../../../spec_helper"
+require_relative "../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::Html::VoidElementStyle do
+RSpec.describe Herb::Lint::Rules::HtmlNoSelfClosing do
   subject { described_class.new.check(document, context) }
 
   let(:document) { Herb.parse(template) }

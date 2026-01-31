@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "../../../../spec_helper"
+require_relative "../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::Html::NoDuplicateId do
+RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateIds do
   subject { described_class.new.check(document, context) }
 
   let(:document) { Herb.parse(template) }
