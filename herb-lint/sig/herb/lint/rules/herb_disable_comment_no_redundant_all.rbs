@@ -1,0 +1,37 @@
+# Generated from lib/herb/lint/rules/herb_disable_comment_no_redundant_all.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Rule that detects redundant rule names when `all` is used in herb:disable comments.
+      #
+      # When `all` is specified in a herb:disable comment, listing specific rule names
+      # is redundant since `all` already disables every rule.
+      #
+      # Good:
+      #   <%# herb:disable all %>
+      #   <%# herb:disable rule-name %>
+      #
+      # Bad:
+      #   <%# herb:disable all, rule-name %>
+      class HerbDisableCommentNoRedundantAll < VisitorRule
+        def self.rule_name: () -> String
+
+        def self.description: () -> String
+
+        def self.default_severity: () -> String
+
+        # @rbs override
+        def visit_erb_content_node: ...
+
+        private
+
+        # @rbs node: Herb::AST::ERBContentNode
+        def erb_comment?: (Herb::AST::ERBContentNode node) -> bool
+
+        # @rbs node: Herb::AST::ERBContentNode
+        def check_disable_comment: (Herb::AST::ERBContentNode node) -> void
+      end
+    end
+  end
+end

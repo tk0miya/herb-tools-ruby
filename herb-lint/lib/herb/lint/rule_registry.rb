@@ -15,6 +15,7 @@ module Herb
           Rules::HerbDisableCommentMalformed,
           Rules::HerbDisableCommentMissingRules,
           Rules::HerbDisableCommentNoDuplicateRules,
+          Rules::HerbDisableCommentNoRedundantAll,
           Rules::HtmlAnchorRequireHref,
           Rules::HtmlAttributeDoubleQuotes,
           Rules::HtmlAttributeEqualsSpacing,
