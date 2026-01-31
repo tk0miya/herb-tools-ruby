@@ -1,0 +1,37 @@
+# Generated from lib/herb/lint/reporter/json_reporter.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Reporter
+      # Reporter that outputs linting results in JSON format.
+      class JsonReporter
+        attr_reader io: IO
+
+        # @rbs io: IO
+        def initialize: (?io: IO) -> void
+
+        # Reports the aggregated linting result as JSON.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def report: (AggregatedResult aggregated_result) -> void
+
+        private
+
+        # Builds the full output hash.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def build_output: (AggregatedResult aggregated_result) -> Hash[String, untyped]
+
+        # Builds a single file entry with its offenses.
+        #
+        # @rbs result: LintResult
+        def build_file: (LintResult result) -> Hash[String, untyped]
+
+        # Builds the summary hash.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def build_summary: (AggregatedResult aggregated_result) -> Hash[String, Integer]
+      end
+    end
+  end
+end

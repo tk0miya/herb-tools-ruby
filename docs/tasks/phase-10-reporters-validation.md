@@ -24,9 +24,9 @@ This phase implements medium-priority post-MVP features: additional output forma
 
 **Location:** `herb-lint/lib/herb/lint/reporter/json_reporter.rb`
 
-- [ ] Implement JsonReporter class
-- [ ] Add unit tests
-- [ ] Generate RBS types
+- [x] Implement JsonReporter class
+- [x] Add unit tests
+- [x] Generate RBS types
 
 **Interface:**
 
