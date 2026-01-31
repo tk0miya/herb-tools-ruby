@@ -74,9 +74,9 @@ Rules are grouped by theme and sorted by complexity within each batch.
 ---
 
 ### Task 11.3: `html-boolean-attributes-no-value`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Boolean attributes should not have values.
 
