@@ -12,6 +12,7 @@ module Herb
         @builtin_rules ||= [
           Rules::ErbCommentSyntax,
           Rules::HerbDisableCommentMalformed,
+          Rules::HerbDisableCommentMissingRules,
           Rules::HtmlAnchorRequireHref,
           Rules::HtmlAttributeDoubleQuotes,
           Rules::HtmlAttributeEqualsSpacing,
