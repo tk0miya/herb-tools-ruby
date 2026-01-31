@@ -14,6 +14,7 @@ module Herb
           Rules::HtmlAttributeDoubleQuotes,
           Rules::HtmlAttributeEqualsSpacing,
           Rules::HtmlAttributeValuesRequireQuotes,
+          Rules::HtmlBooleanAttributesNoValue,
           Rules::HtmlIframeHasTitle,
           Rules::HtmlImgRequireAlt,
           Rules::HtmlNoDuplicateAttributes,
