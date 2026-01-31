@@ -12,6 +12,7 @@ module Herb
         @builtin_rules ||= [
           Rules::ErbCommentSyntax,
           Rules::HtmlAttributeDoubleQuotes,
+          Rules::HtmlAttributeEqualsSpacing,
           Rules::HtmlIframeHasTitle,
           Rules::HtmlImgRequireAlt,
           Rules::HtmlNoDuplicateAttributes,
