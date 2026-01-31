@@ -145,9 +145,9 @@ Rules are grouped by theme and sorted by complexity within each batch.
 ## Batch 2: Element Structure Rules (5 rules)
 
 ### Task 11.6: `html-anchor-require-href`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Require `href` attribute on anchor (`<a>`) elements.
 
