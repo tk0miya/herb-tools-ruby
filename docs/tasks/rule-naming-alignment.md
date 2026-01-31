@@ -143,10 +143,10 @@ Complete mapping from current Ruby names to target names (= TypeScript names):
 
 ### Task 2: Update module namespaces and class names
 
-- [ ] Remove `Rules::A11y` module; move classes to `Rules::`
-- [ ] Remove `Rules::Html` module; move classes to `Rules::`
-- [ ] Rename classes with category prefix (e.g., `AltText` → `HtmlImgRequireAlt`)
-- [ ] Update `RuleRegistry.builtin_rules` with new class references
+- [x] Remove `Rules::A11y` module; move classes to `Rules::`
+- [x] Remove `Rules::Html` module; move classes to `Rules::`
+- [x] Rename classes with category prefix (e.g., `AltText` → `HtmlImgRequireAlt`)
+- [x] Update `RuleRegistry.builtin_rules` with new class references
 
 ### Task 3: Rename rule names to match TypeScript
 
@@ -162,11 +162,11 @@ Complete mapping from current Ruby names to target names (= TypeScript names):
 
 ### Task 4: Update tests
 
-- [ ] Move and rename spec files to match new rule file names
-- [ ] Remove empty `spec/rules/a11y/` directory
-- [ ] Remove empty `spec/rules/html/` directory
+- [x] Move and rename spec files to match new rule file names
+- [x] Remove empty `spec/rules/a11y/` directory
+- [x] Remove empty `spec/rules/html/` directory
 - [ ] Update all test assertions that reference rule names
-- [ ] Update RBS type definition files
+- [x] Update RBS type definition files
 
 ### Task 5: Update documentation
 
