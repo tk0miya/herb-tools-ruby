@@ -228,6 +228,10 @@ When adding a new rule:
 ### Framework
 
 - Use RSpec for all tests
+- herb-lint uses factory_bot for test data construction. Factories are defined in `herb-lint/spec/factories/`:
+  - `:offense` — `Herb::Lint::Offense`
+  - `:lint_result` — `Herb::Lint::LintResult`
+  - `:location` — `Herb::Location`
 
 ### Test Organization
 
