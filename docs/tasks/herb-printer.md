@@ -109,33 +109,33 @@ cd herb-printer && ./bin/rspec spec/herb/printer/print_context_spec.rb
 
 ### Implementation
 
-- [ ] Create `lib/herb/printer/base.rb`
-  - [ ] Inherit from `Herb::Visitor`
-  - [ ] `initialize` — create `@context` (`PrintContext`)
-  - [ ] `self.print(input, ignore_errors:)` — class-level convenience method
-  - [ ] `print(input, ignore_errors:)` — instance method with input type dispatch
-    - [ ] `nil` → return `""`
-    - [ ] `Token` → return `token.value`
-    - [ ] `ParseResult` → extract root node, validate, visit
-    - [ ] `Node` → validate, reset context, visit, return output
-    - [ ] `Array` → reset context, visit each, return output
-  - [ ] `write(text)` — private helper delegating to `@context.write`
-  - [ ] `validate_no_errors!(node)` — raise `PrintError` if `node.recursive_errors` is non-empty
-- [ ] Create `lib/herb/printer/print_error.rb`
-  - [ ] Define `Herb::Printer::PrintError < StandardError`
-- [ ] Add `require_relative` entries to `lib/herb/printer.rb`
+- [x] Create `lib/herb/printer/base.rb`
+  - [x] Inherit from `Herb::Visitor`
+  - [x] `initialize` — create `@context` (`PrintContext`)
+  - [x] `self.print(input, ignore_errors:)` — class-level convenience method
+  - [x] `print(input, ignore_errors:)` — instance method with input type dispatch
+    - [x] `nil` → return `""`
+    - [x] `Token` → return `token.value`
+    - [x] `ParseResult` → extract root node, validate, visit
+    - [x] `Node` → validate, reset context, visit, return output
+    - [x] `Array` → reset context, visit each, return output
+  - [x] `write(text)` — private helper delegating to `@context.write`
+  - [x] `validate_no_errors!(node)` — raise `PrintError` if `node.recursive_errors` is non-empty
+- [x] Create `lib/herb/printer/print_error.rb`
+  - [x] Define `Herb::Printer::PrintError < StandardError`
+- [x] Add `require_relative` entries to `lib/herb/printer.rb`
 
 ### Verification
 
-- [ ] Create `spec/herb/printer/base_spec.rb`
-  - [ ] Test `nil` input returns `""`
-  - [ ] Test `Token` input returns `token.value`
-  - [ ] Test `ParseResult` input extracts and visits root node
-  - [ ] Test `Node` input visits the node
-  - [ ] Test `Array` input visits each node
-  - [ ] Test `PrintError` raised when AST has errors and `ignore_errors: false`
-  - [ ] Test no error raised when `ignore_errors: true`
-  - [ ] Test bare `Base` subclass (no overrides) produces empty output
+- [x] Create `spec/herb/printer/base_spec.rb`
+  - [x] Test `nil` input returns `""`
+  - [x] Test `Token` input returns `token.value`
+  - [x] Test `ParseResult` input extracts and visits root node
+  - [x] Test `Node` input visits the node
+  - [x] Test `Array` input visits each node
+  - [x] Test `PrintError` raised when AST has errors and `ignore_errors: false`
+  - [x] Test no error raised when `ignore_errors: true`
+  - [x] Test bare `Base` subclass (no overrides) produces empty output
 
 ```bash
 cd herb-printer && ./bin/rspec spec/herb/printer/base_spec.rb

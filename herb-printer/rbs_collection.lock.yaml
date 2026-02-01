@@ -85,6 +85,10 @@ gems:
   version: '0'
   source:
     type: stdlib
+- name: herb
+  version: 0.8.9
+  source:
+    type: rubygems
 - name: i18n
   version: '1.10'
   source:
@@ -93,6 +97,10 @@ gems:
     revision: 5aeae33367fa324abf3a4ef912f4e27aaf17f6b9
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
+- name: io-console
+  version: '0'
+  source:
+    type: stdlib
 - name: json
   version: '0'
   source:
@@ -149,8 +157,16 @@ gems:
     revision: 5aeae33367fa324abf3a4ef912f4e27aaf17f6b9
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
+- name: pp
+  version: '0'
+  source:
+    type: stdlib
+- name: prettyprint
+  version: '0'
+  source:
+    type: stdlib
 - name: prism
-  version: 1.8.0
+  version: 1.9.0
   source:
     type: rubygems
 - name: rainbow
@@ -170,7 +186,7 @@ gems:
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: rbs
-  version: 3.10.2
+  version: 3.10.3
   source:
     type: rubygems
 - name: rbs-inline
@@ -249,4 +265,4 @@ gems:
   version: '0'
   source:
     type: stdlib
-gemfile_lock_path: "../Gemfile.lock"
+gemfile_lock_path: Gemfile.lock
