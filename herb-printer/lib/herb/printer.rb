@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "printer/print_context"
 require_relative "printer/version"
 
 module Herb
