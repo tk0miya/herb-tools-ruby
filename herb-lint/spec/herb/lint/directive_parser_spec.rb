@@ -245,19 +245,11 @@ RSpec.describe Herb::Lint::DirectiveParser do
       Herb::Location.new(Herb::Position.new(1, 4), Herb::Position.new(1, 40))
     end
 
-    def build_offense(rule_name:, line:)
-      location = Herb::Location.new(
-        Herb::Position.new(line, 0),
-        Herb::Position.new(line, 0)
-      )
-      Herb::Lint::Offense.new(rule_name:, message: "msg", severity: "error", location:)
-    end
-
     context "when no disable comments exist" do
       let(:disable_comments) { {} }
 
       it "keeps all offenses" do
-        offenses = [build_offense(rule_name: "rule1", line: 1)]
+        offenses = [build(:offense, rule_name: "rule1", start_line: 1)]
         kept, ignored = directives.filter_offenses(offenses)
         expect(kept).to eq(offenses)
         expect(ignored).to be_empty
@@ -274,7 +266,7 @@ RSpec.describe Herb::Lint::DirectiveParser do
       end
 
       it "moves the offense to ignored" do
-        offenses = [build_offense(rule_name: "rule1", line: 1)]
+        offenses = [build(:offense, rule_name: "rule1", start_line: 1)]
         kept, ignored = directives.filter_offenses(offenses)
         expect(kept).to be_empty
         expect(ignored).to eq(offenses)
@@ -292,8 +284,8 @@ RSpec.describe Herb::Lint::DirectiveParser do
 
       it "moves all offenses on that line to ignored" do
         offenses = [
-          build_offense(rule_name: "rule1", line: 1),
-          build_offense(rule_name: "rule2", line: 1)
+          build(:offense, rule_name: "rule1", start_line: 1),
+          build(:offense, rule_name: "rule2", start_line: 1)
         ]
         kept, ignored = directives.filter_offenses(offenses)
         expect(kept).to be_empty
@@ -312,9 +304,9 @@ RSpec.describe Herb::Lint::DirectiveParser do
 
       it "partitions offenses correctly" do
         offenses = [
-          build_offense(rule_name: "rule1", line: 1),
-          build_offense(rule_name: "rule2", line: 1),
-          build_offense(rule_name: "rule1", line: 2)
+          build(:offense, rule_name: "rule1", start_line: 1),
+          build(:offense, rule_name: "rule2", start_line: 1),
+          build(:offense, rule_name: "rule1", start_line: 2)
         ]
         kept, ignored = directives.filter_offenses(offenses)
         expect(kept.size).to eq(2)

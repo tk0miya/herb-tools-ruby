@@ -14,33 +14,30 @@ RSpec.describe Herb::Lint::Reporter::SimpleReporter do
           Herb::Lint::LintResult.new(
             file_path: "app/views/users/show.html.erb",
             offenses: [
-              build_offense(
-                severity: "error",
-                rule_name: "html-img-require-alt",
-                message: "img tag should have an alt attribute",
-                line: 5,
-                column: 10
-              ),
-              build_offense(
-                severity: "warning",
-                rule_name: "html-attribute-double-quotes",
-                message: "Attribute value should be quoted",
-                line: 12,
-                column: 3
-              )
+              build(:offense,
+                    severity: "error",
+                    rule_name: "html-img-require-alt",
+                    message: "img tag should have an alt attribute",
+                    start_line: 5,
+                    start_column: 10),
+              build(:offense,
+                    severity: "warning",
+                    rule_name: "html-attribute-double-quotes",
+                    message: "Attribute value should be quoted",
+                    start_line: 12,
+                    start_column: 3)
             ],
             source: "<div></div>"
           ),
           Herb::Lint::LintResult.new(
             file_path: "app/views/posts/index.html.erb",
             offenses: [
-              build_offense(
-                severity: "error",
-                rule_name: "html-img-require-alt",
-                message: "img tag should have an alt attribute",
-                line: 8,
-                column: 15
-              )
+              build(:offense,
+                    severity: "error",
+                    rule_name: "html-img-require-alt",
+                    message: "img tag should have an alt attribute",
+                    start_line: 8,
+                    start_column: 15)
             ],
             source: "<div></div>"
           )
@@ -106,20 +103,18 @@ RSpec.describe Herb::Lint::Reporter::SimpleReporter do
           Herb::Lint::LintResult.new(
             file_path: "test.html.erb",
             offenses: [
-              build_offense(
-                severity: "error",
-                rule_name: "test-rule",
-                message: "Error message",
-                line: 1,
-                column: 0
-              ),
-              build_offense(
-                severity: "error",
-                rule_name: "test-rule",
-                message: "Another error",
-                line: 2,
-                column: 5
-              )
+              build(:offense,
+                    severity: "error",
+                    rule_name: "test-rule",
+                    message: "Error message",
+                    start_line: 1,
+                    start_column: 0),
+              build(:offense,
+                    severity: "error",
+                    rule_name: "test-rule",
+                    message: "Another error",
+                    start_line: 2,
+                    start_column: 5)
             ],
             source: "<div></div>"
           )
@@ -149,13 +144,12 @@ RSpec.describe Herb::Lint::Reporter::SimpleReporter do
           Herb::Lint::LintResult.new(
             file_path: "test.html.erb",
             offenses: [
-              build_offense(
-                severity: "warning",
-                rule_name: "test-rule",
-                message: "Warning message",
-                line: 1,
-                column: 0
-              )
+              build(:offense,
+                    severity: "warning",
+                    rule_name: "test-rule",
+                    message: "Warning message",
+                    start_line: 1,
+                    start_column: 0)
             ],
             source: "<div></div>"
           )

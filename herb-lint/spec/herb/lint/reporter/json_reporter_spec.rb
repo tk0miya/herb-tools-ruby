@@ -62,20 +62,18 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
           Herb::Lint::LintResult.new(
             file_path: "app/views/users/index.html.erb",
             offenses: [
-              build_offense(
-                severity: "error",
-                rule_name: "html-img-require-alt",
-                message: "Missing alt attribute on img tag",
-                line: 12,
-                column: 5
-              ),
-              build_offense(
-                severity: "warning",
-                rule_name: "html-attribute-double-quotes",
-                message: "Prefer double quotes for attributes",
-                line: 24,
-                column: 3
-              )
+              build(:offense,
+                    severity: "error",
+                    rule_name: "html-img-require-alt",
+                    message: "Missing alt attribute on img tag",
+                    start_line: 12,
+                    start_column: 5),
+              build(:offense,
+                    severity: "warning",
+                    rule_name: "html-attribute-double-quotes",
+                    message: "Prefer double quotes for attributes",
+                    start_line: 24,
+                    start_column: 3)
             ],
             source: "<div></div>"
           )
@@ -116,33 +114,30 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
           Herb::Lint::LintResult.new(
             file_path: "app/views/users/index.html.erb",
             offenses: [
-              build_offense(
-                severity: "error",
-                rule_name: "html-img-require-alt",
-                message: "Missing alt attribute on img tag",
-                line: 12,
-                column: 5
-              )
+              build(:offense,
+                    severity: "error",
+                    rule_name: "html-img-require-alt",
+                    message: "Missing alt attribute on img tag",
+                    start_line: 12,
+                    start_column: 5)
             ],
             source: "<div></div>"
           ),
           Herb::Lint::LintResult.new(
             file_path: "app/views/posts/show.html.erb",
             offenses: [
-              build_offense(
-                severity: "warning",
-                rule_name: "html-attribute-double-quotes",
-                message: "Prefer double quotes for attributes",
-                line: 3,
-                column: 10
-              ),
-              build_offense(
-                severity: "error",
-                rule_name: "html-no-duplicate-ids",
-                message: "Duplicate id attribute",
-                line: 7,
-                column: 1
-              )
+              build(:offense,
+                    severity: "warning",
+                    rule_name: "html-attribute-double-quotes",
+                    message: "Prefer double quotes for attributes",
+                    start_line: 3,
+                    start_column: 10),
+              build(:offense,
+                    severity: "error",
+                    rule_name: "html-no-duplicate-ids",
+                    message: "Duplicate id attribute",
+                    start_line: 7,
+                    start_column: 1)
             ],
             source: "<div></div>"
           )
@@ -171,20 +166,18 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
 
     context "when offenses have distinct end positions" do
       let(:results) do
-        start_pos = Herb::Position.new(12, 5)
-        end_pos = Herb::Position.new(12, 35)
-        location = Herb::Location.new(start_pos, end_pos)
-
         [
           Herb::Lint::LintResult.new(
             file_path: "test.html.erb",
             offenses: [
-              Herb::Lint::Offense.new(
-                rule_name: "html-img-require-alt",
-                message: "Missing alt attribute on img tag",
-                severity: "error",
-                location:
-              )
+              build(:offense,
+                    rule_name: "html-img-require-alt",
+                    message: "Missing alt attribute on img tag",
+                    severity: "error",
+                    start_line: 12,
+                    start_column: 5,
+                    end_line: 12,
+                    end_column: 35)
             ],
             source: "<div></div>"
           )
@@ -208,7 +201,7 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
           Herb::Lint::LintResult.new(
             file_path: "test.html.erb",
             offenses: [
-              build_offense(severity: "error", rule_name: "test-rule", message: "Test", line: 1, column: 0)
+              build(:offense, severity: "error", rule_name: "test-rule", message: "Test")
             ],
             source: "<div></div>"
           )

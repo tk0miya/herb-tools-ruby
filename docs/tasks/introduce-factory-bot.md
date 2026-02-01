@@ -47,11 +47,11 @@ end
 
 Offense is constructed in the most test files, making it the highest-impact factory. `Herb::Position` and `Herb::Location` are external gem classes but are handled as internal dependencies of the Offense factory via transient attributes.
 
-- [ ] Create `herb-lint/spec/factories/offense.rb`
-- [ ] Replace all `build_offense` calls and inline `Offense.new` with `build(:offense, ...)`
-- [ ] Remove `build_offense` and `build_location` from `spec_helper.rb`
-- [ ] Remove any local `build_offense` redefinitions in spec files
-- [ ] Verify all tests pass
+- [x] Create `herb-lint/spec/factories/offense.rb`
+- [x] Replace all `build_offense` calls and inline `Offense.new` with `build(:offense, ...)`
+- [x] Remove `build_offense` and `build_location` from `spec_helper.rb`
+- [x] Remove any local `build_offense` redefinitions in spec files
+- [x] Verify all tests pass
 
 **Factory definition:**
 

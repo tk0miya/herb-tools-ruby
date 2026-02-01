@@ -37,7 +37,7 @@ RSpec.describe Herb::Lint::UnnecessaryDirectiveDetector do
         }
       end
       let(:ignored_offenses) do
-        [build_offense(rule_name: "html-img-require-alt", severity: "warning", line: 1)]
+        [build(:offense, rule_name: "html-img-require-alt", start_line: 1)]
       end
 
       it "returns no offenses" do
@@ -84,7 +84,7 @@ RSpec.describe Herb::Lint::UnnecessaryDirectiveDetector do
         }
       end
       let(:ignored_offenses) do
-        [build_offense(rule_name: "html-img-require-alt", severity: "warning", line: 1)]
+        [build(:offense, rule_name: "html-img-require-alt", start_line: 1)]
       end
 
       it "returns no offenses" do
@@ -138,7 +138,7 @@ RSpec.describe Herb::Lint::UnnecessaryDirectiveDetector do
         }
       end
       let(:ignored_offenses) do
-        [build_offense(rule_name: "html-img-require-alt", severity: "warning", line: 1)]
+        [build(:offense, rule_name: "html-img-require-alt", start_line: 1)]
       end
 
       it "reports an unnecessary offense only for the non-suppressed rule" do
@@ -194,7 +194,7 @@ RSpec.describe Herb::Lint::UnnecessaryDirectiveDetector do
         }
       end
       let(:ignored_offenses) do
-        [build_offense(rule_name: "html-img-require-alt", severity: "warning", line: 1)]
+        [build(:offense, rule_name: "html-img-require-alt", start_line: 1)]
       end
 
       it "reports an unnecessary offense only for the line without suppression" do
