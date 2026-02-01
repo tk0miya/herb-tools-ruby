@@ -21,6 +21,7 @@ module Herb
           Rules::HtmlAriaAttributeMustBeValid,
           Rules::HtmlAriaLabelIsWellFormatted,
           Rules::HtmlAriaRoleHeadingRequiresLevel,
+          Rules::HtmlAriaRoleMustBeValid,
           Rules::HtmlAttributeDoubleQuotes,
           Rules::HtmlAttributeEqualsSpacing,
           Rules::HtmlAttributeValuesRequireQuotes,
