@@ -169,9 +169,9 @@ Rules are grouped by theme and sorted by complexity within each batch.
 ---
 
 ### Task 11.7: `html-no-space-in-tag`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow spaces between `<` and tag name.
 

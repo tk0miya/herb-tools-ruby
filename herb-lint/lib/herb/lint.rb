@@ -31,6 +31,7 @@ require_relative "lint/rules/html_no_empty_attributes"
 require_relative "lint/rules/html_no_underscores_in_attribute_names"
 require_relative "lint/rules/html_no_positive_tab_index"
 require_relative "lint/rules/html_no_self_closing"
+require_relative "lint/rules/html_no_space_in_tag"
 require_relative "lint/rules/html_tag_name_lowercase"
 require_relative "lint/version"
 
