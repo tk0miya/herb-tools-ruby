@@ -64,21 +64,16 @@ These features are implemented as simplified versions in the MVP. Consider expan
 
 ### 4. herb-lint: DirectiveParser & herb-disable-comment Meta-Rules
 
-**Current State (MVP):**
-- Inline directives (`herb:disable`) not implemented
+**Status:** ✅ Implemented in [Phase 9](./phase-9-inline-directives.md)
 
-**Future Enhancements:**
-- [ ] DirectiveParser implementation (stateless class methods in herb-lint)
-- [ ] Directives data object with `ignore_file?` and `disabled_at?` queries
-- [ ] Linter integration with `filter_offenses` and Context updates
-- [ ] `--ignore-disable-comments` CLI option
-- [ ] 6 herb-disable-comment meta-rules (non-excludable)
+~~**Current State (MVP):**~~
+~~- Inline directives (`herb:disable`) not implemented~~
 
-**Priority:** High (important feature)
-
-**Implementation Complexity:** Medium
-
-**Reference:** `docs/design/herb-lint-design.md` - Directive Handling section; `docs/tasks/phase-9-inline-directives-autofix.md` - Tasks 9.1–9.8
+- [x] DirectiveParser implementation (stateless class methods in herb-lint)
+- [x] Directives data object with `ignore_file?` and `disabled_at?` queries
+- [x] Linter integration with `filter_offenses` and Context updates
+- [x] `--ignore-disable-comments` CLI option
+- [x] 6 herb-disable-comment meta-rules (non-excludable)
 
 ---
 
@@ -141,22 +136,25 @@ These features are implemented as simplified versions in the MVP. Consider expan
 
 ---
 
-### 8. Auto-fix Functionality (`--fix` option)
+### 8. Auto-fix Functionality (`--fix` / `--fix-unsafely` options)
 
-**Current State (MVP):**
-- Auto-fix not implemented
+**Status:** 📋 Scheduled as [Phase 15: Autofix](./phase-15-autofix.md)
 
-**Future Enhancements:**
-- [ ] Fixer class implementation
-- [ ] Fix logic implementation for each rule
-- [ ] CLI support for `--fix` option
-- [ ] Pre-fix backup functionality
+Detailed design available: [herb-lint-autofix-design.md](../design/herb-lint-autofix-design.md)
+
+**Depends on:** [Phase 14: herb-printer](./phase-14-herb-printer.md) (IdentityPrinter for AST-to-source serialization)
+
+- [ ] AutofixContext and Offense changes
+- [ ] RuleMethods autofix extensions
+- [ ] NodeLocator implementation
+- [ ] AutoFixer implementation
+- [ ] Runner and CLI integration (`--fix`, `--fix-unsafely`)
+- [ ] Autofix utility helpers
+- [ ] Add autofix to existing rules
 
 **Priority:** High (improves user experience)
 
 **Implementation Complexity:** High
-
-**Reference:** `docs/design/herb-lint-design.md` - Fixer section
 
 ---
 
@@ -196,8 +194,8 @@ These features are implemented as simplified versions in the MVP. Consider expan
 ## Priority Summary
 
 ### High Priority (Consider immediately after MVP)
-1. DirectiveParser & herb-disable-comment meta-rules (inline directives)
-2. Auto-fix functionality (`--fix` option)
+1. ~~DirectiveParser & herb-disable-comment meta-rules (inline directives)~~ ✅ Phase 9
+2. Auto-fix functionality — Phase 14 (herb-printer) → Phase 15 (autofix)
 
 ### Medium Priority (As needed)
 1. Validator implementation (configuration file validation)

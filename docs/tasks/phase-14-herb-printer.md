@@ -1,20 +1,25 @@
-# herb-printer gem Implementation
-
-## Overview
+# Phase 14: herb-printer
 
 Implementation of the herb-printer gem providing AST-to-source-code printer infrastructure. The primary deliverable is `IdentityPrinter`, which performs lossless round-trip reconstruction from Herb AST.
+
+This phase is a prerequisite for [Phase 15: Autofix](./phase-15-autofix.md), which depends on `IdentityPrinter` to serialize modified AST back to source code.
 
 **Design document:** [printer-design.md](../design/printer-design.md)
 
 **Reference:** TypeScript `@herb-tools/printer` package
 
-**Task count:** 12
+## Prerequisites
+
+- Phase 1-7 (MVP) complete
+- herb gem available
 
 ---
 
-## Task 1: Create Gem Skeleton
+## Part A: Gem Setup
 
-### Implementation
+### Task 14.1: Create Gem Skeleton
+
+**Status:** ✅
 
 - [x] Run `bundle gem herb-printer --test=rspec --linter=rubocop`
 - [x] Edit `herb-printer.gemspec` file
@@ -49,9 +54,9 @@ bundle install
 
 ---
 
-## Task 2: Add herb-printer to CI
+### Task 14.2: Add herb-printer to CI
 
-### Implementation
+**Status:** ✅
 
 - [x] Update `.github/workflows/ci.yml`
   - [x] Add herb-printer job (same structure as herb-core job)
@@ -72,9 +77,9 @@ cd herb-printer
 
 ---
 
-## Task 3: Implement PrintContext
+### Task 14.3: Implement PrintContext
 
-### Implementation
+**Status:** ✅
 
 - [x] Create `lib/herb/printer/print_context.rb`
   - [x] `initialize` — initialize `@output`, `@indent_level`, `@current_column`, `@tag_stack`
@@ -90,24 +95,15 @@ cd herb-printer
 
 ### Verification
 
-- [x] Create `spec/herb/printer/print_context_spec.rb`
-  - [x] Test `write` appends text
-  - [x] Test `get_output` returns accumulated text
-  - [x] Test `reset` clears all state
-  - [x] Test `indent`/`dedent` track indent level
-  - [x] Test `write_with_column_tracking` tracks column across newlines
-  - [x] Test `enter_tag`/`exit_tag` maintain tag stack
-  - [x] Test `at_start_of_line?` reflects column position
-
 ```bash
 cd herb-printer && ./bin/rspec spec/herb/printer/print_context_spec.rb
 ```
 
 ---
 
-## Task 4: Implement Base Printer
+## Part B: Base Printer & HTML Leaf Nodes
 
-### Implementation
+### Task 14.4: Implement Base Printer
 
 - [x] Create `lib/herb/printer/base.rb`
   - [x] Inherit from `Herb::Visitor`
@@ -143,9 +139,7 @@ cd herb-printer && ./bin/rspec spec/herb/printer/base_spec.rb
 
 ---
 
-## Task 5: IdentityPrinter — HTML Leaf Nodes
-
-### Implementation
+### Task 14.5: IdentityPrinter — HTML Leaf Nodes
 
 - [ ] Create `lib/herb/printer/identity_printer.rb`
   - [ ] Inherit from `Herb::Printer::Base`
@@ -167,9 +161,9 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 
 ---
 
-## Task 6: IdentityPrinter — HTML Structure Nodes
+## Part C: HTML Structure & Attributes
 
-### Implementation
+### Task 14.6: IdentityPrinter — HTML Structure Nodes
 
 - [ ] `visit_html_open_tag_node` — write `tag_opening` + `tag_name`, visit children, write `tag_closing`
 - [ ] `visit_html_close_tag_node` — write `tag_opening`, split children around `tag_name` token, write `tag_closing`
@@ -189,9 +183,7 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 
 ---
 
-## Task 7: IdentityPrinter — HTML Attribute Nodes
-
-### Implementation
+### Task 14.7: IdentityPrinter — HTML Attribute Nodes
 
 - [ ] `visit_html_attribute_node` — visit `name`, write `equals` if present, visit `value` if present
 - [ ] `visit_html_attribute_name_node` — `visit_child_nodes(node)`
@@ -210,9 +202,7 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 
 ---
 
-## Task 8: IdentityPrinter — HTML Comment, Doctype, XML, CDATA
-
-### Implementation
+### Task 14.8: IdentityPrinter — HTML Comment, Doctype, XML, CDATA
 
 - [ ] `visit_html_comment_node` — write `comment_start`, visit children, write `comment_end`
 - [ ] `visit_html_doctype_node` — write `tag_opening`, visit children, write `tag_closing`
@@ -231,9 +221,9 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 
 ---
 
-## Task 9: IdentityPrinter — ERB Leaf Nodes
+## Part D: ERB Nodes
 
-### Implementation
+### Task 14.9: IdentityPrinter — ERB Leaf Nodes
 
 - [ ] `print_erb_tag` — private helper: write `tag_opening` + `content` + `tag_closing`
 - [ ] `visit_erb_content_node` — call `print_erb_tag`
@@ -253,9 +243,7 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 
 ---
 
-## Task 10: IdentityPrinter — ERB Control Flow (Basic)
-
-### Implementation
+### Task 14.10: IdentityPrinter — ERB Control Flow (Basic)
 
 - [ ] `visit_erb_block_node` — `print_erb_tag` + visit `body` + visit `end_node`
 - [ ] `visit_erb_if_node` — `print_erb_tag` + visit `statements` + visit `subsequent` + visit `end_node`
@@ -276,9 +264,7 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 
 ---
 
-## Task 11: IdentityPrinter — ERB Control Flow (Loop/Case)
-
-### Implementation
+### Task 14.11: IdentityPrinter — ERB Control Flow (Loop/Case)
 
 - [ ] `visit_erb_while_node` — `print_erb_tag` + visit `statements` + visit `end_node`
 - [ ] `visit_erb_until_node` — same pattern
@@ -301,9 +287,7 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 
 ---
 
-## Task 12: IdentityPrinter — ERB Begin/Rescue/Ensure
-
-### Implementation
+### Task 14.12: IdentityPrinter — ERB Begin/Rescue/Ensure
 
 - [ ] `visit_erb_begin_node` — `print_erb_tag` + visit `statements` + visit `rescue_clause` + visit `else_clause` + visit `ensure_clause` + visit `end_node`
 - [ ] `visit_erb_rescue_node` — `print_erb_tag` + visit `statements` + visit `subsequent`
@@ -324,8 +308,33 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 
 ## Completion Criteria
 
-- [ ] All tasks (1–12) completed
+- [ ] All tasks (14.1–14.12) completed
 - [ ] CI passes for herb-printer (spec, rubocop, steep)
 - [ ] `./bin/rspec` passes all tests
 - [ ] `gem build herb-printer.gemspec` succeeds
 - [ ] Round-trip property holds: `IdentityPrinter.print(Herb.parse(source)) == source` for all test cases
+
+## Summary
+
+| Task | Part | Description | Status |
+|------|------|-------------|--------|
+| 14.1 | A | Create gem skeleton | ✅ |
+| 14.2 | A | Add herb-printer to CI | ✅ |
+| 14.3 | A | Implement PrintContext | ✅ |
+| 14.4 | B | Implement Base Printer | 📋 |
+| 14.5 | B | IdentityPrinter — HTML Leaf Nodes | 📋 |
+| 14.6 | C | IdentityPrinter — HTML Structure Nodes | 📋 |
+| 14.7 | C | IdentityPrinter — HTML Attribute Nodes | 📋 |
+| 14.8 | C | IdentityPrinter — HTML Comment, Doctype, XML, CDATA | 📋 |
+| 14.9 | D | IdentityPrinter — ERB Leaf Nodes | 📋 |
+| 14.10 | D | IdentityPrinter — ERB Control Flow (Basic) | 📋 |
+| 14.11 | D | IdentityPrinter — ERB Control Flow (Loop/Case) | 📋 |
+| 14.12 | D | IdentityPrinter — ERB Begin/Rescue/Ensure | 📋 |
+
+**Total: 12 tasks** (3 complete, 9 remaining)
+
+## Related Documents
+
+- [Printer Design](../design/printer-design.md) — Architecture and detailed design
+- [Autofix Design](../design/herb-lint-autofix-design.md) — Depends on IdentityPrinter
+- [Phase 15: Autofix](./phase-15-autofix.md) — Next phase using IdentityPrinter

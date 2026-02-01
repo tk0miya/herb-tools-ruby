@@ -33,13 +33,15 @@ The MVP (Minimum Viable Product) has been completed with:
 | Phase | File | Tasks | Description | Status |
 |-------|------|-------|-------------|--------|
 | Phase 8 | [phase-8-rule-expansion.md](./phase-8-rule-expansion.md) | 6 | herb-lint rule expansion | 🚧 |
-| Phase 9 | [phase-9-inline-directives-autofix.md](./phase-9-inline-directives-autofix.md) | 11 | Inline directives & Auto-fix | 📋 |
+| Phase 9 | [phase-9-inline-directives.md](./phase-9-inline-directives.md) | 8 | Inline directives | ✅ |
 | Phase 10 | [phase-10-reporters-validation.md](./phase-10-reporters-validation.md) | 6 | Multiple reporters & Config validation | 📋 |
 | Phase 11 | [phase-11-html-rule-expansion.md](./phase-11-html-rule-expansion.md) | 23 | Remaining HTML rules | 📋 |
 | Phase 12 | [phase-12-erb-rule-expansion.md](./phase-12-erb-rule-expansion.md) | 12 | Remaining ERB rules | 📋 |
 | Phase 13 | [phase-13-svg-parser-rules.md](./phase-13-svg-parser-rules.md) | 2 | SVG & Parser rules | 📋 |
+| Phase 14 | [phase-14-herb-printer.md](./phase-14-herb-printer.md) | 12 | herb-printer gem (AST-to-source) | 🚧 |
+| Phase 15 | [phase-15-autofix.md](./phase-15-autofix.md) | 8 | Autofix (`--fix` / `--fix-unsafely`) | 📋 |
 
-**Post-MVP Total: 60 tasks**
+**Post-MVP Total: 77 tasks**
 
 Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
@@ -53,13 +55,12 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 | Batch 2 | 2 | Void elements & A11y |
 | Batch 3 | 1 | ERB rules |
 
-### Phase 9: Inline Directives & Auto-fix (11 tasks)
+### Phase 9: Inline Directives (8 tasks) ✅
 
 | Part | Tasks | Description |
 |------|-------|-------------|
 | Part A | 2 | DirectiveParser implementation, Linter integration |
 | Part B | 6 | herb-disable-comment meta-rules (one task per rule) |
-| Part C | 3 | Fixer class, CLI/Runner integration, fix methods |
 
 ### Phase 10: Reporters & Validation (6 tasks)
 
@@ -93,6 +94,23 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 | 13.1 | `svg-tag-name-capitalization` | SVG |
 | 13.2 | `parser-no-errors` | Parser |
 
+### Phase 14: herb-printer (12 tasks)
+
+| Part | Tasks | Description |
+|------|-------|-------------|
+| Part A | 3 | Gem skeleton, CI setup, PrintContext |
+| Part B | 2 | Base Printer, HTML Leaf Nodes |
+| Part C | 3 | HTML Structure, Attributes, Comment/Doctype |
+| Part D | 4 | ERB Leaf Nodes, Control Flow, Begin/Rescue |
+
+### Phase 15: Autofix (8 tasks)
+
+| Part | Tasks | Description |
+|------|-------|-------------|
+| Part A | 3 | AutofixContext, RuleMethods extensions, NodeLocator |
+| Part B | 3 | AutoFixResult, AutoFixer, Runner/CLI integration |
+| Part C | 2 | Autofix utility helpers, rule autofix methods |
+
 ## How to Proceed
 
 1. Open the current phase's task file
@@ -108,12 +126,6 @@ The following tasks should be completed before continuing with new rule implemen
 ### Rule Naming Alignment
 
 - [rule-naming-alignment.md](./rule-naming-alignment.md) — Align rule directory structure and naming with TypeScript reference
-
-## herb-printer
-
-| File | Tasks | Description | Status |
-|------|-------|-------------|--------|
-| [herb-printer.md](./herb-printer.md) | 12 | herb-printer gem (AST-to-source printer) | 📋 |
 
 ## Unscheduled Tasks (Low Priority)
 
