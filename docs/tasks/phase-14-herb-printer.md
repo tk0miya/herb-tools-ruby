@@ -141,19 +141,19 @@ cd herb-printer && ./bin/rspec spec/herb/printer/base_spec.rb
 
 ### Task 14.5: IdentityPrinter — HTML Leaf Nodes
 
-- [ ] Create `lib/herb/printer/identity_printer.rb`
-  - [ ] Inherit from `Herb::Printer::Base`
-  - [ ] `visit_document_node` — `visit_all(node.children)`
-  - [ ] `visit_literal_node` — `write(node.content)`
-  - [ ] `visit_html_text_node` — `write(node.content)`
-  - [ ] `visit_whitespace_node` — `write(node.value.value)` if value present
-- [ ] Add `require_relative` to `lib/herb/printer.rb`
+- [x] Create `lib/herb/printer/identity_printer.rb`
+  - [x] Inherit from `Herb::Printer::Base`
+  - [x] ~~`visit_document_node` — `visit_all(node.children)`~~ (not needed; default visitor handles traversal)
+  - [x] `visit_literal_node` — `write(node.content)`
+  - [x] `visit_html_text_node` — `write(node.content)`
+  - [x] `visit_whitespace_node` — `write(node.value.value)` if value present
+- [x] Add `require_relative` to `lib/herb/printer.rb`
 
 ### Verification
 
-- [ ] Create `spec/herb/printer/identity_printer_spec.rb`
-  - [ ] Round-trip test: `"Hello, world!"`
-  - [ ] Round-trip test: `"  \n  "` (whitespace only)
+- [x] Create `spec/herb/printer/identity_printer_spec.rb`
+  - [x] Round-trip test: `"Hello, world!"`
+  - [x] Round-trip test: `"  \n  "` (whitespace only)
 
 ```bash
 cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
