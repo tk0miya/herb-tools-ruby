@@ -136,10 +136,10 @@ build(:offense, start_line: 12, start_column: 5, end_line: 12, end_column: 35)
 
 LintResult is frequently constructed inline in reporter specs, where `file_path:` and `source:` are always noise.
 
-- [ ] Create `herb-lint/spec/factories/lint_result.rb`
-- [ ] Replace all `build_lint_result` calls and inline `LintResult.new` with `build(:lint_result, ...)`
-- [ ] Remove `build_lint_result` from `spec_helper.rb` (remove `TestHelpers` module if empty)
-- [ ] Verify all tests pass
+- [x] Create `herb-lint/spec/factories/lint_result.rb`
+- [x] Replace all `build_lint_result` calls and inline `LintResult.new` with `build(:lint_result, ...)`
+- [x] Remove `build_lint_result` from `spec_helper.rb` (remove `TestHelpers` module if empty)
+- [x] Verify all tests pass
 
 **Factory definition:**
 

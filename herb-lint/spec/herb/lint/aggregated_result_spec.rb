@@ -27,9 +27,9 @@ RSpec.describe Herb::Lint::AggregatedResult do
     context "when there are multiple results with offenses" do
       let(:results) do
         [
-          build_lint_result(errors: 2, warnings: 1),
-          build_lint_result(errors: 1, warnings: 3),
-          build_lint_result(errors: 0, warnings: 0)
+          build(:lint_result, error_count: 2, warning_count: 1),
+          build(:lint_result, error_count: 1, warning_count: 3),
+          build(:lint_result)
         ]
       end
 
@@ -55,8 +55,8 @@ RSpec.describe Herb::Lint::AggregatedResult do
     context "when there are multiple results" do
       let(:results) do
         [
-          build_lint_result(errors: 3, warnings: 1),
-          build_lint_result(errors: 2, warnings: 5)
+          build(:lint_result, error_count: 3, warning_count: 1),
+          build(:lint_result, error_count: 2, warning_count: 5)
         ]
       end
 
@@ -82,8 +82,8 @@ RSpec.describe Herb::Lint::AggregatedResult do
     context "when there are multiple results" do
       let(:results) do
         [
-          build_lint_result(errors: 1, warnings: 4),
-          build_lint_result(errors: 2, warnings: 2)
+          build(:lint_result, error_count: 1, warning_count: 4),
+          build(:lint_result, error_count: 2, warning_count: 2)
         ]
       end
 
@@ -109,9 +109,9 @@ RSpec.describe Herb::Lint::AggregatedResult do
     context "when there are multiple results" do
       let(:results) do
         [
-          build_lint_result(errors: 1, warnings: 0),
-          build_lint_result(errors: 0, warnings: 1),
-          build_lint_result(errors: 0, warnings: 0)
+          build(:lint_result, :with_errors),
+          build(:lint_result, :with_warnings),
+          build(:lint_result)
         ]
       end
 
@@ -129,8 +129,8 @@ RSpec.describe Herb::Lint::AggregatedResult do
     context "when there are no offenses" do
       let(:results) do
         [
-          build_lint_result(errors: 0, warnings: 0),
-          build_lint_result(errors: 0, warnings: 0)
+          build(:lint_result),
+          build(:lint_result)
         ]
       end
 
@@ -150,8 +150,8 @@ RSpec.describe Herb::Lint::AggregatedResult do
     context "when there are offenses" do
       let(:results) do
         [
-          build_lint_result(errors: 0, warnings: 0),
-          build_lint_result(errors: 1, warnings: 0)
+          build(:lint_result),
+          build(:lint_result, :with_errors)
         ]
       end
 
