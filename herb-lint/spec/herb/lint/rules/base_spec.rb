@@ -70,7 +70,7 @@ RSpec.describe Herb::Lint::Rules::Base do
       end
     end
     let(:rule) { test_rule_class.new(severity: "error") }
-    let(:location) { build_location(line: 5, column: 10) }
+    let(:location) { build(:location) }
 
     it "creates an offense with correct attributes" do
       expect(subject).to be_a(Herb::Lint::Offense)

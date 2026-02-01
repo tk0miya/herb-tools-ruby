@@ -12,12 +12,7 @@ RSpec.describe Herb::Lint::UnnecessaryDirectiveDetector do
     end
     let(:ignored_offenses) { [] }
 
-    let(:content_location) do
-      Herb::Location.new(
-        Herb::Position.new(1, 4),
-        Herb::Position.new(1, 40)
-      )
-    end
+    let(:content_location) { build(:location, start_column: 4) }
 
     context "when there are no disable comments" do
       let(:disable_comments) { {} }
@@ -165,12 +160,7 @@ RSpec.describe Herb::Lint::UnnecessaryDirectiveDetector do
     end
 
     context "when multiple lines have disable comments and one is unnecessary" do
-      let(:content_location_line2) do
-        Herb::Location.new(
-          Herb::Position.new(2, 4),
-          Herb::Position.new(2, 40)
-        )
-      end
+      let(:content_location_line2) { build(:location, start_line: 2) }
       let(:disable_comments) do
         {
           1 => Herb::Lint::DirectiveParser::DisableComment.new(

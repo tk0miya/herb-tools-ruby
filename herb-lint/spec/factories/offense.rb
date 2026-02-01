@@ -14,10 +14,7 @@ FactoryBot.define do
     end
 
     location do
-      Herb::Location.new(
-        Herb::Position.new(start_line, start_column),
-        Herb::Position.new(end_line, end_column)
-      )
+      build(:location, start_line:, start_column:, end_line:, end_column:)
     end
 
     initialize_with { new(rule_name:, message:, severity:, location:) }
