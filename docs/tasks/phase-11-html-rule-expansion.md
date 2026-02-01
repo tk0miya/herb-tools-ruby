@@ -405,9 +405,9 @@ Rules are grouped by theme and sorted by complexity within each batch.
 ## Batch 4: Accessibility Rules - Other (4 rules)
 
 ### Task 11.17: `html-avoid-both-disabled-and-aria-disabled`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow using both `disabled` and `aria-disabled` on the same element (redundant and potentially confusing).
 
