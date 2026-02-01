@@ -67,6 +67,20 @@ Detailed design for the herb-printer gem: AST-to-source-code printer infrastruct
 
 **Audience:** Developers implementing printer features, custom printers, or integrating AST serialization into herb-format.
 
+### [herb-lint-autofix-design.md](./herb-lint-autofix-design.md)
+Detailed design for the herb-lint `--fix` / `--fix-unsafely` autofix feature.
+
+**Contents:**
+- AST node replacement strategy (public API constructors + Array mutation)
+- AutoFixer, AutoFixResult, AutofixContext, NodeLocator components
+- Node replacement patterns (children array, reconstruct-to-boundary)
+- Autofix rule implementation guide with examples
+- Safe vs unsafe autocorrect model
+- Two-phase autofix application (AST phase + source phase)
+- Whitespace preservation via `track_whitespace: true`
+
+**Audience:** Developers implementing fixable rules, the AutoFixer infrastructure, or extending the autofix system.
+
 ### [herb-format-design.md](./herb-format-design.md)
 Detailed design for the ERB template formatter.
 
