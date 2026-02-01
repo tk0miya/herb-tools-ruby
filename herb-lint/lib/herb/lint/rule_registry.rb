@@ -31,6 +31,7 @@ module Herb
           Rules::HtmlIframeHasTitle,
           Rules::HtmlImgRequireAlt,
           Rules::HtmlInputRequireAutocomplete,
+          Rules::HtmlNavigationHasLabel,
           Rules::HtmlNoAriaHiddenOnFocusable,
           Rules::HtmlNoDuplicateAttributes,
           Rules::HtmlNoDuplicateIds,
