@@ -8,12 +8,13 @@ herb-tools-ruby provides Ruby implementations of ERB template linting and format
 
 ## Gem Structure
 
-The project is organized into four gems with clear separation of concerns:
+The project is organized into five gems with clear separation of concerns:
 
 ```
 herb-tools-ruby/
 ├── herb-config/     # Shared: Configuration file management
-├── herb-core/       # Shared: Common components
+├── herb-core/       # Shared: Common components (file discovery)
+├── herb-printer/    # Shared: AST-to-source printer
 ├── herb-lint/       # Linter
 └── herb-format/     # Formatter (future)
 ```
@@ -26,15 +27,15 @@ herb-tools-ruby/
                     │  (parser)   │
                     └──────┬──────┘
                            │
-              ┌────────────┴────────────┐
-              │                         │
-              ▼                         ▼
-      ┌──────────────┐         ┌──────────────┐
-      │  herb-config │         │  herb-core   │
-      │   (config)   │         │   (shared)   │
-      └──────┬───────┘         └──────┬───────┘
-              │                         │
-              └────────────┬────────────┘
+         ┌─────────────────┼─────────────────┐
+         │                 │                 │
+         ▼                 ▼                 ▼
+ ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+ │  herb-config │  │  herb-core   │  │ herb-printer │
+ │   (config)   │  │   (shared)   │  │  (printer)   │
+ └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
+         │                 │                 │
+         └─────────────────┼─────────────────┘
                            │
               ┌────────────┴────────────┐
               │                         │
@@ -57,8 +58,9 @@ Dependencies flow in one direction: from tool-specific gems to shared infrastruc
 |-----|--------------|
 | herb-config | herb (parser) |
 | herb-core | herb (parser) |
+| herb-printer | herb (parser) |
 | herb-lint | herb-config, herb-core, herb |
-| herb-format | herb-config, herb-core, herb |
+| herb-format | herb-config, herb-core, herb-printer, herb |
 
 ## Gem Responsibilities
 
@@ -110,6 +112,29 @@ Herb::Core
 - PatternMatcher handles both include and exclude patterns consistently
 
 For detailed design, see [herb-core Design](./herb-core-design.md).
+
+### herb-printer
+
+**Purpose**: AST-to-source-code printer infrastructure, the inverse of parsing.
+
+**Responsibilities**:
+- Convert Herb AST back to source code strings
+- Provide lossless round-trip reconstruction (IdentityPrinter)
+- Provide extensible base class for custom printers (e.g. formatting printer)
+
+**Key Components**:
+```
+Herb::Printer
+├── PrintContext     # Output buffer with indent/column tracking
+├── Base             # Abstract base class (extends Herb::Visitor)
+└── IdentityPrinter  # Lossless round-trip printer
+```
+
+**Design Decisions**:
+- Matches the TypeScript `@herb-tools/printer` package structure as a standalone gem
+- Visitor-based architecture reuses the established double-dispatch pattern from the herb gem
+
+For detailed design, see [Printer Design](./printer-design.md).
 
 ### herb-lint
 
@@ -424,5 +449,6 @@ This enables integration with CI/CD pipelines and build scripts.
 
 - [herb-config Design](./herb-config-design.md)
 - [herb-core Design](./herb-core-design.md)
+- [Printer Design](./printer-design.md)
 - [herb-lint Design](./herb-lint-design.md)
 - [Requirements: Overview](../requirements/overview.md)

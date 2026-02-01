@@ -109,6 +109,12 @@ The following tasks should be completed before continuing with new rule implemen
 
 - [rule-naming-alignment.md](./rule-naming-alignment.md) — Align rule directory structure and naming with TypeScript reference
 
+## herb-printer
+
+| File | Tasks | Description | Status |
+|------|-------|-------------|--------|
+| [herb-printer.md](./herb-printer.md) | 12 | herb-printer gem (AST-to-source printer) | 📋 |
+
 ## Unscheduled Tasks (Low Priority)
 
 The following features are not yet scheduled into phases. Consider adding them when needed:

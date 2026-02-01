@@ -54,6 +54,19 @@ Detailed design for the ERB template linter.
 
 **Audience:** Developers implementing linter features, custom rules, directive handling, or reporters.
 
+### [printer-design.md](./printer-design.md)
+Detailed design for the herb-printer gem: AST-to-source-code printer infrastructure.
+
+**Contents:**
+- Component structure (PrintContext, Base, IdentityPrinter)
+- RBS interface definitions for all classes
+- Node handling patterns for all 28 AST node types
+- Lossless round-trip design and error handling
+- Public API usage patterns and extension points
+- Rationale for separate gem (TypeScript parity, separation of concerns)
+
+**Audience:** Developers implementing printer features, custom printers, or integrating AST serialization into herb-format.
+
 ### [herb-format-design.md](./herb-format-design.md)
 Detailed design for the ERB template formatter.
 
