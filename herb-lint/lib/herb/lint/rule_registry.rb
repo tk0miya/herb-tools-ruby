@@ -39,6 +39,7 @@ module Herb
           Rules::HtmlNoUnderscoresInAttributeNames,
           Rules::HtmlNoPositiveTabIndex,
           Rules::HtmlNoSelfClosing,
+          Rules::HtmlNoSpaceInTag,
           Rules::HtmlTagNameLowercase
         ].freeze
       end
