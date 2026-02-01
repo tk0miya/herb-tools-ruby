@@ -309,9 +309,9 @@ Rules are grouped by theme and sorted by complexity within each batch.
 ---
 
 ### Task 11.13: `html-aria-level-must-be-valid`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** `aria-level` attribute must have a valid integer value (1-6 for headings).
 

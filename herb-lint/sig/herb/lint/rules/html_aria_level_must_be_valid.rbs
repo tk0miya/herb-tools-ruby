@@ -1,0 +1,41 @@
+# Generated from lib/herb/lint/rules/html_aria_level_must_be_valid.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Rule that validates aria-level attribute values.
+      #
+      # The aria-level attribute must have a valid integer value between 1 and 6
+      # when used on elements with role="heading".
+      #
+      # Good:
+      #   <div role="heading" aria-level="1">
+      #   <div role="heading" aria-level="6">
+      #
+      # Bad:
+      #   <div role="heading" aria-level="0">
+      #   <div role="heading" aria-level="7">
+      #   <div role="heading" aria-level="abc">
+      class HtmlAriaLevelMustBeValid < VisitorRule
+        VALID_LEVELS: Range[Integer]
+
+        def self.rule_name: () -> String
+
+        def self.description: () -> String
+
+        def self.default_severity: () -> String
+
+        # @rbs override
+        def visit_html_attribute_node: ...
+
+        private
+
+        # @rbs node: Herb::AST::HTMLAttributeNode
+        def aria_level_attribute?: (Herb::AST::HTMLAttributeNode node) -> bool
+
+        # @rbs value: String?
+        def valid_aria_level?: (String? value) -> bool
+      end
+    end
+  end
+end
