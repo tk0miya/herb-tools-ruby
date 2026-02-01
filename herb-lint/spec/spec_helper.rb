@@ -3,18 +3,10 @@
 require "factory_bot"
 require "herb/lint"
 
-module TestHelpers
-  def build_location(line:, column:)
-    pos = Herb::Position.new(line, column)
-    Herb::Location.new(pos, pos)
-  end
-end
-
 FactoryBot.find_definitions
 
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
-  config.include TestHelpers
 
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"

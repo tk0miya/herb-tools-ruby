@@ -94,9 +94,7 @@ RSpec.describe Herb::Lint::DirectiveParser do
   describe ".parse_disable_comment_content" do
     subject { described_class.parse_disable_comment_content(content, content_location:) }
 
-    let(:content_location) do
-      Herb::Location.new(Herb::Position.new(1, 4), Herb::Position.new(1, 40))
-    end
+    let(:content_location) { build(:location) }
 
     context "when content is not a herb:disable comment" do
       let(:content) { " just a comment " }
@@ -241,9 +239,7 @@ RSpec.describe Herb::Lint::DirectiveParser do
       described_class::Directives.new(ignore_file: false, disable_comments:)
     end
 
-    let(:content_location) do
-      Herb::Location.new(Herb::Position.new(1, 4), Herb::Position.new(1, 40))
-    end
+    let(:content_location) { build(:location) }
 
     context "when no disable comments exist" do
       let(:disable_comments) { {} }

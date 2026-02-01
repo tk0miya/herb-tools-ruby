@@ -216,22 +216,74 @@ build(:lint_result, offenses: [
 
 ---
 
-## Task 4: Update CLAUDE.md with factory_bot Guidelines
+## Task 4: Location Factory
 
-Add a brief note about factory_bot to CLAUDE.md under "Testing Policy".
+Location is constructed inline in multiple spec files using verbose `Herb::Location.new(Herb::Position.new(...), Herb::Position.new(...))` boilerplate. The Offense factory also constructs Location internally. Extracting a dedicated Location factory reduces this noise and makes tests more readable.
 
-- [ ] Note that herb-lint uses factory_bot for test object creation
-- [ ] List the available factories with a pointer to the definitions directory (`herb-lint/spec/factories/`)
+- [x] Create `herb-lint/spec/factories/location.rb`
+- [x] Update Offense factory to use `build(:location, ...)` instead of inline construction
+- [x] Replace all `build_location` calls with `build(:location, ...)`
+- [x] Replace all inline `Herb::Location.new` / `Herb::Position.new` in spec files with `build(:location, ...)`
+- [x] Remove `build_location` and `TestHelpers` module from `spec_helper.rb`
+- [x] Verify all tests pass
 
-**Content to add to CLAUDE.md (under Testing Policy):**
+**Factory definition:**
 
-~~~markdown
-### factory_bot
+```ruby
+# herb-lint/spec/factories/location.rb
+FactoryBot.define do
+  factory :location, class: "Herb::Location" do
+    transient do
+      start_line { 1 }
+      start_column { 0 }
+      end_line { start_line }
+      end_column { start_column }
+    end
 
-herb-lint uses [factory_bot](https://github.com/thoughtbot/factory_bot) for test object creation. Factories are defined in `herb-lint/spec/factories/`.
+    initialize_with do
+      new(
+        Herb::Position.new(start_line, start_column),
+        Herb::Position.new(end_line, end_column)
+      )
+    end
+  end
+end
+```
 
-Available factories: `:offense`, `:lint_result`
-~~~
+**Replacement examples:**
+
+```ruby
+# Before (offense_spec.rb)
+let(:location) { build_location(line: 10, column: 5) }
+
+# After
+let(:location) { build(:location, start_line: 10, start_column: 5) }
+```
+
+```ruby
+# Before (directive_parser_spec.rb)
+let(:content_location) do
+  Herb::Location.new(Herb::Position.new(1, 4), Herb::Position.new(1, 40))
+end
+
+# After
+let(:content_location) { build(:location, start_line: 1, start_column: 4, end_line: 1, end_column: 40) }
+```
+
+```ruby
+# Before (offense factory)
+location do
+  Herb::Location.new(
+    Herb::Position.new(start_line, start_column),
+    Herb::Position.new(end_line, end_column)
+  )
+end
+
+# After
+location do
+  build(:location, start_line:, start_column:, end_line:, end_column:)
+end
+```
 
 ---
 
@@ -242,4 +294,4 @@ Available factories: `:offense`, `:lint_result`
 | Task 1 | factory_bot setup |
 | Task 2 | Offense factory |
 | Task 3 | LintResult factory |
-| Task 4 | Update CLAUDE.md with factory_bot guidelines |
+| Task 4 | Location factory |
