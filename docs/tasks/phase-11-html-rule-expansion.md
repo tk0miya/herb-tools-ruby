@@ -477,9 +477,9 @@ Rules are grouped by theme and sorted by complexity within each batch.
 ---
 
 ### Task 11.20: `html-no-empty-headings`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Heading elements (`<h1>`-`<h6>`) must not be empty.
 
