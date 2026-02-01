@@ -333,9 +333,9 @@ Rules are grouped by theme and sorted by complexity within each batch.
 ---
 
 ### Task 11.14: `html-aria-role-heading-requires-level`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Elements with `role="heading"` must have an `aria-level` attribute.
 
