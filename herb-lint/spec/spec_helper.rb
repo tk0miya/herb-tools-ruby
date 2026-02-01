@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "factory_bot"
 require "herb/lint"
 
 module TestHelpers
@@ -21,7 +22,10 @@ module TestHelpers
   end
 end
 
+FactoryBot.find_definitions
+
 RSpec.configure do |config|
+  config.include FactoryBot::Syntax::Methods
   config.include TestHelpers
 
   # Enable flags like --only-failures and --next-failure
