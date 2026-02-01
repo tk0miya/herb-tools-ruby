@@ -22,11 +22,11 @@ factory_bot addresses these by providing sensible defaults so each test only spe
 
 ## Task 1: factory_bot Setup
 
-- [ ] Add `factory_bot` and `rspec-factory_bot` to `herb-lint/Gemfile`
-- [ ] Run `bundle install`
-- [ ] Create `herb-lint/spec/factories/` directory
-- [ ] Add factory_bot configuration to `herb-lint/spec/spec_helper.rb`
-- [ ] Verify all existing tests still pass
+- [x] Add `factory_bot` and `rspec-factory_bot` to `herb-lint/Gemfile`
+- [x] Run `bundle install`
+- [x] Create `herb-lint/spec/factories/` directory
+- [x] Add factory_bot configuration to `herb-lint/spec/spec_helper.rb`
+- [x] Verify all existing tests still pass
 
 **Addition to spec_helper.rb:**
 
