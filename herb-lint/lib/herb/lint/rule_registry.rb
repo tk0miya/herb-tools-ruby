@@ -37,6 +37,7 @@ module Herb
           Rules::HtmlNoDuplicateIds,
           Rules::HtmlNoDuplicateMetaNames,
           Rules::HtmlNoEmptyAttributes,
+          Rules::HtmlNoEmptyHeadings,
           Rules::HtmlNoNestedLinks,
           Rules::HtmlNoTitleAttribute,
           Rules::HtmlNoUnderscoresInAttributeNames,

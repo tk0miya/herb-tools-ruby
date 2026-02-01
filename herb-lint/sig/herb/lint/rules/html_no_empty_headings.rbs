@@ -1,0 +1,40 @@
+# Generated from lib/herb/lint/rules/html_no_empty_headings.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Rule that disallows empty heading elements.
+      #
+      # Heading elements (`<h1>`-`<h6>`) must contain meaningful content
+      # and should not be empty or contain only whitespace.
+      #
+      # Good:
+      #   <h1>Page Title</h1>
+      #   <h2><%= title %></h2>
+      #
+      # Bad:
+      #   <h1></h1>
+      #   <h2>   </h2>
+      class HtmlNoEmptyHeadings < VisitorRule
+        HEADING_TAGS: Array[String]
+
+        def self.rule_name: () -> String
+
+        def self.description: () -> String
+
+        def self.default_severity: () -> String
+
+        # @rbs override
+        def visit_html_element_node: ...
+
+        private
+
+        # @rbs node: Herb::AST::HTMLElementNode
+        def heading?: (Herb::AST::HTMLElementNode node) -> bool
+
+        # @rbs node: Herb::AST::HTMLElementNode
+        def empty_content?: (Herb::AST::HTMLElementNode node) -> bool
+      end
+    end
+  end
+end
