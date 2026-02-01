@@ -24,7 +24,7 @@ herb-lint/
 │           ├── aggregated_result.rb
 │           ├── rule_registry.rb
 │           ├── custom_rule_loader.rb
-│           ├── fixer.rb
+│           ├── auto_fixer.rb
 │           ├── errors.rb
 │           ├── directive_parser.rb
 │           ├── unnecessary_directive_detector.rb
@@ -81,7 +81,7 @@ Herb::Lint
 ├── AggregatedResult          # Aggregated result for multiple files
 ├── RuleRegistry              # Rule registration and lookup (Registry Pattern)
 ├── CustomRuleLoader          # Custom rule loading
-├── Fixer                     # Automatic fix application
+├── AutoFixer                 # Autofix application
 ├── Errors                    # Custom exceptions
 ├── DirectiveParser           # Directive parsing (herb:disable, herb:linter ignore)
 ├── UnnecessaryDirectiveDetector  # Detect unused herb:disable directives
@@ -115,30 +115,26 @@ Represents a single linting violation.
 class Herb::Lint::Offense
   attr_reader rule_name: String
   attr_reader message: String
-  attr_reader severity: Symbol
+  attr_reader severity: String
   attr_reader location: Herb::Location
-  attr_reader node: Herb::AST::Node?
-  attr_reader fixable: bool
-  attr_reader fix: Proc?
+  attr_reader autofix_context: AutofixContext?
 
   def initialize: (
     rule_name: String,
     message: String,
-    severity: Symbol,
+    severity: String,
     location: Herb::Location,
-    ?node: Herb::AST::Node?,
-    ?fixable: bool,
-    ?fix: Proc?
+    ?autofix_context: AutofixContext?
   ) -> void
 
   def line: () -> Integer
   def column: () -> Integer
-  def end_line: () -> Integer
-  def end_column: () -> Integer
-  def fixable?: () -> bool
+  def fixable?: () -> bool   # true when autofix_context is present
   def to_h: () -> Hash[Symbol, untyped]
 end
 ```
+
+See [Autofix Design](./herb-lint-autofix-design.md) for `AutofixContext` and the autofix processing flow.
 
 ### Herb::Lint::LintResult
 
@@ -244,8 +240,8 @@ end
 
 **Command-Line Options:**
 - `--init` - Generate default .herb.yml
-- `--fix` - Apply safe automatic fixes
-- `--fix-unsafely` - Apply potentially unsafe fixes
+- `--fix` - Apply safe autofixes
+- `--fix-unsafely` - Apply potentially unsafe autofixes
 - `--format TYPE` - Output format (detailed, simple, json)
 - `--github` - GitHub Actions annotation format
 - `--fail-level LEVEL` - Minimum severity to trigger failure (error, warning, info, hint)
@@ -294,7 +290,7 @@ end
 4. Per-File Processing:
    - Read source file
    - Execute linting via Linter
-   - Apply fixes if requested and available
+   - Apply autofixes if requested and available
    - Handle errors gracefully
 5. Aggregation: Combine results into AggregatedResult
 
@@ -304,7 +300,7 @@ end
 - `CustomRuleLoader` - Custom rule loading
 - `LinterFactory` - Linter instantiation
 - `Herb::Core::FileDiscovery` - File discovery
-- `Fixer` - Auto-fix application
+- `AutoFixer` - Autofix application
 
 ### Herb::Lint::Linter
 
@@ -616,19 +612,17 @@ end
 3. Auto-registers newly loaded rule classes with RuleRegistry
 4. Handles load errors gracefully
 
-### Herb::Lint::Fixer
+### Herb::Lint::AutoFixer
 
-**Responsibility:** Applies automatic fixes to source code.
+**Responsibility:** Applies autofixes to source code using AST node replacement and IdentityPrinter serialization.
+
+See [Autofix Design](./herb-lint-autofix-design.md) for the full detailed design, including node replacement patterns, autofix rule implementation, and the processing flow.
 
 ```rbs
-class Herb::Lint::Fixer
+class Herb::Lint::AutoFixer
   @source: String
   @offenses: Array[Offense]
   @fix_unsafely: bool
-
-  attr_reader source: String
-  attr_reader offenses: Array[Offense]
-  attr_reader fix_unsafely: bool
 
   def initialize: (
     String source,
@@ -636,26 +630,31 @@ class Herb::Lint::Fixer
     ?fix_unsafely: bool
   ) -> void
 
-  def apply_fixes: () -> String
+  def apply: () -> AutoFixResult
 
   private
 
-  def fixable_offenses: () -> Array[Offense]
-  def sort_by_location: (Array[Offense] offenses) -> Array[Offense]
-  def apply_fix: (Offense offense, String current_source) -> String
+  def apply_ast_fixes: (String source, Array[Offense] offenses) -> [String, Array[Offense], Array[Offense]]
+  def fixable_offenses: (Array[Offense] offenses) -> Array[Offense]
+  def safe_to_apply?: (Offense offense) -> bool
 end
 ```
 
 **Processing:**
-1. Filters offenses to fixable ones only
-2. Sorts offenses by location (reverse order to maintain positions)
-3. Applies each fix Proc to the source
-4. Returns modified source code
+1. Filters offenses to fixable ones (those with `autofix_context`)
+2. Re-parses source with `Herb.parse(source, track_whitespace: true)` for whitespace-preserving AST
+3. Relocates each target node via `NodeLocator`, calls rule's `autofix` to create replacement nodes
+4. Serializes the modified AST via `Herb::Printer::IdentityPrinter.print(parse_result)`
+5. Returns `AutoFixResult` with corrected source and categorized offenses
 
 **Safety:**
-- Only applies fixes marked as fixable
-- Requires `fix_unsafely: true` for potentially unsafe fixes
-- Processes fixes in reverse document order to maintain positions
+- `autocorrectable?` rules are applied with `--fix`
+- `unsafe_autocorrectable?` rules require `--fix-unsafely`
+- Nodes not found after re-parse are skipped (added to unfixed list)
+
+**Dependencies:**
+- `herb-printer` gem for `IdentityPrinter`
+- `Herb.parse(source, track_whitespace: true)` for whitespace-preserving AST
 
 ### Herb::Lint::Rules::Base
 
@@ -1196,7 +1195,7 @@ end
 - Valid input produces no offenses
 - Invalid input produces expected offenses
 - Offense metadata (line, column, severity, rule_name) is correct
-- Auto-fix logic works correctly (if fixable)
+- Autofix logic works correctly (if fixable)
 - Rule options affect behavior appropriately
 
 ### Integration Tests - Runner
@@ -1213,7 +1212,7 @@ end
 - Multiple files are processed correctly
 - File discovery respects include/exclude patterns
 - Inline directives (`herb:disable`, `herb:linter ignore`) work
-- Auto-fix writes corrected files
+- Autofix writes corrected files
 - Error handling for parse failures
 
 ### Integration Tests - CLI
@@ -1228,7 +1227,7 @@ end
 **Key Test Cases:**
 - Exit codes match offense severity
 - Format options produce correct output
-- Fix options modify files
+- Autofix options modify files
 - Configuration loading works
 
 ## Related Documents
