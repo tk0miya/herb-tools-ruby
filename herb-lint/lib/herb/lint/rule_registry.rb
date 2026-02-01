@@ -20,6 +20,7 @@ module Herb
           Rules::HtmlAnchorRequireHref,
           Rules::HtmlAriaAttributeMustBeValid,
           Rules::HtmlAriaLabelIsWellFormatted,
+          Rules::HtmlAriaRoleHeadingRequiresLevel,
           Rules::HtmlAttributeDoubleQuotes,
           Rules::HtmlAttributeEqualsSpacing,
           Rules::HtmlAttributeValuesRequireQuotes,
