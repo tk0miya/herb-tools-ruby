@@ -1,0 +1,39 @@
+# Generated from lib/herb/lint/rules/html_no_nested_links.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Rule that disallows nesting of anchor elements.
+      #
+      # Nesting anchor elements is invalid HTML and causes unpredictable
+      # behavior across browsers. Each anchor should be a separate,
+      # non-nested element.
+      #
+      # Good:
+      #   <a href="/page">Link</a>
+      #
+      # Bad:
+      #   <a href="/outer">
+      #     <a href="/inner">Nested link</a>
+      #   </a>
+      class HtmlNoNestedLinks < VisitorRule
+        def self.rule_name: () -> String
+
+        def self.description: () -> String
+
+        def self.default_severity: () -> String
+
+        # @rbs override
+        def check: ...
+
+        # @rbs override
+        def visit_html_element_node: ...
+
+        private
+
+        # @rbs node: Herb::AST::HTMLElementNode
+        def anchor_element?: (Herb::AST::HTMLElementNode node) -> bool
+      end
+    end
+  end
+end

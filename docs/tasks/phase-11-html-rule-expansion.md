@@ -237,9 +237,9 @@ Rules are grouped by theme and sorted by complexity within each batch.
 ---
 
 ### Task 11.10: `html-no-nested-links`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow nesting of anchor (`<a>`) elements.
 
