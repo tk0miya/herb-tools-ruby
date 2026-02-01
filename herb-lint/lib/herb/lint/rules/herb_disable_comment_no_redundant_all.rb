@@ -43,7 +43,7 @@ module Herb
         # @rbs node: Herb::AST::ERBContentNode
         def check_disable_comment(node) #: void
           content = node.content.value
-          comment = DirectiveParser.parse_disable_comment_content(content)
+          comment = DirectiveParser.parse_disable_comment_content(content, content_location: node.content.location)
           return unless comment&.match
 
           rule_names = comment.rule_names

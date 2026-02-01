@@ -1,0 +1,41 @@
+# Generated from lib/herb/lint/unnecessary_directive_detector.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # Detects herb:disable directives that did not suppress any offense.
+    # Used by the Linter after offense filtering to report unnecessary directives.
+    class UnnecessaryDirectiveDetector
+      RULE_NAME: String
+
+      # @rbs directives: DirectiveParser::Directives
+      # @rbs ignored_offenses: Array[Offense]
+      def self.detect: (DirectiveParser::Directives directives, Array[Offense] ignored_offenses) -> Array[Offense]
+
+      # @rbs directives: DirectiveParser::Directives
+      # @rbs ignored_offenses: Array[Offense]
+      def initialize: (DirectiveParser::Directives directives, Array[Offense] ignored_offenses) -> void
+
+      def detect: () -> Array[Offense]
+
+      private
+
+      # @rbs offenses: Array[Offense]
+      # @rbs line: Integer
+      # @rbs comment: DirectiveParser::DisableComment
+      def check_comment: (Array[Offense] offenses, Integer line, DirectiveParser::DisableComment comment) -> void
+
+      # @rbs offenses: Array[Offense]
+      # @rbs comment: DirectiveParser::DisableComment
+      # @rbs suppressed: Array[String]
+      def check_rule_names: (Array[Offense] offenses, DirectiveParser::DisableComment comment, Array[String] suppressed) -> void
+
+      # @rbs message: String
+      # @rbs location: Herb::Location
+      def build_offense: (String message, Herb::Location location) -> Offense
+
+      # @rbs comment: DirectiveParser::DisableComment
+      # @rbs detail: DirectiveParser::DisableRuleName
+      def build_detail_location: (DirectiveParser::DisableComment comment, DirectiveParser::DisableRuleName detail) -> Herb::Location
+    end
+  end
+end

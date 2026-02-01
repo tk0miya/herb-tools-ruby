@@ -27,6 +27,7 @@ herb-lint/
 │           ├── fixer.rb
 │           ├── errors.rb
 │           ├── directive_parser.rb
+│           ├── unnecessary_directive_detector.rb
 │           ├── reporter/
 │           │   ├── base_reporter.rb
 │           │   ├── detailed_reporter.rb
@@ -83,6 +84,7 @@ Herb::Lint
 ├── Fixer                     # Automatic fix application
 ├── Errors                    # Custom exceptions
 ├── DirectiveParser           # Directive parsing (herb:disable, herb:linter ignore)
+├── UnnecessaryDirectiveDetector  # Detect unused herb:disable directives
 ├── Reporter                  # Output formatter
 │   ├── BaseReporter
 │   ├── DetailedReporter
@@ -312,29 +314,30 @@ end
 class Herb::Lint::Linter
   @rules: Array[Rules::Base]
   @config: Herb::Config::LinterConfig
+  @rule_registry: RuleRegistry?
+  @ignore_disable_comments: bool
 
   attr_reader rules: Array[Rules::Base]
   attr_reader config: Herb::Config::LinterConfig
+  attr_reader rule_registry: RuleRegistry?
+  attr_reader ignore_disable_comments: bool
 
   def initialize: (
     Array[Rules::Base] rules,
-    Herb::Config::LinterConfig config
+    Herb::Config::LinterConfig config,
+    ?rule_registry: RuleRegistry?,
+    ?ignore_disable_comments: bool
   ) -> void
 
-  def lint: (String file_path, String source, ?Context context) -> LintResult
+  def lint: (file_path: String, source: String) -> LintResult
 
   private
 
-  # Filter offenses using the herb:disable cache from Directives.
-  # Returns a tuple of [kept_offenses, ignored_offenses].
-  # Also populates ignored_offenses_by_line to track which rule names
-  # were actually used to suppress offenses (needed by the "unnecessary" meta-rule).
-  def filter_offenses: (
-    Array[Offense] offenses,
-    String rule_name,
-    DirectiveParser::Directives directives,
-    Hash[Integer, Set[String]] ignored_offenses_by_line
-  ) -> [Array[Offense], Array[Offense]]
+  def build_context: (String file_path, String source) -> Context
+  def collect_offenses: (Herb::ParseResult document, Context context) -> Array[Offense]
+  def build_lint_result: (String file_path, String source, DirectiveParser::Directives directives, Array[Offense] offenses) -> LintResult
+  def parse_error_result: (String file_path, String source, Array[untyped] errors) -> LintResult
+  def parse_error_offense: (untyped error) -> Offense
 end
 ```
 
@@ -342,12 +345,9 @@ end
 1. Parse ERB template into AST via `Herb.parse`
 2. Parse directives via `DirectiveParser.parse(parse_result, source)` → `directives`
 3. Check for file-level ignore via `directives.ignore_file?`; return empty result if found
-4. Create Context with source, configuration, and directive-related fields
-5. Execute each enabled rule against the AST
-6. For each rule's offenses, call `filter_offenses` using `directives`
-7. Execute non-excludable meta-rules (herb-disable-comment-\* rules); these always run and cannot be suppressed by `herb:disable`
-8. Execute `herb-disable-comment-unnecessary` last (requires `ignored_offenses_by_line` from step 6)
-9. Return LintResult with kept offenses and ignored count
+4. Create Context with source and configuration
+5. Execute all rules against the AST and collect offenses
+6. Build LintResult (filtering offenses and detecting unnecessary directives)
 
 **Non-Excludable Rules:**
 
@@ -358,7 +358,8 @@ The following meta-rules validate `herb:disable` comments themselves and cannot 
 - `herb-disable-comment-valid-rule-name`
 - `herb-disable-comment-no-duplicate-rules`
 - `herb-disable-comment-no-redundant-all`
-- `herb-disable-comment-unnecessary`
+
+**Note:** `herb-disable-comment-unnecessary` is not implemented as a rule. It is handled by `UnnecessaryDirectiveDetector`, which is called by the Linter after offense filtering. This is because it requires knowledge of which offenses were suppressed, which is only available after filtering.
 
 **Dependencies:**
 - `DirectiveParser` - Parse directives; returns `Directives` data object
@@ -402,7 +403,7 @@ end
 
 **Responsibility:** Provides contextual information during rule execution.
 
-**Design Note:** Directive parsing (inline disable comments) is handled by the Linter, not individual rules. Context provides read-only access to configuration and source information that rules need. It also carries directive-related fields needed by the herb-disable-comment meta-rules.
+**Design Note:** Directive parsing (inline disable comments) is handled by the Linter, not individual rules. Context provides read-only access to configuration and source information that rules need.
 
 ```rbs
 class Herb::Lint::Context
@@ -415,27 +416,14 @@ class Herb::Lint::Context
   attr_reader source: String
   attr_reader config: Herb::Config::LinterConfig
 
-  # List of valid rule names registered in the system.
-  # Used by herb-disable-comment-valid-rule-name to check if directive
-  # rule names are real.
-  attr_reader valid_rule_names: Array[String]?
-
-  # Tracks which rule names were actually used to suppress offenses per line.
-  # Populated by Linter#filter_offenses, consumed by herb-disable-comment-unnecessary
-  # to detect directives that did not suppress any offense.
-  attr_reader ignored_offenses_by_line: Hash[Integer, Set[String]]?
-
-  # When true, report offenses even when suppressed by herb:disable comments.
-  # Controlled by the --ignore-disable-comments CLI flag.
-  attr_reader ignore_disable_comments: bool
+  # Optional RuleRegistry for severity lookup.
+  attr_reader rule_registry: RuleRegistry?
 
   def initialize: (
     file_path: String,
     source: String,
     config: Herb::Config::LinterConfig,
-    ?valid_rule_names: Array[String]?,
-    ?ignored_offenses_by_line: Hash[Integer, Set[String]]?,
-    ?ignore_disable_comments: bool
+    ?rule_registry: RuleRegistry?
   ) -> void
 
   def severity_for: (String rule_name) -> Symbol
@@ -570,11 +558,11 @@ Herb disable comment rules (6):
 
 | Rule name | Status |
 |---|---|
-| `herb-disable-comment-malformed` | Not implemented |
-| `herb-disable-comment-missing-rules` | Not implemented |
-| `herb-disable-comment-no-duplicate-rules` | Not implemented |
-| `herb-disable-comment-no-redundant-all` | Not implemented |
-| `herb-disable-comment-unnecessary` | Not implemented |
+| `herb-disable-comment-malformed` | Implemented |
+| `herb-disable-comment-missing-rules` | Implemented |
+| `herb-disable-comment-no-duplicate-rules` | Implemented |
+| `herb-disable-comment-no-redundant-all` | Implemented |
+| `herb-disable-comment-unnecessary` | Implemented (via UnnecessaryDirectiveDetector) |
 | `herb-disable-comment-valid-rule-name` | Not implemented |
 
 SVG rules (1):
@@ -840,12 +828,14 @@ class Herb::Lint::DirectiveParser::DisableComment
   attr_reader rule_names: Array[String]
   attr_reader rule_name_details: Array[DisableRuleName]
   attr_reader rules_string: String
+  attr_reader content_location: Herb::Location?
 
   def initialize: (
     match: String,
     rule_names: Array[String],
     rule_name_details: Array[DisableRuleName],
-    rules_string: String
+    rules_string: String,
+    content_location: Herb::Location?
   ) -> void
 end
 
@@ -897,7 +887,7 @@ end
 
 ### Herb Disable Comment Meta-Rules
 
-The following six meta-rules validate `herb:disable` comments themselves. They are **non-excludable** — they cannot be suppressed by `herb:disable` directives. Each inherits from `VisitorRule` directly.
+The following five meta-rules validate `herb:disable` comments themselves. They are **non-excludable** — they cannot be suppressed by `herb:disable` directives. Each inherits from `VisitorRule` directly.
 
 | Rule Name | Severity | What It Detects |
 |-----------|----------|-----------------|
@@ -906,11 +896,34 @@ The following six meta-rules validate `herb:disable` comments themselves. They a
 | `herb-disable-comment-valid-rule-name` | warning | Unknown rule names (with "did you mean?" suggestions using `valid_rule_names` from Context) |
 | `herb-disable-comment-no-duplicate-rules` | warning | Same rule listed twice in one comment |
 | `herb-disable-comment-no-redundant-all` | warning | `all` used alongside specific rules (redundant) |
-| `herb-disable-comment-unnecessary` | warning | Directive that does not suppress any actual offense (uses `ignored_offenses_by_line` from Context) |
 
 All meta-rules override `visit_erb_content_node` to filter for ERB comment nodes (`<%#`), then use `DirectiveParser.parse_disable_comment_content` to parse and validate the content.
 
-**Execution Order:** `herb-disable-comment-unnecessary` must execute **after** all other rules and after offense filtering, because it needs to know which offenses were actually suppressed.
+### Herb::Lint::UnnecessaryDirectiveDetector
+
+**Responsibility:** Detects `herb:disable` directives that did not suppress any offense. Called by the Linter after offense filtering.
+
+**Design Note:** This is not implemented as a rule because it requires knowledge of which offenses were suppressed — information only available after the Linter has filtered offenses using directives. It computes directly from `directives` and `ignored_offenses`.
+
+| Property | Value |
+|----------|-------|
+| Rule name | `herb-disable-comment-unnecessary` |
+| Severity | warning |
+| Detects | `herb:disable` directive that does not suppress any actual offense |
+
+```rbs
+class Herb::Lint::UnnecessaryDirectiveDetector
+  RULE_NAME: String
+
+  def self.detect: (DirectiveParser::Directives directives, Array[Offense] ignored_offenses) -> Array[Offense]
+end
+```
+
+**Processing:**
+1. Build a lookup of suppressed rule names by line from `ignored_offenses`
+2. Iterate over `directives.disable_comments`
+3. For `herb:disable all` — report if no offenses were suppressed on that line
+4. For specific rule names — report each rule name that did not match any suppressed offense
 
 ## Rule Implementation Examples
 
@@ -1119,34 +1132,27 @@ CLI#run
   │   └── files.each do |file|
   │       ├── File.read(file)
   │       │
-  │       └── Linter#lint(file, source, context)
+  │       └── Linter#lint(file_path:, source:)
   │           │
   │           ├── Herb.parse(source) (herb gem)
   │           │
   │           ├── directives = DirectiveParser.parse(parse_result, source)
   │           │   ├── Detect <%# herb:linter ignore %> via AST traversal
-  │           │   └── Build herb_disable_cache via line-by-line scan
+  │           │   └── Build disable_comments via AST comment scanning
   │           │
   │           ├── directives.ignore_file?
   │           │   └── (return empty LintResult if file ignored)
   │           │
-  │           ├── Context.new (with valid_rule_names, ignore_disable_comments)
+  │           ├── Context.new(file_path:, source:, config:, rule_registry:)
   │           │
-  │           ├── Execute regular rules
-  │           │   └── rules.each do |rule|
-  │           │       ├── rule.check(document, context)
-  │           │       └── filter_offenses(offenses, rule_name,
-  │           │           directives, ignored_offenses_by_line)
-  │           │           → kept[] + ignored[]
+  │           ├── Execute all rules
+  │           │   └── rules.flat_map { |rule| rule.check(document, context) }
   │           │
-  │           ├── Execute non-excludable meta-rules
-  │           │   └── herb-disable-comment-* rules (except unnecessary)
-  │           │       (these run against the AST, not filtered by herb:disable)
-  │           │
-  │           ├── Execute herb-disable-comment-unnecessary (last)
-  │           │   └── (uses ignored_offenses_by_line to detect unused directives)
-  │           │
-  │           └── return LintResult (offenses + ignored count)
+  │           └── build_lint_result
+  │               ├── (if ignore_disable_comments) return LintResult as-is
+  │               ├── directives.filter_offenses(offenses) → [kept, ignored]
+  │               ├── UnnecessaryDirectiveDetector.detect(directives, ignored)
+  │               └── return LintResult (kept + unnecessary, ignored count)
   │
   ├── AggregatedResult.new(results)
   │

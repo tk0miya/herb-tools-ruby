@@ -25,9 +25,8 @@ module Herb
       # 1. Parse ERB template into AST
       # 2. Parse directives via DirectiveParser
       # 3. Check for file-level ignore
-      # 4. Create Context and execute each enabled rule against the AST
-      # 5. Filter offenses using directives (unless ignore_disable_comments)
-      # 6. Return LintResult with kept offenses and ignored count
+      # 4. Create Context and execute rules against the AST
+      # 5. Build LintResult (filtering offenses and detecting unnecessary directives)
       #
       # @rbs file_path: String -- path to the file being linted
       # @rbs source: String -- source code content of the file
@@ -42,6 +41,16 @@ module Herb
       # @rbs document: Herb::ParseResult
       # @rbs context: Context
       def collect_offenses: (Herb::ParseResult document, Context context) -> Array[Offense]
+
+      # Build LintResult from offenses.
+      # When ignore_disable_comments is false, filters offenses using directives
+      # and detects unnecessary herb:disable directives.
+      #
+      # @rbs file_path: String
+      # @rbs source: String
+      # @rbs directives: DirectiveParser::Directives
+      # @rbs offenses: Array[Offense]
+      def build_lint_result: (String file_path, String source, DirectiveParser::Directives directives, Array[Offense] offenses) -> LintResult
 
       # @rbs file_path: String
       # @rbs source: String

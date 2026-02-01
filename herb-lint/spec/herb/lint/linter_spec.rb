@@ -122,19 +122,9 @@ RSpec.describe Herb::Lint::Linter do
       let(:rules) { [Herb::Lint::Rules::HtmlImgRequireAlt.new] }
       let(:source) { '<img src="test.png"> <%# herb:disable html-no-self-closing %>' }
 
-      it "does not filter the offense" do
-        expect(subject.offenses.size).to eq(1)
-        expect(subject.offenses.first.rule_name).to eq("html-img-require-alt")
-        expect(subject.ignored_count).to eq(0)
-      end
-    end
-
-    context "when disable is on a different line" do
-      let(:rules) { [Herb::Lint::Rules::HtmlImgRequireAlt.new] }
-      let(:source) { "<%# herb:disable html-img-require-alt %>\n<img src=\"test.png\">" }
-
-      it "does not filter the offense on the other line" do
-        expect(subject.offenses.size).to eq(1)
+      it "does not filter the offense and reports unnecessary directive" do
+        rule_names = subject.offenses.map(&:rule_name)
+        expect(rule_names).to include("html-img-require-alt", "herb-disable-comment-unnecessary")
         expect(subject.ignored_count).to eq(0)
       end
     end

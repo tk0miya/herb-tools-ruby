@@ -42,7 +42,7 @@ module Herb
         # @rbs node: Herb::AST::ERBContentNode
         def check_duplicate_rules(node) #: void
           content = node.content.value
-          comment = DirectiveParser.parse_disable_comment_content(content)
+          comment = DirectiveParser.parse_disable_comment_content(content, content_location: node.content.location)
           return unless comment
           return unless comment.match
 
