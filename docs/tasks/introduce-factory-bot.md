@@ -218,35 +218,19 @@ build(:lint_result, offenses: [
 
 ## Task 4: Update CLAUDE.md with factory_bot Guidelines
 
-Add factory_bot usage conventions to CLAUDE.md so that all contributors follow consistent patterns when writing tests.
+Add a brief note about factory_bot to CLAUDE.md under "Testing Policy".
 
-- [ ] Add a "factory_bot Usage" subsection under "Testing Policy" in CLAUDE.md
-- [ ] Document the available factories (`offense`, `lint_result`) and their key attributes
-- [ ] Document transient attributes and traits (e.g., `start_line`, `end_line`, `:with_errors`, `:with_warnings`)
-- [ ] Add examples showing when to use `build(:offense, ...)` vs inline construction
-- [ ] Add a guideline: prefer factories over manual object construction for `Offense` and `LintResult`
-- [ ] Add a guideline: only specify attributes relevant to the test (rely on factory defaults for the rest)
+- [ ] Note that herb-lint uses factory_bot for test object creation
+- [ ] List the available factories with a pointer to the definitions directory (`herb-lint/spec/factories/`)
 
 **Content to add to CLAUDE.md (under Testing Policy):**
 
 ~~~markdown
-### factory_bot Usage
+### factory_bot
 
 herb-lint uses [factory_bot](https://github.com/thoughtbot/factory_bot) for test object creation. Factories are defined in `herb-lint/spec/factories/`.
 
-**Available factories:**
-
-| Factory | Key Attributes | Transient Attributes | Traits |
-|---------|---------------|---------------------|--------|
-| `:offense` | `rule_name`, `message`, `severity`, `location` | `start_line`, `start_column`, `end_line`, `end_column` | — |
-| `:lint_result` | `file_path`, `offenses`, `source` | `error_count`, `warning_count` | `:with_errors`, `:with_warnings` |
-
-**Guidelines:**
-
-- Use `build(:offense, ...)` and `build(:lint_result, ...)` instead of manual `Offense.new` or helper methods
-- Only specify attributes relevant to the test — rely on factory defaults for the rest
-- Use transient attributes for position: `build(:offense, start_line: 5, start_column: 10)`
-- Use traits for result with offenses: `build(:lint_result, :with_errors, error_count: 3)`
+Available factories: `:offense`, `:lint_result`
 ~~~
 
 ---
