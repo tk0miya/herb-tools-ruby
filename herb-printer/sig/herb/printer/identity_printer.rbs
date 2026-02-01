@@ -1,0 +1,18 @@
+# Generated from lib/herb/printer/identity_printer.rb with RBS::Inline
+
+module Herb
+  module Printer
+    # Lossless round-trip printer that reconstructs the original source code
+    # exactly from an AST produced by Herb.parse.
+    class IdentityPrinter < Base
+      # @rbs override
+      def visit_literal_node: ...
+
+      # @rbs override
+      def visit_html_text_node: ...
+
+      # @rbs override
+      def visit_whitespace_node: ...
+    end
+  end
+end
