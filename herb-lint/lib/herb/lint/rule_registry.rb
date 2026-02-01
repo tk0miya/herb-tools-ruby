@@ -19,6 +19,7 @@ module Herb
           Rules::HerbDisableCommentValidRuleName,
           Rules::HtmlAnchorRequireHref,
           Rules::HtmlAriaAttributeMustBeValid,
+          Rules::HtmlAriaLabelIsWellFormatted,
           Rules::HtmlAttributeDoubleQuotes,
           Rules::HtmlAttributeEqualsSpacing,
           Rules::HtmlAttributeValuesRequireQuotes,

@@ -1,0 +1,37 @@
+# Generated from lib/herb/lint/rules/html_aria_label_is_well_formatted.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Rule that checks aria-label values are well-formatted.
+      #
+      # The `aria-label` attribute should have a meaningful value that is
+      # not empty, not just whitespace, and starts with an uppercase letter.
+      #
+      # Good:
+      #   <button aria-label="Submit form">Submit</button>
+      #   <nav aria-label="Main navigation">...</nav>
+      #
+      # Bad:
+      #   <button aria-label="">Submit</button>
+      #   <button aria-label="   ">Submit</button>
+      #   <button aria-label="submit form">Submit</button>
+      class HtmlAriaLabelIsWellFormatted < VisitorRule
+        def self.rule_name: () -> String
+
+        def self.description: () -> String
+
+        def self.default_severity: () -> String
+
+        # @rbs override
+        def visit_html_element_node: ...
+
+        private
+
+        # @rbs attr: Herb::AST::HTMLAttributeNode
+        # @rbs value: String?
+        def check_aria_label_value: (Herb::AST::HTMLAttributeNode attr, String? value) -> void
+      end
+    end
+  end
+end
