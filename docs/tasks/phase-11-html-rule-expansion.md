@@ -263,9 +263,9 @@ Rules are grouped by theme and sorted by complexity within each batch.
 ## Batch 3: ARIA Accessibility Rules (6 rules)
 
 ### Task 11.11: `html-aria-attribute-must-be-valid`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** ARIA attributes must be valid (known `aria-*` attributes only).
 
