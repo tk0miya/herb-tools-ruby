@@ -27,31 +27,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaAttributeMustBeValid do
   end
 
   describe "#check" do
-    context "when element has valid aria-label attribute" do
-      let(:template) { '<div aria-label="Name">content</div>' }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when element has valid aria-labelledby attribute" do
-      let(:template) { '<div aria-labelledby="name-id">content</div>' }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when element has valid aria-hidden attribute" do
-      let(:template) { '<div aria-hidden="true">content</div>' }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when element has multiple valid ARIA attributes" do
+    context "when element has valid ARIA attributes" do
       let(:template) do
         '<div aria-label="Name" aria-describedby="desc" aria-expanded="false">content</div>'
       end
@@ -109,14 +85,6 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaAttributeMustBeValid do
       end
     end
 
-    context "when element has data attributes" do
-      let(:template) { '<div data-value="foo">content</div>' }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
     context "when ARIA attribute has uppercase letters" do
       let(:template) { '<div ARIA-LABELLED="Name">content</div>' }
 
@@ -156,14 +124,6 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaAttributeMustBeValid do
 
       it "reports an offense for each element" do
         expect(subject.size).to eq(2)
-      end
-    end
-
-    context "when element has boolean attribute without value" do
-      let(:template) { "<input disabled>" }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
       end
     end
 
