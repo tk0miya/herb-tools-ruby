@@ -554,9 +554,9 @@ Rules are grouped by theme and sorted by complexity within each batch.
 ---
 
 ### Task 11.23: `html-no-block-inside-inline`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow block-level elements nested inside inline elements.
 
