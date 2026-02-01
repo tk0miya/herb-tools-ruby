@@ -27,9 +27,8 @@ module Herb
       # 1. Parse ERB template into AST
       # 2. Parse directives via DirectiveParser
       # 3. Check for file-level ignore
-      # 4. Create Context and execute each enabled rule against the AST
-      # 5. Filter offenses using directives (unless ignore_disable_comments)
-      # 6. Return LintResult with kept offenses and ignored count
+      # 4. Create Context and execute rules against the AST
+      # 5. Build LintResult (filtering offenses and detecting unnecessary directives)
       #
       # @rbs file_path: String -- path to the file being linted
       # @rbs source: String -- source code content of the file
@@ -41,14 +40,8 @@ module Herb
         return LintResult.new(file_path:, offenses: [], source:) if directives.ignore_file?
 
         context = build_context(file_path, source)
-        all_offenses = collect_offenses(document, context)
-
-        if ignore_disable_comments
-          LintResult.new(file_path:, offenses: all_offenses, source:)
-        else
-          kept_offenses, ignored_offenses = directives.filter_offenses(all_offenses)
-          LintResult.new(file_path:, offenses: kept_offenses, source:, ignored_count: ignored_offenses.size)
-        end
+        offenses = collect_offenses(document, context)
+        build_lint_result(file_path, source, directives, offenses)
       end
 
       private
@@ -63,6 +56,27 @@ module Herb
       # @rbs context: Context
       def collect_offenses(document, context) #: Array[Offense]
         rules.flat_map { |rule| rule.check(document, context) }
+      end
+
+      # Build LintResult from offenses.
+      # When ignore_disable_comments is false, filters offenses using directives
+      # and detects unnecessary herb:disable directives.
+      #
+      # @rbs file_path: String
+      # @rbs source: String
+      # @rbs directives: DirectiveParser::Directives
+      # @rbs offenses: Array[Offense]
+      def build_lint_result(file_path, source, directives, offenses) #: LintResult
+        return LintResult.new(file_path:, offenses:, source:) if ignore_disable_comments
+
+        kept_offenses, ignored_offenses = directives.filter_offenses(offenses)
+        unnecessary = UnnecessaryDirectiveDetector.detect(directives, ignored_offenses)
+        LintResult.new(
+          file_path:,
+          offenses: kept_offenses + unnecessary,
+          source:,
+          ignored_count: ignored_offenses.size
+        )
       end
 
       # @rbs file_path: String

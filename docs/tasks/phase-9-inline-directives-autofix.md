@@ -110,7 +110,7 @@ end
 
 - [x] Call `DirectiveParser.parse` in `Linter#lint` method
 - [x] Implement `Linter#filter_offenses` private method
-- [x] Update `Context` to carry `directives`, `valid_rule_names`, `ignored_offenses_by_line`, and `ignore_disable_comments`
+- [x] Update `Context` to carry `valid_rule_names` and `ignore_disable_comments`
 - [x] Add `--ignore-disable-comments` CLI option
 - [x] Add integration tests
 - [x] Update RBS types
@@ -120,46 +120,11 @@ end
 1. Parse ERB template into AST via `Herb.parse`
 2. Parse directives via `DirectiveParser.parse(parse_result, source)` → `directives`
 3. Check for file-level ignore via `directives.ignore_file?`; return empty result if found
-4. Create Context with source, configuration, `directives`, and directive-related fields
-5. Execute each enabled rule against the AST (meta-rules access `context.directives.disable_comments` for validation)
-6. For each rule's offenses, call `filter_offenses` using `directives`
-7. Execute non-excludable meta-rules (herb-disable-comment-\* rules); these always run and cannot be suppressed by `herb:disable`
-8. Execute `herb-disable-comment-unnecessary` last (requires `ignored_offenses_by_line` from step 6)
-9. Return LintResult with kept offenses and ignored count
+4. Create Context with source, configuration, and rule_registry
+5. Execute all rules against the AST and collect offenses
+6. Build LintResult (filtering offenses and detecting unnecessary directives)
 
-**filter_offenses:**
-
-```ruby
-# Filter offenses using the disable_comments from Directives.
-# Returns a tuple of [kept_offenses, ignored_offenses].
-# Also populates ignored_offenses_by_line to track which rule names
-# were actually used to suppress offenses (needed by the "unnecessary" meta-rule).
-def filter_offenses(offenses, rule_name, directives, ignored_offenses_by_line)
-  # ...
-end
-```
-
-**Context Changes:**
-
-```ruby
-class Context
-  # Parsed directives for the current file.
-  # Meta-rules access directives.disable_comments for validation.
-  attr_reader :directives
-
-  # List of valid rule names registered in the system.
-  # Used by herb-disable-comment-valid-rule-name.
-  attr_reader :valid_rule_names
-
-  # Tracks which rule names were actually used to suppress offenses per line.
-  # Populated by Linter#filter_offenses, consumed by herb-disable-comment-unnecessary.
-  attr_reader :ignored_offenses_by_line
-
-  # When true, report offenses even when suppressed by herb:disable comments.
-  # Controlled by the --ignore-disable-comments CLI flag.
-  attr_reader :ignore_disable_comments
-end
-```
+**Context:** No directive-related fields. Context provides `file_path`, `source`, `config`, and optional `rule_registry`.
 
 **Test Cases:**
 - File with `<%# herb:linter ignore %>` returns `ignored: true`
@@ -290,22 +255,20 @@ Uses the list of registered rule names from `Context#valid_rule_names` to check 
 
 ### Task 9.8: herb-disable-comment-unnecessary
 
-**Location:** `herb-lint/lib/herb/lint/rules/herb_disable_comment_unnecessary.rb`
+**Location:** `herb-lint/lib/herb/lint/unnecessary_directive_detector.rb`
 
-- [ ] Implement rule class
-- [ ] Register in `RuleRegistry`
-- [ ] Add unit tests
-- [ ] Generate RBS types
+- [x] Implement `UnnecessaryDirectiveDetector` class
+- [x] Integrate into Linter's `build_lint_result` method
+- [x] Add unit tests (in `linter_spec.rb`)
+- [x] Generate RBS types
 
 | Property | Value |
 |----------|-------|
+| Rule name | `herb-disable-comment-unnecessary` |
 | Severity | warning |
 | Detects | `herb:disable` directive that does not suppress any actual offense |
-| Context Dependency | `Context#ignored_offenses_by_line` |
 
-Uses `Context#ignored_offenses_by_line` (populated by `Linter#filter_offenses`) to determine whether a directive actually suppressed any offense on its line.
-
-**Execution Order:** Must execute **after** all other rules and after offense filtering, because it needs to know which offenses were actually suppressed.
+**Design Note:** Not implemented as a rule. `UnnecessaryDirectiveDetector` is a stateless detector class called by the Linter after offense filtering. It computes directly from `directives` and `ignored_offenses`, without needing AST traversal. The `content_location` field on `DisableComment` (set by the `DirectiveParser::Collector` during parsing) provides the location information needed for offense reporting.
 
 **Test Cases:**
 - Non-directive comments produce no offense

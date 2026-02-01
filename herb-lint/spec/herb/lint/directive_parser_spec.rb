@@ -92,7 +92,11 @@ RSpec.describe Herb::Lint::DirectiveParser do
   end
 
   describe ".parse_disable_comment_content" do
-    subject { described_class.parse_disable_comment_content(content) }
+    subject { described_class.parse_disable_comment_content(content, content_location:) }
+
+    let(:content_location) do
+      Herb::Location.new(Herb::Position.new(1, 4), Herb::Position.new(1, 40))
+    end
 
     context "when content is not a herb:disable comment" do
       let(:content) { " just a comment " }
@@ -237,6 +241,10 @@ RSpec.describe Herb::Lint::DirectiveParser do
       described_class::Directives.new(ignore_file: false, disable_comments:)
     end
 
+    let(:content_location) do
+      Herb::Location.new(Herb::Position.new(1, 4), Herb::Position.new(1, 40))
+    end
+
     def build_offense(rule_name:, line:)
       location = Herb::Location.new(
         Herb::Position.new(line, 0),
@@ -260,7 +268,7 @@ RSpec.describe Herb::Lint::DirectiveParser do
       let(:disable_comments) do
         {
           1 => described_class::DisableComment.new(
-            match: true, rule_names: ["rule1"], rule_name_details: [], rules_string: "rule1"
+            match: true, rule_names: ["rule1"], rule_name_details: [], rules_string: "rule1", content_location:
           )
         }
       end
@@ -277,7 +285,7 @@ RSpec.describe Herb::Lint::DirectiveParser do
       let(:disable_comments) do
         {
           1 => described_class::DisableComment.new(
-            match: true, rule_names: ["all"], rule_name_details: [], rules_string: "all"
+            match: true, rule_names: ["all"], rule_name_details: [], rules_string: "all", content_location:
           )
         }
       end
@@ -297,7 +305,7 @@ RSpec.describe Herb::Lint::DirectiveParser do
       let(:disable_comments) do
         {
           1 => described_class::DisableComment.new(
-            match: true, rule_names: ["rule1"], rule_name_details: [], rules_string: "rule1"
+            match: true, rule_names: ["rule1"], rule_name_details: [], rules_string: "rule1", content_location:
           )
         }
       end

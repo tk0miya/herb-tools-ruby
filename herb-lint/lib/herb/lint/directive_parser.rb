@@ -27,7 +27,8 @@ module Herb
         :match,             #: bool
         :rule_names,        #: Array[String]
         :rule_name_details, #: Array[DisableRuleName]
-        :rules_string       #: String?
+        :rules_string,      #: String?
+        :content_location   #: Herb::Location -- location of the ERB content token
       )
 
       # Parse result holding all directive information for a file.
@@ -81,15 +82,16 @@ module Herb
       # nil otherwise.
       #
       # @rbs content: String -- the text between <%# and %>
-      def self.parse_disable_comment_content(content) #: DisableComment?
+      # @rbs content_location: Herb::Location -- location of the ERB content token
+      def self.parse_disable_comment_content(content, content_location:) #: DisableComment?
         stripped = content.strip
         return nil unless stripped.start_with?(HERB_DISABLE_PREFIX)
 
         rest = stripped[HERB_DISABLE_PREFIX.length..]
-        return build_empty_disable_comment if rest.nil? || rest.empty?
-        return build_malformed_disable_comment(rest) unless rest.start_with?(" ")
+        return build_empty_disable_comment(content_location) if rest.nil? || rest.empty?
+        return build_malformed_disable_comment(rest, content_location) unless rest.start_with?(" ")
 
-        build_matched_disable_comment(content, rest[1..])
+        build_matched_disable_comment(content, rest[1..], content_location)
       end
 
       # Check if content (inside <%# ... %> delimiters) is a herb:disable comment.
@@ -100,23 +102,30 @@ module Herb
       end
 
       # Build a DisableComment for herb:disable with no rules.
-      private_class_method def self.build_empty_disable_comment #: DisableComment
-        DisableComment.new(match: true, rule_names: [], rule_name_details: [], rules_string: nil)
+      # @rbs content_location: Herb::Location
+      private_class_method def self.build_empty_disable_comment(content_location) #: DisableComment
+        DisableComment.new(match: true, rule_names: [], rule_name_details: [], rules_string: nil, content_location:)
       end
 
       # Build a DisableComment for a malformed directive (no space after prefix).
       # @rbs rest: String
-      private_class_method def self.build_malformed_disable_comment(rest) #: DisableComment
-        DisableComment.new(match: false, rule_names: [], rule_name_details: [], rules_string: rest)
+      # @rbs content_location: Herb::Location
+      private_class_method def self.build_malformed_disable_comment(rest, content_location) #: DisableComment
+        DisableComment.new(
+          match: false, rule_names: [], rule_name_details: [],
+          rules_string: rest, content_location:
+        )
       end
 
       # Build a DisableComment for a valid herb:disable directive.
       # @rbs content: String -- full content value for offset calculation
       # @rbs rules_string: String -- the portion after "herb:disable "
-      private_class_method def self.build_matched_disable_comment(content, rules_string) #: DisableComment
+      # @rbs content_location: Herb::Location
+      # @rbs return: DisableComment
+      private_class_method def self.build_matched_disable_comment(content, rules_string, content_location)
         rule_name_details = extract_rule_names(content, rules_string)
         rule_names = rule_name_details.map(&:name)
-        DisableComment.new(match: true, rule_names:, rule_name_details:, rules_string:)
+        DisableComment.new(match: true, rule_names:, rule_name_details:, rules_string:, content_location:)
       end
 
       # Extract rule names with position information from the rules string.
@@ -175,7 +184,7 @@ module Herb
 
           @ignore_file = true if content.strip == DirectiveParser::HERB_LINTER_IGNORE_PREFIX
 
-          comment = DirectiveParser.parse_disable_comment_content(content)
+          comment = DirectiveParser.parse_disable_comment_content(content, content_location: node.content.location)
           @disable_comments[line] = comment if comment
         end
       end
