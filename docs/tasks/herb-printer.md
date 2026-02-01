@@ -16,26 +16,26 @@ Implementation of the herb-printer gem providing AST-to-source-code printer infr
 
 ### Implementation
 
-- [ ] Run `bundle gem herb-printer --test=rspec --linter=rubocop`
-- [ ] Edit `herb-printer.gemspec` file
-  - [ ] Remove TODO comments
-  - [ ] Fill in `summary`, `description`, `homepage`
-  - [ ] Set `required_ruby_version` to `">= 3.3.0"`
-  - [ ] Add dependency: `spec.add_dependency "herb"`
-- [ ] Delete unnecessary files
-  - [ ] Delete `bin/console`
-  - [ ] Delete `bin/setup`
-- [ ] Create binstubs in `bin/` (copy from herb-core and adjust)
-  - [ ] `bin/rake`
-  - [ ] `bin/rbs`
-  - [ ] `bin/rbs-inline`
-  - [ ] `bin/rspec`
-  - [ ] `bin/rubocop`
-  - [ ] `bin/steep`
-- [ ] Create `lib/herb/printer.rb` entry point
-  - [ ] Define `Herb::Printer` module with `Error` base exception
-- [ ] Create `lib/herb/printer/version.rb`
-  - [ ] Define `Herb::Printer::VERSION = "0.1.0"`
+- [x] Run `bundle gem herb-printer --test=rspec --linter=rubocop`
+- [x] Edit `herb-printer.gemspec` file
+  - [x] Remove TODO comments
+  - [x] Fill in `summary`, `description`, `homepage`
+  - [x] Set `required_ruby_version` to `">= 3.3.0"`
+  - [x] Add dependency: `spec.add_dependency "herb"`
+- [x] Delete unnecessary files
+  - [x] Delete `bin/console`
+  - [x] Delete `bin/setup`
+- [x] Create binstubs in `bin/` (copy from herb-core and adjust)
+  - [x] `bin/rake`
+  - [x] `bin/rbs`
+  - [x] `bin/rbs-inline`
+  - [x] `bin/rspec`
+  - [x] `bin/rubocop`
+  - [x] `bin/steep`
+- [x] Create `lib/herb/printer.rb` entry point
+  - [x] Define `Herb::Printer` module with `Error` base exception
+- [x] Create `lib/herb/printer/version.rb`
+  - [x] Define `Herb::Printer::VERSION = "0.1.0"`
 
 ### Verification
 
