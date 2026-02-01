@@ -5,9 +5,8 @@ require_relative "../../../spec_helper"
 RSpec.describe Herb::Lint::Rules::HerbDisableCommentMissingRules do
   subject { described_class.new.check(document, context) }
 
-  let(:document) { Herb.parse(template) }
-  let(:directives) { Herb::Lint::DirectiveParser.parse(document, template) }
-  let(:context) { instance_double(Herb::Lint::Context, directives:) }
+  let(:document) { Herb.parse(source) }
+  let(:context) { build(:context, source:) }
 
   describe ".rule_name" do
     it "returns 'herb-disable-comment-missing-rules'" do
@@ -29,7 +28,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMissingRules do
 
   describe "#check" do
     context "when comment is not a directive" do
-      let(:template) { "<%# This is a regular comment %>" }
+      let(:source) { "<%# This is a regular comment %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -37,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMissingRules do
     end
 
     context "when herb:disable specifies a rule name" do
-      let(:template) { "<%# herb:disable rule-name %>" }
+      let(:source) { "<%# herb:disable rule-name %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -45,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMissingRules do
     end
 
     context "when herb:disable specifies multiple rule names" do
-      let(:template) { "<%# herb:disable rule1, rule2 %>" }
+      let(:source) { "<%# herb:disable rule1, rule2 %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -53,7 +52,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMissingRules do
     end
 
     context "when herb:disable specifies all" do
-      let(:template) { "<%# herb:disable all %>" }
+      let(:source) { "<%# herb:disable all %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -61,7 +60,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMissingRules do
     end
 
     context "when herb:disable has no rule names" do
-      let(:template) { "<%# herb:disable %>" }
+      let(:source) { "<%# herb:disable %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -71,8 +70,8 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMissingRules do
       end
     end
 
-    context "when template has mixed comments" do
-      let(:template) do
+    context "when source has mixed comments" do
+      let(:source) do
         <<~ERB
           <%# regular comment %>
           <%# herb:disable rule-name %>
@@ -86,8 +85,8 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMissingRules do
       end
     end
 
-    context "when template has no ERB comments" do
-      let(:template) { "<div><p>Hello</p></div>" }
+    context "when source has no ERB comments" do
+      let(:source) { "<div><p>Hello</p></div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -95,7 +94,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMissingRules do
     end
 
     context "when herb:disable is malformed (no space after prefix)" do
-      let(:template) { "<%# herb:disablerule-name %>" }
+      let(:source) { "<%# herb:disablerule-name %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty

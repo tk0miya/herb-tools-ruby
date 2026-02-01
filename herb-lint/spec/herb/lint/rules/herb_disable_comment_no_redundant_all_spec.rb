@@ -5,9 +5,8 @@ require_relative "../../../spec_helper"
 RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoRedundantAll do
   subject { described_class.new.check(document, context) }
 
-  let(:document) { Herb.parse(template) }
-  let(:directives) { Herb::Lint::DirectiveParser.parse(document, template) }
-  let(:context) { instance_double(Herb::Lint::Context, directives:) }
+  let(:document) { Herb.parse(source) }
+  let(:context) { build(:context, source:) }
 
   describe ".rule_name" do
     it "returns 'herb-disable-comment-no-redundant-all'" do
@@ -29,7 +28,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoRedundantAll do
 
   describe "#check" do
     context "when comment is not a directive" do
-      let(:template) { "<%# This is a regular comment %>" }
+      let(:source) { "<%# This is a regular comment %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -37,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoRedundantAll do
     end
 
     context "when herb:disable all is used alone" do
-      let(:template) { "<%# herb:disable all %>" }
+      let(:source) { "<%# herb:disable all %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -45,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoRedundantAll do
     end
 
     context "when herb:disable is used with specific rules only" do
-      let(:template) { "<%# herb:disable rule-name %>" }
+      let(:source) { "<%# herb:disable rule-name %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -53,7 +52,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoRedundantAll do
     end
 
     context "when herb:disable all is used with a specific rule" do
-      let(:template) { "<%# herb:disable all, rule-name %>" }
+      let(:source) { "<%# herb:disable all, rule-name %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -64,7 +63,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoRedundantAll do
     end
 
     context "when herb:disable all is used with multiple specific rules" do
-      let(:template) { "<%# herb:disable all, rule1, rule2 %>" }
+      let(:source) { "<%# herb:disable all, rule1, rule2 %>" }
 
       it "reports an offense for each redundant rule" do
         expect(subject.size).to eq(2)
@@ -74,7 +73,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoRedundantAll do
     end
 
     context "when specific rule is listed before all" do
-      let(:template) { "<%# herb:disable rule-name, all %>" }
+      let(:source) { "<%# herb:disable rule-name, all %>" }
 
       it "reports an offense for the specific rule" do
         expect(subject.size).to eq(1)
@@ -83,7 +82,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoRedundantAll do
     end
 
     context "when multiple herb:disable comments exist" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <%# herb:disable all, rule-name %>
           <p>content</p>

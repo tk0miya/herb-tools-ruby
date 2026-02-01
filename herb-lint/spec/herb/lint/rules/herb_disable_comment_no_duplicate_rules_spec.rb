@@ -5,9 +5,8 @@ require_relative "../../../spec_helper"
 RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoDuplicateRules do
   subject { described_class.new.check(document, context) }
 
-  let(:document) { Herb.parse(template) }
-  let(:directives) { Herb::Lint::DirectiveParser.parse(document, template) }
-  let(:context) { instance_double(Herb::Lint::Context, directives:) }
+  let(:document) { Herb.parse(source) }
+  let(:context) { build(:context, source:) }
 
   describe ".rule_name" do
     it "returns 'herb-disable-comment-no-duplicate-rules'" do
@@ -29,7 +28,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoDuplicateRules do
 
   describe "#check" do
     context "when the comment is not a directive" do
-      let(:template) { "<%# just a regular comment %>" }
+      let(:source) { "<%# just a regular comment %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -37,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoDuplicateRules do
     end
 
     context "when the comment is a non-ERB-comment tag" do
-      let(:template) { "<%= output %>" }
+      let(:source) { "<%= output %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -45,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoDuplicateRules do
     end
 
     context "when herb:disable has distinct rule names" do
-      let(:template) { "<%# herb:disable rule1, rule2 %>" }
+      let(:source) { "<%# herb:disable rule1, rule2 %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -53,7 +52,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoDuplicateRules do
     end
 
     context "when herb:disable has a single rule name" do
-      let(:template) { "<%# herb:disable rule1 %>" }
+      let(:source) { "<%# herb:disable rule1 %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -61,7 +60,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoDuplicateRules do
     end
 
     context "when herb:disable uses 'all'" do
-      let(:template) { "<%# herb:disable all %>" }
+      let(:source) { "<%# herb:disable all %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -69,7 +68,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoDuplicateRules do
     end
 
     context "when herb:disable has duplicate rule names" do
-      let(:template) { "<%# herb:disable rule1, rule1 %>" }
+      let(:source) { "<%# herb:disable rule1, rule1 %>" }
 
       it "reports an offense for the duplicate" do
         expect(subject.size).to eq(1)
@@ -88,7 +87,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoDuplicateRules do
     end
 
     context "when herb:disable has a rule duplicated three times" do
-      let(:template) { "<%# herb:disable rule1, rule1, rule1 %>" }
+      let(:source) { "<%# herb:disable rule1, rule1, rule1 %>" }
 
       it "reports an offense for each duplicate" do
         expect(subject.size).to eq(2)
@@ -97,7 +96,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoDuplicateRules do
     end
 
     context "when herb:disable has multiple different duplicates" do
-      let(:template) { "<%# herb:disable rule1, rule2, rule1, rule2 %>" }
+      let(:source) { "<%# herb:disable rule1, rule2, rule1, rule2 %>" }
 
       it "reports an offense for each duplicate" do
         expect(subject.size).to eq(2)
@@ -109,7 +108,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoDuplicateRules do
     end
 
     context "when there are multiple directive comments" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <%# herb:disable rule1, rule1 %>
           <div>content</div>
@@ -124,7 +123,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoDuplicateRules do
     end
 
     context "when the directive is malformed (no space after prefix)" do
-      let(:template) { "<%# herb:disablerule1 %>" }
+      let(:source) { "<%# herb:disablerule1 %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -132,7 +131,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoDuplicateRules do
     end
 
     context "when herb:disable has no rules" do
-      let(:template) { "<%# herb:disable %>" }
+      let(:source) { "<%# herb:disable %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty

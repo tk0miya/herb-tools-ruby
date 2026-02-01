@@ -5,9 +5,8 @@ require_relative "../../../spec_helper"
 RSpec.describe Herb::Lint::Rules::HerbDisableCommentMalformed do
   subject { described_class.new.check(document, context) }
 
-  let(:document) { Herb.parse(template) }
-  let(:directives) { Herb::Lint::DirectiveParser.parse(document, template) }
-  let(:context) { instance_double(Herb::Lint::Context, directives:) }
+  let(:document) { Herb.parse(source) }
+  let(:context) { build(:context, source:) }
 
   describe ".rule_name" do
     it "returns 'herb-disable-comment-malformed'" do
@@ -29,7 +28,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMalformed do
 
   describe "#check" do
     context "when comment is not a directive" do
-      let(:template) { "<%# regular comment %>" }
+      let(:source) { "<%# regular comment %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -37,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMalformed do
     end
 
     context "when herb:disable is properly formatted with a single rule" do
-      let(:template) { "<%# herb:disable rule-name %>" }
+      let(:source) { "<%# herb:disable rule-name %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -45,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMalformed do
     end
 
     context "when herb:disable is properly formatted with multiple rules" do
-      let(:template) { "<%# herb:disable rule1, rule2 %>" }
+      let(:source) { "<%# herb:disable rule1, rule2 %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -53,7 +52,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMalformed do
     end
 
     context "when herb:disable has no rule names" do
-      let(:template) { "<%# herb:disable %>" }
+      let(:source) { "<%# herb:disable %>" }
 
       it "does not report an offense (handled by herb-disable-comment-missing-rules)" do
         expect(subject).to be_empty
@@ -61,7 +60,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMalformed do
     end
 
     context "when herb:disable uses 'all'" do
-      let(:template) { "<%# herb:disable all %>" }
+      let(:source) { "<%# herb:disable all %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -69,7 +68,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMalformed do
     end
 
     context "when herb:disable is missing space before rule name" do
-      let(:template) { "<%# herb:disablerule-name %>" }
+      let(:source) { "<%# herb:disablerule-name %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -80,7 +79,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMalformed do
     end
 
     context "when herb:disable has a leading comma" do
-      let(:template) { "<%# herb:disable ,rule-name %>" }
+      let(:source) { "<%# herb:disable ,rule-name %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -90,7 +89,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMalformed do
     end
 
     context "when herb:disable has a trailing comma" do
-      let(:template) { "<%# herb:disable rule-name, %>" }
+      let(:source) { "<%# herb:disable rule-name, %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -100,7 +99,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMalformed do
     end
 
     context "when herb:disable has consecutive commas" do
-      let(:template) { "<%# herb:disable rule1,,rule2 %>" }
+      let(:source) { "<%# herb:disable rule1,,rule2 %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -110,7 +109,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMalformed do
     end
 
     context "when herb:disable has both leading and trailing commas" do
-      let(:template) { "<%# herb:disable ,rule-name, %>" }
+      let(:source) { "<%# herb:disable ,rule-name, %>" }
 
       it "reports offenses for both issues" do
         expect(subject.size).to eq(2)
@@ -121,7 +120,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMalformed do
     end
 
     context "when herb:disable has consecutive commas with spaces" do
-      let(:template) { "<%# herb:disable rule1, , rule2 %>" }
+      let(:source) { "<%# herb:disable rule1, , rule2 %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -130,7 +129,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMalformed do
     end
 
     context "when non-comment ERB tag is used" do
-      let(:template) { "<%= output %>" }
+      let(:source) { "<%= output %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -138,7 +137,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMalformed do
     end
 
     context "when multiple comments exist with one malformed" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <%# herb:disable rule-name %>
           <%# herb:disableother-rule %>
