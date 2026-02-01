@@ -3,11 +3,12 @@
 require "herb/config"
 
 RSpec.describe Herb::Lint::Context do
-  let(:context) { described_class.new(file_path:, source:, config:, rule_registry:) }
+  let(:context) { described_class.new(file_path:, source:, config:, directives:, rule_registry:) }
   let(:file_path) { "app/views/users/index.html.erb" }
   let(:source) { '<img src="test.png">' }
   let(:config) { Herb::Config::LinterConfig.new(config_hash) }
   let(:config_hash) { {} }
+  let(:directives) { Herb::Lint::DirectiveParser.parse(Herb.parse(source), source) }
   let(:rule_registry) { nil }
 
   describe "#file_path" do

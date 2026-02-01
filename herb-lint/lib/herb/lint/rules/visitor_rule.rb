@@ -27,9 +27,6 @@ module Herb
         # @rbs!
         #   extend RuleMethods::ClassMethods
 
-        # @rbs @offenses: Array[Offense]
-        # @rbs @context: Context
-
         # Check the document for rule violations by visiting AST nodes.
         # @rbs override
         def check(document, context)
@@ -37,12 +34,6 @@ module Herb
           @context = context
           document.visit(self)
           @offenses
-        end
-
-        # Add an offense for the current rule.
-        # @rbs override
-        def add_offense(message:, location:)
-          @offenses << create_offense(message:, location:)
         end
       end
     end

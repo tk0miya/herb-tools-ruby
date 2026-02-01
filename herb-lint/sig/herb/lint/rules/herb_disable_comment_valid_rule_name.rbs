@@ -15,23 +15,17 @@ module Herb
       # Bad:
       #   <%# herb:disable html-img-require-alts %>
       #   <%# herb:disable nonexistent-rule %>
-      class HerbDisableCommentValidRuleName < VisitorRule
+      class HerbDisableCommentValidRuleName < DirectiveRule
         def self.rule_name: () -> String
 
         def self.description: () -> String
 
         def self.default_severity: () -> String
 
-        # @rbs override
-        def visit_erb_content_node: ...
-
         private
 
-        # @rbs node: Herb::AST::ERBContentNode
-        def erb_comment?: (Herb::AST::ERBContentNode node) -> bool
-
-        # @rbs node: Herb::AST::ERBContentNode
-        def check_disable_comment: (Herb::AST::ERBContentNode node) -> void
+        # @rbs override
+        def check_disable_comment: ...
 
         # Build an offense message, including "did you mean?" suggestions when available.
         #
@@ -44,12 +38,6 @@ module Herb
         # @rbs name: String
         # @rbs valid_names: Array[String]
         def find_suggestions: (String name, Array[String] valid_names) -> Array[String]
-
-        # Compute the source location for a rule name within an ERB content node.
-        #
-        # @rbs node: Herb::AST::ERBContentNode -- the ERB content node
-        # @rbs detail: DirectiveParser::DisableRuleName -- the rule name with offset info
-        def offset_location: (Herb::AST::ERBContentNode node, DirectiveParser::DisableRuleName detail) -> Herb::Location
       end
     end
   end

@@ -22,11 +22,21 @@ module Herb
         # @rbs options: Hash[Symbol, untyped]?
         def initialize: (?severity: String?, ?options: Hash[Symbol, untyped]?) -> void
 
+        @offenses: Array[Offense]
+
+        @context: Context
+
         # Check the document for rule violations.
         #
         # @rbs document: Herb::ParseResult -- parsed document to check
         # @rbs context: Context -- linting context with file information
         def check: (Herb::ParseResult document, Context context) -> Array[Offense]
+
+        # Add an offense for the current rule.
+        #
+        # @rbs message: String -- description of the violation
+        # @rbs location: Herb::Location -- location of the violation
+        def add_offense: (message: String, location: Herb::Location) -> void
 
         # Create an offense for a rule violation.
         #

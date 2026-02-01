@@ -39,18 +39,12 @@ module Herb
         directives = DirectiveParser.parse(document, source)
         return LintResult.new(file_path:, offenses: [], source:) if directives.ignore_file?
 
-        context = build_context(file_path, source)
+        context = Context.new(file_path:, source:, config:, directives:, rule_registry:)
         offenses = collect_offenses(document, context)
         build_lint_result(file_path, source, directives, offenses)
       end
 
       private
-
-      # @rbs file_path: String
-      # @rbs source: String
-      def build_context(file_path, source) #: Context
-        Context.new(file_path:, source:, config:, rule_registry:)
-      end
 
       # @rbs document: Herb::ParseResult
       # @rbs context: Context

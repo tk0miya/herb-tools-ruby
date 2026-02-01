@@ -34,10 +34,6 @@ module Herb
 
       private
 
-      # @rbs file_path: String
-      # @rbs source: String
-      def build_context: (String file_path, String source) -> Context
-
       # @rbs document: Herb::ParseResult
       # @rbs context: Context
       def collect_offenses: (Herb::ParseResult document, Context context) -> Array[Offense]

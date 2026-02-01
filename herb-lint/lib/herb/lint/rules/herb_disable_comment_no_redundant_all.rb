@@ -14,7 +14,7 @@ module Herb
       #
       # Bad:
       #   <%# herb:disable all, rule-name %>
-      class HerbDisableCommentNoRedundantAll < VisitorRule
+      class HerbDisableCommentNoRedundantAll < DirectiveRule
         def self.rule_name #: String
           "herb-disable-comment-no-redundant-all"
         end
@@ -27,24 +27,11 @@ module Herb
           "warning"
         end
 
-        # @rbs override
-        def visit_erb_content_node(node)
-          check_disable_comment(node) if erb_comment?(node)
-          super
-        end
-
         private
 
-        # @rbs node: Herb::AST::ERBContentNode
-        def erb_comment?(node) #: bool
-          node.tag_opening.value == "<%#"
-        end
-
-        # @rbs node: Herb::AST::ERBContentNode
-        def check_disable_comment(node) #: void
-          content = node.content.value
-          comment = DirectiveParser.parse_disable_comment_content(content, content_location: node.content.location)
-          return unless comment&.match
+        # @rbs override
+        def check_disable_comment(comment)
+          return unless comment.match
 
           rule_names = comment.rule_names
           return unless rule_names.include?("all") && rule_names.size > 1
@@ -54,7 +41,7 @@ module Herb
 
             add_offense(
               message: "Redundant rule name `#{detail.name}` when `all` is already specified",
-              location: node.content.location
+              location: comment.content_location
             )
           end
         end
