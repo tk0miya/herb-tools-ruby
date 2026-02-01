@@ -355,9 +355,9 @@ Rules are grouped by theme and sorted by complexity within each batch.
 ---
 
 ### Task 11.15: `html-aria-role-must-be-valid`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** `role` attribute must contain a valid WAI-ARIA role.
 

@@ -1,0 +1,43 @@
+# Generated from lib/herb/lint/rules/html_aria_role_must_be_valid.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Rule that validates WAI-ARIA role attribute values.
+      #
+      # The role attribute must contain a valid WAI-ARIA role.
+      # Empty or invalid role values are disallowed.
+      #
+      # Good:
+      #   <div role="button">
+      #   <div role="navigation">
+      #
+      # Bad:
+      #   <div role="invalid-role">
+      #   <div role="">
+      # rubocop:disable Metrics/ClassLength
+      class HtmlAriaRoleMustBeValid < VisitorRule
+        # Valid WAI-ARIA roles from the WAI-ARIA 1.2 specification.
+        # Abstract roles (command, composite, input, landmark, range, roletype,
+        # section, sectionhead, select, structure, widget, window) are excluded
+        # as they must not be used by authors.
+        VALID_ROLES: Set[String]
+
+        def self.rule_name: () -> String
+
+        def self.description: () -> String
+
+        def self.default_severity: () -> String
+
+        # @rbs override
+        def visit_html_element_node: ...
+
+        private
+
+        # @rbs value: String
+        # @rbs role_attr: Herb::AST::HTMLAttributeNode
+        def validate_roles: (String value, Herb::AST::HTMLAttributeNode role_attr) -> void
+      end
+    end
+  end
+end
