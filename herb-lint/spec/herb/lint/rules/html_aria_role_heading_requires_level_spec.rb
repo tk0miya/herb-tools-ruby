@@ -6,7 +6,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleHeadingRequiresLevel do
   subject { described_class.new.check(document, context) }
 
   let(:document) { Herb.parse(template) }
-  let(:context) { instance_double(Herb::Lint::Context) }
+  let(:context) { build(:context) }
 
   describe ".rule_name" do
     it "returns 'html-aria-role-heading-requires-level'" do

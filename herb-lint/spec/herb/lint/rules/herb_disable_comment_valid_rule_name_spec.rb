@@ -5,19 +5,20 @@ require_relative "../../../spec_helper"
 RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
   subject { described_class.new.check(document, context) }
 
-  let(:document) { Herb.parse(template) }
-  let(:directives) { Herb::Lint::DirectiveParser.parse(document, template) }
-  let(:valid_rule_names) do
-    %w[
-      erb-comment-syntax
-      html-anchor-require-href
-      html-attribute-double-quotes
-      html-img-require-alt
-      html-no-self-closing
-      html-tag-name-lowercase
-    ]
+  let(:document) { Herb.parse(source) }
+  let(:rule_registry) do
+    registry = Herb::Lint::RuleRegistry.new
+    [
+      Herb::Lint::Rules::ErbCommentSyntax,
+      Herb::Lint::Rules::HtmlAnchorRequireHref,
+      Herb::Lint::Rules::HtmlAttributeDoubleQuotes,
+      Herb::Lint::Rules::HtmlImgRequireAlt,
+      Herb::Lint::Rules::HtmlNoSelfClosing,
+      Herb::Lint::Rules::HtmlTagNameLowercase
+    ].each { |rule_class| registry.register(rule_class) }
+    registry
   end
-  let(:context) { instance_double(Herb::Lint::Context, directives:, valid_rule_names:) }
+  let(:context) { build(:context, source:, rule_registry:) }
 
   describe ".rule_name" do
     it "returns 'herb-disable-comment-valid-rule-name'" do
@@ -39,7 +40,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
 
   describe "#check" do
     context "when the comment is not a directive" do
-      let(:template) { "<%# just a regular comment %>" }
+      let(:source) { "<%# just a regular comment %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -47,7 +48,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
     end
 
     context "when the comment is a non-ERB-comment tag" do
-      let(:template) { "<%= output %>" }
+      let(:source) { "<%= output %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -55,7 +56,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
     end
 
     context "when herb:disable has a valid rule name" do
-      let(:template) { "<%# herb:disable html-img-require-alt %>" }
+      let(:source) { "<%# herb:disable html-img-require-alt %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -63,7 +64,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
     end
 
     context "when herb:disable has multiple valid rule names" do
-      let(:template) { "<%# herb:disable html-img-require-alt, html-no-self-closing %>" }
+      let(:source) { "<%# herb:disable html-img-require-alt, html-no-self-closing %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -71,7 +72,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
     end
 
     context "when herb:disable uses 'all'" do
-      let(:template) { "<%# herb:disable all %>" }
+      let(:source) { "<%# herb:disable all %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -79,7 +80,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
     end
 
     context "when herb:disable has a typo in a rule name" do
-      let(:template) { "<%# herb:disable html-img-require-alts %>" }
+      let(:source) { "<%# herb:disable html-img-require-alts %>" }
 
       it "reports an offense with suggestion" do
         expect(subject.size).to eq(1)
@@ -92,7 +93,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
     end
 
     context "when herb:disable has a completely unknown rule name" do
-      let(:template) { "<%# herb:disable nonexistent-rule %>" }
+      let(:source) { "<%# herb:disable nonexistent-rule %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -103,7 +104,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
     end
 
     context "when herb:disable has multiple unknown rule names" do
-      let(:template) { "<%# herb:disable fake-rule, another-fake %>" }
+      let(:source) { "<%# herb:disable fake-rule, another-fake %>" }
 
       it "reports an offense for each unknown rule" do
         expect(subject.size).to eq(2)
@@ -113,7 +114,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
     end
 
     context "when herb:disable has a mix of valid and invalid rule names" do
-      let(:template) { "<%# herb:disable html-img-require-alt, nonexistent-rule %>" }
+      let(:source) { "<%# herb:disable html-img-require-alt, nonexistent-rule %>" }
 
       it "reports an offense only for the invalid rule" do
         expect(subject.size).to eq(1)
@@ -122,7 +123,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
     end
 
     context "when herb:disable has 'all' alongside an invalid rule" do
-      let(:template) { "<%# herb:disable all, nonexistent-rule %>" }
+      let(:source) { "<%# herb:disable all, nonexistent-rule %>" }
 
       it "reports an offense for the invalid rule name" do
         expect(subject.size).to eq(1)
@@ -131,7 +132,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
     end
 
     context "when the directive is malformed (no space after prefix)" do
-      let(:template) { "<%# herb:disablerule-name %>" }
+      let(:source) { "<%# herb:disablerule-name %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -139,7 +140,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
     end
 
     context "when herb:disable has no rules" do
-      let(:template) { "<%# herb:disable %>" }
+      let(:source) { "<%# herb:disable %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -147,8 +148,8 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
     end
 
     context "when valid_rule_names is empty" do
-      let(:valid_rule_names) { [] }
-      let(:template) { "<%# herb:disable nonexistent-rule %>" }
+      let(:rule_registry) { nil }
+      let(:source) { "<%# herb:disable nonexistent-rule %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -156,7 +157,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
     end
 
     context "when there are multiple directive comments" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <%# herb:disable html-img-require-alt %>
           <div>content</div>
@@ -171,7 +172,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
     end
 
     context "when offense location is reported" do
-      let(:template) { "<%# herb:disable nonexistent-rule %>" }
+      let(:source) { "<%# herb:disable nonexistent-rule %>" }
 
       it "reports the offense at the location of the unknown rule name" do
         offense = subject.first
