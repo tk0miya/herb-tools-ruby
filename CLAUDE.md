@@ -47,6 +47,12 @@ herb-tools-ruby/
 │   ├── spec/
 │   └── herb-core.gemspec
 │
+├── herb-printer/                # Printer gem (AST-to-source)
+│   ├── bin/                     # Binstubs (uses herb-printer/Gemfile)
+│   ├── lib/
+│   ├── spec/
+│   └── herb-printer.gemspec
+│
 ├── herb-lint/                   # Linter gem
 │   ├── bin/                     # Binstubs (uses herb-lint/Gemfile)
 │   ├── lib/
