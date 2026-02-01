@@ -216,6 +216,25 @@ build(:lint_result, offenses: [
 
 ---
 
+## Task 4: Update CLAUDE.md with factory_bot Guidelines
+
+Add a brief note about factory_bot to CLAUDE.md under "Testing Policy".
+
+- [ ] Note that herb-lint uses factory_bot for test object creation
+- [ ] List the available factories with a pointer to the definitions directory (`herb-lint/spec/factories/`)
+
+**Content to add to CLAUDE.md (under Testing Policy):**
+
+~~~markdown
+### factory_bot
+
+herb-lint uses [factory_bot](https://github.com/thoughtbot/factory_bot) for test object creation. Factories are defined in `herb-lint/spec/factories/`.
+
+Available factories: `:offense`, `:lint_result`
+~~~
+
+---
+
 ## Summary
 
 | Task | Description |
@@ -223,3 +242,4 @@ build(:lint_result, offenses: [
 | Task 1 | factory_bot setup |
 | Task 2 | Offense factory |
 | Task 3 | LintResult factory |
+| Task 4 | Update CLAUDE.md with factory_bot guidelines |
