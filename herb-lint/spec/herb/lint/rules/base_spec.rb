@@ -56,7 +56,7 @@ RSpec.describe Herb::Lint::Rules::Base do
   end
 
   describe "#create_offense" do
-    subject { rule.create_offense(context: nil, message: "Test message", location:) }
+    subject { rule.create_offense(message: "Test message", location:) }
 
     let(:test_rule_class) do
       Class.new(described_class) do

@@ -46,10 +46,9 @@ module Herb
 
         # Create an offense for a rule violation.
         #
-        # @rbs context: Context -- linting context (reserved for future use)
         # @rbs message: String -- description of the violation
         # @rbs location: Herb::Location -- location of the violation
-        def create_offense(context:, message:, location:) #: Offense # rubocop:disable Lint/UnusedMethodArgument
+        def create_offense(message:, location:) #: Offense
           Offense.new(rule_name: self.class.rule_name, message:, severity:, location:)
         end
       end

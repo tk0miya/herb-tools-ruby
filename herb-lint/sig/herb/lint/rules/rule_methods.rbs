@@ -30,10 +30,9 @@ module Herb
 
         # Create an offense for a rule violation.
         #
-        # @rbs context: Context -- linting context (reserved for future use)
         # @rbs message: String -- description of the violation
         # @rbs location: Herb::Location -- location of the violation
-        def create_offense: (context: Context, message: String, location: Herb::Location) -> Offense
+        def create_offense: (message: String, location: Herb::Location) -> Offense
       end
     end
   end
