@@ -30,6 +30,7 @@ module Herb
           Rules::HtmlBooleanAttributesNoValue,
           Rules::HtmlIframeHasTitle,
           Rules::HtmlImgRequireAlt,
+          Rules::HtmlNoAriaHiddenOnFocusable,
           Rules::HtmlNoDuplicateAttributes,
           Rules::HtmlNoDuplicateIds,
           Rules::HtmlNoDuplicateMetaNames,
