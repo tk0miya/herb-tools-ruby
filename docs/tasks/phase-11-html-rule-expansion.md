@@ -379,9 +379,9 @@ Rules are grouped by theme and sorted by complexity within each batch.
 ---
 
 ### Task 11.16: `html-no-aria-hidden-on-focusable`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow `aria-hidden="true"` on focusable elements.
 
