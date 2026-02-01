@@ -53,13 +53,13 @@ bundle install
 
 ### Implementation
 
-- [ ] Update `.github/workflows/ci.yml`
-  - [ ] Add herb-printer job (same structure as herb-core job)
-- [ ] Create `herb-printer/Steepfile`
-  - [ ] Configure target directories
-  - [ ] Configure library dependencies
-- [ ] Create `herb-printer/rbs_collection.yaml`
-  - [ ] Configure RBS collection dependencies
+- [x] Update `.github/workflows/ci.yml`
+  - [x] Add herb-printer job (same structure as herb-core job)
+- [x] Create `herb-printer/Steepfile`
+  - [x] Configure target directories
+  - [x] Configure library dependencies
+- [x] Create `herb-printer/rbs_collection.yaml`
+  - [x] Configure RBS collection dependencies
 
 ### Verification
 

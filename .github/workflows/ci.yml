@@ -37,6 +37,21 @@ jobs:
       - name: Run all checks
         run: bundle exec rake
 
+  herb-printer:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: herb-printer
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+          working-directory: herb-printer
+      - name: Run all checks
+        run: bundle exec rake
+
   herb-lint:
     runs-on: ubuntu-latest
     defaults:
