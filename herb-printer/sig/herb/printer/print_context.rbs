@@ -1,0 +1,57 @@
+# Generated from lib/herb/printer/print_context.rb with RBS::Inline
+
+module Herb
+  module Printer
+    # Output accumulator with indent/column tracking for printers.
+    class PrintContext
+      attr_reader current_column: Integer
+
+      @output: String
+
+      @indent_level: Integer
+
+      @tag_stack: Array[String]
+
+      def initialize: () -> void
+
+      # Append text to the output buffer
+      #
+      # @rbs text: String
+      def write: (String text) -> void
+
+      # Append text and track column position across newlines
+      #
+      # @rbs text: String
+      def write_with_column_tracking: (String text) -> void
+
+      # Increment indent level
+      def indent: () -> void
+
+      # Decrement indent level
+      def dedent: () -> void
+
+      # Push tag name onto the tag stack
+      #
+      # @rbs tag_name: String
+      def enter_tag: (String tag_name) -> void
+
+      # Pop tag name from the tag stack
+      def exit_tag: () -> void
+
+      # Whether the cursor is at column 0
+      def at_start_of_line?: () -> bool
+
+      # Current indent depth
+      def current_indent_level: () -> Integer
+
+      # Copy of the current tag stack
+      def tag_stack: () -> Array[String]
+
+      # Return accumulated output string
+      def output: () -> String
+
+      # Clear all state (output, indent, column, tag stack)
+      def reset: () -> void
+    end
+  end
+end

@@ -76,28 +76,28 @@ cd herb-printer
 
 ### Implementation
 
-- [ ] Create `lib/herb/printer/print_context.rb`
-  - [ ] `initialize` — initialize `@output`, `@indent_level`, `@current_column`, `@tag_stack`
-  - [ ] `write(text)` — append text to output buffer
-  - [ ] `write_with_column_tracking(text)` — append text and update column position across newlines
-  - [ ] `indent` / `dedent` — increment/decrement indent level
-  - [ ] `enter_tag(tag_name)` / `exit_tag` — push/pop tag stack
-  - [ ] `at_start_of_line?` — check if cursor is at column 0
-  - [ ] `current_indent_level` / `current_column` / `tag_stack` — accessors
-  - [ ] `get_output` — return accumulated output string
-  - [ ] `reset` — clear all state
-- [ ] Add `require_relative` to `lib/herb/printer.rb`
+- [x] Create `lib/herb/printer/print_context.rb`
+  - [x] `initialize` — initialize `@output`, `@indent_level`, `@current_column`, `@tag_stack`
+  - [x] `write(text)` — append text to output buffer
+  - [x] `write_with_column_tracking(text)` — append text and update column position across newlines
+  - [x] `indent` / `dedent` — increment/decrement indent level
+  - [x] `enter_tag(tag_name)` / `exit_tag` — push/pop tag stack
+  - [x] `at_start_of_line?` — check if cursor is at column 0
+  - [x] `current_indent_level` / `current_column` / `tag_stack` — accessors
+  - [x] `get_output` — return accumulated output string
+  - [x] `reset` — clear all state
+- [x] Add `require_relative` to `lib/herb/printer.rb`
 
 ### Verification
 
-- [ ] Create `spec/herb/printer/print_context_spec.rb`
-  - [ ] Test `write` appends text
-  - [ ] Test `get_output` returns accumulated text
-  - [ ] Test `reset` clears all state
-  - [ ] Test `indent`/`dedent` track indent level
-  - [ ] Test `write_with_column_tracking` tracks column across newlines
-  - [ ] Test `enter_tag`/`exit_tag` maintain tag stack
-  - [ ] Test `at_start_of_line?` reflects column position
+- [x] Create `spec/herb/printer/print_context_spec.rb`
+  - [x] Test `write` appends text
+  - [x] Test `get_output` returns accumulated text
+  - [x] Test `reset` clears all state
+  - [x] Test `indent`/`dedent` track indent level
+  - [x] Test `write_with_column_tracking` tracks column across newlines
+  - [x] Test `enter_tag`/`exit_tag` maintain tag stack
+  - [x] Test `at_start_of_line?` reflects column position
 
 ```bash
 cd herb-printer && ./bin/rspec spec/herb/printer/print_context_spec.rb
