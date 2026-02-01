@@ -28,6 +28,7 @@ module Herb
           Rules::HtmlAttributeValuesRequireQuotes,
           Rules::HtmlAvoidBothDisabledAndAriaDisabled,
           Rules::HtmlBooleanAttributesNoValue,
+          Rules::HtmlHeadOnlyElements,
           Rules::HtmlIframeHasTitle,
           Rules::HtmlImgRequireAlt,
           Rules::HtmlInputRequireAutocomplete,
