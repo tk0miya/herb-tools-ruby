@@ -8,14 +8,6 @@ module TestHelpers
     pos = Herb::Position.new(line, column)
     Herb::Location.new(pos, pos)
   end
-
-  def build_lint_result(errors: 0, warnings: 0, file_path: "test.html.erb", source: "<div></div>")
-    offenses = []
-    errors.times { offenses << build(:offense, severity: "error") }
-    warnings.times { offenses << build(:offense, severity: "warning") }
-
-    Herb::Lint::LintResult.new(file_path:, offenses:, source:)
-  end
 end
 
 FactoryBot.find_definitions

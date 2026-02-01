@@ -33,11 +33,7 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
     context "when there are files with no offenses" do
       let(:results) do
         [
-          Herb::Lint::LintResult.new(
-            file_path: "app/views/users/index.html.erb",
-            offenses: [],
-            source: "<div></div>"
-          )
+          build(:lint_result, file_path: "app/views/users/index.html.erb")
         ]
       end
 
@@ -59,24 +55,22 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
     context "when a single file has offenses" do
       let(:results) do
         [
-          Herb::Lint::LintResult.new(
-            file_path: "app/views/users/index.html.erb",
-            offenses: [
-              build(:offense,
-                    severity: "error",
-                    rule_name: "html-img-require-alt",
-                    message: "Missing alt attribute on img tag",
-                    start_line: 12,
-                    start_column: 5),
-              build(:offense,
-                    severity: "warning",
-                    rule_name: "html-attribute-double-quotes",
-                    message: "Prefer double quotes for attributes",
-                    start_line: 24,
-                    start_column: 3)
-            ],
-            source: "<div></div>"
-          )
+          build(:lint_result,
+                file_path: "app/views/users/index.html.erb",
+                offenses: [
+                  build(:offense,
+                        severity: "error",
+                        rule_name: "html-img-require-alt",
+                        message: "Missing alt attribute on img tag",
+                        start_line: 12,
+                        start_column: 5),
+                  build(:offense,
+                        severity: "warning",
+                        rule_name: "html-attribute-double-quotes",
+                        message: "Prefer double quotes for attributes",
+                        start_line: 24,
+                        start_column: 3)
+                ])
         ]
       end
 
@@ -111,36 +105,32 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
     context "when multiple files have offenses" do
       let(:results) do
         [
-          Herb::Lint::LintResult.new(
-            file_path: "app/views/users/index.html.erb",
-            offenses: [
-              build(:offense,
-                    severity: "error",
-                    rule_name: "html-img-require-alt",
-                    message: "Missing alt attribute on img tag",
-                    start_line: 12,
-                    start_column: 5)
-            ],
-            source: "<div></div>"
-          ),
-          Herb::Lint::LintResult.new(
-            file_path: "app/views/posts/show.html.erb",
-            offenses: [
-              build(:offense,
-                    severity: "warning",
-                    rule_name: "html-attribute-double-quotes",
-                    message: "Prefer double quotes for attributes",
-                    start_line: 3,
-                    start_column: 10),
-              build(:offense,
-                    severity: "error",
-                    rule_name: "html-no-duplicate-ids",
-                    message: "Duplicate id attribute",
-                    start_line: 7,
-                    start_column: 1)
-            ],
-            source: "<div></div>"
-          )
+          build(:lint_result,
+                file_path: "app/views/users/index.html.erb",
+                offenses: [
+                  build(:offense,
+                        severity: "error",
+                        rule_name: "html-img-require-alt",
+                        message: "Missing alt attribute on img tag",
+                        start_line: 12,
+                        start_column: 5)
+                ]),
+          build(:lint_result,
+                file_path: "app/views/posts/show.html.erb",
+                offenses: [
+                  build(:offense,
+                        severity: "warning",
+                        rule_name: "html-attribute-double-quotes",
+                        message: "Prefer double quotes for attributes",
+                        start_line: 3,
+                        start_column: 10),
+                  build(:offense,
+                        severity: "error",
+                        rule_name: "html-no-duplicate-ids",
+                        message: "Duplicate id attribute",
+                        start_line: 7,
+                        start_column: 1)
+                ])
         ]
       end
 
@@ -167,20 +157,16 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
     context "when offenses have distinct end positions" do
       let(:results) do
         [
-          Herb::Lint::LintResult.new(
-            file_path: "test.html.erb",
-            offenses: [
-              build(:offense,
-                    rule_name: "html-img-require-alt",
-                    message: "Missing alt attribute on img tag",
-                    severity: "error",
-                    start_line: 12,
-                    start_column: 5,
-                    end_line: 12,
-                    end_column: 35)
-            ],
-            source: "<div></div>"
-          )
+          build(:lint_result, offenses: [
+                  build(:offense,
+                        rule_name: "html-img-require-alt",
+                        message: "Missing alt attribute on img tag",
+                        severity: "error",
+                        start_line: 12,
+                        start_column: 5,
+                        end_line: 12,
+                        end_column: 35)
+                ])
         ]
       end
 
@@ -198,13 +184,9 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
     context "when fixable flag is included" do
       let(:results) do
         [
-          Herb::Lint::LintResult.new(
-            file_path: "test.html.erb",
-            offenses: [
-              build(:offense, severity: "error", rule_name: "test-rule", message: "Test")
-            ],
-            source: "<div></div>"
-          )
+          build(:lint_result, offenses: [
+                  build(:offense, severity: "error", rule_name: "test-rule", message: "Test")
+                ])
         ]
       end
 
