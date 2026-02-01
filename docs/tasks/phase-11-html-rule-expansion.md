@@ -428,9 +428,9 @@ Rules are grouped by theme and sorted by complexity within each batch.
 ---
 
 ### Task 11.18: `html-input-require-autocomplete`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Require `autocomplete` attribute on input elements that accept text input.
 
