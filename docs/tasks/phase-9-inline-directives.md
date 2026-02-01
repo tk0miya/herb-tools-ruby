@@ -1,6 +1,6 @@
-# Phase 9: Inline Directives & Auto-fix
+# Phase 9: Inline Directives
 
-This phase implements high-priority post-MVP features: inline directive support, herb-disable-comment meta-rules, and auto-fix functionality.
+This phase implements inline directive support and herb-disable-comment meta-rules.
 
 ## Overview
 
@@ -8,7 +8,6 @@ This phase implements high-priority post-MVP features: inline directive support,
 |---------|-------------|--------|
 | Inline Directives | `<%# herb:disable rule-name %>` and `<%# herb:linter ignore %>` comments | Users can suppress specific violations |
 | Meta-Rules | `herb-disable-comment-*` rules that validate directive comments | Catch typos and misuse in directives |
-| Auto-fix | `--fix` CLI option | Automatic code correction |
 
 ## Prerequisites
 
@@ -278,121 +277,6 @@ Uses the list of registered rule names from `Context#valid_rule_names` to check 
 
 ---
 
-## Part C: Auto-fix Functionality
-
-### Task 9.9: Fixer Class Implementation
-
-**Location:** `herb-lint/lib/herb/lint/fixer.rb`
-
-- [ ] Implement Fixer class
-- [ ] Add unit tests
-- [ ] Generate RBS types
-
-**Interface:**
-
-```ruby
-module Herb
-  module Lint
-    class Fixer
-      def initialize(source, offenses, fix_unsafely: false)
-      def apply_fixes  # => String (modified source)
-    end
-  end
-end
-```
-
-**Algorithm:**
-1. Filter offenses to those with `fixable: true` and `fix` Proc
-2. Sort by location (reverse order: end of file first)
-3. Apply each fix Proc to source
-4. Return modified source
-
-**Test Cases:**
-- No fixable offenses returns original source
-- Single fix applied correctly
-- Multiple fixes applied in correct order
-- fix_unsafely flag respected
-- Overlapping fixes handled
-
----
-
-### Task 9.10: CLI --fix Option and Runner Integration
-
-**Location:** `herb-lint/lib/herb/lint/cli.rb`, `herb-lint/lib/herb/lint/runner.rb`
-
-- [ ] Add `--fix` option parsing in CLI
-- [ ] Add `--fix-unsafely` option parsing in CLI
-- [ ] Accept fix options in Runner constructor
-- [ ] Apply fixes after linting each file in Runner
-- [ ] Write fixed content back to file
-- [ ] Add integration tests
-
-**CLI Changes:**
-
-```ruby
-def parse_options
-  # ... existing options ...
-  opts.on("--fix", "Apply safe automatic fixes") do
-    options[:fix] = true
-  end
-  opts.on("--fix-unsafely", "Apply all fixes including unsafe ones") do
-    options[:fix] = true
-    options[:fix_unsafely] = true
-  end
-end
-```
-
-**Runner Changes:**
-
-```ruby
-def lint_file(file_path)
-  source = File.read(file_path)
-  result = @linter.lint(file_path, source)
-
-  if @fix && result.fixable_count > 0
-    fixer = Fixer.new(source, result.offenses, fix_unsafely: @fix_unsafely)
-    fixed_source = fixer.apply_fixes
-    File.write(file_path, fixed_source) if fixed_source != source
-  end
-
-  result
-end
-```
-
----
-
-### Task 9.11: Add fix Methods to Existing Rules
-
-Update existing fixable rules to include fix Procs:
-
-- [ ] `html-attribute-double-quotes` - Add fix method
-- [ ] Add fix tests for each rule
-
-**Example Fix Implementation:**
-
-```ruby
-# In Rules::HtmlAttributeDoubleQuotes
-def visit_html_attribute_node(node)
-  return super(node) unless wrong_quote_style?(node.value)
-
-  add_offense(
-    message: "Attribute value should use double quotes",
-    location: node.value.location,
-    node: node,
-    fix: -> (source) {
-      value = node.value.content
-      replacement = %Q{"#{value}"}
-      source[node.value.location.range] = replacement
-      source
-    }
-  )
-
-  super(node)
-end
-```
-
----
-
 ## Verification
 
 ### Part A: DirectiveParser
@@ -437,32 +321,6 @@ cd herb-lint && ./bin/rspec spec/herb/lint/rules/herb_disable_comment_unnecessar
 cd herb-lint && ./bin/steep check
 ```
 
-### Part C: Auto-fix
-
-```bash
-# Unit tests
-cd herb-lint && ./bin/rspec spec/herb/lint/fixer_spec.rb
-
-# Integration test
-cd herb-lint && ./bin/rspec spec/herb/lint/cli_spec.rb
-
-# Type check
-cd herb-lint && ./bin/steep check
-```
-
-**Manual Test:**
-
-```erb
-<%# test.html.erb %>
-<div class=foo></div>
-```
-
-```bash
-herb-lint --fix test.html.erb
-cat test.html.erb
-# Should show: <div class="foo"></div>
-```
-
 ---
 
 ## Summary
@@ -477,13 +335,11 @@ cat test.html.erb
 | 9.6 | herb-lint | herb-disable-comment-no-redundant-all meta-rule |
 | 9.7 | herb-lint | herb-disable-comment-valid-rule-name meta-rule |
 | 9.8 | herb-lint | herb-disable-comment-unnecessary meta-rule |
-| 9.9 | herb-lint | Fixer class implementation |
-| 9.10 | herb-lint | CLI --fix option and Runner integration |
-| 9.11 | herb-lint | Add fix methods to existing rules |
 
-**Total: 11 tasks**
+**Total: 8 tasks** ✅
 
 ## Related Documents
 
-- [herb-lint Design](../design/herb-lint-design.md) - DirectiveParser, Directives, meta-rules, and Fixer specs
+- [herb-lint Design](../design/herb-lint-design.md) - DirectiveParser, Directives, meta-rules specs
+- [Autofix Design](../design/herb-lint-autofix-design.md) - Autofix feature (moved to [Phase 15](./phase-15-autofix.md))
 - [Future Enhancements](./future-enhancements.md) - Priority list
