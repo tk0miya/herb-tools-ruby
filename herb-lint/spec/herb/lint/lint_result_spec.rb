@@ -31,8 +31,8 @@ RSpec.describe Herb::Lint::LintResult do
     context "when there are only errors" do
       let(:offenses) do
         [
-          build_offense(severity: "error"),
-          build_offense(severity: "error")
+          build(:offense, severity: "error"),
+          build(:offense, severity: "error")
         ]
       end
 
@@ -44,10 +44,10 @@ RSpec.describe Herb::Lint::LintResult do
     context "when there are mixed severities" do
       let(:offenses) do
         [
-          build_offense(severity: "error"),
-          build_offense(severity: "warning"),
-          build_offense(severity: "error"),
-          build_offense(severity: "info")
+          build(:offense, severity: "error"),
+          build(:offense, severity: "warning"),
+          build(:offense, severity: "error"),
+          build(:offense, severity: "info")
         ]
       end
 
@@ -73,9 +73,9 @@ RSpec.describe Herb::Lint::LintResult do
     context "when there are only warnings" do
       let(:offenses) do
         [
-          build_offense(severity: "warning"),
-          build_offense(severity: "warning"),
-          build_offense(severity: "warning")
+          build(:offense, severity: "warning"),
+          build(:offense, severity: "warning"),
+          build(:offense, severity: "warning")
         ]
       end
 
@@ -87,10 +87,10 @@ RSpec.describe Herb::Lint::LintResult do
     context "when there are mixed severities" do
       let(:offenses) do
         [
-          build_offense(severity: "error"),
-          build_offense(severity: "warning"),
-          build_offense(severity: "warning"),
-          build_offense(severity: "info")
+          build(:offense, severity: "error"),
+          build(:offense, severity: "warning"),
+          build(:offense, severity: "warning"),
+          build(:offense, severity: "info")
         ]
       end
 
@@ -116,9 +116,9 @@ RSpec.describe Herb::Lint::LintResult do
     context "when there are multiple offenses" do
       let(:offenses) do
         [
-          build_offense(severity: "error"),
-          build_offense(severity: "warning"),
-          build_offense(severity: "info")
+          build(:offense, severity: "error"),
+          build(:offense, severity: "warning"),
+          build(:offense, severity: "info")
         ]
       end
 

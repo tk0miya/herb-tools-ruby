@@ -9,14 +9,10 @@ module TestHelpers
     Herb::Location.new(pos, pos)
   end
 
-  def build_offense(severity:, rule_name: "test-rule", message: "Test message", line: 1, column: 0)
-    Herb::Lint::Offense.new(rule_name:, message:, severity:, location: build_location(line:, column:))
-  end
-
   def build_lint_result(errors: 0, warnings: 0, file_path: "test.html.erb", source: "<div></div>")
     offenses = []
-    errors.times { offenses << build_offense(severity: "error") }
-    warnings.times { offenses << build_offense(severity: "warning") }
+    errors.times { offenses << build(:offense, severity: "error") }
+    warnings.times { offenses << build(:offense, severity: "warning") }
 
     Herb::Lint::LintResult.new(file_path:, offenses:, source:)
   end
