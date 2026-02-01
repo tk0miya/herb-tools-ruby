@@ -1,0 +1,9 @@
+# Generated from lib/herb/printer/print_error.rb with RBS::Inline
+
+module Herb
+  module Printer
+    # Error raised when attempting to print an AST that contains parse errors.
+    class PrintError < StandardError
+    end
+  end
+end

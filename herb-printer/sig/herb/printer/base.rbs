@@ -1,0 +1,33 @@
+# Generated from lib/herb/printer/base.rb with RBS::Inline
+
+module Herb
+  module Printer
+    # Abstract base class for AST-to-source printers.
+    #
+    # Subclasses override `visit_*_node` methods to define how each node type
+    # is serialized. A subclass with no overrides produces empty output.
+    class Base < ::Herb::Visitor
+      attr_reader context: PrintContext
+
+      # Print the given input to a source string.
+      #
+      # @rbs input: Herb::ParseResult | Herb::AST::Node
+      # @rbs ignore_errors: bool
+      def self.print: (Herb::ParseResult | Herb::AST::Node input, ?ignore_errors: bool) -> String
+
+      # Raise PrintError if node tree contains parse errors.
+      #
+      # @rbs node: Herb::AST::Node
+      def self.validate_no_errors!: (Herb::AST::Node node) -> void
+
+      def initialize: () -> void
+
+      private
+
+      # Write text to the output context.
+      #
+      # @rbs text: String
+      def write: (String text) -> void
+    end
+  end
+end
