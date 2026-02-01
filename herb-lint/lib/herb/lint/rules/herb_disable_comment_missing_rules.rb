@@ -14,7 +14,7 @@ module Herb
       #
       # Bad:
       #   <%# herb:disable %>
-      class HerbDisableCommentMissingRules < VisitorRule
+      class HerbDisableCommentMissingRules < DirectiveRule
         def self.rule_name #: String
           "herb-disable-comment-missing-rules"
         end
@@ -27,30 +27,16 @@ module Herb
           "error"
         end
 
-        # @rbs override
-        def visit_erb_content_node(node)
-          check_disable_comment(node) if comment_tag?(node)
-          super
-        end
-
         private
 
-        # @rbs node: Herb::AST::ERBContentNode
-        def comment_tag?(node) #: bool
-          node.tag_opening.value == "<%#"
-        end
-
-        # @rbs node: Herb::AST::ERBContentNode
-        def check_disable_comment(node) #: void
-          content = node.content.value
-          comment = DirectiveParser.parse_disable_comment_content(content, content_location: node.content.location)
-          return unless comment
+        # @rbs override
+        def check_disable_comment(comment)
           return unless comment.match
           return unless comment.rule_names.empty?
 
           add_offense(
             message: "`herb:disable` comment must specify at least one rule name or `all`",
-            location: node.location
+            location: comment.content_location
           )
         end
       end

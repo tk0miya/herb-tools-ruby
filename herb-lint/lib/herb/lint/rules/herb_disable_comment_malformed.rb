@@ -10,7 +10,7 @@ module Herb
       # - Leading commas in the rule list (e.g. `herb:disable ,rule-name`)
       # - Trailing commas in the rule list (e.g. `herb:disable rule-name,`)
       # - Consecutive commas in the rule list (e.g. `herb:disable rule1,,rule2`)
-      class HerbDisableCommentMalformed < VisitorRule
+      class HerbDisableCommentMalformed < DirectiveRule
         def self.rule_name #: String
           "herb-disable-comment-malformed"
         end
@@ -23,48 +23,37 @@ module Herb
           "error"
         end
 
-        # @rbs override
-        def visit_erb_content_node(node)
-          check_erb_comment(node) if node.tag_opening.value == "<%#"
-          super
-        end
-
         private
 
-        # @rbs node: Herb::AST::ERBContentNode
-        def check_erb_comment(node) #: void
-          content = node.content.value
-          parsed = DirectiveParser.parse_disable_comment_content(content, content_location: node.content.location)
-          return unless parsed
-
-          unless parsed.match
+        # @rbs override
+        def check_disable_comment(comment)
+          unless comment.match
             add_offense(
               message: "Malformed herb:disable comment: missing space after `herb:disable`",
-              location: node.location
+              location: comment.content_location
             )
             return
           end
 
-          check_comma_issues(parsed, node)
+          check_comma_issues(comment)
         end
 
-        # @rbs parsed: DirectiveParser::DisableComment
-        # @rbs node: Herb::AST::ERBContentNode
-        def check_comma_issues(parsed, node) #: void
-          rules_string = parsed.rules_string
+        # @rbs comment: DirectiveParser::DisableComment
+        def check_comma_issues(comment) #: void
+          rules_string = comment.rules_string
           return if rules_string.nil? || rules_string.empty?
 
           if rules_string.match?(/\A\s*,/)
             add_offense(
               message: "Malformed herb:disable comment: leading comma in rule list",
-              location: node.location
+              location: comment.content_location
             )
           end
 
           if rules_string.match?(/,\s*\z/)
             add_offense(
               message: "Malformed herb:disable comment: trailing comma in rule list",
-              location: node.location
+              location: comment.content_location
             )
           end
 
@@ -72,7 +61,7 @@ module Herb
 
           add_offense(
             message: "Malformed herb:disable comment: consecutive commas in rule list",
-            location: node.location
+            location: comment.content_location
           )
         end
       end

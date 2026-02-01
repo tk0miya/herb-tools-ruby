@@ -17,7 +17,7 @@ module Herb
       # Bad:
       #   <%# herb:disable html-img-require-alts %>
       #   <%# herb:disable nonexistent-rule %>
-      class HerbDisableCommentValidRuleName < VisitorRule
+      class HerbDisableCommentValidRuleName < DirectiveRule
         def self.rule_name #: String
           "herb-disable-comment-valid-rule-name"
         end
@@ -30,24 +30,11 @@ module Herb
           "warning"
         end
 
-        # @rbs override
-        def visit_erb_content_node(node)
-          check_disable_comment(node) if erb_comment?(node)
-          super
-        end
-
         private
 
-        # @rbs node: Herb::AST::ERBContentNode
-        def erb_comment?(node) #: bool
-          node.tag_opening.value == "<%#"
-        end
-
-        # @rbs node: Herb::AST::ERBContentNode
-        def check_disable_comment(node) #: void
-          content = node.content.value
-          comment = DirectiveParser.parse_disable_comment_content(content, content_location: node.content.location)
-          return unless comment&.match
+        # @rbs override
+        def check_disable_comment(comment)
+          return unless comment.match
 
           valid_names = @context.valid_rule_names
           return if valid_names.empty?
@@ -58,7 +45,7 @@ module Herb
 
             add_offense(
               message: build_message(detail.name, valid_names),
-              location: offset_location(node, detail)
+              location: offset_location(comment, detail)
             )
           end
         end
@@ -84,20 +71,6 @@ module Herb
         def find_suggestions(name, valid_names) #: Array[String]
           checker = DidYouMean::SpellChecker.new(dictionary: valid_names)
           checker.correct(name)
-        end
-
-        # Compute the source location for a rule name within an ERB content node.
-        #
-        # @rbs node: Herb::AST::ERBContentNode -- the ERB content node
-        # @rbs detail: DirectiveParser::DisableRuleName -- the rule name with offset info
-        def offset_location(node, detail) #: Herb::Location
-          content_start = node.content.location.start
-          line = content_start.line
-          column = content_start.column + detail.offset
-
-          start_pos = Herb::Position.new(line, column)
-          end_pos = Herb::Position.new(line, column + detail.length)
-          Herb::Location.new(start_pos, end_pos)
         end
       end
     end

@@ -6,7 +6,8 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentMissingRules do
   subject { described_class.new.check(document, context) }
 
   let(:document) { Herb.parse(template) }
-  let(:context) { instance_double(Herb::Lint::Context) }
+  let(:directives) { Herb::Lint::DirectiveParser.parse(document, template) }
+  let(:context) { instance_double(Herb::Lint::Context, directives:) }
 
   describe ".rule_name" do
     it "returns 'herb-disable-comment-missing-rules'" do

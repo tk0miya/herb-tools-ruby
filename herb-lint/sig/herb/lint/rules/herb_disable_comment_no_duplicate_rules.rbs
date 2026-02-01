@@ -13,29 +13,17 @@ module Herb
       #
       # Bad:
       #   <%# herb:disable rule1, rule1 %>
-      class HerbDisableCommentNoDuplicateRules < VisitorRule
+      class HerbDisableCommentNoDuplicateRules < DirectiveRule
         def self.rule_name: () -> String
 
         def self.description: () -> String
 
         def self.default_severity: () -> String
 
-        # @rbs override
-        def visit_erb_content_node: ...
-
         private
 
-        # @rbs node: Herb::AST::ERBContentNode
-        def erb_comment?: (Herb::AST::ERBContentNode node) -> bool
-
-        # @rbs node: Herb::AST::ERBContentNode
-        def check_duplicate_rules: (Herb::AST::ERBContentNode node) -> void
-
-        # Compute the source location for a rule name within an ERB content node.
-        #
-        # @rbs node: Herb::AST::ERBContentNode -- the ERB content node
-        # @rbs detail: DirectiveParser::DisableRuleName -- the rule name with offset info
-        def offset_location: (Herb::AST::ERBContentNode node, DirectiveParser::DisableRuleName detail) -> Herb::Location
+        # @rbs override
+        def check_disable_comment: ...
       end
     end
   end

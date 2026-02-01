@@ -6,6 +6,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
   subject { described_class.new.check(document, context) }
 
   let(:document) { Herb.parse(template) }
+  let(:directives) { Herb::Lint::DirectiveParser.parse(document, template) }
   let(:valid_rule_names) do
     %w[
       erb-comment-syntax
@@ -16,7 +17,7 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
       html-tag-name-lowercase
     ]
   end
-  let(:context) { instance_double(Herb::Lint::Context, valid_rule_names:) }
+  let(:context) { instance_double(Herb::Lint::Context, directives:, valid_rule_names:) }
 
   describe ".rule_name" do
     it "returns 'herb-disable-comment-valid-rule-name'" do

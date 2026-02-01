@@ -3,20 +3,23 @@
 module Herb
   module Lint
     # Linting context with file information.
-    # Provides access to file path, source code, and configuration.
+    # Provides access to file path, source code, configuration, and parsed directives.
     class Context
       attr_reader :file_path #: String
       attr_reader :source #: String
       attr_reader :config #: Herb::Config::LinterConfig
+      attr_reader :directives #: DirectiveParser::Directives
 
       # @rbs file_path: String -- path to the file being linted
       # @rbs source: String -- source code content of the file
       # @rbs config: Herb::Config::LinterConfig -- linter configuration
+      # @rbs directives: DirectiveParser::Directives -- parsed directive comments
       # @rbs rule_registry: RuleRegistry? -- optional registry to look up rule defaults
-      def initialize(file_path:, source:, config:, rule_registry: nil) #: void
+      def initialize(file_path:, source:, config:, directives:, rule_registry: nil) #: void
         @file_path = file_path
         @source = source
         @config = config
+        @directives = directives
         @rule_registry = rule_registry
       end
 

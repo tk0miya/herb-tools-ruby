@@ -36,12 +36,23 @@ module Herb
           super() if defined?(super)
         end
 
+        # @rbs @offenses: Array[Offense]
+        # @rbs @context: Context
+
         # Check the document for rule violations.
         #
         # @rbs document: Herb::ParseResult -- parsed document to check
         # @rbs context: Context -- linting context with file information
         def check(document, context) #: Array[Offense]
           raise NotImplementedError, "#{self.class.name} must implement #check"
+        end
+
+        # Add an offense for the current rule.
+        #
+        # @rbs message: String -- description of the violation
+        # @rbs location: Herb::Location -- location of the violation
+        def add_offense(message:, location:) #: void
+          @offenses << create_offense(message:, location:)
         end
 
         # Create an offense for a rule violation.
