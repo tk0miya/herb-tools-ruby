@@ -1,0 +1,7 @@
+# Generated from lib/herb/printer/version.rb with RBS::Inline
+
+module Herb
+  module Printer
+    VERSION: ::String
+  end
+end

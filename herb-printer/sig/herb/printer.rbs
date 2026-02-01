@@ -1,0 +1,8 @@
+# Generated from lib/herb/printer.rb with RBS::Inline
+
+module Herb
+  module Printer
+    class Error < StandardError
+    end
+  end
+end
