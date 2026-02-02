@@ -187,16 +187,18 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 
 ### Task 14.7: IdentityPrinter — HTML Attribute Nodes
 
-- [ ] `visit_html_attribute_node` — visit `name`, write `equals` if present, visit `value` if present
-- [ ] `visit_html_attribute_name_node` — `visit_child_nodes(node)`
-- [ ] `visit_html_attribute_value_node` — write `open_quote` if quoted, visit children, write `close_quote` if quoted
+**Status:** ✅
+
+- [x] `visit_html_attribute_node` — visit `name`, write `equals` if present, visit `value` if present
+- [x] `visit_html_attribute_name_node` — `visit_child_nodes(node)`
+- [x] `visit_html_attribute_value_node` — write `open_quote` if quoted, visit children, write `close_quote` if quoted
 
 ### Verification
 
-- [ ] Round-trip test: `<div class="container">text</div>`
-- [ ] Round-trip test: `<div class='single-quoted'>text</div>`
-- [ ] Round-trip test: `<input type="text" disabled>` (boolean attribute)
-- [ ] Round-trip test: `<div id="main" class="wrapper" data-value="123">text</div>` (multiple attributes)
+- [x] Round-trip test: `<div class="container">text</div>`
+- [x] Round-trip test: `<div class='single-quoted'>text</div>`
+- [x] Round-trip test: `<input type="text" disabled>` (boolean attribute)
+- [x] Round-trip test: `<div id="main" class="wrapper" data-value="123">text</div>` (multiple attributes)
 
 ```bash
 cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
@@ -326,14 +328,14 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 | 14.4 | B | Implement Base Printer | 📋 |
 | 14.5 | B | IdentityPrinter — HTML Leaf Nodes | 📋 |
 | 14.6 | C | IdentityPrinter — HTML Structure Nodes | ✅ |
-| 14.7 | C | IdentityPrinter — HTML Attribute Nodes | 📋 |
+| 14.7 | C | IdentityPrinter — HTML Attribute Nodes | ✅ |
 | 14.8 | C | IdentityPrinter — HTML Comment, Doctype, XML, CDATA | 📋 |
 | 14.9 | D | IdentityPrinter — ERB Leaf Nodes | 📋 |
 | 14.10 | D | IdentityPrinter — ERB Control Flow (Basic) | 📋 |
 | 14.11 | D | IdentityPrinter — ERB Control Flow (Loop/Case) | 📋 |
 | 14.12 | D | IdentityPrinter — ERB Begin/Rescue/Ensure | 📋 |
 
-**Total: 12 tasks** (4 complete, 8 remaining)
+**Total: 12 tasks** (5 complete, 7 remaining)
 
 ## Related Documents
 

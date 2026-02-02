@@ -22,6 +22,27 @@ module Herb
         write(node.value.value) if node.value
       end
 
+      # -- HTML attribute nodes --
+
+      # @rbs override
+      def visit_html_attribute_node(node)
+        visit(node.name)
+        write(node.equals.value) if node.equals
+        visit(node.value) if node.value
+      end
+
+      # @rbs override
+      def visit_html_attribute_name_node(node)
+        visit_child_nodes(node)
+      end
+
+      # @rbs override
+      def visit_html_attribute_value_node(node)
+        write(node.open_quote.value) if node.open_quote
+        super
+        write(node.close_quote.value) if node.close_quote
+      end
+
       # -- HTML structure nodes --
 
       # @rbs override
