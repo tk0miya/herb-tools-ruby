@@ -1,0 +1,67 @@
+# Generated from lib/herb/lint/rules/erb_no_silent_tag_in_attribute_name.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Rule that disallows ERB silent tags inside HTML attribute names.
+      #
+      # ERB silent tags (`<% %>`) should not be used inside HTML tag opening sections
+      # to conditionally include attributes. This pattern is difficult to read and
+      # can lead to parsing issues.
+      #
+      # Good:
+      #   <div class="<%= active? ? 'active' : '' %>">
+      #   <div <%= active? ? 'class="active"' : '' %>>
+      #
+      # Bad:
+      #   <div <% if active? %>class="active"<% end %>>
+      class ErbNoSilentTagInAttributeName < VisitorRule
+        def self.rule_name: () -> String
+
+        def self.description: () -> String
+
+        def self.default_severity: () -> String
+
+        # @rbs override
+        def visit_html_open_tag_node: ...
+
+        private
+
+        # @rbs node: Herb::AST::HTMLOpenTagNode
+        def check_silent_tags_with_attributes: (Herb::AST::HTMLOpenTagNode node) -> void
+
+        # Recursively check ERB node for attributes
+        # @rbs node: untyped
+        def check_erb_node_for_attributes: (untyped node) -> void
+
+        # Check nested ERB nodes in statements
+        # @rbs node: untyped
+        def check_nested_erb_nodes: (untyped node) -> void
+
+        # Check ERBCaseNode for attributes in when clauses
+        # @rbs node: untyped
+        def check_case_node: (untyped node) -> void
+
+        # Check if a node is a silent ERB node with statements
+        # @rbs node: untyped
+        def silent_erb_node_with_statements?: (untyped node) -> bool
+
+        # Check if a node is an ERBCaseNode
+        # @rbs node: untyped
+        def erb_case_node?: (untyped node) -> bool
+
+        # Check if case node has attributes in when clauses
+        # @rbs node: untyped
+        def case_has_attribute?: (untyped node) -> bool
+
+        # Check if node's statements directly contain an HTMLAttributeNode
+        # @rbs node: untyped
+        def attribute_directly?: (untyped node) -> bool
+
+        # Report offense for silent ERB tag with attributes
+        # @rbs node: untyped
+        def report_offense: (untyped node) -> void
+      end
+    end
+  end
+end

@@ -16,6 +16,7 @@ module Herb
           Rules::ErbNoEmptyTags,
           Rules::ErbNoExtraWhitespaceInsideTags,
           Rules::ErbNoOutputControlFlow,
+          Rules::ErbNoSilentTagInAttributeName,
           Rules::ErbRequireWhitespaceInsideTags,
           Rules::HerbDisableCommentMalformed,
           Rules::HerbDisableCommentMissingRules,

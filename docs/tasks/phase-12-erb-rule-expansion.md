@@ -179,9 +179,9 @@ Rules are grouped by theme:
 ---
 
 ### Task 12.7: `erb-no-silent-tag-in-attribute-name`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow ERB silent tags (`<% %>`) inside HTML attribute names.
 
