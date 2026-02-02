@@ -20,6 +20,7 @@ module Herb
           Rules::ErbRequireTrailingNewline,
           Rules::ErbRequireWhitespaceInsideTags,
           Rules::ErbRightTrim,
+          Rules::ErbStrictLocalsRequired,
           Rules::HerbDisableCommentMalformed,
           Rules::HerbDisableCommentMissingRules,
           Rules::HerbDisableCommentNoDuplicateRules,

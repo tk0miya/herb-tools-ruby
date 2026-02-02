@@ -291,9 +291,9 @@ Rules are grouped by theme:
 ---
 
 ### Task 12.12: `erb-strict-locals-required`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Require a `strict_locals` magic comment in every partial.
 
