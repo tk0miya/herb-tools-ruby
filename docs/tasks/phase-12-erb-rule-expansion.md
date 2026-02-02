@@ -225,9 +225,9 @@ Rules are grouped by theme:
 ## Batch 3: Convention & Strict Locals Rules (4 rules)
 
 ### Task 12.9: `erb-prefer-image-tag-helper`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Prefer Rails `image_tag` helper over raw `<img>` tags.
 
