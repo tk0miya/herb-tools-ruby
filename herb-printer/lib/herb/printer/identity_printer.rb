@@ -4,7 +4,7 @@ module Herb
   module Printer
     # Lossless round-trip printer that reconstructs the original source code
     # exactly from an AST produced by Herb.parse.
-    class IdentityPrinter < Base
+    class IdentityPrinter < Base # rubocop:disable Metrics/ClassLength
       # -- Leaf nodes --
 
       # @rbs override
@@ -88,6 +88,32 @@ module Herb
       # @rbs override
       def visit_erb_yield_node(node)
         print_erb_tag(node)
+      end
+
+      # -- ERB control flow nodes --
+
+      # @rbs override
+      def visit_erb_block_node(node)
+        print_erb_tag(node)
+        super
+      end
+
+      # @rbs override
+      def visit_erb_if_node(node)
+        print_erb_tag(node)
+        super
+      end
+
+      # @rbs override
+      def visit_erb_else_node(node)
+        print_erb_tag(node)
+        super
+      end
+
+      # @rbs override
+      def visit_erb_unless_node(node)
+        print_erb_tag(node)
+        super
       end
 
       # -- HTML structure nodes --
