@@ -12,9 +12,9 @@ This phase implements the remaining 2 rules from the TypeScript reference implem
 ---
 
 ## Task 13.1: `svg-tag-name-capitalization`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Enforce correct capitalization of SVG element and attribute names. SVG uses camelCase for many elements (e.g., `clipPath`, `linearGradient`, `textPath`) unlike HTML which is case-insensitive.
 

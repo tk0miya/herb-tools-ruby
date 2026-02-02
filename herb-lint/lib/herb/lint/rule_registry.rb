@@ -57,7 +57,8 @@ module Herb
           Rules::HtmlNoSelfClosing,
           Rules::HtmlNoSpaceInTag,
           Rules::HtmlTagNameLowercase,
-          Rules::ParserNoErrors
+          Rules::ParserNoErrors,
+          Rules::SvgTagNameCapitalization
         ].freeze
       end
       # rubocop:enable Metrics/MethodLength
