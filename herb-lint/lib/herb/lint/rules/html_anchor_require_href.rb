@@ -44,7 +44,7 @@ module Herb
 
         # @rbs node: Herb::AST::HTMLElementNode
         def anchor_element?(node) #: bool
-          node.tag_name&.value&.downcase == "a"
+          tag_name(node) == "a"
         end
       end
     end

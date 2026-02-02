@@ -47,17 +47,17 @@ module Herb
 
         # @rbs override
         def visit_html_element_node(node)
-          tag_name = node.tag_name&.value&.downcase
-          return super unless tag_name
+          tag = tag_name(node)
+          return super unless tag
 
-          if inside_head? && !inside_body? && body_only_tag?(tag_name)
+          if inside_head? && !inside_body? && body_only_tag?(tag)
             add_offense(
-              message: "Element `<#{tag_name}>` must be placed inside the `<body>` tag.",
+              message: "Element `<#{tag}>` must be placed inside the `<body>` tag.",
               location: node.location
             )
           end
 
-          @element_stack.push(tag_name)
+          @element_stack.push(tag)
           super
           @element_stack.pop
         end

@@ -42,7 +42,7 @@ module Herb
 
         # @rbs node: Herb::AST::HTMLElementNode
         def iframe_element?(node) #: bool
-          node.tag_name&.value&.downcase == "iframe"
+          tag_name(node) == "iframe"
         end
 
         # @rbs node: Herb::AST::HTMLElementNode

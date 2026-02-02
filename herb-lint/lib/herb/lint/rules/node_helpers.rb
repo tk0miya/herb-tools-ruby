@@ -59,6 +59,24 @@ module Herb
 
           value.children.first&.content
         end
+
+        # Extract the tag name from an element node, preserving original case.
+        # Returns nil if the node is nil.
+        #
+        # @rbs node: Herb::AST::HTMLElementNode? -- element node
+        def raw_tag_name(node) #: String?
+          return nil if node.nil?
+
+          node.tag_name&.value
+        end
+
+        # Extract the tag name from an element node, normalized to lowercase.
+        # Returns nil if the node is nil.
+        #
+        # @rbs node: Herb::AST::HTMLElementNode? -- element node
+        def tag_name(node) #: String?
+          raw_tag_name(node)&.downcase
+        end
       end
     end
   end

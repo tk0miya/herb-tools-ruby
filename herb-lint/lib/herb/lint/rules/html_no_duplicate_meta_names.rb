@@ -45,7 +45,7 @@ module Herb
 
         # @rbs node: Herb::AST::HTMLElementNode
         def meta_element?(node) #: bool
-          node.tag_name&.value&.downcase == "meta"
+          tag_name(node) == "meta"
         end
 
         # @rbs node: Herb::AST::HTMLElementNode

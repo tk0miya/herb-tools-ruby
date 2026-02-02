@@ -42,7 +42,7 @@ module Herb
 
         # @rbs override
         def visit_html_element_node(node)
-          tag = node.tag_name&.value&.downcase
+          tag = tag_name(node)
 
           if tag == "head"
             @inside_head = true

@@ -36,9 +36,6 @@ module Herb
 
         private
 
-        # @rbs node: Herb::AST::HTMLElementNode
-        def tag_name: (Herb::AST::HTMLElementNode node) -> String?
-
         # @rbs tag: String?
         def inline_element?: (String? tag) -> bool
 
