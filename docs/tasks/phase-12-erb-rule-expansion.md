@@ -295,9 +295,9 @@ Rules are grouped by theme:
 ---
 
 ### Task 12.11: `erb-strict-locals-comment-syntax`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Enforce correct syntax for the `strict_locals` magic comment.
 

@@ -1,0 +1,30 @@
+# Generated from lib/herb/lint/rules/string_helpers.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # String manipulation utilities for lint rules
+      module StringHelpers
+        # Checks if parentheses in a string are balanced
+        # Returns false if there are more closing parens than opening at any point
+        #
+        # @rbs content: String -- the string to check
+        # @rbs return: bool
+        def balanced_parentheses?: (String content) -> bool
+
+        # Splits a string by commas at the top level only
+        # Respects nested parentheses, brackets, braces, and strings
+        #
+        # @example
+        #   split_by_top_level_comma("a, b, c") #=> ["a", " b", " c"]
+        #   split_by_top_level_comma("a, (b, c), d") #=> ["a", " (b, c)", " d"]
+        #   split_by_top_level_comma('a, "b, c", d') #=> ["a", ' "b, c"', " d"]
+        #
+        # @rbs str: String -- the string to split
+        # @rbs return: Array[String]
+        # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+        def split_by_top_level_comma: (String str) -> Array[String]
+      end
+    end
+  end
+end

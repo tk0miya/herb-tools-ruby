@@ -1,0 +1,118 @@
+# Generated from lib/herb/lint/rules/erb_strict_locals_comment_syntax.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Rule that enforces correct syntax for strict locals magic comments.
+      #
+      # Rails strict locals allow partials to declare their expected local variables
+      # using a magic comment at the top of the file. This rule validates that the
+      # comment follows the correct format.
+      #
+      # Good:
+      #   <%# locals: (user:, admin: false) %>
+      #   <%# locals: () %>
+      #   <%# locals: (name:, **attributes) %>
+      #
+      # Bad:
+      #   <%# locals() %>            # Missing colon
+      #   <%# local: (user:) %>      # Singular "local" instead of plural
+      #   <%# locals:(user:) %>      # Missing space after colon
+      #   <%# locals: user %>        # Missing parentheses
+      #   <%# locals: (user) %>      # Positional argument (must be keyword)
+      #   <% # locals: (user:) %>    # Ruby comment instead of ERB comment
+      # rubocop:disable Metrics/ClassLength
+      class ErbStrictLocalsCommentSyntax < VisitorRule
+        include StringHelpers
+
+        include FileHelpers
+
+        STRICT_LOCALS_PATTERN: ::Regexp
+
+        def self.rule_name: () -> String
+
+        def self.description: () -> String
+
+        def self.default_severity: () -> String
+
+        @first_strict_locals_location: Location?
+
+        @seen_strict_locals_comment: bool
+
+        def initialize: () -> untyped
+
+        # @rbs override
+        def visit_erb_content_node: ...
+
+        private
+
+        # @rbs opening_tag: String?
+        # @rbs content: String
+        # @rbs node: Herb::AST::ERBContentNode
+        # @rbs return: String?
+        def extract_comment_content: (String? opening_tag, String content, Herb::AST::ERBContentNode node) -> String?
+
+        # @rbs content: String
+        # @rbs return: String?
+        def extract_ruby_comment_content: (String content) -> String?
+
+        # @rbs content: String
+        # @rbs return: String?
+        def extract_locals_remainder: (String content) -> String?
+
+        # @rbs content: String
+        def looks_like_locals_declaration?: (String content) -> bool
+
+        # @rbs remainder: String
+        def locals_like_syntax?: (String remainder) -> bool
+
+        # @rbs comment_content: String
+        # @rbs node: Herb::AST::ERBContentNode
+        def validate_locals_comment: (String comment_content, Herb::AST::ERBContentNode node) -> void
+
+        # @rbs node: Herb::AST::ERBContentNode
+        def check_partial_file: (Herb::AST::ERBContentNode node) -> void
+
+        # @rbs content: String
+        def valid_strict_locals_format?: (String content) -> bool
+
+        # @rbs comment_content: String
+        # @rbs node: Herb::AST::ERBContentNode
+        def handle_valid_format: (String comment_content, Herb::AST::ERBContentNode node) -> void
+
+        # @rbs comment_content: String
+        # @rbs node: Herb::AST::ERBContentNode
+        # rubocop:disable Metrics/MethodLength
+        def handle_invalid_format: (String comment_content, Herb::AST::ERBContentNode node) -> void
+
+        # @rbs params_content: String
+        # @rbs return: String?
+        def validate_locals_signature: (String params_content) -> String?
+
+        # @rbs inner: String
+        # @rbs return: String?
+        def validate_comma_usage: (String inner) -> String?
+
+        # @rbs param: String
+        # @rbs return: String?
+        def validate_parameter: (String param) -> String?
+
+        # @rbs param: String
+        # @rbs return: String?
+        def validate_block_argument: (String param) -> String?
+
+        # @rbs param: String
+        # @rbs return: String?
+        def validate_splat_argument: (String param) -> String?
+
+        # @rbs param: String
+        # @rbs return: String?
+        def validate_double_splat_argument: (String param) -> String?
+
+        # @rbs param: String
+        # @rbs return: String?
+        def validate_keyword_argument: (String param) -> String?
+      end
+    end
+  end
+end
