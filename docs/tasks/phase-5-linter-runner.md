@@ -246,7 +246,7 @@ bundle exec rspec spec/herb/lint/runner_spec.rb
 - [x] All tasks (5.1–5.4) completed
 - [x] `bundle exec rspec` passes all tests
 - [x] Complete flow from file discovery to lint execution works
-- [ ] Verify operation with integration tests
+- [x] Verify operation with integration tests
 
 ---
 
