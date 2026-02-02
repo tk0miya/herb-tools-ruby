@@ -124,9 +124,9 @@ Rules are grouped by theme:
 ## Batch 2: Control Flow & Output Rules (4 rules)
 
 ### Task 12.5: `erb-no-case-node-children`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow direct children inside `case` ERB blocks (content should be in `when`/`else` branches).
 
