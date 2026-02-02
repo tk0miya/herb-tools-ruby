@@ -208,16 +208,18 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 
 ### Task 14.8: IdentityPrinter — HTML Comment, Doctype, XML, CDATA
 
-- [ ] `visit_html_comment_node` — write `comment_start`, visit children, write `comment_end`
-- [ ] `visit_html_doctype_node` — write `tag_opening`, visit children, write `tag_closing`
-- [ ] `visit_xml_declaration_node` — write `tag_opening`, visit children, write `tag_closing`
-- [ ] `visit_cdata_node` — write `tag_opening`, visit children, write `tag_closing`
+**Status:** ✅
+
+- [x] `visit_html_comment_node` — write `comment_start`, visit children, write `comment_end`
+- [x] `visit_html_doctype_node` — write `tag_opening`, visit children, write `tag_closing`
+- [x] `visit_xml_declaration_node` — write `tag_opening`, visit children, write `tag_closing`
+- [x] `visit_cdata_node` — write `tag_opening`, visit children, write `tag_closing`
 
 ### Verification
 
-- [ ] Round-trip test: `<!-- comment -->`
-- [ ] Round-trip test: `<!-- multi\nline\ncomment -->`
-- [ ] Round-trip test: `<!DOCTYPE html>`
+- [x] Round-trip test: `<!-- comment -->`
+- [x] Round-trip test: `<!-- multi\nline\ncomment -->`
+- [x] Round-trip test: `<!DOCTYPE html>`
 
 ```bash
 cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
@@ -329,13 +331,13 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 | 14.5 | B | IdentityPrinter — HTML Leaf Nodes | 📋 |
 | 14.6 | C | IdentityPrinter — HTML Structure Nodes | ✅ |
 | 14.7 | C | IdentityPrinter — HTML Attribute Nodes | ✅ |
-| 14.8 | C | IdentityPrinter — HTML Comment, Doctype, XML, CDATA | 📋 |
+| 14.8 | C | IdentityPrinter — HTML Comment, Doctype, XML, CDATA | ✅ |
 | 14.9 | D | IdentityPrinter — ERB Leaf Nodes | 📋 |
 | 14.10 | D | IdentityPrinter — ERB Control Flow (Basic) | 📋 |
 | 14.11 | D | IdentityPrinter — ERB Control Flow (Loop/Case) | 📋 |
 | 14.12 | D | IdentityPrinter — ERB Begin/Rescue/Ensure | 📋 |
 
-**Total: 12 tasks** (5 complete, 7 remaining)
+**Total: 12 tasks** (6 complete, 6 remaining)
 
 ## Related Documents
 
