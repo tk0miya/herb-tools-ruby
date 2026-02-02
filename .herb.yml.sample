@@ -1,0 +1,136 @@
+# herb-lint configuration file
+# Save this file as .herb.yml in your project root
+
+linter:
+  # Files to lint (glob patterns)
+  include:
+    - "**/*.html.erb"
+
+  # Files to exclude (glob patterns)
+  exclude:
+    - "vendor/**/*"
+    - "node_modules/**/*"
+    - "tmp/**/*"
+
+  # Linting rules configuration
+  # Each rule can be configured with a severity string or a hash with severity and options.
+  # Available severities: error, warning, info, hint, off
+  #
+  # Examples:
+  #   rule-name: error          # String format
+  #   rule-name:                # Hash format
+  #     severity: error
+  rules:
+    # --- ERB rules ---
+
+    # Enforce ERB comment style
+    erb-comment-syntax: warning
+
+    # --- herb:disable comment rules ---
+
+    # Detect syntactically malformed herb:disable comments
+    herb-disable-comment-malformed: error
+
+    # Require rule names in herb:disable comments
+    herb-disable-comment-missing-rules: error
+
+    # Prevent duplicate rules in herb:disable comments
+    herb-disable-comment-no-duplicate-rules: warning
+
+    # Prevent redundant use of "all" in herb:disable comments
+    herb-disable-comment-no-redundant-all: warning
+
+    # Validate rule names in herb:disable comments
+    herb-disable-comment-valid-rule-name: warning
+
+    # --- HTML rules ---
+
+    # Require href attribute on anchor elements
+    html-anchor-require-href: warning
+
+    # Validate ARIA attributes
+    html-aria-attribute-must-be-valid: error
+
+    # Check ARIA label formatting
+    html-aria-label-is-well-formatted: warning
+
+    # Validate aria-level attribute values
+    html-aria-level-must-be-valid: error
+
+    # Require aria-level with heading roles
+    html-aria-role-heading-requires-level: error
+
+    # Validate ARIA role values
+    html-aria-role-must-be-valid: error
+
+    # Require double quotes for attribute values
+    html-attribute-double-quotes: warning
+
+    # Control whitespace around = in attributes
+    html-attribute-equals-spacing: warning
+
+    # Require quotes for attribute values
+    html-attribute-values-require-quotes: warning
+
+    # Prevent redundant disabled and aria-disabled attributes
+    html-avoid-both-disabled-and-aria-disabled: warning
+
+    # Enforce elements that belong in body only
+    html-body-only-elements: error
+
+    # Boolean attributes should not have values
+    html-boolean-attributes-no-value: warning
+
+    # Enforce elements that belong in head only
+    html-head-only-elements: error
+
+    # Require title attribute on iframes
+    html-iframe-has-title: error
+
+    # Require alt attribute on img tags
+    html-img-require-alt: error
+
+    # Require autocomplete attribute on inputs
+    html-input-require-autocomplete: error
+
+    # Require accessible label on navigation elements
+    html-navigation-has-label: error
+
+    # Prevent aria-hidden on focusable elements
+    html-no-aria-hidden-on-focusable: error
+
+    # Prevent duplicate attributes on elements
+    html-no-duplicate-attributes: error
+
+    # Prevent duplicate id attributes
+    html-no-duplicate-ids: error
+
+    # Prevent duplicate meta name attributes
+    html-no-duplicate-meta-names: error
+
+    # Prevent empty attribute values
+    html-no-empty-attributes: warning
+
+    # Require content in headings
+    html-no-empty-headings: warning
+
+    # Prevent nested anchor elements
+    html-no-nested-links: error
+
+    # Disallow positive tabindex values
+    html-no-positive-tab-index: warning
+
+    # Disallow self-closing tags for non-void elements
+    html-no-self-closing: warning
+
+    # Disallow extra whitespace inside HTML tags
+    html-no-space-in-tag: warning
+
+    # Disallow title attribute (use aria-label instead)
+    html-no-title-attribute: warning
+
+    # Disallow underscores in attribute names
+    html-no-underscores-in-attribute-names: warning
+
+    # Require lowercase tag names
+    html-tag-name-lowercase: warning
