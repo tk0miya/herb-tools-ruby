@@ -74,9 +74,9 @@ Rules are grouped by theme:
 ---
 
 ### Task 12.3: `erb-no-extra-whitespace-inside-tags`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow extra whitespace inside ERB tag delimiters.
 
