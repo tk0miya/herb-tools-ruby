@@ -13,6 +13,34 @@ module Herb
 
       # @rbs override
       def visit_whitespace_node: ...
+
+      # @rbs override
+      def visit_html_element_node: ...
+
+      # @rbs override
+      def visit_html_open_tag_node: ...
+
+      # Unlike open tags, close tags can have WhitespaceNode children on both
+      # sides of tag_name (e.g. `</ div >`). Since tag_name is a Token and not
+      # part of child_nodes, we must split children around its position rather
+      # than using super, which would place all children after the tag name.
+      #
+      # @rbs override
+      def visit_html_close_tag_node: ...
+
+      private
+
+      # Return child nodes that end at or before the token's start position.
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      # @rbs token: Herb::Token
+      def nodes_before_token: (Array[Herb::AST::Node] children, Herb::Token token) -> Array[Herb::AST::Node]
+
+      # Return child nodes that start at or after the token's end position.
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      # @rbs token: Herb::Token
+      def nodes_after_token: (Array[Herb::AST::Node] children, Herb::Token token) -> Array[Herb::AST::Node]
     end
   end
 end
