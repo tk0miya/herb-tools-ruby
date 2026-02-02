@@ -221,10 +221,10 @@ Bug reports and pull requests are welcome on GitHub.
 
 ### Implementation
 
-- [ ] Create `.herb.yml.sample` in project root
-  - [ ] Example rule configuration usable in MVP
-  - [ ] Add explanations as comments for each item
-  - [ ] Provide practical configuration examples
+- [x] Create `.herb.yml.sample` in project root
+  - [x] Example rule configuration usable in MVP
+  - [x] Add explanations as comments for each item
+  - [x] Provide practical configuration examples
 
 ### Sample Contents
 
@@ -270,11 +270,11 @@ bundle exec exe/herb-lint
 
 ## Phase 7 Completion Criteria
 
-- [ ] All tasks (7.1–7.3) completed
-- [ ] All integration tests pass
-- [ ] README.md is complete and accurate
-- [ ] Sample configuration file is verified to work
-- [ ] Overall documentation is complete
+- [x] All tasks (7.1–7.3) completed
+- [x] All integration tests pass
+- [x] README.md is complete and accurate
+- [x] Sample configuration file is verified to work
+- [x] Overall documentation is complete
 
 ---
 
@@ -284,13 +284,13 @@ After Phase 7 is complete, **herb-tools-ruby MVP** is finished!
 
 ### Final Verification Checklist
 
-- [ ] 3 gems (herb-config, herb-core, herb-lint) can be built
-- [ ] All unit tests pass
-- [ ] Integration tests pass
-- [ ] Can lint actual ERB files with `herb-lint` command
-- [ ] 2 or more rules work
-- [ ] Can load configuration from configuration file (.herb.yml)
-- [ ] README.md is complete
+- [x] 3 gems (herb-config, herb-core, herb-lint) can be built
+- [x] All unit tests pass
+- [x] Integration tests pass
+- [x] Can lint actual ERB files with `herb-lint` command
+- [x] 2 or more rules work
+- [x] Can load configuration from configuration file (.herb.yml)
+- [x] README.md is complete
 
 ### Next Steps (Post-MVP)
 
