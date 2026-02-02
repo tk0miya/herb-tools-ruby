@@ -29,6 +29,7 @@ module Herb
           Rules::HtmlAvoidBothDisabledAndAriaDisabled,
           Rules::HtmlBodyOnlyElements,
           Rules::HtmlBooleanAttributesNoValue,
+          Rules::HtmlHeadOnlyElements,
           Rules::HtmlIframeHasTitle,
           Rules::HtmlImgRequireAlt,
           Rules::HtmlInputRequireAutocomplete,
