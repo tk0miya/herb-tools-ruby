@@ -73,6 +73,23 @@ module Herb
         write(node.tag_closing.value)
       end
 
+      # -- ERB leaf nodes --
+
+      # @rbs override
+      def visit_erb_content_node(node)
+        print_erb_tag(node)
+      end
+
+      # @rbs override
+      def visit_erb_end_node(node)
+        print_erb_tag(node)
+      end
+
+      # @rbs override
+      def visit_erb_yield_node(node)
+        print_erb_tag(node)
+      end
+
       # -- HTML structure nodes --
 
       # @rbs override
@@ -105,6 +122,16 @@ module Herb
       end
 
       private
+
+      # Write an ERB tag by emitting its opening delimiter, content, and
+      # closing delimiter tokens.
+      #
+      # @rbs node: Herb::AST::Node
+      def print_erb_tag(node) #: void
+        write(node.tag_opening.value)
+        write(node.content.value)
+        write(node.tag_closing.value)
+      end
 
       # Return child nodes that end at or before the token's start position.
       #

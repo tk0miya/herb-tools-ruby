@@ -231,17 +231,19 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 
 ### Task 14.9: IdentityPrinter — ERB Leaf Nodes
 
-- [ ] `print_erb_tag` — private helper: write `tag_opening` + `content` + `tag_closing`
-- [ ] `visit_erb_content_node` — call `print_erb_tag`
-- [ ] `visit_erb_end_node` — call `print_erb_tag`
-- [ ] `visit_erb_yield_node` — call `print_erb_tag`
+**Status:** ✅
+
+- [x] `print_erb_tag` — private helper: write `tag_opening` + `content` + `tag_closing`
+- [x] `visit_erb_content_node` — call `print_erb_tag`
+- [x] `visit_erb_end_node` — call `print_erb_tag`
+- [x] `visit_erb_yield_node` — call `print_erb_tag`
 
 ### Verification
 
-- [ ] Round-trip test: `<%= user.name %>`
-- [ ] Round-trip test: `<%# comment %>`
-- [ ] Round-trip test: `<%= yield %>`
-- [ ] Round-trip test: `<%- trimmed -%>` (trim markers)
+- [x] Round-trip test: `<%= user.name %>`
+- [x] Round-trip test: `<%# comment %>`
+- [x] Round-trip test: `<%= yield %>`
+- [x] Round-trip test: `<%- trimmed -%>` (trim markers)
 
 ```bash
 cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
@@ -332,12 +334,12 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 | 14.6 | C | IdentityPrinter — HTML Structure Nodes | ✅ |
 | 14.7 | C | IdentityPrinter — HTML Attribute Nodes | ✅ |
 | 14.8 | C | IdentityPrinter — HTML Comment, Doctype, XML, CDATA | ✅ |
-| 14.9 | D | IdentityPrinter — ERB Leaf Nodes | 📋 |
+| 14.9 | D | IdentityPrinter — ERB Leaf Nodes | ✅ |
 | 14.10 | D | IdentityPrinter — ERB Control Flow (Basic) | 📋 |
 | 14.11 | D | IdentityPrinter — ERB Control Flow (Loop/Case) | 📋 |
 | 14.12 | D | IdentityPrinter — ERB Begin/Rescue/Ensure | 📋 |
 
-**Total: 12 tasks** (6 complete, 6 remaining)
+**Total: 12 tasks** (7 complete, 5 remaining)
 
 ## Related Documents
 
