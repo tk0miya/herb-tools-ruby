@@ -4,7 +4,7 @@ module Herb
   module Printer
     # Lossless round-trip printer that reconstructs the original source code
     # exactly from an AST produced by Herb.parse.
-    class IdentityPrinter < Base # rubocop:disable Metrics/ClassLength
+    class IdentityPrinter < Base
       # -- Leaf nodes --
 
       # @rbs override
@@ -73,48 +73,40 @@ module Herb
         write(node.tag_closing.value)
       end
 
-      # -- ERB leaf nodes --
+      # -- ERB nodes --
+      #
+      # All ERB nodes share the same structure: tag_opening, content, and
+      # tag_closing tokens that are not part of child_nodes. The print_erb_tag
+      # helper writes these three tokens, and super visits any child nodes.
 
-      # @rbs override
-      def visit_erb_content_node(node)
-        print_erb_tag(node)
+      %i[
+        begin block case case_match content else end ensure
+        for if in rescue unless until when while yield
+      ].each do |type|
+        define_method(:"visit_erb_#{type}_node") do |node|
+          print_erb_tag(node)
+          super(node)
+        end
       end
 
-      # @rbs override
-      def visit_erb_end_node(node)
-        print_erb_tag(node)
-      end
-
-      # @rbs override
-      def visit_erb_yield_node(node)
-        print_erb_tag(node)
-      end
-
-      # -- ERB control flow nodes --
-
-      # @rbs override
-      def visit_erb_block_node(node)
-        print_erb_tag(node)
-        super
-      end
-
-      # @rbs override
-      def visit_erb_if_node(node)
-        print_erb_tag(node)
-        super
-      end
-
-      # @rbs override
-      def visit_erb_else_node(node)
-        print_erb_tag(node)
-        super
-      end
-
-      # @rbs override
-      def visit_erb_unless_node(node)
-        print_erb_tag(node)
-        super
-      end
+      # @rbs!
+      #   def visit_erb_content_node: ...
+      #   def visit_erb_end_node: ...
+      #   def visit_erb_yield_node: ...
+      #   def visit_erb_begin_node: ...
+      #   def visit_erb_block_node: ...
+      #   def visit_erb_case_node: ...
+      #   def visit_erb_case_match_node: ...
+      #   def visit_erb_else_node: ...
+      #   def visit_erb_ensure_node: ...
+      #   def visit_erb_for_node: ...
+      #   def visit_erb_if_node: ...
+      #   def visit_erb_in_node: ...
+      #   def visit_erb_rescue_node: ...
+      #   def visit_erb_unless_node: ...
+      #   def visit_erb_until_node: ...
+      #   def visit_erb_when_node: ...
+      #   def visit_erb_while_node: ...
 
       # -- HTML structure nodes --
 

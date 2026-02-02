@@ -276,20 +276,22 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 
 ### Task 14.11: IdentityPrinter — ERB Control Flow (Loop/Case)
 
-- [ ] `visit_erb_while_node` — `print_erb_tag` + visit `statements` + visit `end_node`
-- [ ] `visit_erb_until_node` — same pattern
-- [ ] `visit_erb_for_node` — same pattern
-- [ ] `visit_erb_case_node` — `print_erb_tag` + visit `children` + visit `conditions` + visit `else_clause` + visit `end_node`
-- [ ] `visit_erb_case_match_node` — same pattern as case
-- [ ] `visit_erb_when_node` — `print_erb_tag` + visit `statements`
-- [ ] `visit_erb_in_node` — same pattern as when
+**Status:** ✅
+
+- [x] `visit_erb_while_node` — `print_erb_tag` + visit `statements` + visit `end_node`
+- [x] `visit_erb_until_node` — same pattern
+- [x] `visit_erb_for_node` — same pattern
+- [x] `visit_erb_case_node` — `print_erb_tag` + visit `children` + visit `conditions` + visit `else_clause` + visit `end_node`
+- [x] `visit_erb_case_match_node` — same pattern as case
+- [x] `visit_erb_when_node` — `print_erb_tag` + visit `statements`
+- [x] `visit_erb_in_node` — same pattern as when
 
 ### Verification
 
-- [ ] Round-trip test: `<% while running %><%= status %><% end %>`
-- [ ] Round-trip test: `<% until done %><%= progress %><% end %>`
-- [ ] Round-trip test: `<% for item in list %><%= item %><% end %>`
-- [ ] Round-trip test: `<% case x %><% when 1 %>one<% when 2 %>two<% else %>other<% end %>`
+- [x] Round-trip test: `<% while running %><%= status %><% end %>`
+- [x] Round-trip test: `<% until done %><%= progress %><% end %>`
+- [x] Round-trip test: `<% for item in list %><%= item %><% end %>`
+- [x] Round-trip test: `<% case x %><% when 1 %>one<% when 2 %>two<% else %>other<% end %>`
 
 ```bash
 cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
@@ -299,16 +301,18 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 
 ### Task 14.12: IdentityPrinter — ERB Begin/Rescue/Ensure
 
-- [ ] `visit_erb_begin_node` — `print_erb_tag` + visit `statements` + visit `rescue_clause` + visit `else_clause` + visit `ensure_clause` + visit `end_node`
-- [ ] `visit_erb_rescue_node` — `print_erb_tag` + visit `statements` + visit `subsequent`
-- [ ] `visit_erb_ensure_node` — `print_erb_tag` + visit `statements`
+**Status:** ✅
+
+- [x] `visit_erb_begin_node` — `print_erb_tag` + visit `statements` + visit `rescue_clause` + visit `else_clause` + visit `ensure_clause` + visit `end_node`
+- [x] `visit_erb_rescue_node` — `print_erb_tag` + visit `statements` + visit `subsequent`
+- [x] `visit_erb_ensure_node` — `print_erb_tag` + visit `statements`
 
 ### Verification
 
-- [ ] Round-trip test: `<% begin %><%= risky %><% rescue %><%= fallback %><% end %>`
-- [ ] Round-trip test: `<% begin %><%= x %><% rescue => e %><%= e %><% ensure %><%= cleanup %><% end %>`
-- [ ] Round-trip test: chained rescue (`rescue A ... rescue B`)
-- [ ] Comprehensive round-trip tests with mixed HTML+ERB templates
+- [x] Round-trip test: `<% begin %><%= risky %><% rescue %><%= fallback %><% end %>`
+- [x] Round-trip test: `<% begin %><%= x %><% rescue => e %><%= e %><% ensure %><%= cleanup %><% end %>`
+- [x] Round-trip test: chained rescue (`rescue A ... rescue B`)
+- [x] Comprehensive round-trip tests with mixed HTML+ERB templates
 
 ```bash
 cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
@@ -318,11 +322,11 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 
 ## Completion Criteria
 
-- [ ] All tasks (14.1–14.12) completed
-- [ ] CI passes for herb-printer (spec, rubocop, steep)
-- [ ] `./bin/rspec` passes all tests
-- [ ] `gem build herb-printer.gemspec` succeeds
-- [ ] Round-trip property holds: `IdentityPrinter.print(Herb.parse(source)) == source` for all test cases
+- [x] All tasks (14.1–14.12) completed
+- [x] CI passes for herb-printer (spec, rubocop, steep)
+- [x] `./bin/rspec` passes all tests
+- [x] `gem build herb-printer.gemspec` succeeds
+- [x] Round-trip property holds: `IdentityPrinter.print(Herb.parse(source)) == source` for all test cases
 
 ## Summary
 
@@ -331,17 +335,17 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 | 14.1 | A | Create gem skeleton | ✅ |
 | 14.2 | A | Add herb-printer to CI | ✅ |
 | 14.3 | A | Implement PrintContext | ✅ |
-| 14.4 | B | Implement Base Printer | 📋 |
-| 14.5 | B | IdentityPrinter — HTML Leaf Nodes | 📋 |
+| 14.4 | B | Implement Base Printer | ✅ |
+| 14.5 | B | IdentityPrinter — HTML Leaf Nodes | ✅ |
 | 14.6 | C | IdentityPrinter — HTML Structure Nodes | ✅ |
 | 14.7 | C | IdentityPrinter — HTML Attribute Nodes | ✅ |
 | 14.8 | C | IdentityPrinter — HTML Comment, Doctype, XML, CDATA | ✅ |
 | 14.9 | D | IdentityPrinter — ERB Leaf Nodes | ✅ |
 | 14.10 | D | IdentityPrinter — ERB Control Flow (Basic) | ✅ |
-| 14.11 | D | IdentityPrinter — ERB Control Flow (Loop/Case) | 📋 |
-| 14.12 | D | IdentityPrinter — ERB Begin/Rescue/Ensure | 📋 |
+| 14.11 | D | IdentityPrinter — ERB Control Flow (Loop/Case) | ✅ |
+| 14.12 | D | IdentityPrinter — ERB Begin/Rescue/Ensure | ✅ |
 
-**Total: 12 tasks** (8 complete, 4 remaining)
+**Total: 12 tasks** (12 complete, 0 remaining)
 
 ## Related Documents
 
