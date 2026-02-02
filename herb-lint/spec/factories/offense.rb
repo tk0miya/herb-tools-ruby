@@ -5,6 +5,7 @@ FactoryBot.define do
     rule_name { "test-rule" }
     message { "Test message" }
     severity { "error" }
+    autofix_context { nil }
 
     transient do
       start_line { 1 }
@@ -17,6 +18,6 @@ FactoryBot.define do
       build(:location, start_line:, start_column:, end_line:, end_column:)
     end
 
-    initialize_with { new(rule_name:, message:, severity:, location:) }
+    initialize_with { new(rule_name:, message:, severity:, location:, autofix_context:) }
   end
 end
