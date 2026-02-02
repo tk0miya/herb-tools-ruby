@@ -48,9 +48,9 @@ This phase implements the remaining 2 rules from the TypeScript reference implem
 ---
 
 ## Task 13.2: `parser-no-errors`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Report parser errors as lint offenses. When the Herb parser encounters syntax errors in ERB templates, surface them as lint violations so users see all issues in one report.
 

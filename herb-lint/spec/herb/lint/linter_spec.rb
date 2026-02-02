@@ -78,12 +78,12 @@ RSpec.describe Herb::Lint::Linter do
       let(:rules) { [Herb::Lint::Rules::HtmlImgRequireAlt.new] }
       let(:source) { "<%= unclosed" }
 
-      it "returns a LintResult with parse-error offenses" do
+      it "returns a LintResult with parser-no-errors offenses" do
         expect(subject).to be_a(Herb::Lint::LintResult)
         expect(subject.file_path).to eq(file_path)
         expect(subject.source).to eq(source)
         expect(subject.offenses).not_to be_empty
-        expect(subject.offenses.first.rule_name).to eq("parse-error")
+        expect(subject.offenses.first.rule_name).to eq("parser-no-errors")
         expect(subject.offenses.first.severity).to eq("error")
       end
     end

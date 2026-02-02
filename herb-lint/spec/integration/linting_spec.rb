@@ -48,7 +48,7 @@ RSpec.describe "End-to-end linting integration" do # rubocop:disable RSpec/Descr
       subject { run_cli(fixture_path("parse_error.html.erb")) }
 
       it "handles parse errors" do
-        expect(subject[:stdout]).to include("parse-error")
+        expect(subject[:stdout]).to include("parser-no-errors")
       end
     end
   end

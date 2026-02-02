@@ -1,0 +1,36 @@
+# Generated from lib/herb/lint/rules/parser_no_errors.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Rule that reports parser errors as lint offenses.
+      #
+      # When the Herb parser encounters syntax errors in ERB templates,
+      # this rule surfaces them as lint violations so users see all issues
+      # in one report.
+      #
+      # This rule is special in that it doesn't implement a check method.
+      # Instead, the Linter class directly creates offenses for parser errors
+      # using this rule's metadata.
+      #
+      # Examples of parser errors:
+      #   - Unclosed ERB tags: <%= unclosed
+      #   - Unclosed HTML tags: <div><span>unclosed
+      #   - Malformed ERB syntax
+      class ParserNoErrors < Base
+        def self.rule_name: () -> String
+
+        def self.description: () -> String
+
+        def self.default_severity: () -> String
+
+        # This method is not called by the Linter.
+        # Parser errors are detected and reported directly by the Linter class
+        # before normal rule checking begins.
+        #
+        # @rbs override
+        def check: ...
+      end
+    end
+  end
+end

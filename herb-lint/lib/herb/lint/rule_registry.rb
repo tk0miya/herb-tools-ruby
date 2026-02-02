@@ -48,7 +48,8 @@ module Herb
           Rules::HtmlNoPositiveTabIndex,
           Rules::HtmlNoSelfClosing,
           Rules::HtmlNoSpaceInTag,
-          Rules::HtmlTagNameLowercase
+          Rules::HtmlTagNameLowercase,
+          Rules::ParserNoErrors
         ].freeze
       end
       # rubocop:enable Metrics/MethodLength
