@@ -161,5 +161,77 @@ RSpec.describe Herb::Printer::IdentityPrinter do
 
       it { is_expected.to eq(source) }
     end
+
+    context "when input is an ERB while loop" do
+      let(:source) { "<% while running %><%= status %><% end %>" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is an ERB until loop" do
+      let(:source) { "<% until done %><%= progress %><% end %>" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is an ERB for loop" do
+      let(:source) { "<% for item in list %><%= item %><% end %>" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is an ERB case/when" do
+      let(:source) { "<% case x %><% when 1 %>one<% when 2 %>two<% else %>other<% end %>" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is an ERB case/in (pattern matching)" do
+      let(:source) { "<% case x %><% in 1 %>one<% in 2 %>two<% else %>other<% end %>" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is an ERB begin/rescue" do
+      let(:source) { "<% begin %><%= risky %><% rescue %><%= fallback %><% end %>" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is an ERB begin/rescue/ensure" do
+      let(:source) { "<% begin %><%= x %><% rescue => e %><%= e %><% ensure %><%= cleanup %><% end %>" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is an ERB begin with chained rescue" do
+      let(:source) do
+        "<% begin %><%= x %><% rescue ArgumentError %><%= a %>" \
+          "<% rescue StandardError %><%= b %><% end %>"
+      end
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is a mixed HTML and ERB template" do
+      let(:source) do
+        <<~ERB.chomp
+          <div class="container">
+            <% if logged_in? %>
+              <h1>Welcome</h1>
+              <% begin %>
+                <%= render_profile %>
+              <% rescue => e %>
+                <p>Error: <%= e.message %></p>
+              <% end %>
+            <% else %>
+              <p>Please log in</p>
+            <% end %>
+          </div>
+        ERB
+      end
+
+      it { is_expected.to eq(source) }
+    end
   end
 end
