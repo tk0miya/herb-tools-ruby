@@ -17,6 +17,7 @@ module Herb
           Rules::ErbNoExtraWhitespaceInsideTags,
           Rules::ErbNoOutputControlFlow,
           Rules::ErbPreferImageTagHelper,
+          Rules::ErbRequireTrailingNewline,
           Rules::ErbRequireWhitespaceInsideTags,
           Rules::ErbRightTrim,
           Rules::HerbDisableCommentMalformed,

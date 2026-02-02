@@ -247,9 +247,9 @@ Rules are grouped by theme:
 ---
 
 ### Task 12.10: `erb-require-trailing-newline`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Require a trailing newline at the end of the file.
 
