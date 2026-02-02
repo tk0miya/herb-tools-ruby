@@ -5,7 +5,7 @@ require_relative "../../../spec_helper"
 RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
   subject { described_class.new.check(document, context) }
 
-  let(:document) { Herb.parse(source) }
+  let(:document) { Herb.parse(source, track_whitespace: true) }
   let(:rule_registry) do
     registry = Herb::Lint::RuleRegistry.new
     [

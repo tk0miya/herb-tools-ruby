@@ -20,7 +20,7 @@ RSpec.describe Herb::Lint::Rules::VisitorRule do
   end
 
   describe "#check" do
-    let(:document) { Herb.parse(template) }
+    let(:document) { Herb.parse(template, track_whitespace: true) }
     let(:context) { instance_double(Object) }
 
     context "when no visit methods are overridden" do
@@ -76,7 +76,8 @@ RSpec.describe Herb::Lint::Rules::VisitorRule do
 
           def visit_html_element_node(node)
             if node.tag_name.value == "img"
-              has_alt = node.open_tag.children.any? do |attr|
+              attrs = node.open_tag.children.select { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+              has_alt = attrs.any? do |attr|
                 attr.name.children.first.content == "alt"
               end
               add_offense(message: "Missing alt attribute", location: node.location) unless has_alt

@@ -8,7 +8,7 @@ RSpec.describe Herb::Lint::Context do
   let(:source) { '<img src="test.png">' }
   let(:config) { Herb::Config::LinterConfig.new(config_hash) }
   let(:config_hash) { {} }
-  let(:directives) { Herb::Lint::DirectiveParser.parse(Herb.parse(source), source) }
+  let(:directives) { Herb::Lint::DirectiveParser.parse(Herb.parse(source, track_whitespace: true), source) }
   let(:rule_registry) { nil }
 
   describe "#file_path" do
