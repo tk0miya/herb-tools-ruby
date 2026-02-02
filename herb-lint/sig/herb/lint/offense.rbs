@@ -12,11 +12,17 @@ module Herb
 
       attr_reader location: Herb::Location
 
+      attr_reader autofix_context: AutofixContext?
+
       # @rbs rule_name: String
       # @rbs message: String
       # @rbs severity: String
       # @rbs location: Herb::Location
-      def initialize: (rule_name: String, message: String, severity: String, location: Herb::Location) -> void
+      # @rbs autofix_context: AutofixContext? -- optional autofix context for fixable offenses
+      def initialize: (rule_name: String, message: String, severity: String, location: Herb::Location, ?autofix_context: AutofixContext?) -> void
+
+      # Returns true when the offense can be automatically fixed.
+      def fixable?: () -> bool
 
       # Returns the starting line number of the offense.
       def line: () -> Integer

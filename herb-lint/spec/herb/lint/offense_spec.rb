@@ -50,4 +50,56 @@ RSpec.describe Herb::Lint::Offense do
       expect(subject).to eq(25)
     end
   end
+
+  describe "#fixable?" do
+    context "when autofix_context is present" do
+      subject do
+        described_class.new(
+          rule_name: "html-img-require-alt",
+          message: "Image missing alt attribute",
+          severity: "error",
+          location: build(:location),
+          autofix_context: Herb::Lint::AutofixContext.new(
+            node_location: build(:location),
+            node_type: "HTMLElementNode",
+            rule_class: Herb::Lint::Rules::HtmlImgRequireAlt
+          )
+        )
+      end
+
+      it "returns true" do
+        expect(subject.fixable?).to be true
+      end
+    end
+
+    context "when autofix_context is nil" do
+      subject do
+        described_class.new(
+          rule_name: "html-img-require-alt",
+          message: "Image missing alt attribute",
+          severity: "error",
+          location: build(:location)
+        )
+      end
+
+      it "returns false" do
+        expect(subject.fixable?).to be false
+      end
+    end
+  end
+
+  describe "backward compatibility" do
+    subject { described_class.new(rule_name:, message:, severity:, location:) }
+
+    let(:rule_name) { "test-rule" }
+    let(:message) { "Test message" }
+    let(:severity) { "warning" }
+    let(:location) { build(:location) }
+
+    it "creates offense without autofix_context" do
+      expect(subject.rule_name).to eq("test-rule")
+      expect(subject.autofix_context).to be_nil
+      expect(subject.fixable?).to be false
+    end
+  end
 end
