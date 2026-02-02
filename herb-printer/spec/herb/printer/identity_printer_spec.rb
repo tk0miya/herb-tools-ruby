@@ -83,5 +83,23 @@ RSpec.describe Herb::Printer::IdentityPrinter do
 
       it { is_expected.to eq(source) }
     end
+
+    context "when input is an HTML comment" do
+      let(:source) { "<!-- comment -->" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is a multiline HTML comment" do
+      let(:source) { "<!-- multi\nline\ncomment -->" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is a DOCTYPE" do
+      let(:source) { "<!DOCTYPE html>" }
+
+      it { is_expected.to eq(source) }
+    end
   end
 end

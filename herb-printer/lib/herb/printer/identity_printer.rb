@@ -43,6 +43,36 @@ module Herb
         write(node.close_quote.value) if node.close_quote
       end
 
+      # -- HTML comment, doctype, XML declaration, CDATA --
+
+      # @rbs override
+      def visit_html_comment_node(node)
+        write(node.comment_start.value)
+        super
+        write(node.comment_end.value)
+      end
+
+      # @rbs override
+      def visit_html_doctype_node(node)
+        write(node.tag_opening.value)
+        super
+        write(node.tag_closing.value)
+      end
+
+      # @rbs override
+      def visit_xml_declaration_node(node)
+        write(node.tag_opening.value)
+        super
+        write(node.tag_closing.value)
+      end
+
+      # @rbs override
+      def visit_cdata_node(node)
+        write(node.tag_opening.value)
+        super
+        write(node.tag_closing.value)
+      end
+
       # -- HTML structure nodes --
 
       # @rbs override
