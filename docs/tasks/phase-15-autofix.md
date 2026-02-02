@@ -38,19 +38,19 @@ This phase implements the `--fix` / `--fix-unsafely` feature for herb-lint: auto
 
 **Location:** `herb-lint/lib/herb/lint/autofix_context.rb`, `herb-lint/lib/herb/lint/offense.rb`, `herb-lint/lib/herb/lint/lint_result.rb`, `herb-lint/lib/herb/lint/linter.rb`
 
-- [ ] Implement `AutofixContext` Data class
-  - [ ] `node` (`Herb::AST::Node`) — direct reference to the offending AST node
-  - [ ] `rule_class` (`Class`) — rule class that can fix this offense
-- [ ] Update `Offense` to accept optional `autofix_context`
-  - [ ] Add `autofix_context` attribute (default: `nil`)
-  - [ ] Add `fixable?` method — returns `true` when `autofix_context` is present
-- [ ] Update `LintResult` to accept optional `parse_result`
-  - [ ] Add `parse_result` attribute (default: `nil`)
-  - [ ] `nil` when parsing fails (parse error offenses are reported instead)
-- [ ] Update `Linter#lint` to include `parse_result` in `LintResult`
-- [ ] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
-- [ ] Add unit tests
-- [ ] Generate RBS types
+- [x] Implement `AutofixContext` Data class
+  - [x] `node` (`Herb::AST::Node`) — direct reference to the offending AST node
+  - [x] `rule_class` (`Class`) — rule class that can fix this offense
+- [x] Update `Offense` to accept optional `autofix_context`
+  - [x] Add `autofix_context` attribute (default: `nil`)
+  - [x] Add `fixable?` method — returns `true` when `autofix_context` is present
+- [x] Update `LintResult` to accept optional `parse_result`
+  - [x] Add `parse_result` attribute (default: `nil`)
+  - [x] `nil` when parsing fails (parse error offenses are reported instead)
+- [x] Update `Linter#lint` to include `parse_result` in `LintResult`
+- [x] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
+- [x] Add unit tests
+- [x] Generate RBS types
 
 **Data Structure:**
 
@@ -79,16 +79,16 @@ end
 
 **Location:** `herb-lint/lib/herb/lint/rules/rule_methods.rb`
 
-- [ ] Add `autocorrectable?` class method (default: `false`)
-- [ ] Add `unsafe_autocorrectable?` class method (default: `false`)
-- [ ] Add `add_offense_with_autofix` instance method
-  - [ ] Creates `AutofixContext` from the given node and current rule class
-  - [ ] Delegates to `add_offense` with the context attached
-- [ ] Add `autofix` instance method (default: returns `false`)
-  - [ ] Signature: `autofix(node, parse_result) -> bool`
-  - [ ] Override in fixable rules to perform AST mutation
-- [ ] Add unit tests
-- [ ] Generate RBS types
+- [x] Add `autocorrectable?` class method (default: `false`)
+- [x] Add `unsafe_autocorrectable?` class method (default: `false`)
+- [x] Add `add_offense_with_autofix` instance method
+  - [x] Creates `AutofixContext` from the given node and current rule class
+  - [x] Delegates to `add_offense` with the context attached
+- [x] Add `autofix` instance method (default: returns `false`)
+  - [x] Signature: `autofix(node, parse_result) -> bool`
+  - [x] Override in fixable rules to perform AST mutation
+- [x] Add unit tests
+- [x] Generate RBS types
 
 **Interface:**
 
@@ -132,14 +132,13 @@ end
 
 With the single-parse design, offenses carry direct node references. `NodeLocator.find` (re-locating by location/type) is no longer needed. Instead, `NodeLocator` provides parent lookup by object identity — autofix methods need the parent node to perform array-based replacement.
 
-- [ ] Implement `NodeLocator` class extending `Herb::Visitor`
-  - [ ] `self.find_parent(parse_result, target_node)` — find the parent of a given node
-  - [ ] `self.find_with_parent(parse_result, target_node)` — find node and its parent (returns `[node, parent]`)
-  - [ ] Private `match?(node)` — compare by object identity (`node.equal?(target_node)`)
-  - [ ] Track `@parent_stack` during traversal
-- [ ] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
-- [ ] Add unit tests
-- [ ] Generate RBS types
+- [x] Implement `NodeLocator` class extending `Herb::Visitor`
+  - [x] `self.find_parent(parse_result, target_node)` — find the parent of a given node
+  - [x] Override `visit_child_nodes` — check identity via `equal?`, delegate traversal to `super`
+  - [x] Track `@parent_stack` during traversal
+- [x] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
+- [x] Add unit tests
+- [x] Generate RBS types
 
 **Matching Logic:**
 
