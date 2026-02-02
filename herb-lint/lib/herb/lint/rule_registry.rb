@@ -27,6 +27,7 @@ module Herb
           Rules::HtmlAttributeEqualsSpacing,
           Rules::HtmlAttributeValuesRequireQuotes,
           Rules::HtmlAvoidBothDisabledAndAriaDisabled,
+          Rules::HtmlBodyOnlyElements,
           Rules::HtmlBooleanAttributesNoValue,
           Rules::HtmlIframeHasTitle,
           Rules::HtmlImgRequireAlt,
