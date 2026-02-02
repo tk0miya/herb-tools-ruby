@@ -101,5 +101,29 @@ RSpec.describe Herb::Printer::IdentityPrinter do
 
       it { is_expected.to eq(source) }
     end
+
+    context "when input is an ERB output tag" do
+      let(:source) { "<%= user.name %>" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is an ERB comment tag" do
+      let(:source) { "<%# comment %>" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is an ERB yield tag" do
+      let(:source) { "<%= yield %>" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is an ERB tag with trim markers" do
+      let(:source) { "<%- trimmed -%>" }
+
+      it { is_expected.to eq(source) }
+    end
   end
 end
