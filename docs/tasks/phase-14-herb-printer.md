@@ -165,17 +165,19 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 
 ### Task 14.6: IdentityPrinter — HTML Structure Nodes
 
-- [ ] `visit_html_open_tag_node` — write `tag_opening` + `tag_name`, visit children, write `tag_closing`
-- [ ] `visit_html_close_tag_node` — write `tag_opening`, split children around `tag_name` token, write `tag_closing`
-- [ ] `visit_html_element_node` — enter tag context, visit `open_tag` + `body` + `close_tag`, exit tag context
-- [ ] `split_children_around_token` — private helper using location-based comparison
+**Status:** ✅
+
+- [x] `visit_html_open_tag_node` — write `tag_opening` + `tag_name`, visit children, write `tag_closing`
+- [x] `visit_html_close_tag_node` — write `tag_opening`, split children around `tag_name` token, write `tag_closing`
+- [x] `visit_html_element_node` — enter tag context, visit `open_tag` + `body` + `close_tag`, exit tag context
+- [x] `split_children_around_token` — private helper using location-based comparison
 
 ### Verification
 
-- [ ] Round-trip test: `<div></div>`
-- [ ] Round-trip test: `<div>Hello</div>`
-- [ ] Round-trip test: `<br>` (void element)
-- [ ] Round-trip test: `<img src="photo.jpg">` (void with attribute)
+- [x] Round-trip test: `<div></div>`
+- [x] Round-trip test: `<div>Hello</div>`
+- [x] Round-trip test: `<br>` (void element)
+- [x] Round-trip test: `<img src="photo.jpg">` (void with attribute — pending attribute visitors from Task 14.7)
 
 ```bash
 cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
@@ -323,7 +325,7 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 | 14.3 | A | Implement PrintContext | ✅ |
 | 14.4 | B | Implement Base Printer | 📋 |
 | 14.5 | B | IdentityPrinter — HTML Leaf Nodes | 📋 |
-| 14.6 | C | IdentityPrinter — HTML Structure Nodes | 📋 |
+| 14.6 | C | IdentityPrinter — HTML Structure Nodes | ✅ |
 | 14.7 | C | IdentityPrinter — HTML Attribute Nodes | 📋 |
 | 14.8 | C | IdentityPrinter — HTML Comment, Doctype, XML, CDATA | 📋 |
 | 14.9 | D | IdentityPrinter — ERB Leaf Nodes | 📋 |
@@ -331,7 +333,7 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 | 14.11 | D | IdentityPrinter — ERB Control Flow (Loop/Case) | 📋 |
 | 14.12 | D | IdentityPrinter — ERB Begin/Rescue/Ensure | 📋 |
 
-**Total: 12 tasks** (3 complete, 9 remaining)
+**Total: 12 tasks** (4 complete, 8 remaining)
 
 ## Related Documents
 
