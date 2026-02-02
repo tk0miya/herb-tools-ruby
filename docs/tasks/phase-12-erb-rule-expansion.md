@@ -48,9 +48,9 @@ Rules are grouped by theme:
 ---
 
 ### Task 12.2: `erb-no-extra-newline`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow extra blank lines inside ERB tags.
 

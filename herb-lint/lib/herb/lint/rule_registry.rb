@@ -13,6 +13,7 @@ module Herb
         @builtin_rules ||= [
           Rules::ErbCommentSyntax,
           Rules::ErbNoEmptyTags,
+          Rules::ErbNoExtraNewline,
           Rules::HerbDisableCommentMalformed,
           Rules::HerbDisableCommentMissingRules,
           Rules::HerbDisableCommentNoDuplicateRules,

@@ -1,0 +1,44 @@
+# Generated from lib/herb/lint/rules/erb_no_extra_newline.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Rule that disallows extra blank lines inside ERB tags.
+      #
+      # ERB tags should not contain leading or trailing blank lines,
+      # or multiple consecutive blank lines within the content.
+      #
+      # Good:
+      #   <% value %>
+      #   <% if condition
+      #        do_something
+      #      end %>
+      #
+      # Bad:
+      #   <%
+      #
+      #     value
+      #
+      #   %>
+      #   <% value
+      #
+      #
+      #      another %>
+      class ErbNoExtraNewline < VisitorRule
+        def self.rule_name: () -> String
+
+        def self.description: () -> String
+
+        def self.default_severity: () -> String
+
+        # @rbs override
+        def visit_erb_content_node: ...
+
+        private
+
+        # @rbs content: String
+        def extra_newlines?: (String content) -> bool
+      end
+    end
+  end
+end
