@@ -4,9 +4,13 @@ Detailed design document for the herb-lint `--fix` / `--fix-unsafely` feature: a
 
 ## Overview
 
-The autofix feature applies automatic corrections to ERB templates by mutating the AST and re-serializing it via `IdentityPrinter`. When a fixable rule detects an offense, it also provides an `autofix` method that creates replacement AST nodes. The `AutoFixer` orchestrates autofix application: it re-parses the source with `track_whitespace: true`, relocates offending nodes by location, invokes each rule's `autofix`, and serializes the modified AST back to source code.
+The autofix feature applies automatic corrections to ERB templates by mutating the AST and re-serializing it via `IdentityPrinter`. When a fixable rule detects an offense, it also provides an `autofix` method that creates replacement AST nodes. The `AutoFixer` orchestrates autofix application: it receives the `ParseResult` from the lint phase, invokes each rule's `autofix` with the offending node (stored as a direct reference in the offense), and serializes the modified AST back to source code.
 
 This design follows the TypeScript reference implementation in `@herb-tools/linter`, which uses the same AST mutation + IdentityPrinter approach.
+
+### Single-Parse Design
+
+The linting phase already parses with `track_whitespace: true`, producing an AST suitable for lossless round-trip serialization. The autofix phase reuses this same `ParseResult` rather than re-parsing the source. This eliminates the need to relocate nodes by location after re-parsing — offenses carry direct references to the original AST nodes detected during linting.
 
 ## Reference Implementation
 
@@ -16,7 +20,7 @@ The TypeScript reference is `@herb-tools/linter` in the [herb repository](https:
 |-----------|------|
 | `Linter.autofix()` | `Herb::Lint::AutoFixer` |
 | `IdentityPrinter` (in `@herb-tools/printer`) | `Herb::Printer::IdentityPrinter` (in herb-printer gem) |
-| `findNodeByLocation()` | `Herb::Lint::NodeLocator` |
+| `findNodeByLocation()` | `Herb::Lint::NodeLocator` (parent lookup only; node re-finding not needed) |
 | `Mutable<T>` (type-level readonly removal) | Not needed (node replacement via public constructors) |
 | `autofixContext` on offense | `autofix_context` on `Offense` |
 | `static autocorrectable = true` on rule | `self.autocorrectable?` on rule class |
@@ -39,13 +43,13 @@ Token.new(...)                         # new leaf
 
 ### Whitespace Preservation
 
-`Herb.parse(source, track_whitespace: true)` includes `WhitespaceNode` children in the AST. This is required for lossless round-trip serialization via `IdentityPrinter`. The AutoFixer always parses with this option.
+`Herb.parse(source, track_whitespace: true)` includes `WhitespaceNode` children in the AST. This is required for lossless round-trip serialization via `IdentityPrinter`. The linting phase always parses with this option, and the autofix phase reuses the same `ParseResult`.
 
 ### Two-Phase Autofix Application
 
 Following the TypeScript reference, autofixes are applied in two phases:
 
-1. **AST phase**: Rules that operate on AST nodes (`VisitorRule`). All AST autofixes share a single `ParseResult`; each autofix creates replacement nodes and substitutes them in the tree. After all AST autofixes, `IdentityPrinter` serializes the modified AST back to source.
+1. **AST phase**: Rules that operate on AST nodes (`VisitorRule`). All AST autofixes operate on the `ParseResult` from the lint phase; each autofix creates replacement nodes and substitutes them in the tree. After all AST autofixes, `IdentityPrinter` serializes the modified AST back to source.
 2. **Source phase**: Rules that operate on raw source strings (future `SourceRule`). Applied in reverse document order to avoid offset invalidation.
 
 Currently all implemented rules are `VisitorRule`, so only the AST phase is needed. The source phase is a future extension point.
@@ -68,15 +72,15 @@ CLI#run
           ├── source = File.read(file_path)
           │
           ├── Linter#lint(file_path:, source:)
-          │   └── offenses (including fixable ones)
+          │   ├── Herb.parse(source, track_whitespace: true) → parse_result
+          │   └── LintResult (offenses + parse_result)
           │
           ├── if fix enabled AND fixable offenses exist:
-          │   ├── AutoFixer.new(source, offenses, fix_unsafely:)
+          │   ├── AutoFixer.new(parse_result, offenses, fix_unsafely:)
           │   ├── fix_result = auto_fixer.apply
-          │   │   ├── Phase 1: AST autofixes
-          │   │   │   ├── Herb.parse(source, track_whitespace: true)
+          │   │   ├── Phase 1: AST autofixes (reuses parse_result from lint phase)
           │   │   │   ├── for each fixable offense:
-          │   │   │   │   ├── NodeLocator.find(parse_result, offense) → node
+          │   │   │   │   ├── offense.autofix_context.node → node (direct reference)
           │   │   │   │   ├── rule.autofix(node, parse_result) → bool
           │   │   │   │   └── track fixed vs unfixed
           │   │   │   └── IdentityPrinter.print(parse_result) → new_source
@@ -96,7 +100,7 @@ CLI#run
 
 #### Herb::Lint::Offense
 
-Add `autofix_context` to carry data from check phase to autofix phase. The context holds a reference to the offending node's location and type, enabling `NodeLocator` to re-find the node in a freshly-parsed AST.
+Add `autofix_context` to carry data from check phase to autofix phase. The context holds a direct reference to the offending AST node, enabling the autofix phase to operate on the same node without re-parsing.
 
 ```rbs
 class Herb::Lint::Offense
@@ -122,17 +126,15 @@ end
 
 #### Herb::Lint::AutofixContext
 
-Data class bridging the check phase and autofix phase. Carries the information needed to relocate the target node in a freshly-parsed AST.
+Data class bridging the check phase and autofix phase. Carries a direct reference to the offending AST node and the rule class that can fix it.
 
 ```rbs
 class Herb::Lint::AutofixContext
-  attr_reader node_location: Herb::Location   # location of the target node
-  attr_reader node_type: String               # AST node type (e.g., "HTMLElementNode")
+  attr_reader node: Herb::AST::Node            # direct reference to the offending node
   attr_reader rule_class: singleton(Rules::VisitorRule)  # rule that can fix this offense
 
   def initialize: (
-    node_location: Herb::Location,
-    node_type: String,
+    node: Herb::AST::Node,
     rule_class: singleton(Rules::VisitorRule)
   ) -> void
 end
@@ -168,7 +170,7 @@ module Herb::Lint::Rules::RuleMethods
   ) -> void
 
   # NEW: autofix method (override in fixable rules)
-  # Receives the relocated node in the current AST and the parse_result.
+  # Receives the original node (direct reference from AutofixContext) and the parse_result.
   # Modifies the AST by replacing nodes in parent arrays.
   # Returns true if the fix was applied, false otherwise.
   def autofix: (Herb::AST::Node node, Herb::ParseResult parse_result) -> bool
@@ -176,6 +178,30 @@ end
 ```
 
 `add_offense_with_autofix` creates an `Offense` with an `AutofixContext` populated from the given node and the current rule class. Rules that are fixable call this method instead of `add_offense`.
+
+#### Herb::Lint::LintResult
+
+Add `parse_result` to carry the parsed AST through to the autofix phase. This enables the single-parse design where the autofix phase reuses the AST from linting.
+
+```rbs
+class Herb::Lint::LintResult
+  attr_reader file_path: String
+  attr_reader offenses: Array[Offense]
+  attr_reader source: String
+  attr_reader ignored_count: Integer
+  attr_reader parse_result: Herb::ParseResult?    # NEW
+
+  def initialize: (
+    file_path: String,
+    offenses: Array[Offense],
+    source: String,
+    ?ignored_count: Integer,
+    ?parse_result: Herb::ParseResult?
+  ) -> void
+end
+```
+
+`parse_result` is `nil` when parsing fails (parse error offenses are reported instead).
 
 #### Herb::Lint::Runner
 
@@ -200,7 +226,7 @@ class Herb::Lint::Runner
   private
 
   def process_file: (String file_path) -> LintResult
-  def apply_fixes: (String file_path, String source, Array[Offense] offenses) -> AutoFixResult   # NEW
+  def apply_fixes: (String file_path, LintResult lint_result) -> AutoFixResult   # NEW
 end
 ```
 
@@ -208,16 +234,16 @@ end
 
 #### Herb::Lint::AutoFixer
 
-Orchestrates autofix application for a single file. This is the core new component.
+Orchestrates autofix application for a single file. This is the core new component. It receives the `ParseResult` from the lint phase (single-parse design) and applies fixes to the same AST.
 
 ```rbs
 class Herb::Lint::AutoFixer
-  @source: String
+  @parse_result: Herb::ParseResult
   @offenses: Array[Offense]
   @fix_unsafely: bool
 
   def initialize: (
-    String source,
+    Herb::ParseResult parse_result,
     Array[Offense] offenses,
     ?fix_unsafely: bool
   ) -> void
@@ -226,7 +252,7 @@ class Herb::Lint::AutoFixer
 
   private
 
-  def apply_ast_fixes: (String source, Array[Offense] offenses) -> [String, Array[Offense], Array[Offense]]
+  def apply_ast_fixes: (Array[Offense] offenses) -> [String, Array[Offense], Array[Offense]]
   def fixable_offenses: (Array[Offense] offenses) -> Array[Offense]
   def safe_to_apply?: (Offense offense) -> bool
 end
@@ -241,14 +267,12 @@ end
 
 **`apply_ast_fixes` method processing:**
 
-1. Parse source with `Herb.parse(source, track_whitespace: true)`
-2. For each fixable offense:
-   a. Use `NodeLocator.find` to relocate the target node in the freshly-parsed AST
-   b. Skip if node not found (add to unfixed list)
-   c. Call `offense.autofix_context.rule_class.new.autofix(node, parse_result)`
-   d. Track as fixed or unfixed based on return value
-3. Serialize modified AST via `Herb::Printer::IdentityPrinter.print(parse_result)`
-4. Return `[new_source, fixed_offenses, unfixed_offenses]`
+1. For each fixable offense:
+   a. Retrieve the offending node directly from `offense.autofix_context.node`
+   b. Call `offense.autofix_context.rule_class.new.autofix(node, @parse_result)`
+   c. Track as fixed or unfixed based on return value
+2. Serialize modified AST via `Herb::Printer::IdentityPrinter.print(@parse_result)`
+3. Return `[new_source, fixed_offenses, unfixed_offenses]`
 
 #### Herb::Lint::AutoFixResult
 
@@ -273,36 +297,35 @@ end
 
 #### Herb::Lint::NodeLocator
 
-Utility for finding a node in a freshly-parsed AST by matching location and type. After re-parsing with `track_whitespace: true`, original node references are stale. `NodeLocator` traverses the new AST to find the equivalent node.
+Utility for finding nodes and their parents in an AST. With the single-parse design, offenses carry direct node references, so `NodeLocator.find` is no longer needed for re-locating nodes. However, `find_parent` remains essential — autofix methods need to find the parent node to perform array-based replacement.
 
 ```rbs
 class Herb::Lint::NodeLocator < Herb::Visitor
-  # Find a node matching the given location and type in the AST.
-  def self.find: (
+  # Find the parent of a given node in the AST.
+  # The parent is the node whose children/body array contains the target.
+  def self.find_parent: (
     Herb::ParseResult parse_result,
-    Herb::Location location,
-    String node_type
+    Herb::AST::Node target_node
   ) -> Herb::AST::Node?
 
   # Find a node and its parent (the node whose children/body array contains it).
+  # Uses object identity (equal?) to match the target node.
   def self.find_with_parent: (
     Herb::ParseResult parse_result,
-    Herb::Location location,
-    String node_type
+    Herb::AST::Node target_node
   ) -> [Herb::AST::Node, Herb::AST::Node]?
 
   private
 
-  @target_location: Herb::Location
-  @target_type: String
-  @found_node: Herb::AST::Node?
+  @target_node: Herb::AST::Node
+  @found_parent: Herb::AST::Node?
   @parent_stack: Array[Herb::AST::Node]
 
   def match?: (Herb::AST::Node node) -> bool
 end
 ```
 
-**Matching logic:** A node matches when both its `type` equals `node_type` AND its `location.start.line`, `location.start.column`, `location.end.line`, `location.end.column` all match the target location. This mirrors the TypeScript `findNodeByLocation` function.
+**Matching logic:** A node matches when `node.equal?(target_node)` (object identity). Since the autofix phase operates on the same `ParseResult` as the lint phase, the node reference from the offense is the same object in the AST. This is simpler and more reliable than the location-based matching used in the TypeScript reference (which requires re-parsing).
 
 ## Node Replacement Patterns
 
@@ -321,8 +344,8 @@ open_tag.children[i] = new_attribute_node
 **Example -- Boolean attribute autofix (`disabled="disabled"` → `disabled`):**
 
 ```ruby
-# node: HTMLAttributeNode (located by NodeLocator)
-# parent: HTMLOpenTagNode (from find_with_parent)
+# node: HTMLAttributeNode (direct reference from AutofixContext)
+# parent: HTMLOpenTagNode (from NodeLocator.find_parent)
 new_attr = Herb::AST::HTMLAttributeNode.new(
   node.type, node.location, node.errors,
   node.name,  # keep name
@@ -411,6 +434,8 @@ class HtmlTagNameLowercase < VisitorRule
   end
 
   # Fix (NEW)
+  # node: direct reference from AutofixContext (same object as detected during linting)
+  # parse_result: same ParseResult from the lint phase (single-parse design)
   def autofix(node, parse_result)
     parent = NodeLocator.find_parent(parse_result, node)
     return false unless parent
@@ -495,8 +520,8 @@ The autofix feature depends on:
 
 Following the TypeScript reference, there is no explicit conflict resolution mechanism. Conflicts are avoided by design:
 
-1. **AST autofixes target distinct nodes.** Each offense references a different node location. `NodeLocator` re-finds each node independently.
-2. **Node not found = skip.** If a prior autofix removes or restructures a node, `NodeLocator.find` returns `nil` and the offense is added to the unfixed list.
+1. **AST autofixes target distinct nodes.** Each offense references a different node via its direct `AutofixContext.node` reference.
+2. **Stale reference = skip.** If a prior autofix replaces a node (creating a new object), `NodeLocator.find_parent` will not find the original node reference in the tree, and the autofix returns `false`. The offense is added to the unfixed list.
 3. **No re-run loop.** Unlike RuboCop, the TypeScript reference does not re-run after autofixing. A single pass is applied. Users can run `herb-lint --fix` multiple times if cascading autofixes are needed.
 
 ## Testing Strategy
@@ -506,13 +531,13 @@ Following the TypeScript reference, there is no explicit conflict resolution mec
 - Verify autofix application produces correct source
 - Verify fixable offenses are applied, non-fixable are skipped
 - Verify `--fix` skips unsafe autofixes, `--fix-unsafely` applies them
-- Verify node-not-found results in unfixed offense
+- Verify stale node reference (replaced by prior autofix) results in unfixed offense
 
 ### Unit Tests -- NodeLocator
 
-- Verify nodes found by matching location and type
-- Verify `nil` returned when no match
-- Verify `find_with_parent` returns correct parent
+- Verify `find_parent` returns parent node for a given child
+- Verify `nil` returned when node not in the tree (stale reference)
+- Verify `find_with_parent` returns `[node, parent]` tuple
 
 ### Unit Tests -- Rule autofix
 
