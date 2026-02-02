@@ -37,19 +37,17 @@ module Herb
         def check_single_line_open_tag: (Herb::AST::HTMLOpenTagNode node) -> void
 
         # @rbs node: Herb::AST::HTMLOpenTagNode
-        # @rbs children: Array[Herb::AST::HTMLAttributeNode]
-        def check_inter_element_gaps: (Herb::AST::HTMLOpenTagNode node, Array[Herb::AST::HTMLAttributeNode] children) -> void
+        # @rbs trailing: Herb::AST::WhitespaceNode?
+        def check_single_line_trailing: (Herb::AST::HTMLOpenTagNode node, Herb::AST::WhitespaceNode? trailing) -> void
 
-        # @rbs node: Herb::AST::HTMLOpenTagNode
-        # @rbs last: Herb::Token | Herb::AST::HTMLAttributeNode
-        def check_trailing_gap: (Herb::AST::HTMLOpenTagNode node, Herb::Token | Herb::AST::HTMLAttributeNode last) -> void
+        # @rbs node: Herb::AST::HTMLCloseTagNode
+        def check_close_tag: (Herb::AST::HTMLCloseTagNode node) -> void
 
         # @rbs node: Herb::AST::HTMLOpenTagNode
         def check_multiline_open_tag: (Herb::AST::HTMLOpenTagNode node) -> void
 
         # @rbs node: Herb::AST::HTMLOpenTagNode
-        # @rbs children: Array[Herb::AST::HTMLAttributeNode]
-        def check_blank_lines: (Herb::AST::HTMLOpenTagNode node, Array[Herb::AST::HTMLAttributeNode] children) -> void
+        def check_blank_lines: (Herb::AST::HTMLOpenTagNode node) -> void
 
         # @rbs children: Array[Herb::AST::HTMLAttributeNode]
         # @rbs tag_closing: Herb::Token
@@ -62,19 +60,8 @@ module Herb
         def check_closing_indent: (Herb::AST::HTMLAttributeNode? last_child, Herb::Token tag_closing, Integer tag_col) -> void
 
         # @rbs node: Herb::AST::HTMLOpenTagNode
-        # @rbs children: Array[Herb::AST::HTMLAttributeNode]
-        def check_multiline_trailing: (Herb::AST::HTMLOpenTagNode node, Array[Herb::AST::HTMLAttributeNode] children) -> void
-
-        # @rbs node: Herb::AST::HTMLCloseTagNode
-        def check_close_tag: (Herb::AST::HTMLCloseTagNode node) -> void
-
-        # @rbs left: Herb::Token | Herb::AST::HTMLAttributeNode
-        # @rbs right: Herb::Token | Herb::AST::HTMLAttributeNode
-        def gap_size: (Herb::Token | Herb::AST::HTMLAttributeNode left, Herb::Token | Herb::AST::HTMLAttributeNode right) -> Integer
-
-        # @rbs left: Herb::Token | Herb::AST::HTMLAttributeNode
-        # @rbs right: Herb::Token | Herb::AST::HTMLAttributeNode
-        def gap_loc: (Herb::Token | Herb::AST::HTMLAttributeNode left, Herb::Token | Herb::AST::HTMLAttributeNode right) -> Herb::Location
+        # @rbs attrs: Array[Herb::AST::HTMLAttributeNode]
+        def check_multiline_trailing: (Herb::AST::HTMLOpenTagNode node, Array[Herb::AST::HTMLAttributeNode] attrs) -> void
 
         # @rbs message: String
         # @rbs location: Herb::Location
