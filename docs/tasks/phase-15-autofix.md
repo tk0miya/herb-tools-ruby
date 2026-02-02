@@ -10,9 +10,9 @@ This phase implements the `--fix` / `--fix-unsafely` feature for herb-lint: auto
 
 | Feature | Description | Impact |
 |---------|-------------|--------|
-| AutofixContext | Bridge between check phase and autofix phase | Enables offense → fix mapping |
-| NodeLocator | Find nodes in freshly-parsed AST by location/type | Required for AST mutation after re-parse |
-| AutoFixer | Orchestrate autofix application per file | Core autofix engine |
+| AutofixContext | Bridge between check phase and autofix phase (direct node reference) | Enables offense → fix mapping |
+| NodeLocator | Find parent nodes in AST by object identity | Required for parent lookup during AST mutation |
+| AutoFixer | Orchestrate autofix application per file (reuses lint-phase ParseResult) | Core autofix engine |
 | CLI flags | `--fix` and `--fix-unsafely` options | User-facing autofix interface |
 | Rule autofix | `autofix` method on fixable rules | Per-rule fix implementation |
 
@@ -25,25 +25,29 @@ This phase implements the `--fix` / `--fix-unsafely` feature for herb-lint: auto
 ## Design Principles
 
 1. **AST Node Replacement via Public API** — Create new nodes using public constructors, replace via `Array#[]=` in parent arrays. No `instance_variable_set`.
-2. **Whitespace Preservation** — Always parse with `track_whitespace: true` for lossless round-trip.
-3. **Two-Phase Application** — AST phase (current rules) + Source phase (future extension).
-4. **No Re-run Loop** — Single pass, like the TypeScript reference. Users run multiple times for cascading fixes.
+2. **Whitespace Preservation** — The lint phase already parses with `track_whitespace: true`. The autofix phase reuses the same `ParseResult` (single-parse design).
+3. **Single-Parse Design** — The lint phase produces a whitespace-preserving AST. The autofix phase reuses it directly. No re-parsing needed. Offenses carry direct node references via `AutofixContext`.
+4. **Two-Phase Application** — AST phase (current rules) + Source phase (future extension).
+5. **No Re-run Loop** — Single pass, like the TypeScript reference. Users run multiple times for cascading fixes.
 
 ---
 
 ## Part A: Autofix Infrastructure
 
-### Task 15.1: AutofixContext and Offense Changes
+### Task 15.1: AutofixContext, Offense, and LintResult Changes
 
-**Location:** `herb-lint/lib/herb/lint/autofix_context.rb`, `herb-lint/lib/herb/lint/offense.rb`
+**Location:** `herb-lint/lib/herb/lint/autofix_context.rb`, `herb-lint/lib/herb/lint/offense.rb`, `herb-lint/lib/herb/lint/lint_result.rb`, `herb-lint/lib/herb/lint/linter.rb`
 
 - [ ] Implement `AutofixContext` Data class
-  - [ ] `node_location` (`Herb::Location`) — location of the target node
-  - [ ] `node_type` (`String`) — AST node type (e.g., `"HTMLElementNode"`)
+  - [ ] `node` (`Herb::AST::Node`) — direct reference to the offending AST node
   - [ ] `rule_class` (`Class`) — rule class that can fix this offense
 - [ ] Update `Offense` to accept optional `autofix_context`
   - [ ] Add `autofix_context` attribute (default: `nil`)
   - [ ] Add `fixable?` method — returns `true` when `autofix_context` is present
+- [ ] Update `LintResult` to accept optional `parse_result`
+  - [ ] Add `parse_result` attribute (default: `nil`)
+  - [ ] `nil` when parsing fails (parse error offenses are reported instead)
+- [ ] Update `Linter#lint` to include `parse_result` in `LintResult`
 - [ ] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
 - [ ] Add unit tests
 - [ ] Generate RBS types
@@ -54,19 +58,20 @@ This phase implements the `--fix` / `--fix-unsafely` feature for herb-lint: auto
 module Herb
   module Lint
     AutofixContext = Data.define(
-      :node_location, #: Herb::Location
-      :node_type,     #: String
-      :rule_class     #: singleton(Rules::VisitorRule)
+      :node,       #: Herb::AST::Node
+      :rule_class  #: singleton(Rules::VisitorRule)
     )
   end
 end
 ```
 
 **Test Cases:**
-- `AutofixContext` stores location, type, and rule class
+- `AutofixContext` stores node reference and rule class
 - `Offense` with `autofix_context` returns `fixable? == true`
 - `Offense` without `autofix_context` returns `fixable? == false`
 - Backward compatibility: existing offense creation without `autofix_context` still works
+- `LintResult` with `parse_result` exposes it via accessor
+- `LintResult` without `parse_result` defaults to `nil`
 
 ---
 
@@ -99,8 +104,7 @@ module Herb
 
         def add_offense_with_autofix(message:, location:, node:)
           context = AutofixContext.new(
-            node_location: node.location,
-            node_type: node.class.name.split("::").last,
+            node: node,
             rule_class: self.class
           )
           add_offense(message:, location:, autofix_context: context)
@@ -126,10 +130,12 @@ end
 
 **Location:** `herb-lint/lib/herb/lint/node_locator.rb`
 
+With the single-parse design, offenses carry direct node references. `NodeLocator.find` (re-locating by location/type) is no longer needed. Instead, `NodeLocator` provides parent lookup by object identity — autofix methods need the parent node to perform array-based replacement.
+
 - [ ] Implement `NodeLocator` class extending `Herb::Visitor`
-  - [ ] `self.find(parse_result, location, node_type)` — find a node matching location and type
-  - [ ] `self.find_with_parent(parse_result, location, node_type)` — find node and its parent
-  - [ ] Private `match?(node)` — compare type + location (start line/column, end line/column)
+  - [ ] `self.find_parent(parse_result, target_node)` — find the parent of a given node
+  - [ ] `self.find_with_parent(parse_result, target_node)` — find node and its parent (returns `[node, parent]`)
+  - [ ] Private `match?(node)` — compare by object identity (`node.equal?(target_node)`)
   - [ ] Track `@parent_stack` during traversal
 - [ ] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
 - [ ] Add unit tests
@@ -137,18 +143,12 @@ end
 
 **Matching Logic:**
 
-A node matches when:
-1. `node.class.name` ends with `node_type`
-2. `node.location.start.line == target.start.line`
-3. `node.location.start.column == target.start.column`
-4. `node.location.end.line == target.end.line`
-5. `node.location.end.column == target.end.column`
+A node matches when `node.equal?(target_node)` (object identity). Since the autofix phase operates on the same `ParseResult` as the lint phase, the node reference from `AutofixContext` is the same object in the AST.
 
 **Test Cases:**
-- Find an `HTMLElementNode` by location in a simple document
-- Find an `HTMLAttributeNode` by location in a document with attributes
-- Return `nil` when no node matches the location
-- Return `nil` when location matches but type does not
+- `find_parent` returns the parent node for a given child in a simple document
+- `find_parent` returns the parent for an attribute node within an element
+- `find_parent` returns `nil` when node is not in the tree (stale reference after replacement)
 - `find_with_parent` returns `[node, parent]` tuple
 - `find_with_parent` returns `nil` when node not found
 
@@ -198,17 +198,18 @@ end
 
 **Location:** `herb-lint/lib/herb/lint/auto_fixer.rb`
 
+The AutoFixer receives the `ParseResult` from the lint phase (single-parse design) rather than re-parsing the source. Offenses carry direct node references via `AutofixContext`.
+
 - [ ] Implement `AutoFixer` class
-  - [ ] `initialize(source, offenses, fix_unsafely: false)`
+  - [ ] `initialize(parse_result, offenses, fix_unsafely: false)`
   - [ ] `apply` → `AutoFixResult`
     - [ ] Filter to fixable offenses (`offense.fixable?`)
     - [ ] Filter by safety level (`safe_to_apply?`)
     - [ ] Call `apply_ast_fixes` for AST-phase fixes
     - [ ] Return `AutoFixResult`
-  - [ ] Private `apply_ast_fixes(source, offenses)` → `[String, Array[Offense], Array[Offense]]`
-    - [ ] Parse with `Herb.parse(source, track_whitespace: true)`
-    - [ ] For each fixable offense: locate node via `NodeLocator`, call `autofix`, track result
-    - [ ] Serialize via `Herb::Printer::IdentityPrinter.print(parse_result)`
+  - [ ] Private `apply_ast_fixes(offenses)` → `[String, Array[Offense], Array[Offense]]`
+    - [ ] For each fixable offense: retrieve node from `offense.autofix_context.node`, call `autofix`, track result
+    - [ ] Serialize via `Herb::Printer::IdentityPrinter.print(@parse_result)`
   - [ ] Private `fixable_offenses(offenses)` — filter to offenses with `fixable? == true`
   - [ ] Private `safe_to_apply?(offense)` — check safety based on `fix_unsafely` flag
 - [ ] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
@@ -229,11 +230,9 @@ end
 AutoFixer#apply
   ├── filter fixable offenses
   ├── filter by safety level
-  ├── apply_ast_fixes
-  │   ├── Herb.parse(source, track_whitespace: true)
+  ├── apply_ast_fixes (operates on lint-phase parse_result)
   │   ├── for each offense:
-  │   │   ├── NodeLocator.find(parse_result, location, type) → node
-  │   │   ├── skip if node not found → unfixed
+  │   │   ├── offense.autofix_context.node → node (direct reference)
   │   │   ├── rule.new.autofix(node, parse_result) → bool
   │   │   └── track as fixed or unfixed
   │   └── IdentityPrinter.print(parse_result) → new_source
@@ -247,7 +246,7 @@ AutoFixer#apply
 - Non-fixable offenses remain in unfixed list
 - `--fix` skips unsafe autofixes
 - `--fix-unsafely` applies unsafe autofixes
-- Node not found results in unfixed offense
+- Stale node reference (replaced by prior autofix) results in unfixed offense
 - AutoFixResult contains correct counts
 
 ---
@@ -286,8 +285,8 @@ def process_file(file_path)
   source = File.read(file_path)
   result = linter.lint(file_path:, source:)
 
-  if fix && result.offenses.any?(&:fixable?)
-    fix_result = apply_fixes(file_path, source, result.offenses)
+  if fix && result.parse_result && result.offenses.any?(&:fixable?)
+    fix_result = apply_fixes(file_path, result)
     File.write(file_path, fix_result.source) if fix_result.source != source
     # Update result to only include unfixed offenses
   end
@@ -295,6 +294,8 @@ def process_file(file_path)
   result
 end
 ```
+
+Note: `result.parse_result` is `nil` when parsing fails, so autofix is skipped for files with parse errors.
 
 **Test Cases:**
 - `--fix` flag parsed correctly
@@ -317,7 +318,7 @@ end
     - [ ] Check `parent.children` first
     - [ ] Check `parent.body` as fallback
     - [ ] Return `nil` if not found
-  - [ ] `find_parent(parse_result, node)` — convenience wrapper around `NodeLocator.find_with_parent`
+  - [ ] `find_parent(parse_result, node)` — convenience wrapper around `NodeLocator.find_parent`
 - [ ] Add unit tests
 - [ ] Generate RBS types
 
@@ -371,17 +372,18 @@ Update existing fixable rules to declare `autocorrectable?` and implement `autof
 class HtmlTagNameLowercase < VisitorRule
   def self.autocorrectable? = true
 
+  # node: direct reference from AutofixContext (same object as detected during linting)
+  # parse_result: same ParseResult from the lint phase (single-parse design)
   def autofix(node, parse_result)
-    result = NodeLocator.find_with_parent(parse_result, node.location, "HTMLElementNode")
-    return false unless result
+    parent = NodeLocator.find_parent(parse_result, node)
+    return false unless parent
 
-    found_node, parent = result
-    new_element = build_lowercase_element(found_node)
+    new_element = build_lowercase_element(node)
 
-    parent_array = parent_array_for(parent, found_node)
+    parent_array = parent_array_for(parent, node)
     return false unless parent_array
 
-    idx = parent_array.index(found_node)
+    idx = parent_array.index(node)
     return false unless idx
 
     parent_array[idx] = new_element
