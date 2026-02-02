@@ -12,6 +12,7 @@ module Herb
       def self.builtin_rules #: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
         @builtin_rules ||= [
           Rules::ErbCommentSyntax,
+          Rules::ErbNoEmptyTags,
           Rules::HerbDisableCommentMalformed,
           Rules::HerbDisableCommentMissingRules,
           Rules::HerbDisableCommentNoDuplicateRules,
