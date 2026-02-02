@@ -62,7 +62,7 @@ module Herb
 
         # @rbs node: Herb::AST::HTMLElementNode
         def focusable?(node) #: bool
-          tag = node.tag_name&.value&.downcase
+          tag = tag_name(node)
           return false if tag.nil?
 
           natively_focusable = tag == "a" ? attribute?(node, "href") : INTERACTIVE_ELEMENTS.include?(tag)

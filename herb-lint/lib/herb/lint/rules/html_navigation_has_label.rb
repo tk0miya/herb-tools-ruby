@@ -42,7 +42,7 @@ module Herb
 
         # @rbs node: Herb::AST::HTMLElementNode
         def nav_element?(node) #: bool
-          node.tag_name&.value&.downcase == "nav"
+          tag_name(node) == "nav"
         end
 
         # @rbs node: Herb::AST::HTMLElementNode

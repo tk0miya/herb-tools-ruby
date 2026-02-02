@@ -34,7 +34,7 @@ module Herb
         def visit_html_element_node(node)
           if heading?(node) && empty_content?(node)
             add_offense(
-              message: "Heading element `<#{node.tag_name&.value}>` must not be empty",
+              message: "Heading element `<#{raw_tag_name(node)}>` must not be empty",
               location: node.location
             )
           end
@@ -45,7 +45,7 @@ module Herb
 
         # @rbs node: Herb::AST::HTMLElementNode
         def heading?(node) #: bool
-          HEADING_TAGS.include?(node.tag_name&.value&.downcase)
+          HEADING_TAGS.include?(tag_name(node))
         end
 
         # @rbs node: Herb::AST::HTMLElementNode

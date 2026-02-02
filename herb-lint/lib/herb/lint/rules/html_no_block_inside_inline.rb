@@ -62,7 +62,7 @@ module Herb
             @inline_depth -= 1
           elsif block_element?(tag) && @inline_depth.positive?
             add_offense(
-              message: "Block-level element `<#{node.tag_name&.value}>` must not be nested inside an inline element",
+              message: "Block-level element `<#{raw_tag_name(node)}>` must not be nested inside an inline element",
               location: node.location
             )
             saved_depth = @inline_depth
@@ -75,11 +75,6 @@ module Herb
         end
 
         private
-
-        # @rbs node: Herb::AST::HTMLElementNode
-        def tag_name(node) #: String?
-          node.tag_name&.value&.downcase
-        end
 
         # @rbs tag: String?
         def inline_element?(tag) #: bool

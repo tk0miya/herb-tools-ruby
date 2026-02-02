@@ -36,6 +36,18 @@ module Herb
         #
         # @rbs node: Herb::AST::HTMLAttributeNode? -- attribute node
         def attribute_value: (Herb::AST::HTMLAttributeNode? node) -> String?
+
+        # Extract the tag name from an element node, preserving original case.
+        # Returns nil if the node is nil.
+        #
+        # @rbs node: Herb::AST::HTMLElementNode? -- element node
+        def raw_tag_name: (Herb::AST::HTMLElementNode? node) -> String?
+
+        # Extract the tag name from an element node, normalized to lowercase.
+        # Returns nil if the node is nil.
+        #
+        # @rbs node: Herb::AST::HTMLElementNode? -- element node
+        def tag_name: (Herb::AST::HTMLElementNode? node) -> String?
       end
     end
   end

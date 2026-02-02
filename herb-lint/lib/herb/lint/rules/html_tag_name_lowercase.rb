@@ -39,12 +39,12 @@ module Herb
 
         # @rbs node: Herb::AST::HTMLElementNode
         def check_open_tag(node) #: void
-          tag_name = node.tag_name&.value
-          return unless tag_name
-          return if lowercase?(tag_name)
+          tag = raw_tag_name(node)
+          return unless tag
+          return if lowercase?(tag)
 
           add_offense(
-            message: "Tag name '#{tag_name}' should be lowercase",
+            message: "Tag name '#{tag}' should be lowercase",
             location: node.tag_name.location
           )
         end
@@ -54,12 +54,12 @@ module Herb
           close_tag = node.close_tag
           return unless close_tag
 
-          close_tag_name = close_tag.tag_name&.value
-          return unless close_tag_name
-          return if lowercase?(close_tag_name)
+          tag = close_tag.tag_name&.value
+          return unless tag
+          return if lowercase?(tag)
 
           add_offense(
-            message: "Tag name '#{close_tag_name}' should be lowercase",
+            message: "Tag name '#{tag}' should be lowercase",
             location: close_tag.tag_name.location
           )
         end

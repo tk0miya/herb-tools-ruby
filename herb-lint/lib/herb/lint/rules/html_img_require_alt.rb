@@ -42,7 +42,7 @@ module Herb
 
         # @rbs node: Herb::AST::HTMLElementNode
         def img_element?(node) #: bool
-          node.tag_name&.value&.downcase == "img"
+          tag_name(node) == "img"
         end
       end
     end

@@ -67,7 +67,7 @@ module Herb
 
         # @rbs node: Herb::AST::HTMLElementNode
         def input_element?(node) #: bool
-          node.tag_name&.value&.downcase == "input"
+          tag_name(node) == "input"
         end
       end
     end
