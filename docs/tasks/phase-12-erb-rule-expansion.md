@@ -155,9 +155,9 @@ Rules are grouped by theme:
 ---
 
 ### Task 12.6: `erb-no-output-control-flow`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow control flow statements in ERB output tags (`<%= %>`).
 

@@ -15,6 +15,7 @@ module Herb
           Rules::ErbNoCaseNodeChildren,
           Rules::ErbNoEmptyTags,
           Rules::ErbNoExtraWhitespaceInsideTags,
+          Rules::ErbNoOutputControlFlow,
           Rules::ErbRequireWhitespaceInsideTags,
           Rules::HerbDisableCommentMalformed,
           Rules::HerbDisableCommentMissingRules,
