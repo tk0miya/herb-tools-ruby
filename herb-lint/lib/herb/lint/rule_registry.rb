@@ -35,6 +35,7 @@ module Herb
           Rules::HtmlInputRequireAutocomplete,
           Rules::HtmlNavigationHasLabel,
           Rules::HtmlNoAriaHiddenOnFocusable,
+          Rules::HtmlNoBlockInsideInline,
           Rules::HtmlNoDuplicateAttributes,
           Rules::HtmlNoDuplicateIds,
           Rules::HtmlNoDuplicateMetaNames,
