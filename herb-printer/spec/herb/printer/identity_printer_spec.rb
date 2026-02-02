@@ -51,8 +51,37 @@ RSpec.describe Herb::Printer::IdentityPrinter do
     context "when input is a void element with attribute" do
       let(:source) { '<img src="photo.jpg">' }
 
-      # Requires attribute visitors (Task 14.7)
-      it(nil, pending: "attribute visitors not yet implemented") { is_expected.to eq(source) }
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input has a double-quoted attribute" do
+      let(:source) { '<div class="container">text</div>' }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input has a single-quoted attribute" do
+      let(:source) { "<div class='single-quoted'>text</div>" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input has a boolean attribute" do
+      let(:source) { '<input type="text" disabled>' }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input has multiple attributes" do
+      let(:source) { '<div id="main" class="wrapper" data-value="123">text</div>' }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when attribute has spaces around equals" do
+      let(:source) { '<div class = "spaced">text</div>' }
+
+      it { is_expected.to eq(source) }
     end
   end
 end
