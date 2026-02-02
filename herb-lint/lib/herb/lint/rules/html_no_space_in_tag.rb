@@ -45,15 +45,16 @@ module Herb
         # @rbs node: Herb::AST::HTMLOpenTagNode
         def check_single_line_open_tag(node) #: void
           ws_nodes = node.children.select { |c| c.is_a?(Herb::AST::WhitespaceNode) }
-          has_trailing = node.children.last.is_a?(Herb::AST::WhitespaceNode)
-          trailing = has_trailing ? ws_nodes.last : nil
-          inter_elements = has_trailing ? ws_nodes[...-1] : ws_nodes
 
-          inter_elements.each do |ws|
-            report(EXTRA_SPACE_SINGLE_SPACE, ws.location) if ws.value.value.length > 1
+          ws_nodes.each do |ws|
+            if node.children.last == ws
+              check_single_line_trailing(node, ws)
+            elsif ws.value.value.length > 1
+              report(EXTRA_SPACE_SINGLE_SPACE, ws.location)
+            end
           end
 
-          check_single_line_trailing(node, trailing)
+          check_single_line_trailing(node, nil) unless node.children.last.is_a?(Herb::AST::WhitespaceNode)
         end
 
         # @rbs node: Herb::AST::HTMLOpenTagNode
