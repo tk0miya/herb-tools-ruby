@@ -159,15 +159,15 @@ A node matches when `node.equal?(target_node)` (object identity). Since the auto
 
 **Location:** `herb-lint/lib/herb/lint/auto_fix_result.rb`
 
-- [ ] Implement `AutoFixResult` Data class
-  - [ ] `source` (`String`) — corrected source code
-  - [ ] `fixed` (`Array[Offense]`) — successfully fixed offenses
-  - [ ] `unfixed` (`Array[Offense]`) — offenses that could not be fixed
-  - [ ] `fixed_count` method
-  - [ ] `unfixed_count` method
-- [ ] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
-- [ ] Add unit tests
-- [ ] Generate RBS types
+- [x] Implement `AutoFixResult` Data class
+  - [x] `source` (`String`) — corrected source code
+  - [x] `fixed` (`Array[Offense]`) — successfully fixed offenses
+  - [x] `unfixed` (`Array[Offense]`) — offenses that could not be fixed
+  - [x] `fixed_count` method
+  - [x] `unfixed_count` method
+- [x] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
+- [x] Add unit tests
+- [x] Generate RBS types
 
 **Data Structure:**
 

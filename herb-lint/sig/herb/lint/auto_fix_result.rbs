@@ -1,0 +1,28 @@
+# Generated from lib/herb/lint/auto_fix_result.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # Result of applying automatic fixes to lint offenses
+    #
+    # Contains the corrected source code and tracks which offenses were
+    # successfully fixed versus those that remain unfixed.
+    class AutoFixResult < Data
+      attr_reader source(): String
+
+      attr_reader fixed(): Array[Offense]
+
+      attr_reader unfixed(): Array[Offense]
+
+      def self.new: (String source, Array[Offense] fixed, Array[Offense] unfixed) -> instance
+                  | (source: String, fixed: Array[Offense], unfixed: Array[Offense]) -> instance
+
+      def self.members: () -> [ :source, :fixed, :unfixed ]
+
+      def members: () -> [ :source, :fixed, :unfixed ]
+
+      def fixed_count: () -> Integer
+
+      def unfixed_count: () -> Integer
+    end
+  end
+end
