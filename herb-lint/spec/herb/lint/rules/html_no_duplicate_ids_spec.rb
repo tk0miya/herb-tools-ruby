@@ -5,7 +5,7 @@ require_relative "../../../spec_helper"
 RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateIds do
   subject { described_class.new.check(document, context) }
 
-  let(:document) { Herb.parse(template) }
+  let(:document) { Herb.parse(template, track_whitespace: true) }
   let(:context) { build(:context) }
 
   describe ".rule_name" do

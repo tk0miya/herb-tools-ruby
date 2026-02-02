@@ -5,7 +5,7 @@ FactoryBot.define do
     file_path { "test.html.erb" }
     source { "<div></div>" }
     config { Herb::Config::LinterConfig.new({}) }
-    directives { Herb::Lint::DirectiveParser.parse(Herb.parse(source), source) }
+    directives { Herb::Lint::DirectiveParser.parse(Herb.parse(source, track_whitespace: true), source) }
     rule_registry { nil }
 
     initialize_with { new(file_path:, source:, config:, directives:, rule_registry:) }

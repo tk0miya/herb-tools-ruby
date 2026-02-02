@@ -58,14 +58,14 @@ module Herb
 
         # @rbs node: Herb::AST::HTMLAttributeNode
         def space_before_equals?(node) #: bool
-          node.equals.location.start.column > node.name.location.end.column
+          node.equals.value.start_with?(" ", "\t")
         end
 
         # @rbs node: Herb::AST::HTMLAttributeNode
         def space_after_equals?(node) #: bool
           return false unless node.value
 
-          node.value.location.start.column > node.equals.location.end.column
+          node.equals.value.end_with?(" ", "\t")
         end
       end
     end

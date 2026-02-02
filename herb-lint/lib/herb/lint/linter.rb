@@ -33,7 +33,7 @@ module Herb
       # @rbs file_path: String -- path to the file being linted
       # @rbs source: String -- source code content of the file
       def lint(file_path:, source:) #: LintResult
-        document = Herb.parse(source)
+        document = Herb.parse(source, track_whitespace: true)
         return parse_error_result(file_path, source, document.errors) if document.failed?
 
         directives = DirectiveParser.parse(document, source)

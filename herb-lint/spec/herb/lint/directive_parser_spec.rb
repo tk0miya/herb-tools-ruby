@@ -6,7 +6,7 @@ RSpec.describe Herb::Lint::DirectiveParser do
   describe ".parse" do
     subject { described_class.parse(document, source) }
 
-    let(:document) { Herb.parse(source) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
 
     context "when template has no directives" do
       let(:source) { "<div>Hello</div>" }
@@ -193,7 +193,7 @@ RSpec.describe Herb::Lint::DirectiveParser do
   describe "Directives#disabled_at?" do
     subject { described_class.parse(document, source) }
 
-    let(:document) { Herb.parse(source) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
 
     context "when rule is disabled on the line" do
       let(:source) { '<img src="test.png"> <%# herb:disable html-img-require-alt %>' }

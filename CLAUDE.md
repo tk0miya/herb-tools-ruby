@@ -139,6 +139,7 @@ Each gem's binstubs use that gem's Gemfile, ensuring proper dependency resolutio
 - Use RuboCop for style enforcement
 - Target Ruby 3.3+ features where appropriate
 - Sort lists of definitions in ASCII order unless there is a specific reason not to (e.g., `require` statements, `gem` declarations in Gemfile, constant definitions)
+- Always pass `track_whitespace: true` when calling `Herb.parse`. This applies to production code, test code, and any ad-hoc scripts. Example: `Herb.parse(source, track_whitespace: true)`
 
 ### Naming Conventions
 
