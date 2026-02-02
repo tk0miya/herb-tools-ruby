@@ -156,6 +156,36 @@ RSpec.describe Herb::Lint::Linter do
         expect(subject.ignored_count).to eq(1)
       end
     end
+
+    describe "parse_result in LintResult" do
+      let(:rules) { [Herb::Lint::Rules::HtmlImgRequireAlt.new] }
+
+      context "when parsing succeeds" do
+        let(:source) { '<img src="test.png">' }
+
+        it "includes parse_result in the result" do
+          expect(subject.parse_result).not_to be_nil
+          expect(subject.parse_result).to be_a(Herb::ParseResult)
+        end
+      end
+
+      context "when parsing fails" do
+        let(:source) { "<%= unclosed" }
+
+        it "returns nil parse_result" do
+          expect(subject.parse_result).to be_nil
+        end
+      end
+
+      context "when file has herb:linter ignore directive" do
+        let(:source) { "<%# herb:linter ignore %>\n<img src=\"test.png\">" }
+
+        it "still includes parse_result" do
+          expect(subject.parse_result).not_to be_nil
+          expect(subject.parse_result).to be_a(Herb::ParseResult)
+        end
+      end
+    end
   end
 
   describe "#rules" do

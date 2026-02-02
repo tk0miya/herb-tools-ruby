@@ -54,14 +54,14 @@ RSpec.describe Herb::Lint::Offense do
   describe "#fixable?" do
     context "when autofix_context is present" do
       subject do
+        node = Herb.parse('<img src="test.png">', track_whitespace: true).value.children.first
         described_class.new(
           rule_name: "html-img-require-alt",
           message: "Image missing alt attribute",
           severity: "error",
           location: build(:location),
           autofix_context: Herb::Lint::AutofixContext.new(
-            node_location: build(:location),
-            node_type: "HTMLElementNode",
+            node:,
             rule_class: Herb::Lint::Rules::HtmlImgRequireAlt
           )
         )

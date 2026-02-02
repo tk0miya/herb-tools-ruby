@@ -8,16 +8,19 @@ module Herb
       attr_reader :offenses #: Array[Offense]
       attr_reader :source #: String
       attr_reader :ignored_count #: Integer
+      attr_reader :parse_result #: Herb::ParseResult?
 
       # @rbs file_path: String
       # @rbs offenses: Array[Offense]
       # @rbs source: String
       # @rbs ignored_count: Integer -- number of offenses suppressed by directives
-      def initialize(file_path:, offenses:, source:, ignored_count: 0) #: void
+      # @rbs parse_result: Herb::ParseResult? -- parsed AST for autofix phase (nil on parse error)
+      def initialize(file_path:, offenses:, source:, ignored_count: 0, parse_result: nil) #: void
         @file_path = file_path
         @offenses = offenses
         @source = source
         @ignored_count = ignored_count
+        @parse_result = parse_result
       end
 
       # Returns the count of errors.

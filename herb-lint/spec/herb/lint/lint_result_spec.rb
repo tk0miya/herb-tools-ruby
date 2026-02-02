@@ -127,4 +127,27 @@ RSpec.describe Herb::Lint::LintResult do
       end
     end
   end
+
+  describe "#parse_result" do
+    context "when parse_result is provided" do
+      subject do
+        described_class.new(file_path: "test.html.erb", offenses: [], source:, parse_result:)
+      end
+
+      let(:source) { "<div>Hello</div>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+
+      it "returns the parse result" do
+        expect(subject.parse_result).to equal(parse_result)
+      end
+    end
+
+    context "when parse_result is not provided" do
+      subject { described_class.new(file_path: "test.html.erb", offenses: [], source: "<div></div>") }
+
+      it "defaults to nil" do
+        expect(subject.parse_result).to be_nil
+      end
+    end
+  end
 end
