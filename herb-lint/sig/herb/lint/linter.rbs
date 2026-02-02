@@ -34,9 +34,9 @@ module Herb
 
       private
 
-      # @rbs document: Herb::ParseResult
+      # @rbs parse_result: Herb::ParseResult
       # @rbs context: Context
-      def collect_offenses: (Herb::ParseResult document, Context context) -> Array[Offense]
+      def collect_offenses: (Herb::ParseResult parse_result, Context context) -> Array[Offense]
 
       # Build LintResult from offenses.
       # When ignore_disable_comments is false, filters offenses using directives
@@ -44,9 +44,10 @@ module Herb
       #
       # @rbs file_path: String
       # @rbs source: String
+      # @rbs parse_result: Herb::ParseResult
       # @rbs directives: DirectiveParser::Directives
       # @rbs offenses: Array[Offense]
-      def build_lint_result: (String file_path, String source, DirectiveParser::Directives directives, Array[Offense] offenses) -> LintResult
+      def build_lint_result: (String file_path, String source, Herb::ParseResult parse_result, DirectiveParser::Directives directives, Array[Offense] offenses) -> LintResult
 
       # @rbs file_path: String
       # @rbs source: String

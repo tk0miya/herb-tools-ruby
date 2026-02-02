@@ -33,23 +33,23 @@ module Herb
       # @rbs file_path: String -- path to the file being linted
       # @rbs source: String -- source code content of the file
       def lint(file_path:, source:) #: LintResult
-        document = Herb.parse(source, track_whitespace: true)
-        return parse_error_result(file_path, source, document.errors) if document.failed?
+        parse_result = Herb.parse(source, track_whitespace: true)
+        return parse_error_result(file_path, source, parse_result.errors) if parse_result.failed?
 
-        directives = DirectiveParser.parse(document, source)
-        return LintResult.new(file_path:, offenses: [], source:) if directives.ignore_file?
+        directives = DirectiveParser.parse(parse_result, source)
+        return LintResult.new(file_path:, offenses: [], source:, parse_result:) if directives.ignore_file?
 
         context = Context.new(file_path:, source:, config:, directives:, rule_registry:)
-        offenses = collect_offenses(document, context)
-        build_lint_result(file_path, source, directives, offenses)
+        offenses = collect_offenses(parse_result, context)
+        build_lint_result(file_path, source, parse_result, directives, offenses)
       end
 
       private
 
-      # @rbs document: Herb::ParseResult
+      # @rbs parse_result: Herb::ParseResult
       # @rbs context: Context
-      def collect_offenses(document, context) #: Array[Offense]
-        rules.flat_map { |rule| rule.check(document, context) }
+      def collect_offenses(parse_result, context) #: Array[Offense]
+        rules.flat_map { |rule| rule.check(parse_result, context) }
       end
 
       # Build LintResult from offenses.
@@ -58,10 +58,11 @@ module Herb
       #
       # @rbs file_path: String
       # @rbs source: String
+      # @rbs parse_result: Herb::ParseResult
       # @rbs directives: DirectiveParser::Directives
       # @rbs offenses: Array[Offense]
-      def build_lint_result(file_path, source, directives, offenses) #: LintResult
-        return LintResult.new(file_path:, offenses:, source:) if ignore_disable_comments
+      def build_lint_result(file_path, source, parse_result, directives, offenses) #: LintResult
+        return LintResult.new(file_path:, offenses:, source:, parse_result:) if ignore_disable_comments
 
         kept_offenses, ignored_offenses = directives.filter_offenses(offenses)
         unnecessary = UnnecessaryDirectiveDetector.detect(directives, ignored_offenses)
@@ -69,7 +70,8 @@ module Herb
           file_path:,
           offenses: kept_offenses + unnecessary,
           source:,
-          ignored_count: ignored_offenses.size
+          ignored_count: ignored_offenses.size,
+          parse_result:
         )
       end
 

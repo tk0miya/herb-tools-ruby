@@ -26,6 +26,16 @@ module Herb
           def default_severity #: String
             "warning"
           end
+
+          # Whether the rule provides safe autofix.
+          def autocorrectable? #: bool
+            false
+          end
+
+          # Whether the rule provides unsafe autofix (requires --fix-unsafely).
+          def unsafe_autocorrectable? #: bool
+            false
+          end
         end
 
         # @rbs severity: String?
@@ -51,16 +61,39 @@ module Herb
         #
         # @rbs message: String -- description of the violation
         # @rbs location: Herb::Location -- location of the violation
-        def add_offense(message:, location:) #: void
-          @offenses << create_offense(message:, location:)
+        def add_offense(message:, location:, autofix_context: nil) #: void
+          @offenses << create_offense(message:, location:, autofix_context:)
+        end
+
+        # Add an offense with autofix context for the current rule.
+        # Creates an AutofixContext from the given node and current rule class,
+        # then delegates to add_offense.
+        #
+        # @rbs message: String -- description of the violation
+        # @rbs location: Herb::Location -- location of the violation
+        # @rbs node: Herb::AST::Node -- the offending AST node (direct reference for autofix)
+        def add_offense_with_autofix(message:, location:, node:) #: void
+          context = AutofixContext.new(node:, rule_class: self.class)
+          add_offense(message:, location:, autofix_context: context)
+        end
+
+        # Apply autofix to the given node in the AST.
+        # Override in fixable rules to perform AST mutation.
+        # Returns true if the fix was applied, false otherwise.
+        #
+        # @rbs _node: Herb::AST::Node -- the offending AST node (direct reference from AutofixContext)
+        # @rbs _parse_result: Herb::ParseResult -- the parse result from the lint phase
+        def autofix(_node, _parse_result) #: bool # rubocop:disable Naming/PredicateMethod
+          false
         end
 
         # Create an offense for a rule violation.
         #
         # @rbs message: String -- description of the violation
         # @rbs location: Herb::Location -- location of the violation
-        def create_offense(message:, location:) #: Offense
-          Offense.new(rule_name: self.class.rule_name, message:, severity:, location:)
+        # @rbs autofix_context: AutofixContext? -- optional autofix context for fixable offenses
+        def create_offense(message:, location:, autofix_context: nil) #: Offense
+          Offense.new(rule_name: self.class.rule_name, message:, severity:, location:, autofix_context:)
         end
       end
     end

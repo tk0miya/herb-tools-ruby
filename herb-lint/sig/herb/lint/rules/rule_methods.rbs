@@ -16,6 +16,12 @@ module Herb
           def description: () -> String
 
           def default_severity: () -> String
+
+          # Whether the rule provides safe autofix.
+          def autocorrectable?: () -> bool
+
+          # Whether the rule provides unsafe autofix (requires --fix-unsafely).
+          def unsafe_autocorrectable?: () -> bool
         end
 
         # @rbs severity: String?
@@ -36,13 +42,31 @@ module Herb
         #
         # @rbs message: String -- description of the violation
         # @rbs location: Herb::Location -- location of the violation
-        def add_offense: (message: String, location: Herb::Location) -> void
+        def add_offense: (message: String, location: Herb::Location, ?autofix_context: untyped) -> void
+
+        # Add an offense with autofix context for the current rule.
+        # Creates an AutofixContext from the given node and current rule class,
+        # then delegates to add_offense.
+        #
+        # @rbs message: String -- description of the violation
+        # @rbs location: Herb::Location -- location of the violation
+        # @rbs node: Herb::AST::Node -- the offending AST node (direct reference for autofix)
+        def add_offense_with_autofix: (message: String, location: Herb::Location, node: Herb::AST::Node) -> void
+
+        # Apply autofix to the given node in the AST.
+        # Override in fixable rules to perform AST mutation.
+        # Returns true if the fix was applied, false otherwise.
+        #
+        # @rbs _node: Herb::AST::Node -- the offending AST node (direct reference from AutofixContext)
+        # @rbs _parse_result: Herb::ParseResult -- the parse result from the lint phase
+        def autofix: (untyped _node, untyped _parse_result) -> bool
 
         # Create an offense for a rule violation.
         #
         # @rbs message: String -- description of the violation
         # @rbs location: Herb::Location -- location of the violation
-        def create_offense: (message: String, location: Herb::Location) -> Offense
+        # @rbs autofix_context: AutofixContext? -- optional autofix context for fixable offenses
+        def create_offense: (message: String, location: Herb::Location, ?autofix_context: AutofixContext?) -> Offense
       end
     end
   end
