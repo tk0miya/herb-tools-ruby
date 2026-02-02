@@ -125,5 +125,41 @@ RSpec.describe Herb::Printer::IdentityPrinter do
 
       it { is_expected.to eq(source) }
     end
+
+    context "when input is an ERB block with each" do
+      let(:source) { "<% items.each do |item| %><li><%= item %></li><% end %>" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is a simple ERB if" do
+      let(:source) { "<% if condition %>yes<% end %>" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is an ERB if/else" do
+      let(:source) { "<% if condition %>yes<% else %>no<% end %>" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is an ERB unless" do
+      let(:source) { "<% unless done %>work<% end %>" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is an ERB unless/else" do
+      let(:source) { "<% unless done %>work<% else %>rest<% end %>" }
+
+      it { is_expected.to eq(source) }
+    end
+
+    context "when input is a nested ERB if/elsif/else" do
+      let(:source) { "<% if x == 1 %>one<% elsif x == 2 %>two<% else %>other<% end %>" }
+
+      it { is_expected.to eq(source) }
+    end
   end
 end

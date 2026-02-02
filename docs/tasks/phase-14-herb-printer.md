@@ -253,18 +253,20 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 
 ### Task 14.10: IdentityPrinter — ERB Control Flow (Basic)
 
-- [ ] `visit_erb_block_node` — `print_erb_tag` + visit `body` + visit `end_node`
-- [ ] `visit_erb_if_node` — `print_erb_tag` + visit `statements` + visit `subsequent` + visit `end_node`
-- [ ] `visit_erb_else_node` — `print_erb_tag` + visit `statements`
-- [ ] `visit_erb_unless_node` — `print_erb_tag` + visit `statements` + visit `else_clause` + visit `end_node`
+**Status:** ✅
+
+- [x] `visit_erb_block_node` — `print_erb_tag` + visit `body` + visit `end_node`
+- [x] `visit_erb_if_node` — `print_erb_tag` + visit `statements` + visit `subsequent` + visit `end_node`
+- [x] `visit_erb_else_node` — `print_erb_tag` + visit `statements`
+- [x] `visit_erb_unless_node` — `print_erb_tag` + visit `statements` + visit `else_clause` + visit `end_node`
 
 ### Verification
 
-- [ ] Round-trip test: `<% items.each do |item| %><li><%= item %></li><% end %>`
-- [ ] Round-trip test: `<% if condition %>yes<% end %>`
-- [ ] Round-trip test: `<% if condition %>yes<% else %>no<% end %>`
-- [ ] Round-trip test: `<% unless done %>work<% end %>`
-- [ ] Round-trip test: nested `if`/`elsif`/`else`/`end`
+- [x] Round-trip test: `<% items.each do |item| %><li><%= item %></li><% end %>`
+- [x] Round-trip test: `<% if condition %>yes<% end %>`
+- [x] Round-trip test: `<% if condition %>yes<% else %>no<% end %>`
+- [x] Round-trip test: `<% unless done %>work<% end %>`
+- [x] Round-trip test: nested `if`/`elsif`/`else`/`end`
 
 ```bash
 cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
@@ -335,11 +337,11 @@ cd herb-printer && ./bin/rspec spec/herb/printer/identity_printer_spec.rb
 | 14.7 | C | IdentityPrinter — HTML Attribute Nodes | ✅ |
 | 14.8 | C | IdentityPrinter — HTML Comment, Doctype, XML, CDATA | ✅ |
 | 14.9 | D | IdentityPrinter — ERB Leaf Nodes | ✅ |
-| 14.10 | D | IdentityPrinter — ERB Control Flow (Basic) | 📋 |
+| 14.10 | D | IdentityPrinter — ERB Control Flow (Basic) | ✅ |
 | 14.11 | D | IdentityPrinter — ERB Control Flow (Loop/Case) | 📋 |
 | 14.12 | D | IdentityPrinter — ERB Begin/Rescue/Ensure | 📋 |
 
-**Total: 12 tasks** (7 complete, 5 remaining)
+**Total: 12 tasks** (8 complete, 4 remaining)
 
 ## Related Documents
 
