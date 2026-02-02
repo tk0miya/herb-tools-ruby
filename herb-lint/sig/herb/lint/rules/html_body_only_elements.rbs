@@ -1,0 +1,54 @@
+# Generated from lib/herb/lint/rules/html_body_only_elements.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Rule that ensures body-only elements are not placed inside `<head>`.
+      #
+      # Certain HTML elements (e.g., `<div>`, `<p>`, `<main>`) are only valid
+      # inside `<body>`. Placing them inside `<head>` is invalid HTML.
+      #
+      # Good:
+      #   <body>
+      #     <div>Content in body</div>
+      #   </body>
+      #
+      # Bad:
+      #   <head>
+      #     <div>Content in head</div>
+      #   </head>
+      class HtmlBodyOnlyElements < VisitorRule
+        DOCUMENT_ONLY_TAGS: Array[String]
+
+        HTML_ONLY_TAGS: Array[String]
+
+        HEAD_ONLY_TAGS: Array[String]
+
+        HEAD_AND_BODY_TAGS: Array[String]
+
+        NON_BODY_TAGS: Array[String]
+
+        def self.rule_name: () -> String
+
+        def self.description: () -> String
+
+        def self.default_severity: () -> String
+
+        # @rbs override
+        def check: ...
+
+        # @rbs override
+        def visit_html_element_node: ...
+
+        private
+
+        def inside_head?: () -> bool
+
+        def inside_body?: () -> bool
+
+        # @rbs tag_name: String
+        def body_only_tag?: (String tag_name) -> bool
+      end
+    end
+  end
+end

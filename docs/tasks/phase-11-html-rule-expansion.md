@@ -502,9 +502,9 @@ Rules are grouped by theme and sorted by complexity within each batch.
 ## Batch 5: Document Structure Rules (3 rules)
 
 ### Task 11.21: `html-body-only-elements`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Certain elements (e.g., `<div>`, `<p>`, `<main>`) should only appear inside `<body>`.
 
