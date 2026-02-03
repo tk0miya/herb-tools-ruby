@@ -3,25 +3,20 @@
 module Herb
   module Lint
     module Rules
-      # Rule that enforces consistent use of right-trim markers in ERB tags.
+      # Rule that detects the obscure `=%>` right-trim syntax in ERB tags.
       #
-      # ERB supports right-trim markers (`-%>`) that remove trailing whitespace
-      # after the tag. This rule enforces consistency in their usage.
+      # The `=%>` syntax is obscure and not well-supported in most ERB engines.
+      # Use `-%>` instead for right-trimming whitespace after ERB tags.
       #
-      # Good (consistent - never using right-trim):
-      #   <% if condition %>
+      # Bad:
+      #   <% if condition =%>
       #     <p>Content</p>
-      #   <% end %>
+      #   <% end =%>
       #
-      # Good (consistent - always using right-trim):
+      # Good:
       #   <% if condition -%>
       #     <p>Content</p>
       #   <% end -%>
-      #
-      # Bad (inconsistent):
-      #   <% if condition -%>
-      #     <p>Content</p>
-      #   <% end %>
       class ErbRightTrim < VisitorRule
         def self.rule_name: () -> String
 
@@ -29,31 +24,14 @@ module Herb
 
         def self.default_severity: () -> String
 
-        @erb_nodes: Array[untyped]
-
-        # @rbs override
-        def initialize: ...
-
-        # Collect all ERB nodes (all ERB nodes have tag_closing)
+        # Check each ERB node for the obscure =%> syntax
         # @rbs override
         def visit_child_nodes: ...
 
-        # Check consistency after visiting all nodes
-        # @rbs override
-        def visit_document_node: ...
-
         private
 
-        def check_consistency: () -> void
-
-        # Report offenses for tags with right-trim marker
-        def report_trim_offenses: () -> void
-
-        # Report offenses for tags without right-trim marker
-        def report_no_trim_offenses: () -> void
-
         # @rbs node: untyped
-        def right_trim?: (untyped node) -> bool
+        def check_erb_node: (untyped node) -> void
       end
     end
   end
