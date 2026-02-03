@@ -27,16 +27,16 @@ This phase expands autofix support across all rule categories:
 
 ### Task 16.1: Autofix Utility Helpers
 
-**Status:** Incomplete (Task 15.7)
+**Status:** Complete
 
 **Location:** `herb-lint/lib/herb/lint/autofix_helpers.rb`
 
-- [ ] Implement `AutofixHelpers` module
-  - [ ] `parent_array_for(parent, node)` — find mutable array containing node
-  - [ ] `find_parent(parse_result, node)` — wrapper around `NodeLocator.find_parent`
-- [ ] Include in `VisitorRule` base class
-- [ ] Add unit tests
-- [ ] Generate RBS types
+- [x] Implement `AutofixHelpers` module
+  - [x] `parent_array_for(parent, node)` — find mutable array containing node
+  - [x] `find_parent(parse_result, node)` — wrapper around `NodeLocator.find_parent`
+- [x] Include in `VisitorRule` base class
+- [x] Add unit tests
+- [x] Generate RBS types
 
 **Verification:**
 
