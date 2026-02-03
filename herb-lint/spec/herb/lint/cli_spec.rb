@@ -52,7 +52,7 @@ RSpec.describe Herb::Lint::CLI do
         let(:argv) { [] }
 
         before do
-          create_file("app/views/index.html.erb", '<img src="test.png" alt="Test">')
+          create_file("app/views/index.html.erb", '<%= image_tag "test.png", alt: "Test" %>')
         end
 
         it "lints files in the current directory" do
@@ -96,7 +96,7 @@ RSpec.describe Herb::Lint::CLI do
         let(:argv) { [] }
 
         before do
-          create_file("app/views/valid.html.erb", '<img src="test.png" alt="Test">')
+          create_file("app/views/valid.html.erb", '<%= image_tag "test.png", alt: "Test" %>')
         end
 
         it "returns EXIT_SUCCESS" do
@@ -131,7 +131,10 @@ RSpec.describe Herb::Lint::CLI do
         let(:argv) { [] }
 
         before do
-          create_file("app/views/disabled.html.erb", '<img src="test.png"> <%# herb:disable html-img-require-alt %>')
+          create_file(
+            "app/views/disabled.html.erb",
+            '<img src="test.png"> <%# herb:disable html-img-require-alt, erb-prefer-image-tag-helper %>'
+          )
         end
 
         it "returns EXIT_SUCCESS when all offenses are suppressed" do

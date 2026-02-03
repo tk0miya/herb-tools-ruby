@@ -68,7 +68,7 @@ RSpec.describe Herb::Lint::Runner do
 
       it "processes all files and aggregates results" do
         expect(subject.file_count).to eq(3)
-        expect(subject.offense_count).to eq(3)
+        expect(subject.offense_count).to eq(6)
       end
     end
 
@@ -80,7 +80,7 @@ RSpec.describe Herb::Lint::Runner do
 
       it "aggregates offense counts correctly" do
         expect(subject.file_count).to eq(2)
-        expect(subject.offense_count).to eq(1)
+        expect(subject.offense_count).to eq(3)
         expect(subject.error_count).to eq(1)
       end
 
@@ -91,7 +91,7 @@ RSpec.describe Herb::Lint::Runner do
 
     context "when all files are valid" do
       before do
-        create_file("app/views/valid.html.erb", '<img src="test.png" alt="Test">')
+        create_file("app/views/valid.html.erb", '<%= image_tag "test.png", alt: "Test" %>')
       end
 
       it "reports success" do

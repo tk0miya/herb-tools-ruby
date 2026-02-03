@@ -1,0 +1,36 @@
+# Generated from lib/herb/lint/rules/erb_prefer_image_tag_helper.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Rule that prefers Rails image_tag helper over raw <img> tags.
+      #
+      # In Rails applications, it's conventional to use the image_tag helper
+      # instead of raw <img> HTML tags. The helper provides automatic asset
+      # pipeline integration and better defaults.
+      #
+      # Good:
+      #   <%= image_tag 'logo.png' %>
+      #   <%= image_tag 'logo.png', alt: 'Company Logo' %>
+      #
+      # Bad:
+      #   <img src="<%= asset_path('logo.png') %>">
+      #   <img src="logo.png" alt="Logo">
+      class ErbPreferImageTagHelper < VisitorRule
+        def self.rule_name: () -> String
+
+        def self.description: () -> String
+
+        def self.default_severity: () -> String
+
+        # @rbs override
+        def visit_html_element_node: ...
+
+        private
+
+        # @rbs node: Herb::AST::HTMLElementNode
+        def img_element?: (Herb::AST::HTMLElementNode node) -> bool
+      end
+    end
+  end
+end
