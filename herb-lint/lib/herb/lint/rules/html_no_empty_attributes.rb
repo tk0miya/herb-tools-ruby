@@ -17,6 +17,9 @@ module Herb
       # Bad:
       #   <div class="">
       #   <input type="">
+      #
+      # @see https://herb-tools.dev/linter/rules/html-no-empty-attributes Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-no-empty-attributes.ts Source
       class HtmlNoEmptyAttributes < VisitorRule
         # Attributes where an empty value is semantically valid.
         ALLOWED_EMPTY_ATTRIBUTES = %w[alt].freeze #: Array[String]

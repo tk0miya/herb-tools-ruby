@@ -16,6 +16,9 @@ module Herb
       # Bad:
       #   <div class=container>
       #   <input type=text>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-attribute-values-require-quotes Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-attribute-values-require-quotes.ts Source
       class HtmlAttributeValuesRequireQuotes < VisitorRule
         def self.rule_name #: String
           "html-attribute-values-require-quotes"

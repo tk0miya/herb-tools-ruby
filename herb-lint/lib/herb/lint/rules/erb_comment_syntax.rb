@@ -13,6 +13,9 @@ module Herb
       #
       # Bad:
       #   <% # This is a comment %>
+      #
+      # @see https://herb-tools.dev/linter/rules/erb-comment-syntax Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/erb-comment-syntax.ts Source
       class ErbCommentSyntax < VisitorRule
         def self.rule_name #: String
           "erb-comment-syntax"

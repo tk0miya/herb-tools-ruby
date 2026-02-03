@@ -16,6 +16,9 @@ module Herb
       #   <div role="heading" aria-level="0">
       #   <div role="heading" aria-level="7">
       #   <div role="heading" aria-level="abc">
+      #
+      # @see https://herb-tools.dev/linter/rules/html-aria-level-must-be-valid Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-aria-level-must-be-valid.ts Source
       class HtmlAriaLevelMustBeValid < VisitorRule
         VALID_LEVELS = (1..6) #: Range[Integer]
 

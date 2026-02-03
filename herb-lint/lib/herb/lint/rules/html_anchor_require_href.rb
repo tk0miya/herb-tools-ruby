@@ -16,6 +16,9 @@ module Herb
       # Bad:
       #   <a>Click here</a>
       #   <a name="anchor">Section</a>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-anchor-require-href Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-anchor-require-href.ts Source
       class HtmlAnchorRequireHref < VisitorRule
         def self.rule_name #: String
           "html-anchor-require-href"

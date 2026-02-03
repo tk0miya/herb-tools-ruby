@@ -17,6 +17,9 @@ module Herb
       #   <%= if condition %>
       #   <%= case value %>
       #   <%= while loop %>
+      #
+      # @see https://herb-tools.dev/linter/rules/erb-no-output-control-flow Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/erb-no-output-control-flow.ts Source
       class ErbNoOutputControlFlow < VisitorRule
         def self.rule_name #: String
           "erb-no-output-control-flow"

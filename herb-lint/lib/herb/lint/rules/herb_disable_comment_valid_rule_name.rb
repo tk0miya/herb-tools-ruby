@@ -17,6 +17,9 @@ module Herb
       # Bad:
       #   <%# herb:disable html-img-require-alts %>
       #   <%# herb:disable nonexistent-rule %>
+      #
+      # @see https://herb-tools.dev/linter/rules/herb-disable-comment-valid-rule-name Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/herb-disable-comment-valid-rule-name.ts Source
       class HerbDisableCommentValidRuleName < DirectiveRule
         def self.rule_name #: String
           "herb-disable-comment-valid-rule-name"

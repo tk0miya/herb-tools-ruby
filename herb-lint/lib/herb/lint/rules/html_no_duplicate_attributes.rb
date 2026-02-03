@@ -14,6 +14,9 @@ module Herb
       #
       # Bad:
       #   <div class="foo" class="bar">content</div>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-no-duplicate-attributes Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-no-duplicate-attributes.ts Source
       class HtmlNoDuplicateAttributes < VisitorRule
         def self.rule_name #: String
           "html-no-duplicate-attributes"

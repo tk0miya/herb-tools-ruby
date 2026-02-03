@@ -14,6 +14,9 @@ module Herb
       #
       # Bad:
       #   <img src="photo.jpg">
+      #
+      # @see https://herb-tools.dev/linter/rules/html-img-require-alt Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-img-require-alt.ts Source
       class HtmlImgRequireAlt < VisitorRule
         def self.rule_name #: String
           "html-img-require-alt"

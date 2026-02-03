@@ -15,6 +15,9 @@ module Herb
       # Bad:
       #   <span><div>Block in inline</div></span>
       #   <a href="/"><p>Paragraph in anchor</p></a>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-no-block-inside-inline Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-no-block-inside-inline.ts Source
       class HtmlNoBlockInsideInline < VisitorRule
         # @see https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements
         INLINE_ELEMENTS = Set.new(

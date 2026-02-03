@@ -16,6 +16,9 @@ module Herb
       #   <div role="invalid-role">
       #   <div role="">
       # rubocop:disable Metrics/ClassLength
+      #
+      # @see https://herb-tools.dev/linter/rules/html-aria-role-must-be-valid Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-aria-role-must-be-valid.ts Source
       class HtmlAriaRoleMustBeValid < VisitorRule
         # Valid WAI-ARIA roles from the WAI-ARIA 1.2 specification.
         # Abstract roles (command, composite, input, landmark, range, roletype,

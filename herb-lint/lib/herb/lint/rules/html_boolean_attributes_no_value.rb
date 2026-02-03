@@ -16,6 +16,9 @@ module Herb
       # Bad:
       #   <input disabled="disabled">
       #   <input disabled="true">
+      #
+      # @see https://herb-tools.dev/linter/rules/html-boolean-attributes-no-value Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-boolean-attributes-no-value.ts Source
       class HtmlBooleanAttributesNoValue < VisitorRule
         # Standard HTML boolean attributes.
         BOOLEAN_ATTRIBUTES = Set.new(

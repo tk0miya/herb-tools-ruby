@@ -14,6 +14,9 @@ module Herb
       #
       # Bad:
       #   <button disabled aria-disabled="true">Submit</button>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-avoid-both-disabled-and-aria-disabled Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-avoid-both-disabled-and-aria-disabled.ts Source
       class HtmlAvoidBothDisabledAndAriaDisabled < VisitorRule
         def self.rule_name #: String
           "html-avoid-both-disabled-and-aria-disabled"

@@ -14,6 +14,9 @@ module Herb
       #
       # Bad:
       #   <%# herb:disable all, rule-name %>
+      #
+      # @see https://herb-tools.dev/linter/rules/herb-disable-comment-no-redundant-all Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/herb-disable-comment-no-redundant-all.ts Source
       class HerbDisableCommentNoRedundantAll < DirectiveRule
         def self.rule_name #: String
           "herb-disable-comment-no-redundant-all"

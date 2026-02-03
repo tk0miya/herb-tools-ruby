@@ -16,6 +16,9 @@ module Herb
       # Bad:
       #   <div id="content">...</div>
       #   <div id="content">...</div>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-no-duplicate-ids Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-no-duplicate-ids.ts Source
       class HtmlNoDuplicateIds < VisitorRule
         def self.rule_name #: String
           "html-no-duplicate-ids"

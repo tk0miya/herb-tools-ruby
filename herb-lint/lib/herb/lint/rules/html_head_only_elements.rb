@@ -19,6 +19,9 @@ module Herb
       #   <body>
       #     <title>Page Title</title>
       #   </body>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-head-only-elements Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-head-only-elements.ts Source
       class HtmlHeadOnlyElements < VisitorRule
         HEAD_ONLY_ELEMENTS = %w[title meta link base].freeze #: Array[String]
 

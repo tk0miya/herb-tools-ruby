@@ -16,6 +16,9 @@ module Herb
       # Bad:
       #   <div class=container>
       #   <input type=text>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-attribute-double-quotes Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-attribute-double-quotes.ts Source
       class HtmlAttributeDoubleQuotes < VisitorRule
         def self.rule_name #: String
           "html-attribute-double-quotes"

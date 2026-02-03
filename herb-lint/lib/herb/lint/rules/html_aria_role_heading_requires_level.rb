@@ -13,6 +13,9 @@ module Herb
       #
       # Bad:
       #   <div role="heading">Title</div>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-aria-role-heading-requires-level Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-aria-role-heading-requires-level.ts Source
       class HtmlAriaRoleHeadingRequiresLevel < VisitorRule
         def self.rule_name #: String
           "html-aria-role-heading-requires-level"

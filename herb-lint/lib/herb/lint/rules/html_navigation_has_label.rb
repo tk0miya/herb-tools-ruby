@@ -14,6 +14,9 @@ module Herb
       #
       # Bad:
       #   <nav><a href="/">Home</a></nav>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-navigation-has-label Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-navigation-has-label.ts Source
       class HtmlNavigationHasLabel < VisitorRule
         def self.rule_name #: String
           "html-navigation-has-label"

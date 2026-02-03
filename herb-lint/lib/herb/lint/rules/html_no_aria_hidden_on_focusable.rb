@@ -25,6 +25,9 @@ module Herb
       #   <button aria-hidden="true">Click</button>
       #   <a href="/page" aria-hidden="true">Link</a>
       #   <div tabindex="0" aria-hidden="true">Focusable div</div>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-no-aria-hidden-on-focusable Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-no-aria-hidden-on-focusable.ts Source
       class HtmlNoAriaHiddenOnFocusable < VisitorRule
         # Elements that are natively interactive/focusable.
         INTERACTIVE_ELEMENTS = Set.new(%w[a button input select summary textarea]).freeze #: Set[String]

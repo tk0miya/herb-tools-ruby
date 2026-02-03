@@ -16,6 +16,9 @@ module Herb
       #   <button aria-label="">Submit</button>
       #   <button aria-label="   ">Submit</button>
       #   <button aria-label="submit form">Submit</button>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-aria-label-is-well-formatted Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-aria-label-is-well-formatted.ts Source
       class HtmlAriaLabelIsWellFormatted < VisitorRule
         def self.rule_name #: String
           "html-aria-label-is-well-formatted"

@@ -16,6 +16,9 @@ module Herb
       # Bad:
       #   <meta name="description" content="First">
       #   <meta name="description" content="Second">
+      #
+      # @see https://herb-tools.dev/linter/rules/html-no-duplicate-meta-names Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-no-duplicate-meta-names.ts Source
       class HtmlNoDuplicateMetaNames < VisitorRule
         def self.rule_name #: String
           "html-no-duplicate-meta-names"

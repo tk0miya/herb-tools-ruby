@@ -14,6 +14,9 @@ module Herb
       #
       # Bad:
       #   <span title="More info">Hover me</span>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-no-title-attribute Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-no-title-attribute.ts Source
       class HtmlNoTitleAttribute < VisitorRule
         def self.rule_name #: String
           "html-no-title-attribute"

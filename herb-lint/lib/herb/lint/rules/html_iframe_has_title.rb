@@ -14,6 +14,9 @@ module Herb
       # Bad:
       #   <iframe src="content.html"></iframe>
       #   <iframe src="content.html" title=""></iframe>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-iframe-has-title Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-iframe-has-title.ts Source
       class HtmlIframeHasTitle < VisitorRule
         def self.rule_name #: String
           "html-iframe-has-title"

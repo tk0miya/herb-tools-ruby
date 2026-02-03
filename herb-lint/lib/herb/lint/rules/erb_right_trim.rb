@@ -22,6 +22,9 @@ module Herb
       #   <% if condition -%>
       #     <p>Content</p>
       #   <% end %>
+      #
+      # @see https://herb-tools.dev/linter/rules/erb-right-trim Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/erb-right-trim.ts Source
       class ErbRightTrim < VisitorRule
         def self.rule_name #: String
           "erb-right-trim"

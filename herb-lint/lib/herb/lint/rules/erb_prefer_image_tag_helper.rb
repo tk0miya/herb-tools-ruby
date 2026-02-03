@@ -16,6 +16,9 @@ module Herb
       # Bad:
       #   <img src="<%= asset_path('logo.png') %>">
       #   <img src="logo.png" alt="Logo">
+      #
+      # @see https://herb-tools.dev/linter/rules/erb-prefer-image-tag-helper Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/erb-prefer-image-tag-helper.ts Source
       class ErbPreferImageTagHelper < VisitorRule
         def self.rule_name #: String
           "erb-prefer-image-tag-helper"

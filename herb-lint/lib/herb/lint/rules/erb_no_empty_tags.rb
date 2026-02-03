@@ -15,6 +15,9 @@ module Herb
       #   <% %>
       #   <%  %>
       #   <%= %>
+      #
+      # @see https://herb-tools.dev/linter/rules/erb-no-empty-tags Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/erb-no-empty-tags.ts Source
       class ErbNoEmptyTags < VisitorRule
         def self.rule_name #: String
           "erb-no-empty-tags"

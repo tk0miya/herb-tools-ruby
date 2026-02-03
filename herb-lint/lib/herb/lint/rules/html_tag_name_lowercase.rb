@@ -15,6 +15,9 @@ module Herb
       # Bad:
       #   <DIV></DIV>
       #   <Span>text</Span>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-tag-name-lowercase Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-tag-name-lowercase.ts Source
       class HtmlTagNameLowercase < VisitorRule
         def self.rule_name #: String
           "html-tag-name-lowercase"

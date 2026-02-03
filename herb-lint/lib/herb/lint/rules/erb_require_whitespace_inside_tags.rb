@@ -15,6 +15,9 @@ module Herb
       # Bad:
       #   <%value%>
       #   <%=value%>
+      #
+      # @see https://herb-tools.dev/linter/rules/erb-require-whitespace-inside-tags Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/erb-require-whitespace-inside-tags.ts Source
       class ErbRequireWhitespaceInsideTags < VisitorRule
         def self.rule_name #: String
           "erb-require-whitespace-inside-tags"

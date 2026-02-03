@@ -15,6 +15,9 @@ module Herb
       #   <div class = "foo">
       #   <div class ="foo">
       #   <div class= "foo">
+      #
+      # @see https://herb-tools.dev/linter/rules/html-attribute-equals-spacing Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-attribute-equals-spacing.ts Source
       class HtmlAttributeEqualsSpacing < VisitorRule
         def self.rule_name #: String
           "html-attribute-equals-spacing"

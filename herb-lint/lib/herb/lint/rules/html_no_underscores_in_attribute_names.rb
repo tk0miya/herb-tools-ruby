@@ -13,6 +13,9 @@ module Herb
       #
       # Bad:
       #   <div data_value="foo">
+      #
+      # @see https://herb-tools.dev/linter/rules/html-no-underscores-in-attribute-names Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-no-underscores-in-attribute-names.ts Source
       class HtmlNoUnderscoresInAttributeNames < VisitorRule
         def self.rule_name #: String
           "html-no-underscores-in-attribute-names"

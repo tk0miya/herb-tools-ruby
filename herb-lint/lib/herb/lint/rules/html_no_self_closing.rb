@@ -18,6 +18,9 @@ module Herb
       #   <br/>
       #   <img src="photo.jpg" />
       #   <input type="text" />
+      #
+      # @see https://herb-tools.dev/linter/rules/html-no-self-closing Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-no-self-closing.ts Source
       class HtmlNoSelfClosing < VisitorRule
         VOID_ELEMENTS = %w[
           area

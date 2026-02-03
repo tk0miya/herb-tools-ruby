@@ -21,6 +21,9 @@ module Herb
       #   <% when :a %>
       #     <p>A</p>
       #   <% end %>
+      #
+      # @see https://herb-tools.dev/linter/rules/erb-no-case-node-children Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/erb-no-case-node-children.ts Source
       class ErbNoCaseNodeChildren < VisitorRule
         def self.rule_name #: String
           "erb-no-case-node-children"

@@ -14,6 +14,9 @@ module Herb
       #
       # Bad:
       #   <input type="text" name="email">
+      #
+      # @see https://herb-tools.dev/linter/rules/html-input-require-autocomplete Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-input-require-autocomplete.ts Source
       class HtmlInputRequireAutocomplete < VisitorRule
         TYPES_REQUIRING_AUTOCOMPLETE = Set.new(
           %w[

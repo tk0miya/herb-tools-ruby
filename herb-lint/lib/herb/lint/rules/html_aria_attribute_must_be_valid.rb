@@ -14,6 +14,9 @@ module Herb
       #
       # Bad:
       #   <div aria-labelled="Name">
+      #
+      # @see https://herb-tools.dev/linter/rules/html-aria-attribute-must-be-valid Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-aria-attribute-must-be-valid.ts Source
       class HtmlAriaAttributeMustBeValid < VisitorRule
         # Valid ARIA attributes from the WAI-ARIA specification.
         VALID_ARIA_ATTRIBUTES = Set.new(

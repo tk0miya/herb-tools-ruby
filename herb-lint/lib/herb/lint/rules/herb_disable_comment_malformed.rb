@@ -10,6 +10,9 @@ module Herb
       # - Leading commas in the rule list (e.g. `herb:disable ,rule-name`)
       # - Trailing commas in the rule list (e.g. `herb:disable rule-name,`)
       # - Consecutive commas in the rule list (e.g. `herb:disable rule1,,rule2`)
+      #
+      # @see https://herb-tools.dev/linter/rules/herb-disable-comment-malformed Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/herb-disable-comment-malformed.ts Source
       class HerbDisableCommentMalformed < DirectiveRule
         def self.rule_name #: String
           "herb-disable-comment-malformed"

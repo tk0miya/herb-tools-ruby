@@ -13,6 +13,9 @@ module Herb
       #
       # Bad:
       #   <%# herb:disable rule1, rule1 %>
+      #
+      # @see https://herb-tools.dev/linter/rules/herb-disable-comment-no-duplicate-rules Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/herb-disable-comment-no-duplicate-rules.ts Source
       class HerbDisableCommentNoDuplicateRules < DirectiveRule
         def self.rule_name #: String
           "herb-disable-comment-no-duplicate-rules"

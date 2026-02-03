@@ -16,6 +16,9 @@ module Herb
       # Bad:
       #   <button tabindex="1">Click</button>
       #   <div tabindex="5">Content</div>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-no-positive-tab-index Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-no-positive-tab-index.ts Source
       class HtmlNoPositiveTabIndex < VisitorRule
         def self.rule_name #: String
           "html-no-positive-tab-index"

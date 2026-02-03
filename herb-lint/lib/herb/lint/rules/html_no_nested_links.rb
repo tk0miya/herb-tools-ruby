@@ -16,6 +16,9 @@ module Herb
       #   <a href="/outer">
       #     <a href="/inner">Nested link</a>
       #   </a>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-no-nested-links Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-no-nested-links.ts Source
       class HtmlNoNestedLinks < VisitorRule
         def self.rule_name #: String
           "html-no-nested-links"

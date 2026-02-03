@@ -15,6 +15,9 @@ module Herb
       # Bad:
       #   <h1></h1>
       #   <h2>   </h2>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-no-empty-headings Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-no-empty-headings.ts Source
       class HtmlNoEmptyHeadings < VisitorRule
         HEADING_TAGS = %w[h1 h2 h3 h4 h5 h6].freeze #: Array[String]
 

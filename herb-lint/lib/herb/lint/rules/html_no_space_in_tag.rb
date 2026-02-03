@@ -7,6 +7,9 @@ module Herb
       # including spaces between the tag name and attributes,
       # between consecutive attributes, trailing spaces before `>`,
       # incorrect spacing around `/>`, and multiline indentation.
+      #
+      # @see https://herb-tools.dev/linter/rules/html-no-space-in-tag Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-no-space-in-tag.ts Source
       class HtmlNoSpaceInTag < VisitorRule
         EXTRA_SPACE_NO_SPACE = "Extra space detected where there should be no space."
         EXTRA_SPACE_SINGLE_SPACE = "Extra space detected where there should be a single space."

@@ -17,6 +17,9 @@ module Herb
       #   <head>
       #     <div>Content in head</div>
       #   </head>
+      #
+      # @see https://herb-tools.dev/linter/rules/html-body-only-elements Documentation
+      # @see https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-body-only-elements.ts Source
       class HtmlBodyOnlyElements < VisitorRule
         DOCUMENT_ONLY_TAGS = %w[html].freeze #: Array[String]
         HTML_ONLY_TAGS = %w[body head].freeze #: Array[String]
