@@ -45,7 +45,13 @@ RSpec.describe Herb::Lint::CLI do
       def create_file(relative_path, content = "")
         full_path = File.join(Dir.pwd, relative_path)
         FileUtils.mkdir_p(File.dirname(full_path))
-        File.write(full_path, content)
+        # Ensure content ends with newline if not empty
+        content_with_newline = if content.empty? || content.end_with?("\n")
+                                 content
+                               else
+                                 "#{content}\n"
+                               end
+        File.write(full_path, content_with_newline)
       end
 
       context "when no arguments are provided" do
