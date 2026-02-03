@@ -2,6 +2,7 @@
 
 require_relative "node_helpers"
 require_relative "rule_methods"
+require_relative "../autofix_helpers"
 
 module Herb
   module Lint
@@ -21,6 +22,7 @@ module Herb
       #     end
       #   end
       class VisitorRule < Herb::Visitor
+        include AutofixHelpers
         include NodeHelpers
         include RuleMethods
 
