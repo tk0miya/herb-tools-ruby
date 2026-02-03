@@ -201,9 +201,9 @@ Rules are grouped by theme:
 ---
 
 ### Task 12.8: `erb-right-trim`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Enforce consistent use of right-trim marker (`-%>` vs `%>`).
 
