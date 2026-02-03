@@ -18,6 +18,8 @@ module Herb
       #     end
       #   end
       class VisitorRule < Herb::Visitor
+        include AutofixHelpers
+
         include NodeHelpers
 
         include RuleMethods
