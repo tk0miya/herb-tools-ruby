@@ -280,7 +280,11 @@ herb-format/spec/
 ### Writing Tests
 
 - Define the test subject using `subject` (without a name)
-- Use `context` blocks when preconditions or execution conditions differ
+- The subject should match the describe block - e.g., `describe "#hello"` should have `subject { object.hello }`
+- Use `context` blocks to express different situations (preconditions or parameter variations)
+  - Describe the situation in the context name (e.g., `context "with option"`, `context "without option"`)
+  - Do NOT describe situations in `it` blocks (e.g., avoid `it "runs with options"`)
+  - Define `before` hooks and `let` variables within contexts to set up the situation
 - Consolidate multiple expectations into a single `it` block within the same context
 
 ```ruby
