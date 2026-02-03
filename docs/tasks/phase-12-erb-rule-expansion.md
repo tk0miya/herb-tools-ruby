@@ -98,9 +98,9 @@ Rules are grouped by theme:
 ---
 
 ### Task 12.4: `erb-require-whitespace-inside-tags`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Require whitespace between ERB tag delimiters and content.
 

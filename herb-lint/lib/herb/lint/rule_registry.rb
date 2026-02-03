@@ -14,6 +14,7 @@ module Herb
           Rules::ErbCommentSyntax,
           Rules::ErbNoEmptyTags,
           Rules::ErbNoExtraWhitespaceInsideTags,
+          Rules::ErbRequireWhitespaceInsideTags,
           Rules::HerbDisableCommentMalformed,
           Rules::HerbDisableCommentMissingRules,
           Rules::HerbDisableCommentNoDuplicateRules,
