@@ -1,0 +1,38 @@
+# Generated from lib/herb/lint/auto_fixer.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # Orchestrates autofix application for a single file.
+    # Receives the ParseResult from the lint phase (single-parse design)
+    # and applies fixes to the same AST.
+    class AutoFixer
+      attr_reader offenses: Array[Offense]
+
+      attr_reader parse_result: Herb::ParseResult
+
+      attr_reader unsafe: bool
+
+      # @rbs parse_result: Herb::ParseResult -- the parse result from the lint phase
+      # @rbs offenses: Array[Offense] -- offenses detected during linting
+      # @rbs unsafe: bool -- when true, also apply unsafe autofixes
+      def initialize: (Herb::ParseResult parse_result, Array[Offense] offenses, ?unsafe: bool) -> void
+
+      # Apply autofixes and return the result.
+      #
+      # Processing:
+      # 1. Partition offenses into fixable and non-fixable
+      # 2. Apply AST-phase autofixes for fixable offenses
+      # 3. Return AutoFixResult with corrected source and categorized offenses
+      def apply: () -> AutoFixResult
+
+      private
+
+      # Apply autofixes for fixable offenses.
+      # For each offense, instantiate the rule and call its autofix method.
+      # After all fixes, serialize the modified AST via IdentityPrinter.
+      #
+      # @rbs offenses: Array[Offense] -- fixable offenses to apply
+      def apply_fixes: (Array[Offense] offenses) -> [ String, Array[Offense], Array[Offense] ]
+    end
+  end
+end

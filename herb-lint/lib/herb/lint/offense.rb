@@ -24,8 +24,11 @@ module Herb
       end
 
       # Returns true when the offense can be automatically fixed.
-      def fixable? #: bool
-        !@autofix_context.nil?
+      # Delegates to AutofixContext#autocorrectable? for safety-level filtering.
+      #
+      # @rbs unsafe: bool -- when true, also consider unsafe autofixes
+      def fixable?(unsafe: false) #: boolish
+        @autofix_context&.autocorrectable?(unsafe:)
       end
 
       # Returns the starting line number of the offense.

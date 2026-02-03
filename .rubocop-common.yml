@@ -11,6 +11,10 @@ AllCops:
 Layout/LeadingCommentSpace:
   AllowRBSInlineAnnotation: true
 
+Naming/PredicateMethod:
+  AllowedMethods:
+    - autofix
+
 Metrics/AbcSize:
   Max: 20
 

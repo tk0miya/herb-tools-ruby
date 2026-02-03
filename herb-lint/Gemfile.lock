@@ -9,12 +9,19 @@ PATH
     herb-core (0.1.0)
 
 PATH
+  remote: ../herb-printer
+  specs:
+    herb-printer (0.1.0)
+      herb
+
+PATH
   remote: .
   specs:
     herb-lint (0.1.0)
       herb
       herb-config (~> 0.1.0)
       herb-core (~> 0.1.0)
+      herb-printer (~> 0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -200,6 +207,7 @@ DEPENDENCIES
   herb-config!
   herb-core!
   herb-lint!
+  herb-printer!
   irb
   rake
   rbs

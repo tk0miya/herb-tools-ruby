@@ -6,7 +6,7 @@ RSpec.describe Herb::Lint::Rules::RuleMethods do
       Class.new(Herb::Lint::Rules::VisitorRule) do
         def self.rule_name = "autofix-test-rule"
         def self.description = "Test rule with autofix"
-        def self.autocorrectable? = true
+        def self.safe_autocorrectable? = true
 
         def visit_html_element_node(node)
           add_offense_with_autofix(
