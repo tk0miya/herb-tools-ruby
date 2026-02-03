@@ -346,56 +346,7 @@ end
 
 ---
 
-### Task 15.8: Add Autofix to Existing Rules
-
-Update existing fixable rules to declare `autocorrectable?` and implement `autofix`:
-
-- [ ] Identify which existing rules are autofixable (per TypeScript reference)
-- [ ] For each fixable rule:
-  - [ ] Add `def self.autocorrectable? = true`
-  - [ ] Change `add_offense` to `add_offense_with_autofix` in detection
-  - [ ] Implement `autofix(node, parse_result)` method
-  - [ ] Add autofix unit tests
-
-**Node Replacement Patterns:**
-
-| Pattern | When | Example |
-|---------|------|---------|
-| Replace in children array | Attribute-level changes | Boolean attribute fix, quote change |
-| Reconstruct to array boundary | Element-level changes | Tag name lowercase |
-| Children array modification | Add/remove children | Self-closing removal |
-
-**Example — Tag name lowercase autofix:**
-
-```ruby
-class HtmlTagNameLowercase < VisitorRule
-  def self.autocorrectable? = true
-
-  # node: direct reference from AutofixContext (same object as detected during linting)
-  # parse_result: same ParseResult from the lint phase (single-parse design)
-  def autofix(node, parse_result)
-    parent = NodeLocator.find_parent(parse_result, node)
-    return false unless parent
-
-    new_element = build_lowercase_element(node)
-
-    parent_array = parent_array_for(parent, node)
-    return false unless parent_array
-
-    idx = parent_array.index(node)
-    return false unless idx
-
-    parent_array[idx] = new_element
-    true
-  end
-end
-```
-
-**Test Cases (per fixable rule):**
-- Autofix produces correct output source
-- `autocorrectable?` returns `true`
-- `add_offense_with_autofix` creates fixable offense
-- Round-trip: source → parse → detect → autofix → print → expected source
+**Note:** Task 15.7 (Autofix utility helpers) and individual rule autofix implementations have been moved to [Phase 16: Rule Autofix Expansion](./phase-16-rule-autofix-expansion.md).
 
 ---
 
@@ -427,29 +378,6 @@ cd herb-lint && ./bin/rspec spec/herb/lint/cli_spec.rb
 cd herb-lint && ./bin/steep check
 ```
 
-### Part C: Rule Autofix
-
-```bash
-# Rule autofix tests
-cd herb-lint && ./bin/rspec spec/herb/lint/rules/ --tag autofix
-
-# Type check
-cd herb-lint && ./bin/steep check
-```
-
-**Manual Test:**
-
-```erb
-<%# test.html.erb %>
-<DIV class='foo'>hello</DIV>
-```
-
-```bash
-herb-lint --fix test.html.erb
-cat test.html.erb
-# Expected: <div class="foo">hello</div>
-```
-
 ---
 
 ## Summary
@@ -462,10 +390,10 @@ cat test.html.erb
 | 15.4 | B | AutoFixResult Data class |
 | 15.5 | B | AutoFixer implementation |
 | 15.6 | B | Runner and CLI integration |
-| 15.7 | C | Autofix utility helpers |
-| 15.8 | C | Add autofix to existing rules |
 
-**Total: 8 tasks**
+**Total: 6 tasks**
+
+**Note:** Task 15.7 (Autofix utility helpers) and rule-specific autofix implementations have been extracted to [Phase 16: Rule Autofix Expansion](./phase-16-rule-autofix-expansion.md) for better organization and incremental implementation.
 
 ## Related Documents
 
@@ -473,3 +401,4 @@ cat test.html.erb
 - [herb-lint Design](../design/herb-lint-design.md) — Overall linter architecture
 - [Printer Design](../design/printer-design.md) — IdentityPrinter for AST-to-source serialization
 - [Phase 14: herb-printer](./phase-14-herb-printer.md) — Prerequisite phase
+- [Phase 16: Rule Autofix Expansion](./phase-16-rule-autofix-expansion.md) — Rule-specific autofix implementations
