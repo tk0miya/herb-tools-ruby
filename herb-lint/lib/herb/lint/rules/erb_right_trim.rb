@@ -3,106 +3,52 @@
 module Herb
   module Lint
     module Rules
-      # Rule that enforces consistent use of right-trim markers in ERB tags.
+      # Rule that detects the obscure `=%>` right-trim syntax in ERB tags.
       #
-      # ERB supports right-trim markers (`-%>`) that remove trailing whitespace
-      # after the tag. This rule enforces consistency in their usage.
+      # The `=%>` syntax is obscure and not well-supported in most ERB engines.
+      # Use `-%>` instead for right-trimming whitespace after ERB tags.
       #
-      # Good (consistent - never using right-trim):
-      #   <% if condition %>
+      # Bad:
+      #   <% if condition =%>
       #     <p>Content</p>
-      #   <% end %>
+      #   <% end =%>
       #
-      # Good (consistent - always using right-trim):
+      # Good:
       #   <% if condition -%>
       #     <p>Content</p>
       #   <% end -%>
-      #
-      # Bad (inconsistent):
-      #   <% if condition -%>
-      #     <p>Content</p>
-      #   <% end %>
       class ErbRightTrim < VisitorRule
         def self.rule_name #: String
           "erb-right-trim"
         end
 
         def self.description #: String
-          "Enforce consistent use of right-trim marker"
+          "Use `-%>` instead of `=%>` for right-trimming"
         end
 
         def self.default_severity #: String
-          "warning"
+          "error"
         end
 
-        # @rbs @erb_nodes: Array[untyped]
-
-        # @rbs override
-        def initialize(severity: nil, options: nil)
-          super
-          @erb_nodes = []
-        end
-
-        # Collect all ERB nodes (all ERB nodes have tag_closing)
+        # Check each ERB node for the obscure =%> syntax
         # @rbs override
         def visit_child_nodes(node)
-          @erb_nodes << node if node.class.name.start_with?("Herb::AST::ERB")
+          check_erb_node(node) if node.class.name.start_with?("Herb::AST::ERB")
           super
-        end
-
-        # Check consistency after visiting all nodes
-        # @rbs override
-        def visit_document_node(node)
-          super
-          check_consistency
         end
 
         private
 
-        def check_consistency #: void
-          # Count tags with and without right-trim
-          with_trim = @erb_nodes.count { |node| right_trim?(node) }
-          without_trim = @erb_nodes.count - with_trim
-
-          # If both styles are used, report inconsistency
-          return unless with_trim.positive? && without_trim.positive?
-
-          # Report offenses for the minority style
-          # When equal, prefer no trim (report tags with trim as inconsistent)
-          if with_trim <= without_trim
-            report_trim_offenses
-          else
-            report_no_trim_offenses
-          end
-        end
-
-        # Report offenses for tags with right-trim marker
-        def report_trim_offenses #: void
-          @erb_nodes.each do |node|
-            next unless right_trim?(node)
-
-            add_offense(
-              message: "Remove right-trim marker `-%>` for consistency",
-              location: node.tag_closing.location
-            )
-          end
-        end
-
-        # Report offenses for tags without right-trim marker
-        def report_no_trim_offenses #: void
-          @erb_nodes.each do |node|
-            next if right_trim?(node)
-
-            add_offense(
-              message: "Add right-trim marker `-%>` for consistency",
-              location: node.tag_closing.location
-            )
-          end
-        end
-
         # @rbs node: untyped
-        def right_trim?(node) #: bool
-          node.tag_closing&.value == "-%>"
+        def check_erb_node(node) #: void
+          return unless node.tag_closing
+          return unless node.tag_closing.value == "=%>"
+
+          add_offense(
+            message: "Use `-%>` instead of `=%>` for right-trimming. " \
+                     "The `=%>` syntax is obscure and not well-supported in most ERB engines.",
+            location: node.tag_closing.location
+          )
         end
       end
     end
