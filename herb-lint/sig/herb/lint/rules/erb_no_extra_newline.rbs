@@ -1,0 +1,51 @@
+# Generated from lib/herb/lint/rules/erb_no_extra_newline.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Rule that disallows more than 2 consecutive blank lines in ERB files.
+      #
+      # This is a source-based rule that scans the entire file content
+      # (similar to TypeScript's SourceRule), rather than traversing AST nodes.
+      #
+      # Files should not have more than 2 consecutive blank lines
+      # (which equals 3 consecutive newline characters).
+      #
+      # Good:
+      #   <div>First</div>
+      #
+      #
+      #   <div>Second</div>
+      #
+      # Bad:
+      #   <div>First</div>
+      #
+      #
+      #
+      #   <div>Second</div>
+      class ErbNoExtraNewline < Base
+        def self.rule_name: () -> String
+
+        def self.description: () -> String
+
+        def self.default_severity: () -> String
+
+        # @rbs override
+        def check: ...
+
+        private
+
+        @source: String
+
+        # Create a location object from byte offsets.
+        # @rbs start_offset: Integer
+        # @rbs end_offset: Integer
+        def location_from_offsets: (Integer start_offset, Integer end_offset) -> Herb::Location
+
+        # Convert byte offset to line and column position (0-indexed).
+        # @rbs offset: Integer
+        def position_from_offset: (Integer offset) -> Hash[Symbol, Integer]
+      end
+    end
+  end
+end
