@@ -86,9 +86,9 @@ module Herb
       # @rbs error: untyped
       def parse_error_offense(error) #: Offense
         Offense.new(
-          rule_name: "parse-error",
+          rule_name: Rules::ParserNoErrors.rule_name,
           message: error.message,
-          severity: "error",
+          severity: Rules::ParserNoErrors.default_severity,
           location: error.location
         )
       end
