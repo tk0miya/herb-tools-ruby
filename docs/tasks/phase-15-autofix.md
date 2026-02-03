@@ -199,21 +199,21 @@ end
 
 The AutoFixer receives the `ParseResult` from the lint phase (single-parse design) rather than re-parsing the source. Offenses carry direct node references via `AutofixContext`.
 
-- [ ] Implement `AutoFixer` class
-  - [ ] `initialize(parse_result, offenses, fix_unsafely: false)`
-  - [ ] `apply` → `AutoFixResult`
-    - [ ] Filter to fixable offenses (`offense.fixable?`)
-    - [ ] Filter by safety level (`safe_to_apply?`)
-    - [ ] Call `apply_ast_fixes` for AST-phase fixes
-    - [ ] Return `AutoFixResult`
-  - [ ] Private `apply_ast_fixes(offenses)` → `[String, Array[Offense], Array[Offense]]`
-    - [ ] For each fixable offense: retrieve node from `offense.autofix_context.node`, call `autofix`, track result
-    - [ ] Serialize via `Herb::Printer::IdentityPrinter.print(@parse_result)`
-  - [ ] Private `fixable_offenses(offenses)` — filter to offenses with `fixable? == true`
-  - [ ] Private `safe_to_apply?(offense)` — check safety based on `fix_unsafely` flag
-- [ ] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
-- [ ] Add unit tests
-- [ ] Generate RBS types
+- [x] Implement `AutoFixer` class
+  - [x] `initialize(parse_result, offenses, fix_unsafely: false)`
+  - [x] `apply` → `AutoFixResult`
+    - [x] Filter to fixable offenses (`offense.fixable?`)
+    - [x] Filter by safety level (`safe_to_apply?`)
+    - [x] Call `apply_ast_fixes` for AST-phase fixes
+    - [x] Return `AutoFixResult`
+  - [x] Private `apply_ast_fixes(offenses)` → `[String, Array[Offense], Array[Offense]]`
+    - [x] For each fixable offense: retrieve node from `offense.autofix_context.node`, call `autofix`, track result
+    - [x] Serialize via `Herb::Printer::IdentityPrinter.print(@parse_result)`
+  - [x] Private `fixable_offenses(offenses)` — filter to offenses with `fixable? == true`
+  - [x] Private `safe_to_apply?(offense)` — check safety based on `fix_unsafely` flag
+- [x] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
+- [x] Add unit tests
+- [x] Generate RBS types
 
 **Safety Model:**
 

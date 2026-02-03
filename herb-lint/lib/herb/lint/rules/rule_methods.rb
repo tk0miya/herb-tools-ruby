@@ -28,7 +28,7 @@ module Herb
           end
 
           # Whether the rule provides safe autofix.
-          def autocorrectable? #: bool
+          def safe_autocorrectable? #: bool
             false
           end
 
@@ -83,7 +83,7 @@ module Herb
         #
         # @rbs _node: Herb::AST::Node -- the offending AST node (direct reference from AutofixContext)
         # @rbs _parse_result: Herb::ParseResult -- the parse result from the lint phase
-        def autofix(_node, _parse_result) #: bool # rubocop:disable Naming/PredicateMethod
+        def autofix(_node, _parse_result) #: bool
           false
         end
 

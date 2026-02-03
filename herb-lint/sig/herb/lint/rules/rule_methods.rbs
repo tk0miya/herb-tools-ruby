@@ -18,7 +18,7 @@ module Herb
           def default_severity: () -> String
 
           # Whether the rule provides safe autofix.
-          def autocorrectable?: () -> bool
+          def safe_autocorrectable?: () -> bool
 
           # Whether the rule provides unsafe autofix (requires --fix-unsafely).
           def unsafe_autocorrectable?: () -> bool

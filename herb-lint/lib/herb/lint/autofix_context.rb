@@ -7,6 +7,18 @@ module Herb
     AutofixContext = Data.define(
       :node,      #: Herb::AST::Node
       :rule_class #: singleton(Herb::Lint::Rules::VisitorRule)
-    )
+    ) do
+      # Returns true when the rule can autocorrect this offense.
+      # Safe autofixes are always allowed.
+      # Unsafe autofixes require unsafe: true.
+      #
+      # @rbs unsafe: bool -- when true, also consider unsafe autofixes
+      def autocorrectable?(unsafe: false) #: bool
+        return true if rule_class.safe_autocorrectable?
+        return true if unsafe && rule_class.unsafe_autocorrectable?
+
+        false
+      end
+    end
   end
 end
