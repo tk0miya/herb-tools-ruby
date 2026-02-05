@@ -70,6 +70,7 @@ require_relative "lint/rules/html_no_self_closing"
 require_relative "lint/rules/html_no_space_in_tag"
 require_relative "lint/rules/html_tag_name_lowercase"
 require_relative "lint/rules/parser_no_errors"
+require_relative "lint/rules/svg_tag_name_capitalization"
 require_relative "lint/version"
 
 module Herb
