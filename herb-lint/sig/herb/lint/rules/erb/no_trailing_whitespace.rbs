@@ -1,0 +1,44 @@
+# Generated from lib/herb/lint/rules/erb/no_trailing_whitespace.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Erb
+        # Rule that disallows trailing whitespace in ERB tag content.
+        #
+        # ERB tags should have content that ends with exactly one space before the closing delimiter,
+        # not multiple spaces, tabs, or newlines.
+        #
+        # Good:
+        #   <%= value %>
+        #   <% statement %>
+        #
+        # Bad:
+        #   <%= value  %>
+        #   <% statement\t%>
+        #   <%= value
+        #   %>
+        class NoTrailingWhitespace < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          def self.autocorrectable?: () -> bool
+
+          # @rbs override
+          def visit_erb_content_node: ...
+
+          # @rbs override
+          def autofix: ...
+
+          private
+
+          # @rbs node: Herb::AST::ERBContentNode
+          def trailing_whitespace?: (Herb::AST::ERBContentNode node) -> bool
+        end
+      end
+    end
+  end
+end
