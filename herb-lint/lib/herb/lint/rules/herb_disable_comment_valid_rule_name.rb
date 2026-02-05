@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Source: https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/herb-disable-comment-valid-rule-name.ts
+# Documentation: https://herb-tools.dev/linter/rules/herb-disable-comment-valid-rule-name
+
 require "did_you_mean"
 
 module Herb

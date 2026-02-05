@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Source: https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-no-block-inside-inline.ts
+# Documentation: https://herb-tools.dev/linter/rules/html-no-block-inside-inline
+
 module Herb
   module Lint
     module Rules

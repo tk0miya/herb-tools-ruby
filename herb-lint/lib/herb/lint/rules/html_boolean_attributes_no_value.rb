@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Source: https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/html-boolean-attributes-no-value.ts
+# Documentation: https://herb-tools.dev/linter/rules/html-boolean-attributes-no-value
+
 module Herb
   module Lint
     module Rules

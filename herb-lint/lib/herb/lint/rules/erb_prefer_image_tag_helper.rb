@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Source: https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/erb-prefer-image-tag-helper.ts
+# Documentation: https://herb-tools.dev/linter/rules/erb-prefer-image-tag-helper
+
 module Herb
   module Lint
     module Rules
