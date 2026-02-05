@@ -1,0 +1,46 @@
+# Generated from lib/herb/lint/rules/erb/no_space_before_close.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Erb
+        # Rule that disallows space before closing ERB tag delimiter.
+        #
+        # ERB tags should not have whitespace immediately before the closing `%>`.
+        #
+        # Good:
+        #   <% value %>
+        #   <%= value %>
+        #   <% value -%>
+        #
+        # Bad:
+        #   <% value  %>
+        #   <%= value  %>
+        #   <% value  -%>
+        class NoSpaceBeforeClose < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          def self.autocorrectable?: () -> bool
+
+          # @rbs override
+          def visit_erb_content_node: ...
+
+          # @rbs override
+          def autofix: ...
+
+          private
+
+          # @rbs node: Herb::AST::ERBContentNode
+          def space_before_close?: (Herb::AST::ERBContentNode node) -> bool
+
+          # @rbs node: Herb::AST::ERBContentNode
+          def comment_tag?: (Herb::AST::ERBContentNode node) -> bool
+        end
+      end
+    end
+  end
+end

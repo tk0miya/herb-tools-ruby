@@ -213,18 +213,30 @@ cd herb-lint && ./bin/steep check
 
 ### Task 16.9: Implement erb/no-space-before-close
 
+**Status:** Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/erb_no_space_before_close.rb`
 
-- [ ] Implement rule class
-- [ ] Add `def self.autocorrectable? = true`
-- [ ] Implement detection logic
-- [ ] Implement `autofix(node, parse_result)` method
-- [ ] Register in `RuleRegistry`
-- [ ] Add to `herb-lint/lib/herb/lint.rb`
-- [ ] Add detection tests
-- [ ] Add autofix tests
+- [x] Implement rule class
+- [x] Add `def self.autocorrectable? = true`
+- [x] Implement detection logic
+- [x] Implement `autofix(node, parse_result)` method
+- [x] Register in `RuleRegistry`
+- [x] Add to `herb-lint/lib/herb/lint.rb`
+- [x] Add detection tests
+- [x] Add autofix tests
 
-**Description:** Remove space before closing `%>`.
+**Description:** Remove extra space before closing `%>`.
+
+**Example:**
+
+```erb
+# Before
+<% foo  %>
+
+# After
+<% foo %>
+```
 
 ### Task 16.10: Implement erb/space-after-open
 
