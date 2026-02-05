@@ -21,13 +21,10 @@ module Herb
       #   <%# locals: user %>        # Missing parentheses
       #   <%# locals: (user) %>      # Positional argument (must be keyword)
       #   <% # locals: (user:) %>    # Ruby comment instead of ERB comment
-      # rubocop:disable Metrics/ClassLength
       class ErbStrictLocalsCommentSyntax < VisitorRule
         include StringHelpers
 
         include FileHelpers
-
-        STRICT_LOCALS_PATTERN: ::Regexp
 
         def self.rule_name: () -> String
 
@@ -35,9 +32,9 @@ module Herb
 
         def self.default_severity: () -> String
 
-        @first_strict_locals_location: Location?
+        @validator: Validator
 
-        @seen_strict_locals_comment: bool
+        def initialize: () -> untyped
 
         # @rbs override
         def on_new_investigation: ...
@@ -61,52 +58,81 @@ module Herb
         # @rbs content: String
         def ruby_comment_looks_like_locals_declaration?: (String content) -> bool
 
-        # @rbs comment_content: String
-        # @rbs node: Herb::AST::ERBContentNode
-        def validate_locals_comment: (String comment_content, Herb::AST::ERBContentNode node) -> void
+        # Validator for strict locals comment syntax
+        # rubocop:disable Metrics/ClassLength
+        class Validator
+          include StringHelpers
 
-        # @rbs node: Herb::AST::ERBContentNode
-        def check_partial_file: (Herb::AST::ERBContentNode node) -> void
+          include FileHelpers
 
-        # @rbs content: String
-        def valid_strict_locals_format?: (String content) -> bool
+          STRICT_LOCALS_PATTERN: ::Regexp
 
-        # @rbs comment_content: String
-        # @rbs node: Herb::AST::ERBContentNode
-        def handle_valid_format: (String comment_content, Herb::AST::ERBContentNode node) -> void
+          @first_strict_locals_location: Location?
 
-        # @rbs comment_content: String
-        # @rbs node: Herb::AST::ERBContentNode
-        # rubocop:disable Metrics/MethodLength
-        def handle_invalid_format: (String comment_content, Herb::AST::ERBContentNode node) -> void
+          @seen_strict_locals_comment: bool
 
-        # @rbs params_content: String
-        # @rbs return: String?
-        def validate_locals_signature: (String params_content) -> String?
+          @rule: ErbStrictLocalsCommentSyntax
 
-        # @rbs inner: String
-        # @rbs return: String?
-        def validate_comma_usage: (String inner) -> String?
+          # @rbs rule: ErbStrictLocalsCommentSyntax
+          def initialize: (ErbStrictLocalsCommentSyntax rule) -> untyped
 
-        # @rbs param: String
-        # @rbs return: String?
-        def validate_parameter: (String param) -> String?
+          def reset: () -> void
 
-        # @rbs param: String
-        # @rbs return: String?
-        def validate_block_argument: (String param) -> String?
+          # @rbs comment_content: String
+          # @rbs node: Herb::AST::ERBContentNode
+          def validate: (String comment_content, Herb::AST::ERBContentNode node) -> void
 
-        # @rbs param: String
-        # @rbs return: String?
-        def validate_splat_argument: (String param) -> String?
+          private
 
-        # @rbs param: String
-        # @rbs return: String?
-        def validate_double_splat_argument: (String param) -> String?
+          # @rbs node: Herb::AST::ERBContentNode
+          def check_partial_file: (Herb::AST::ERBContentNode node) -> void
 
-        # @rbs param: String
-        # @rbs return: String?
-        def validate_keyword_argument: (String param) -> String?
+          # @rbs content: String
+          def valid_strict_locals_format?: (String content) -> bool
+
+          # @rbs comment_content: String
+          # @rbs node: Herb::AST::ERBContentNode
+          def handle_valid_format: (String comment_content, Herb::AST::ERBContentNode node) -> void
+
+          # @rbs comment_content: String
+          # @rbs node: Herb::AST::ERBContentNode
+          # rubocop:disable Metrics/MethodLength
+          def handle_invalid_format: (String comment_content, Herb::AST::ERBContentNode node) -> void
+
+          # @rbs params_content: String
+          # @rbs return: String?
+          def validate_locals_signature: (String params_content) -> String?
+
+          # @rbs inner: String
+          # @rbs return: String?
+          def validate_comma_usage: (String inner) -> String?
+
+          # @rbs param: String
+          # @rbs return: String?
+          def validate_parameter: (String param) -> String?
+
+          # @rbs param: String
+          # @rbs return: String?
+          def validate_block_argument: (String param) -> String?
+
+          # @rbs param: String
+          # @rbs return: String?
+          def validate_splat_argument: (String param) -> String?
+
+          # @rbs param: String
+          # @rbs return: String?
+          def validate_double_splat_argument: (String param) -> String?
+
+          # @rbs param: String
+          # @rbs return: String?
+          def validate_keyword_argument: (String param) -> String?
+
+          # @rbs message: String
+          # @rbs location: Herb::Location
+          def add_offense: (message: String, location: Herb::Location) -> void
+
+          def context: () -> Herb::Lint::Context?
+        end
       end
     end
   end

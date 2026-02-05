@@ -21,12 +21,9 @@ module Herb
       #   <%# locals: user %>        # Missing parentheses
       #   <%# locals: (user) %>      # Positional argument (must be keyword)
       #   <% # locals: (user:) %>    # Ruby comment instead of ERB comment
-      # rubocop:disable Metrics/ClassLength
       class ErbStrictLocalsCommentSyntax < VisitorRule
         include StringHelpers
         include FileHelpers
-
-        STRICT_LOCALS_PATTERN = /\Alocals:\s+\([^)]*\)\s*\z/
 
         def self.rule_name #: String
           "erb-strict-locals-comment-syntax"
@@ -40,14 +37,17 @@ module Herb
           "error"
         end
 
-        # @rbs @seen_strict_locals_comment: bool
-        # @rbs @first_strict_locals_location: Location?
+        # @rbs @validator: Validator
+
+        def initialize
+          super
+          @validator = Validator.new(self)
+        end
 
         # @rbs override
         def on_new_investigation #: void
           super
-          @seen_strict_locals_comment = false
-          @first_strict_locals_location = nil
+          @validator.reset
         end
 
         # @rbs override
@@ -73,7 +73,7 @@ module Herb
           comment_content = content.strip
           return unless looks_like_locals_declaration?(comment_content)
 
-          validate_locals_comment(comment_content, node)
+          @validator.validate(comment_content, node)
         end
 
         # @rbs node: Herb::AST::ERBContentNode
@@ -106,195 +106,232 @@ module Herb
           /\Alocals?\b/.match?(comment_text) && /[(:)]/.match?(comment_text)
         end
 
-        # @rbs comment_content: String
-        # @rbs node: Herb::AST::ERBContentNode
-        def validate_locals_comment(comment_content, node) #: void
-          check_partial_file(node)
+        # Validator for strict locals comment syntax
+        # rubocop:disable Metrics/ClassLength
+        class Validator
+          include StringHelpers
+          include FileHelpers
 
-          unless balanced_parentheses?(comment_content)
-            add_offense(
-              message: "Unbalanced parentheses in `locals:` comment. " \
-                       "Ensure all opening parentheses have matching closing parentheses.",
-              location: node.location
-            )
-            return
+          STRICT_LOCALS_PATTERN = /\Alocals:\s+\([^)]*\)\s*\z/
+
+          # @rbs @rule: ErbStrictLocalsCommentSyntax
+          # @rbs @seen_strict_locals_comment: bool
+          # @rbs @first_strict_locals_location: Location?
+
+          # @rbs rule: ErbStrictLocalsCommentSyntax
+          def initialize(rule)
+            @rule = rule
+            @seen_strict_locals_comment = false
+            @first_strict_locals_location = nil
           end
 
-          if valid_strict_locals_format?(comment_content)
-            handle_valid_format(comment_content, node)
-          else
-            handle_invalid_format(comment_content, node)
-          end
-        end
-
-        # @rbs node: Herb::AST::ERBContentNode
-        def check_partial_file(node) #: void
-          is_partial = partial_file?(@context&.file_path)
-
-          if is_partial == false # rubocop:disable Style/GuardClause
-            add_offense(
-              message: "Strict locals (`locals:`) only work in partials (files starting with `_`). " \
-                       "This declaration will be ignored.",
-              location: node.location
-            )
-          end
-        end
-
-        # @rbs content: String
-        def valid_strict_locals_format?(content) #: bool
-          STRICT_LOCALS_PATTERN.match?(content)
-        end
-
-        # @rbs comment_content: String
-        # @rbs node: Herb::AST::ERBContentNode
-        def handle_valid_format(comment_content, node) #: void
-          if @seen_strict_locals_comment
-            add_offense(
-              message: "Duplicate `locals:` declaration. Only one `locals:` comment is allowed per partial " \
-                       "(first declaration at line #{@first_strict_locals_location&.start&.line}).",
-              location: node.location
-            )
-            return
+          def reset #: void
+            @seen_strict_locals_comment = false
+            @first_strict_locals_location = nil
           end
 
-          @seen_strict_locals_comment = true
-          @first_strict_locals_location = node.location
+          # @rbs comment_content: String
+          # @rbs node: Herb::AST::ERBContentNode
+          def validate(comment_content, node) #: void
+            check_partial_file(node)
 
-          params_match = comment_content.match(/\Alocals:\s*(\([\s\S]*\))\s*\z/)
-          return unless params_match
+            unless balanced_parentheses?(comment_content)
+              add_offense(
+                message: "Unbalanced parentheses in `locals:` comment. " \
+                         "Ensure all opening parentheses have matching closing parentheses.",
+                location: node.location
+              )
+              return
+            end
 
-          error = validate_locals_signature(params_match[1])
-          add_offense(message: error, location: node.location) if error
-        end
-
-        # @rbs comment_content: String
-        # @rbs node: Herb::AST::ERBContentNode
-        # rubocop:disable Metrics/MethodLength
-        def handle_invalid_format(comment_content, node) #: void
-          case comment_content
-          when /\Alocals\(/
-            add_offense(
-              message: "Use `locals:` with a colon, not `locals()`. Correct format: `<%# locals: (...) %>`.",
-              location: node.location
-            )
-          when /\Alocal:/
-            add_offense(
-              message: "Use `locals:` (plural), not `local:`.",
-              location: node.location
-            )
-          when /\Alocals\s+\(/
-            add_offense(
-              message: "Use `locals:` with a colon before the parentheses, not `locals (`.",
-              location: node.location
-            )
-          when /\Alocals:\(/
-            add_offense(
-              message: "Missing space after `locals:`. Rails Strict Locals require a space after the colon: " \
-                       "`<%# locals: (...) %>`.",
-              location: node.location
-            )
-          when /\Alocals:\s*[^(]/
-            add_offense(
-              message: "Wrap parameters in parentheses: `locals: (name:)` or `locals: (name: default)`.",
-              location: node.location
-            )
-          when /\Alocals:\s*\z/
-            add_offense(
-              message: "Add parameters after `locals:`. Use `locals: (name:)` or `locals: ()` for no locals.",
-              location: node.location
-            )
-          else
-            add_offense(
-              message: "Invalid `locals:` syntax. Use format: `locals: (name:, option: default)`.",
-              location: node.location
-            )
-          end
-        end
-        # rubocop:enable Metrics/MethodLength
-
-        # @rbs params_content: String
-        # @rbs return: String?
-        def validate_locals_signature(params_content)
-          match = params_content.match(/\A\s*\(([\s\S]*)\)\s*\z/)
-          return nil unless match
-
-          inner = match[1].strip
-          return nil if inner.empty? # Empty locals is valid: locals: ()
-
-          comma_error = validate_comma_usage(inner)
-          return comma_error if comma_error
-
-          params = split_by_top_level_comma(inner)
-
-          params.each do |param|
-            error = validate_parameter(param)
-            return error if error
+            if valid_strict_locals_format?(comment_content)
+              handle_valid_format(comment_content, node)
+            else
+              handle_invalid_format(comment_content, node)
+            end
           end
 
-          nil
-        end
+          private
 
-        # @rbs inner: String
-        # @rbs return: String?
-        def validate_comma_usage(inner)
-          return unless inner.start_with?(",") || inner.end_with?(",") || /,,/.match?(inner)
+          # @rbs node: Herb::AST::ERBContentNode
+          def check_partial_file(node) #: void
+            is_partial = partial_file?(context&.file_path)
 
-          "Unexpected comma in `locals:` parameters."
-        end
+            if is_partial == false # rubocop:disable Style/GuardClause
+              add_offense(
+                message: "Strict locals (`locals:`) only work in partials (files starting with `_`). " \
+                         "This declaration will be ignored.",
+                location: node.location
+              )
+            end
+          end
 
-        # @rbs param: String
-        # @rbs return: String?
-        def validate_parameter(param)
-          trimmed = param.strip
-          return nil if trimmed.empty?
+          # @rbs content: String
+          def valid_strict_locals_format?(content) #: bool
+            STRICT_LOCALS_PATTERN.match?(content)
+          end
 
-          validate_block_argument(trimmed) ||
-            validate_splat_argument(trimmed) ||
-            validate_double_splat_argument(trimmed) ||
-            (trimmed.start_with?("**") ? nil : validate_keyword_argument(trimmed))
-        end
+          # @rbs comment_content: String
+          # @rbs node: Herb::AST::ERBContentNode
+          def handle_valid_format(comment_content, node) #: void
+            if @seen_strict_locals_comment
+              add_offense(
+                message: "Duplicate `locals:` declaration. Only one `locals:` comment is allowed per partial " \
+                         "(first declaration at line #{@first_strict_locals_location&.start&.line}).",
+                location: node.location
+              )
+              return
+            end
 
-        # @rbs param: String
-        # @rbs return: String?
-        def validate_block_argument(param)
-          return unless param.start_with?("&")
+            @seen_strict_locals_comment = true
+            @first_strict_locals_location = node.location
 
-          "Block argument `#{param}` is not allowed. Strict locals only support keyword arguments."
-        end
+            params_match = comment_content.match(/\Alocals:\s*(\([\s\S]*\))\s*\z/)
+            return unless params_match
 
-        # @rbs param: String
-        # @rbs return: String?
-        def validate_splat_argument(param)
-          return unless param.start_with?("*") && !param.start_with?("**")
+            error = validate_locals_signature(params_match[1])
+            add_offense(message: error, location: node.location) if error
+          end
 
-          "Splat argument `#{param}` is not allowed. Strict locals only support keyword arguments."
-        end
+          # @rbs comment_content: String
+          # @rbs node: Herb::AST::ERBContentNode
+          # rubocop:disable Metrics/MethodLength
+          def handle_invalid_format(comment_content, node) #: void
+            case comment_content
+            when /\Alocals\(/
+              add_offense(
+                message: "Use `locals:` with a colon, not `locals()`. Correct format: `<%# locals: (...) %>`.",
+                location: node.location
+              )
+            when /\Alocal:/
+              add_offense(
+                message: "Use `locals:` (plural), not `local:`.",
+                location: node.location
+              )
+            when /\Alocals\s+\(/
+              add_offense(
+                message: "Use `locals:` with a colon before the parentheses, not `locals (`.",
+                location: node.location
+              )
+            when /\Alocals:\(/
+              add_offense(
+                message: "Missing space after `locals:`. Rails Strict Locals require a space after the colon: " \
+                         "`<%# locals: (...) %>`.",
+                location: node.location
+              )
+            when /\Alocals:\s*[^(]/
+              add_offense(
+                message: "Wrap parameters in parentheses: `locals: (name:)` or `locals: (name: default)`.",
+                location: node.location
+              )
+            when /\Alocals:\s*\z/
+              add_offense(
+                message: "Add parameters after `locals:`. Use `locals: (name:)` or `locals: ()` for no locals.",
+                location: node.location
+              )
+            else
+              add_offense(
+                message: "Invalid `locals:` syntax. Use format: `locals: (name:, option: default)`.",
+                location: node.location
+              )
+            end
+          end
+          # rubocop:enable Metrics/MethodLength
 
-        # @rbs param: String
-        # @rbs return: String?
-        def validate_double_splat_argument(param)
-          return unless param.start_with?("**")
+          # @rbs params_content: String
+          # @rbs return: String?
+          def validate_locals_signature(params_content)
+            match = params_content.match(/\A\s*\(([\s\S]*)\)\s*\z/)
+            return nil unless match
 
-          if /\A\*\*\w+\z/.match?(param)
-            nil # Valid double-splat
-          else
-            "Invalid double-splat syntax `#{param}`. Use `**name` format (e.g., `**attributes`)."
+            inner = match[1].strip
+            return nil if inner.empty? # Empty locals is valid: locals: ()
+
+            comma_error = validate_comma_usage(inner)
+            return comma_error if comma_error
+
+            params = split_by_top_level_comma(inner)
+
+            params.each do |param|
+              error = validate_parameter(param)
+              return error if error
+            end
+
+            nil
+          end
+
+          # @rbs inner: String
+          # @rbs return: String?
+          def validate_comma_usage(inner)
+            return unless inner.start_with?(",") || inner.end_with?(",") || /,,/.match?(inner)
+
+            "Unexpected comma in `locals:` parameters."
+          end
+
+          # @rbs param: String
+          # @rbs return: String?
+          def validate_parameter(param)
+            trimmed = param.strip
+            return nil if trimmed.empty?
+
+            validate_block_argument(trimmed) ||
+              validate_splat_argument(trimmed) ||
+              validate_double_splat_argument(trimmed) ||
+              (trimmed.start_with?("**") ? nil : validate_keyword_argument(trimmed))
+          end
+
+          # @rbs param: String
+          # @rbs return: String?
+          def validate_block_argument(param)
+            return unless param.start_with?("&")
+
+            "Block argument `#{param}` is not allowed. Strict locals only support keyword arguments."
+          end
+
+          # @rbs param: String
+          # @rbs return: String?
+          def validate_splat_argument(param)
+            return unless param.start_with?("*") && !param.start_with?("**")
+
+            "Splat argument `#{param}` is not allowed. Strict locals only support keyword arguments."
+          end
+
+          # @rbs param: String
+          # @rbs return: String?
+          def validate_double_splat_argument(param)
+            return unless param.start_with?("**")
+
+            if /\A\*\*\w+\z/.match?(param)
+              nil # Valid double-splat
+            else
+              "Invalid double-splat syntax `#{param}`. Use `**name` format (e.g., `**attributes`)."
+            end
+          end
+
+          # @rbs param: String
+          # @rbs return: String?
+          def validate_keyword_argument(param)
+            return if /\A\w+:\s*/.match?(param)
+
+            if /\A\w+\z/.match?(param)
+              "Positional argument `#{param}` is not allowed. Use keyword argument format: `#{param}:`."
+            else
+              "Invalid parameter `#{param}`. Use keyword argument format: `name:` or `name: default`."
+            end
+          end
+
+          # @rbs message: String
+          # @rbs location: Herb::Location
+          def add_offense(message:, location:) #: void
+            @rule.add_offense(message:, location:)
+          end
+
+          def context #: Herb::Lint::Context?
+            @rule.instance_variable_get(:@context)
           end
         end
-
-        # @rbs param: String
-        # @rbs return: String?
-        def validate_keyword_argument(param)
-          return if /\A\w+:\s*/.match?(param)
-
-          if /\A\w+\z/.match?(param)
-            "Positional argument `#{param}` is not allowed. Use keyword argument format: `#{param}:`."
-          else
-            "Invalid parameter `#{param}`. Use keyword argument format: `name:` or `name: default`."
-          end
-        end
+        # rubocop:enable Metrics/ClassLength
       end
-      # rubocop:enable Metrics/ClassLength
     end
   end
 end
