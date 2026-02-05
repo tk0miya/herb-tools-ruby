@@ -20,10 +20,27 @@ module Herb
 
         def self.default_severity: () -> String
 
+        def self.safe_autocorrectable?: () -> bool
+
         # @rbs override
         def visit_erb_content_node: ...
 
+        # @rbs override
+        def autofix: ...
+
         private
+
+        # @rbs node: Herb::AST::ERBContentNode
+        def build_comment_node: (Herb::AST::ERBContentNode node) -> Herb::AST::ERBContentNode
+
+        # @rbs node: Herb::AST::ERBContentNode
+        def build_comment_content: (Herb::AST::ERBContentNode node) -> Herb::Token
+
+        # @rbs parent_array: Array[Herb::AST::Node]
+        # @rbs old_node: Herb::AST::Node
+        # @rbs new_node: Herb::AST::Node
+        # rubocop:disable Naming/PredicateMethod
+        def replace_node_in_array: (Array[Herb::AST::Node] parent_array, Herb::AST::Node old_node, Herb::AST::Node new_node) -> bool
 
         # @rbs node: Herb::AST::ERBContentNode
         def statement_tag?: (Herb::AST::ERBContentNode node) -> bool

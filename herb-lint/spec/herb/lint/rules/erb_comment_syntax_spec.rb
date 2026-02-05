@@ -26,6 +26,12 @@ RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
     end
   end
 
+  describe ".safe_autocorrectable?" do
+    it "returns true" do
+      expect(described_class.safe_autocorrectable?).to be(true)
+    end
+  end
+
   describe "#check" do
     context "when using proper ERB comment syntax" do
       let(:template) { "<%# This is a comment %>" }
@@ -104,6 +110,71 @@ RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
 
       it "does not report an offense" do
         expect(subject).to be_empty
+      end
+    end
+  end
+
+  describe "#autofix" do
+    subject { described_class.new.autofix(node, document) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+
+    context "when fixing a simple comment" do
+      let(:template) { "<% # This is a comment %>" }
+      let(:node) { document.value.children.first }
+
+      it "converts to ERB comment tag and returns true" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq("<%# This is a comment %>")
+      end
+    end
+
+    context "when fixing a comment with multiple spaces before hash" do
+      let(:template) { "<%   # comment %>" }
+      let(:node) { document.value.children.first }
+
+      it "converts to ERB comment tag" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq("<%# comment %>")
+      end
+    end
+
+    context "when fixing a comment with no space after hash" do
+      let(:template) { "<% #comment %>" }
+      let(:node) { document.value.children.first }
+
+      it "converts to ERB comment tag" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq("<%#comment %>")
+      end
+    end
+
+    context "when fixing multiple comments in sequence" do
+      let(:template) do
+        <<~ERB
+          <% # first comment %>
+          <p>content</p>
+          <% # second comment %>
+        ERB
+      end
+
+      it "can fix each comment independently" do
+        nodes = document.value.children.select { |n| n.is_a?(Herb::AST::ERBContentNode) }
+        expect(nodes.size).to eq(2)
+
+        # Fix first comment
+        result1 = described_class.new.autofix(nodes[0], document)
+        expect(result1).to be(true)
+
+        # Fix second comment
+        result2 = described_class.new.autofix(nodes[1], document)
+        expect(result2).to be(true)
+
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq("<%# first comment %>\n<p>content</p>\n<%# second comment %>\n")
       end
     end
   end
