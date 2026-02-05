@@ -39,10 +39,12 @@ module Herb
           "error"
         end
 
+        # @rbs @element_stack: Array[String]
+
         # @rbs override
-        def check(document, context)
-          @element_stack = [] #: Array[String]
+        def on_new_investigation #: void
           super
+          @element_stack = []
         end
 
         # @rbs override

@@ -46,10 +46,12 @@ module Herb
           "error"
         end
 
+        # @rbs @inline_depth: Integer
+
         # @rbs override
-        def check(document, context)
-          @inline_depth = 0 #: Integer
+        def on_new_investigation #: void
           super
+          @inline_depth = 0
         end
 
         # @rbs override
