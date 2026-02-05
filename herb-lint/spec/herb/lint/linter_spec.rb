@@ -203,4 +203,31 @@ RSpec.describe Herb::Lint::Linter do
       expect(linter.config).to eq(config)
     end
   end
+
+  describe "rule instance reuse" do
+    let(:stateful_rule) { Herb::Lint::Rules::HtmlNoDuplicateIds.new }
+    let(:rules) { [stateful_rule] }
+
+    it "does not leak state between lint calls" do
+      # First file: duplicate IDs
+      source1 = <<~ERB
+        <div id="test">First</div>
+        <div id="test">Second</div>
+      ERB
+      result1 = linter.lint(file_path: "file1.html.erb", source: source1)
+
+      # Should report offense for duplicate ID
+      expect(result1.offenses.size).to eq(1)
+      expect(result1.offenses.first.rule_name).to eq("html-no-duplicate-ids")
+
+      # Second file: unique IDs
+      source2 = <<~ERB
+        <div id="test">Only one</div>
+      ERB
+      result2 = linter.lint(file_path: "file2.html.erb", source: source2)
+
+      # Should not report offense (state from first file should not leak)
+      expect(result2.offenses).to be_empty
+    end
+  end
 end

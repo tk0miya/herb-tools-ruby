@@ -29,10 +29,12 @@ module Herb
           "error"
         end
 
+        # @rbs @anchor_depth: Integer
+
         # @rbs override
-        def check(document, context)
-          @anchor_depth = 0 #: Integer
+        def on_new_investigation #: void
           super
+          @anchor_depth = 0
         end
 
         # @rbs override

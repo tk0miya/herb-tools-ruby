@@ -104,5 +104,38 @@ RSpec.describe Herb::Lint::Rules::VisitorRule do
         end
       end
     end
+
+    context "when on_new_investigation is overridden" do
+      let(:template) { "<div>Test</div>" }
+      let(:stateful_rule) do
+        Class.new(described_class) do
+          attr_reader :investigation_count
+
+          def self.rule_name
+            "stateful-rule"
+          end
+
+          def self.description
+            "A rule with state"
+          end
+
+          def on_new_investigation
+            super
+            @investigation_count = (@investigation_count || 0) + 1
+          end
+        end
+      end
+
+      it "calls on_new_investigation before visiting nodes" do
+        rule = stateful_rule.new
+        document = Herb.parse(template, track_whitespace: true)
+
+        rule.check(document, context)
+        expect(rule.investigation_count).to eq(1)
+
+        rule.check(document, context)
+        expect(rule.investigation_count).to eq(2)
+      end
+    end
   end
 end

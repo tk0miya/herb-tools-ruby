@@ -29,10 +29,12 @@ module Herb
           "error"
         end
 
+        # @rbs @seen_ids: Hash[String, Herb::Location]
+
         # @rbs override
-        def check(document, context)
-          @seen_ids = {} #: Hash[String, Herb::Location]
+        def on_new_investigation #: void
           super
+          @seen_ids = {}
         end
 
         # @rbs override

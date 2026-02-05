@@ -34,10 +34,12 @@ module Herb
           "error"
         end
 
+        # @rbs @inside_head: bool
+
         # @rbs override
-        def check(document, context)
-          @inside_head = false #: bool
+        def on_new_investigation #: void
           super
+          @inside_head = false
         end
 
         # @rbs override

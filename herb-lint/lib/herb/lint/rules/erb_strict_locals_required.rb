@@ -30,10 +30,15 @@ module Herb
         # @rbs @locals_definition_found: bool
 
         # @rbs override
+        def on_new_investigation #: void
+          super
+          @locals_definition_found = false
+        end
+
+        # @rbs override
         def visit_document_node(node)
           return super unless partial_file? # Skip checking if not a partial
 
-          @locals_definition_found = false
           super # Traverse the tree to find locals definition
 
           return if @locals_definition_found

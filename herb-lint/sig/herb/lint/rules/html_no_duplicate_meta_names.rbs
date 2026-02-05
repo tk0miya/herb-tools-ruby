@@ -23,8 +23,10 @@ module Herb
 
         def self.default_severity: () -> String
 
+        @seen_meta_names: Hash[String, Herb::Location]
+
         # @rbs override
-        def check: ...
+        def on_new_investigation: ...
 
         # @rbs override
         def visit_html_element_node: ...

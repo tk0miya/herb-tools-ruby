@@ -24,6 +24,9 @@ module Herb
         @locals_definition_found: bool
 
         # @rbs override
+        def on_new_investigation: ...
+
+        # @rbs override
         def visit_document_node: ...
 
         # @rbs override
