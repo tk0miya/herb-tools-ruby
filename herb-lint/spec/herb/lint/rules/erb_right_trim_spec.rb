@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::ErbRightTrim do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'erb-right-trim'" do
       expect(described_class.rule_name).to eq("erb-right-trim")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::ErbRightTrim do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when ERB tag uses obscure =%> syntax" do
       let(:template) do
         <<~ERB

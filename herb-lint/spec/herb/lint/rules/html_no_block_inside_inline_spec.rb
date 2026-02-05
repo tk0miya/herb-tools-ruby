@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlNoBlockInsideInline do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-no-block-inside-inline'" do
       expect(described_class.rule_name).to eq("html-no-block-inside-inline")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoBlockInsideInline do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template) }
+    let(:context) { build(:context) }
+
     context "when block element is inside block element" do
       let(:template) { "<div><p>Hello</p></div>" }
 

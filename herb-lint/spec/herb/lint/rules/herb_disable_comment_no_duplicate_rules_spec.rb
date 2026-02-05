@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoDuplicateRules do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(source, track_whitespace: true) }
-  let(:context) { build(:context, source:) }
-
   describe ".rule_name" do
     it "returns 'herb-disable-comment-no-duplicate-rules'" do
       expect(described_class.rule_name).to eq("herb-disable-comment-no-duplicate-rules")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoDuplicateRules do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(source, track_whitespace: true) }
+    let(:context) { build(:context, source:) }
+
     context "when the comment is not a directive" do
       let(:source) { "<%# just a regular comment %>" }
 

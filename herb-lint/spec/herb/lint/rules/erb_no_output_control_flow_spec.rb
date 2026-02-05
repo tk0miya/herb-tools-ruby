@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::ErbNoOutputControlFlow do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'erb-no-output-control-flow'" do
       expect(described_class.rule_name).to eq("erb-no-output-control-flow")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::ErbNoOutputControlFlow do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when if statement uses silent tag" do
       let(:template) { "<% if condition %><% end %>" }
 

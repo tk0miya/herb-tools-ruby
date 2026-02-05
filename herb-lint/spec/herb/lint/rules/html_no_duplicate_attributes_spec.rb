@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateAttributes do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-no-duplicate-attributes'" do
       expect(described_class.rule_name).to eq("html-no-duplicate-attributes")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateAttributes do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when there are no duplicate attributes" do
       let(:template) { '<div class="foo" id="bar">content</div>' }
 

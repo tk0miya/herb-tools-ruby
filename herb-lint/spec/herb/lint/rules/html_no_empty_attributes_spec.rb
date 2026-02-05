@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlNoEmptyAttributes do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-no-empty-attributes'" do
       expect(described_class.rule_name).to eq("html-no-empty-attributes")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyAttributes do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when attribute has a non-empty value" do
       let(:template) { '<div class="container">text</div>' }
 

@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::ErbRequireTrailingNewline do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context, source: template) }
-
   describe ".rule_name" do
     it "returns 'erb-require-trailing-newline'" do
       expect(described_class.rule_name).to eq("erb-require-trailing-newline")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::ErbRequireTrailingNewline do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context, source: template) }
+
     context "when file ends with a single newline" do
       let(:template) { "<div>content</div>\n" }
 

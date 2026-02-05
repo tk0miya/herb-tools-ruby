@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlImgRequireAlt do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-img-require-alt'" do
       expect(described_class.rule_name).to eq("html-img-require-alt")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlImgRequireAlt do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when img tag has alt attribute" do
       let(:template) { '<img src="image.png" alt="Description">' }
 

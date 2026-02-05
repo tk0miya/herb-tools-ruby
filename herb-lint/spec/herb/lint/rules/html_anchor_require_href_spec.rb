@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlAnchorRequireHref do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-anchor-require-href'" do
       expect(described_class.rule_name).to eq("html-anchor-require-href")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlAnchorRequireHref do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when anchor has href attribute" do
       let(:template) { '<a href="/page">Click here</a>' }
 

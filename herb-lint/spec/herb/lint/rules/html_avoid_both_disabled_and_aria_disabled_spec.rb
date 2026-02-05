@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlAvoidBothDisabledAndAriaDisabled do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-avoid-both-disabled-and-aria-disabled'" do
       expect(described_class.rule_name).to eq("html-avoid-both-disabled-and-aria-disabled")
@@ -29,6 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlAvoidBothDisabledAndAriaDisabled do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when element has only disabled attribute" do
       let(:template) { "<button disabled>Submit</button>" }
 

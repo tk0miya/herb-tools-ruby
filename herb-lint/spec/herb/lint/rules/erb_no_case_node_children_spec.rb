@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::ErbNoCaseNodeChildren do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'erb-no-case-node-children'" do
       expect(described_class.rule_name).to eq("erb-no-case-node-children")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::ErbNoCaseNodeChildren do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when case has no direct children (only whitespace)" do
       let(:template) do
         <<~ERB

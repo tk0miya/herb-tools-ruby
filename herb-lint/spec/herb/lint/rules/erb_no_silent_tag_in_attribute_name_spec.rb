@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'erb-no-silent-tag-in-attribute-name'" do
       expect(described_class.rule_name).to eq("erb-no-silent-tag-in-attribute-name")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when attribute name contains standard silent tag" do
       let(:template) { '<div data-<% key %>-target="value"></div>' }
 

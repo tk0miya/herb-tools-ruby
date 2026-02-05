@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::ErbNoExtraNewline do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context, source: template) }
-
   describe ".rule_name" do
     it "returns 'erb-no-extra-newline'" do
       expect(described_class.rule_name).to eq("erb-no-extra-newline")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraNewline do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context, source: template) }
+
     context "when there are no blank lines" do
       let(:template) { "<div>First</div>\n<div>Second</div>" }
 

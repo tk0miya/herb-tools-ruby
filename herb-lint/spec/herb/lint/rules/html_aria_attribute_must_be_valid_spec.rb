@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlAriaAttributeMustBeValid do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-aria-attribute-must-be-valid'" do
       expect(described_class.rule_name).to eq("html-aria-attribute-must-be-valid")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaAttributeMustBeValid do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when element has valid ARIA attributes" do
       let(:template) do
         '<div aria-label="Name" aria-describedby="desc" aria-expanded="false">content</div>'

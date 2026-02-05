@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlAriaRoleMustBeValid do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-aria-role-must-be-valid'" do
       expect(described_class.rule_name).to eq("html-aria-role-must-be-valid")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleMustBeValid do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when element has a valid role" do
       let(:template) { '<div role="button">Click me</div>' }
 
