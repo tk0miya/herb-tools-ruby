@@ -17,6 +17,7 @@ module Herb
           Rules::ErbNoExtraNewline,
           Rules::ErbNoExtraWhitespaceInsideTags,
           Rules::ErbNoOutputControlFlow,
+          Rules::ErbNoSilentTagInAttributeName,
           Rules::ErbPreferImageTagHelper,
           Rules::ErbRequireTrailingNewline,
           Rules::ErbRequireWhitespaceInsideTags,

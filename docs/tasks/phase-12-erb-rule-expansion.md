@@ -196,7 +196,11 @@ Rules are grouped by theme:
 - [ ] Add tests
 - [ ] Update RuleRegistry
 
-**Description:** Disallow ERB silent tags (`<% %>`) inside HTML attribute names.
+**Description:** Disallow ERB silent tags (`<%`, `<%-`, `<%#`) **within** HTML attribute names. Silent tags do not output content and cannot form part of an attribute name. This rule does not prevent using silent tags for conditional attribute logic in the attribute list.
+
+**Severity:** `error`
+
+**Enabled by default:** `true`
 
 **Complexity:** Medium
 
@@ -204,11 +208,20 @@ Rules are grouped by theme:
 
 **Example:**
 ```erb
-<!-- Bad -->
-<div <% if active? %>class="active"<% end %>>
+<!-- Bad: Silent tag within attribute name -->
+<div data-<% key %>-target="value"></div>
+<div prefix-<%- variable -%>-suffix="test"></div>
+<span id-<%# comment %>-name="test"></span>
 
-<!-- Good -->
-<div class="<%= active? ? 'active' : '' %>">
+<!-- Good: Output tag in attribute name -->
+<div data-<%= key %>-target="value"></div>
+
+<!-- Good: Output tag for entire attributes -->
+<div <%= data_attributes_for(user) %>></div>
+
+<!-- Good: Silent tags for conditional attributes (not in names) -->
+<div <% if valid? %>data-valid="true"<% else %>data-valid="false"<% end %>></div>
+<span <% if user.admin? %>class="admin"<% end %>></span>
 ```
 
 ---
