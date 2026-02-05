@@ -159,34 +159,37 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
 
     context "when fixing a simple empty tag" do
       let(:source) { "<% %>" }
+      let(:expected) { "" }
       let(:node) { document.value.children.first }
 
       it "removes the empty tag and returns true" do
         expect(subject).to be(true)
         result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq("")
+        expect(result).to eq(expected)
       end
     end
 
     context "when fixing an empty output tag" do
       let(:source) { "<%= %>" }
+      let(:expected) { "" }
       let(:node) { document.value.children.first }
 
       it "removes the empty tag" do
         expect(subject).to be(true)
         result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq("")
+        expect(result).to eq(expected)
       end
     end
 
     context "when fixing an empty tag with surrounding content" do
       let(:source) { "<p>before</p><% %><p>after</p>" }
+      let(:expected) { "<p>before</p><p>after</p>" }
       let(:node) { document.value.children.find { |n| n.is_a?(Herb::AST::ERBContentNode) } }
 
       it "removes only the empty tag" do
         expect(subject).to be(true)
         result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq("<p>before</p><p>after</p>")
+        expect(result).to eq(expected)
       end
     end
 
@@ -198,6 +201,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
           <%= %>
         ERB
       end
+      let(:expected) { "\n<p>content</p>\n\n" }
 
       it "can fix each tag independently" do
         nodes = document.value.children.select { |n| n.is_a?(Herb::AST::ERBContentNode) }
@@ -212,18 +216,19 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
         expect(result2).to be(true)
 
         result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq("\n<p>content</p>\n\n")
+        expect(result).to eq(expected)
       end
     end
 
     context "when fixing an empty tag with tabs and newlines" do
       let(:source) { "<% \t\n %>" }
+      let(:expected) { "" }
       let(:node) { document.value.children.first }
 
       it "removes the empty tag" do
         expect(subject).to be(true)
         result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq("")
+        expect(result).to eq(expected)
       end
     end
 
@@ -236,6 +241,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
           </div>
         ERB
       end
+      let(:expected) { "<div>\n  \n  <p>text</p>\n</div>\n" }
       let(:node) do
         # Find the ERB content node inside the div
         div = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
@@ -245,7 +251,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
       it "removes the empty tag from HTML structure" do
         expect(subject).to be(true)
         result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq("<div>\n  \n  <p>text</p>\n</div>\n")
+        expect(result).to eq(expected)
       end
     end
   end

@@ -121,34 +121,37 @@ RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
 
     context "when fixing a simple comment" do
       let(:source) { "<% # This is a comment %>" }
+      let(:expected) { "<%# This is a comment %>" }
       let(:node) { document.value.children.first }
 
       it "converts to ERB comment tag and returns true" do
         expect(subject).to be(true)
         result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq("<%# This is a comment %>")
+        expect(result).to eq(expected)
       end
     end
 
     context "when fixing a comment with multiple spaces before hash" do
       let(:source) { "<%   # comment %>" }
+      let(:expected) { "<%# comment %>" }
       let(:node) { document.value.children.first }
 
       it "converts to ERB comment tag" do
         expect(subject).to be(true)
         result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq("<%# comment %>")
+        expect(result).to eq(expected)
       end
     end
 
     context "when fixing a comment with no space after hash" do
       let(:source) { "<% #comment %>" }
+      let(:expected) { "<%#comment %>" }
       let(:node) { document.value.children.first }
 
       it "converts to ERB comment tag" do
         expect(subject).to be(true)
         result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq("<%#comment %>")
+        expect(result).to eq(expected)
       end
     end
 
@@ -160,6 +163,7 @@ RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
           <% # second comment %>
         ERB
       end
+      let(:expected) { "<%# first comment %>\n<p>content</p>\n<%# second comment %>\n" }
 
       it "can fix each comment independently" do
         nodes = document.value.children.select { |n| n.is_a?(Herb::AST::ERBContentNode) }
@@ -174,7 +178,7 @@ RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
         expect(result2).to be(true)
 
         result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq("<%# first comment %>\n<p>content</p>\n<%# second comment %>\n")
+        expect(result).to eq(expected)
       end
     end
   end
