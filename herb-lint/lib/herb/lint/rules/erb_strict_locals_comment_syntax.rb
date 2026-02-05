@@ -80,8 +80,7 @@ module Herb
         # @rbs node: Herb::AST::ERBContentNode
         # @rbs content: String
         def check_ruby_comment_in_execution_tag(node, content) #: void
-          ruby_comment = extract_ruby_comment_content(content)
-          return unless ruby_comment && looks_like_locals_declaration?(ruby_comment)
+          return unless ruby_comment_looks_like_locals_declaration?(content)
 
           add_offense(
             message: "Use `<%#` instead of `#{node.tag_opening&.value} #` for strict locals comments. " \
@@ -91,10 +90,12 @@ module Herb
         end
 
         # @rbs content: String
-        # @rbs return: String?
-        def extract_ruby_comment_content(content)
+        def ruby_comment_looks_like_locals_declaration?(content) #: bool
           match = content.match(/\A\s*#\s*(.*)/)
-          match ? match[1].strip : nil
+          return false unless match
+
+          comment_text = match[1].strip
+          /\Alocals?\b/.match?(comment_text) && /[(:)]/.match?(comment_text)
         end
 
         # @rbs content: String
@@ -102,11 +103,6 @@ module Herb
         def extract_locals_remainder(content)
           match = content.match(/\Alocals?\b(.*)/)
           match ? match[1] : nil
-        end
-
-        # @rbs content: String
-        def looks_like_locals_declaration?(content) #: bool
-          /\Alocals?\b/.match?(content) && /[(:)]/.match?(content)
         end
 
         # @rbs remainder: String
