@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlBooleanAttributesNoValue do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-boolean-attributes-no-value'" do
       expect(described_class.rule_name).to eq("html-boolean-attributes-no-value")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlBooleanAttributesNoValue do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when boolean attribute has no value" do
       let(:template) { "<input disabled>" }
 

@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlNoEmptyHeadings do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-no-empty-headings'" do
       expect(described_class.rule_name).to eq("html-no-empty-headings")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyHeadings do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when heading has text content" do
       let(:template) { "<h1>Page Title</h1>" }
 

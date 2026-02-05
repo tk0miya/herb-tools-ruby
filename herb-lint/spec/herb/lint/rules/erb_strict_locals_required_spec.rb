@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::ErbStrictLocalsRequired do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context, file_path:) }
-
   describe ".rule_name" do
     it "returns 'erb-strict-locals-required'" do
       expect(described_class.rule_name).to eq("erb-strict-locals-required")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::ErbStrictLocalsRequired do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context, file_path:) }
+
     context "when file is not a partial" do
       let(:file_path) { "/path/to/file.html.erb" }
 

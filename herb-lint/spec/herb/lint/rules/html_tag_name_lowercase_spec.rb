@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlTagNameLowercase do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-tag-name-lowercase'" do
       expect(described_class.rule_name).to eq("html-tag-name-lowercase")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlTagNameLowercase do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when tag names are lowercase" do
       let(:template) { "<div>text</div>" }
 

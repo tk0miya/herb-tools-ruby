@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlBodyOnlyElements do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-body-only-elements'" do
       expect(described_class.rule_name).to eq("html-body-only-elements")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlBodyOnlyElements do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template) }
+    let(:context) { build(:context) }
+
     context "when body-only element is inside body" do
       let(:template) do
         <<~HTML

@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlNoSelfClosing do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-no-self-closing'" do
       expect(described_class.rule_name).to eq("html-no-self-closing")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSelfClosing do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when void element has no self-closing slash" do
       let(:template) { "<br>" }
 

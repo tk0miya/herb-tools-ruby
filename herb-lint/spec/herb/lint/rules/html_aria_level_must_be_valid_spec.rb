@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlAriaLevelMustBeValid do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-aria-level-must-be-valid'" do
       expect(described_class.rule_name).to eq("html-aria-level-must-be-valid")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLevelMustBeValid do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when aria-level is 1" do
       let(:template) { '<div role="heading" aria-level="1">Heading</div>' }
 

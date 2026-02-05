@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::ErbPreferImageTagHelper do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'erb-prefer-image-tag-helper'" do
       expect(described_class.rule_name).to eq("erb-prefer-image-tag-helper")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::ErbPreferImageTagHelper do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when using image_tag helper" do
       let(:template) { "<%= image_tag 'logo.png' %>" }
 

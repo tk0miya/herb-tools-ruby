@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-no-space-in-tag'" do
       expect(described_class.rule_name).to eq("html-no-space-in-tag")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     describe "when space is correct" do
       context "when tags have no extra spaces" do
         let(:template) { "<div>content</div>" }

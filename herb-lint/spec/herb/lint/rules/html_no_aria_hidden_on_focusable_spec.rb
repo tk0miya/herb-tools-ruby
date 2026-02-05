@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlNoAriaHiddenOnFocusable do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { instance_double(Herb::Lint::Context) }
-
   describe ".rule_name" do
     it "returns 'html-no-aria-hidden-on-focusable'" do
       expect(described_class.rule_name).to eq("html-no-aria-hidden-on-focusable")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoAriaHiddenOnFocusable do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { instance_double(Herb::Lint::Context) }
+
     context "when aria-hidden=\"true\" is on a button" do
       let(:template) { '<button aria-hidden="true">Click</button>' }
 

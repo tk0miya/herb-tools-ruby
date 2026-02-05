@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlNoPositiveTabIndex do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-no-positive-tab-index'" do
       expect(described_class.rule_name).to eq("html-no-positive-tab-index")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoPositiveTabIndex do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when tabindex is 0" do
       let(:template) { '<button tabindex="0">Click</button>' }
 

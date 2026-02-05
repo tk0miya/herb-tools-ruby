@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlHeadOnlyElements do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-head-only-elements'" do
       expect(described_class.rule_name).to eq("html-head-only-elements")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlHeadOnlyElements do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template) }
+    let(:context) { build(:context) }
+
     context "when head-only elements are inside head" do
       let(:template) do
         <<~HTML

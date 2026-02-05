@@ -3,23 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(source, track_whitespace: true) }
-  let(:rule_registry) do
-    registry = Herb::Lint::RuleRegistry.new
-    [
-      Herb::Lint::Rules::ErbCommentSyntax,
-      Herb::Lint::Rules::HtmlAnchorRequireHref,
-      Herb::Lint::Rules::HtmlAttributeDoubleQuotes,
-      Herb::Lint::Rules::HtmlImgRequireAlt,
-      Herb::Lint::Rules::HtmlNoSelfClosing,
-      Herb::Lint::Rules::HtmlTagNameLowercase
-    ].each { |rule_class| registry.register(rule_class) }
-    registry
-  end
-  let(:context) { build(:context, source:, rule_registry:) }
-
   describe ".rule_name" do
     it "returns 'herb-disable-comment-valid-rule-name'" do
       expect(described_class.rule_name).to eq("herb-disable-comment-valid-rule-name")
@@ -39,6 +22,23 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(source, track_whitespace: true) }
+    let(:rule_registry) do
+      registry = Herb::Lint::RuleRegistry.new
+      [
+        Herb::Lint::Rules::ErbCommentSyntax,
+        Herb::Lint::Rules::HtmlAnchorRequireHref,
+        Herb::Lint::Rules::HtmlAttributeDoubleQuotes,
+        Herb::Lint::Rules::HtmlImgRequireAlt,
+        Herb::Lint::Rules::HtmlNoSelfClosing,
+        Herb::Lint::Rules::HtmlTagNameLowercase
+      ].each { |rule_class| registry.register(rule_class) }
+      registry
+    end
+    let(:context) { build(:context, source:, rule_registry:) }
+
     context "when the comment is not a directive" do
       let(:source) { "<%# just a regular comment %>" }
 

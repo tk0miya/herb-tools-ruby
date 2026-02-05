@@ -3,11 +3,6 @@
 require_relative "../../../spec_helper"
 
 RSpec.describe Herb::Lint::Rules::HtmlNavigationHasLabel do
-  subject { described_class.new.check(document, context) }
-
-  let(:document) { Herb.parse(template, track_whitespace: true) }
-  let(:context) { build(:context) }
-
   describe ".rule_name" do
     it "returns 'html-navigation-has-label'" do
       expect(described_class.rule_name).to eq("html-navigation-has-label")
@@ -27,6 +22,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNavigationHasLabel do
   end
 
   describe "#check" do
+    subject { described_class.new.check(document, context) }
+
+    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:context) { build(:context) }
+
     context "when nav has aria-label attribute" do
       let(:template) { '<nav aria-label="Main navigation"><a href="/">Home</a></nav>' }
 
