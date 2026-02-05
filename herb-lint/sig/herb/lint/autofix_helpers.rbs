@@ -22,6 +22,18 @@ module Herb
       # @rbs parent: Herb::AST::Node -- the parent node to search
       # @rbs node: Herb::AST::Node -- the node to find within the parent
       def parent_array_for: (Herb::AST::Node parent, Herb::AST::Node node) -> Array[Herb::AST::Node]?
+
+      # Replace a node in the AST with a new node.
+      # Finds the parent, locates the array containing the old node,
+      # and replaces it with the new node.
+      #
+      # This is a convenience method that combines find_parent, parent_array_for,
+      # and array index replacement.
+      #
+      # @rbs parse_result: Herb::ParseResult -- the parse result to search
+      # @rbs old_node: Herb::AST::Node -- the node to replace
+      # @rbs new_node: Herb::AST::Node -- the replacement node
+      def replace_node: (Herb::ParseResult parse_result, Herb::AST::Node old_node, Herb::AST::Node new_node) -> bool
     end
   end
 end
