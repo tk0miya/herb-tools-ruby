@@ -34,6 +34,28 @@ module Herb
       # @rbs old_node: Herb::AST::Node -- the node to replace
       # @rbs new_node: Herb::AST::Node -- the replacement node
       def replace_node: (Herb::ParseResult parse_result, Herb::AST::Node old_node, Herb::AST::Node new_node) -> bool
+
+      # Create a new token by copying an existing token with optional attribute overrides.
+      # This is useful for creating modified tokens during autofix operations.
+      #
+      # @rbs token: Herb::Token -- the token to copy
+      # @rbs content: String? -- override the token content (value)
+      # @rbs range: Herb::Range? -- override the token range
+      # @rbs location: Herb::Location? -- override the token location
+      # @rbs type: String? -- override the token type
+      def copy_token: (Herb::Token token, ?content: String?, ?range: Herb::Range?, ?location: Herb::Location?, ?type: String?) -> Herb::Token
+
+      # Create a new ERBContentNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB content nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBContentNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      # @rbs analyzed_ruby: nil -- override the analyzed_ruby attribute
+      # @rbs parsed: bool? -- override the parsed flag
+      # @rbs valid: bool? -- override the valid flag
+      def copy_erb_content_node: (Herb::AST::ERBContentNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?analyzed_ruby: nil, ?parsed: bool?, ?valid: bool?) -> Herb::AST::ERBContentNode
     end
   end
 end

@@ -54,6 +54,55 @@ module Herb
         parent_array[index] = new_node
         true
       end
+
+      # Create a new token by copying an existing token with optional attribute overrides.
+      # This is useful for creating modified tokens during autofix operations.
+      #
+      # @rbs token: Herb::Token -- the token to copy
+      # @rbs content: String? -- override the token content (value)
+      # @rbs range: Herb::Range? -- override the token range
+      # @rbs location: Herb::Location? -- override the token location
+      # @rbs type: String? -- override the token type
+      def copy_token(token, content: nil, range: nil, location: nil, type: nil) #: Herb::Token
+        Herb::Token.new(
+          content || token.value,
+          range || token.range,
+          location || token.location,
+          type || token.type
+        )
+      end
+
+      # Create a new ERBContentNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB content nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBContentNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      # @rbs analyzed_ruby: nil -- override the analyzed_ruby attribute
+      # @rbs parsed: bool? -- override the parsed flag
+      # @rbs valid: bool? -- override the valid flag
+      def copy_erb_content_node( # rubocop:disable Metrics/ParameterLists
+        node,
+        tag_opening: nil,
+        content: nil,
+        tag_closing: nil,
+        analyzed_ruby: nil,
+        parsed: nil,
+        valid: nil
+      ) #: Herb::AST::ERBContentNode
+        Herb::AST::ERBContentNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          tag_opening || node.tag_opening,
+          content || node.content,
+          tag_closing || node.tag_closing,
+          analyzed_ruby || node.analyzed_ruby,
+          parsed.nil? ? node.parsed : parsed,
+          valid.nil? ? node.valid : valid
+        )
+      end
     end
   end
 end
