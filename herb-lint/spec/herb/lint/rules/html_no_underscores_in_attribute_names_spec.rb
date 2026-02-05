@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoUnderscoresInAttributeNames do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when attribute names use hyphens" do
-      let(:template) { '<div data-value="foo">' }
+      let(:source) { '<div data-value="foo">' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoUnderscoresInAttributeNames do
     end
 
     context "when standard attributes have no underscores" do
-      let(:template) { '<input type="text" name="user" class="form-control">' }
+      let(:source) { '<input type="text" name="user" class="form-control">' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -44,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoUnderscoresInAttributeNames do
     end
 
     context "when attribute name contains an underscore" do
-      let(:template) { '<div data_value="foo">' }
+      let(:source) { '<div data_value="foo">' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -57,7 +57,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoUnderscoresInAttributeNames do
     end
 
     context "when attribute name contains multiple underscores" do
-      let(:template) { '<div my_custom_attr="bar">' }
+      let(:source) { '<div my_custom_attr="bar">' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -68,7 +68,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoUnderscoresInAttributeNames do
     end
 
     context "when multiple attributes contain underscores" do
-      let(:template) { '<div data_value="foo" data_type="bar">' }
+      let(:source) { '<div data_value="foo" data_type="bar">' }
 
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
@@ -80,7 +80,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoUnderscoresInAttributeNames do
     end
 
     context "when some attributes have underscores and some do not" do
-      let(:template) { '<div class="foo" data_value="bar" id="baz">' }
+      let(:source) { '<div class="foo" data_value="bar" id="baz">' }
 
       it "reports offense only for the attribute with underscore" do
         expect(subject.size).to eq(1)
@@ -91,7 +91,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoUnderscoresInAttributeNames do
     end
 
     context "when element has no attributes" do
-      let(:template) { "<div>text</div>" }
+      let(:source) { "<div>text</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -99,7 +99,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoUnderscoresInAttributeNames do
     end
 
     context "when boolean attribute has no underscore" do
-      let(:template) { "<input disabled>" }
+      let(:source) { "<input disabled>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -107,7 +107,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoUnderscoresInAttributeNames do
     end
 
     context "with nested elements having underscored attributes" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div>
             <span data_info="test">text</span>
@@ -126,7 +126,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoUnderscoresInAttributeNames do
     end
 
     context "when attribute value contains underscores but name does not" do
-      let(:template) { '<div data-value="some_value">' }
+      let(:source) { '<div data-value="some_value">' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -134,7 +134,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoUnderscoresInAttributeNames do
     end
 
     context "with self-closing element having underscored attribute" do
-      let(:template) { '<img src_set="image.png">' }
+      let(:source) { '<img src_set="image.png">' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)

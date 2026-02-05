@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaAttributeMustBeValid do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when element has valid ARIA attributes" do
-      let(:template) do
+      let(:source) do
         '<div aria-label="Name" aria-describedby="desc" aria-expanded="false">content</div>'
       end
 
@@ -38,7 +38,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaAttributeMustBeValid do
     end
 
     context "when element has an invalid ARIA attribute" do
-      let(:template) { '<div aria-labelled="Name">content</div>' }
+      let(:source) { '<div aria-labelled="Name">content</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -52,7 +52,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaAttributeMustBeValid do
     end
 
     context "when element has multiple invalid ARIA attributes" do
-      let(:template) { '<div aria-labelled="Name" aria-foo="bar">content</div>' }
+      let(:source) { '<div aria-labelled="Name" aria-foo="bar">content</div>' }
 
       it "reports an offense for each invalid attribute" do
         expect(subject.size).to eq(2)
@@ -66,7 +66,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaAttributeMustBeValid do
     end
 
     context "when element has mixed valid and invalid ARIA attributes" do
-      let(:template) { '<div aria-label="Name" aria-labelled="Name">content</div>' }
+      let(:source) { '<div aria-label="Name" aria-labelled="Name">content</div>' }
 
       it "reports offense only for the invalid attribute" do
         expect(subject.size).to eq(1)
@@ -78,7 +78,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaAttributeMustBeValid do
     end
 
     context "when element has non-aria attributes" do
-      let(:template) { '<div class="container" id="main">content</div>' }
+      let(:source) { '<div class="container" id="main">content</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -86,7 +86,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaAttributeMustBeValid do
     end
 
     context "when ARIA attribute has uppercase letters" do
-      let(:template) { '<div ARIA-LABELLED="Name">content</div>' }
+      let(:source) { '<div ARIA-LABELLED="Name">content</div>' }
 
       it "reports an offense (case-insensitive check)" do
         expect(subject.size).to eq(1)
@@ -98,7 +98,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaAttributeMustBeValid do
     end
 
     context "when valid ARIA attribute has uppercase letters" do
-      let(:template) { '<div ARIA-LABEL="Name">content</div>' }
+      let(:source) { '<div ARIA-LABEL="Name">content</div>' }
 
       it "does not report an offense (case-insensitive check)" do
         expect(subject).to be_empty
@@ -106,7 +106,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaAttributeMustBeValid do
     end
 
     context "when element has no attributes" do
-      let(:template) { "<div>content</div>" }
+      let(:source) { "<div>content</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -114,7 +114,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaAttributeMustBeValid do
     end
 
     context "with nested elements having invalid ARIA attributes" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div aria-labelled="outer">
             <span aria-foo="inner">text</span>
@@ -128,7 +128,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaAttributeMustBeValid do
     end
 
     context "when self-closing element has invalid ARIA attribute" do
-      let(:template) { '<input aria-labelled="Name">' }
+      let(:source) { '<input aria-labelled="Name">' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)

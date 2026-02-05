@@ -24,14 +24,14 @@ RSpec.describe Herb::Lint::Rules::ErbStrictLocalsRequired do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context, file_path:) }
 
     context "when file is not a partial" do
       let(:file_path) { "/path/to/file.html.erb" }
 
       context "when it has no strict_locals comment" do
-        let(:template) { "<div><%= name %></div>" }
+        let(:source) { "<div><%= name %></div>" }
 
         it "does not report an offense" do
           expect(subject).to be_empty
@@ -39,7 +39,7 @@ RSpec.describe Herb::Lint::Rules::ErbStrictLocalsRequired do
       end
 
       context "when it has strict_locals comment" do
-        let(:template) do
+        let(:source) do
           <<~ERB
             <%# locals: (name: String) %>
             <div><%= name %></div>
@@ -56,7 +56,7 @@ RSpec.describe Herb::Lint::Rules::ErbStrictLocalsRequired do
       let(:file_path) { "/path/to/_partial.html.erb" }
 
       context "when it has valid strict_locals comment" do
-        let(:template) do
+        let(:source) do
           <<~ERB
             <%# locals: (name: String) %>
             <div><%= name %></div>
@@ -69,7 +69,7 @@ RSpec.describe Herb::Lint::Rules::ErbStrictLocalsRequired do
       end
 
       context "when it has strict_locals comment with extra whitespace" do
-        let(:template) do
+        let(:source) do
           <<~ERB
             <%# locals:  (name: String) %>
             <div><%= name %></div>
@@ -82,7 +82,7 @@ RSpec.describe Herb::Lint::Rules::ErbStrictLocalsRequired do
       end
 
       context "when it has strict_locals comment without spaces" do
-        let(:template) do
+        let(:source) do
           <<~ERB
             <%# locals:(name: String) %>
             <div><%= name %></div>
@@ -95,7 +95,7 @@ RSpec.describe Herb::Lint::Rules::ErbStrictLocalsRequired do
       end
 
       context "when it has no strict_locals comment" do
-        let(:template) { "<div><%= name %></div>" }
+        let(:source) { "<div><%= name %></div>" }
 
         it "reports an offense" do
           expected_message = "Partial files must have a strict_locals magic comment (<%# locals: ... %>)"
@@ -107,7 +107,7 @@ RSpec.describe Herb::Lint::Rules::ErbStrictLocalsRequired do
       end
 
       context "when it has only a regular comment" do
-        let(:template) do
+        let(:source) do
           <<~ERB
             <%# This is a regular comment %>
             <div><%= name %></div>
@@ -121,7 +121,7 @@ RSpec.describe Herb::Lint::Rules::ErbStrictLocalsRequired do
       end
 
       context "when it has empty strict_locals declaration" do
-        let(:template) do
+        let(:source) do
           <<~ERB
             <%# locals: () %>
             <div>Static content</div>
@@ -134,7 +134,7 @@ RSpec.describe Herb::Lint::Rules::ErbStrictLocalsRequired do
       end
 
       context "when strict_locals comment is not first" do
-        let(:template) do
+        let(:source) do
           <<~ERB
             <div>Content</div>
             <%# locals: (name: String) %>
@@ -148,7 +148,7 @@ RSpec.describe Herb::Lint::Rules::ErbStrictLocalsRequired do
       end
 
       context "when it has multiple comments including strict_locals" do
-        let(:template) do
+        let(:source) do
           <<~ERB
             <%# This is a regular comment %>
             <%# locals: (name: String) %>

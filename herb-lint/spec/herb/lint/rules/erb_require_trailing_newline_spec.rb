@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::ErbRequireTrailingNewline do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
-    let(:context) { build(:context, source: template) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
+    let(:context) { build(:context, source:) }
 
     context "when file ends with a single newline" do
-      let(:template) { "<div>content</div>\n" }
+      let(:source) { "<div>content</div>\n" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::ErbRequireTrailingNewline do
     end
 
     context "when file ends with no newline" do
-      let(:template) { "<div>content</div>" }
+      let(:source) { "<div>content</div>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -47,7 +47,7 @@ RSpec.describe Herb::Lint::Rules::ErbRequireTrailingNewline do
     end
 
     context "when file ends with multiple newlines" do
-      let(:template) { "<div>content</div>\n\n" }
+      let(:source) { "<div>content</div>\n\n" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -58,7 +58,7 @@ RSpec.describe Herb::Lint::Rules::ErbRequireTrailingNewline do
     end
 
     context "when file is empty" do
-      let(:template) { "" }
+      let(:source) { "" }
 
       it "does not report an offense" do
         expect(subject).to be_empty

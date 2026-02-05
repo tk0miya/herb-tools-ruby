@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeEqualsSpacing do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when attribute has no spaces around =" do
-      let(:template) { '<div class="foo">text</div>' }
+      let(:source) { '<div class="foo">text</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeEqualsSpacing do
     end
 
     context "when attribute has space before =" do
-      let(:template) { '<div class ="foo">text</div>' }
+      let(:source) { '<div class ="foo">text</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -47,7 +47,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeEqualsSpacing do
     end
 
     context "when attribute has space after =" do
-      let(:template) { '<div class= "foo">text</div>' }
+      let(:source) { '<div class= "foo">text</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -56,7 +56,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeEqualsSpacing do
     end
 
     context "when attribute has spaces on both sides of =" do
-      let(:template) { '<div class = "foo">text</div>' }
+      let(:source) { '<div class = "foo">text</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -65,7 +65,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeEqualsSpacing do
     end
 
     context "when boolean attribute has no value" do
-      let(:template) { "<input disabled>" }
+      let(:source) { "<input disabled>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -73,7 +73,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeEqualsSpacing do
     end
 
     context "when multiple attributes have spacing issues" do
-      let(:template) { '<div class ="foo" id = "bar">text</div>' }
+      let(:source) { '<div class ="foo" id = "bar">text</div>' }
 
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
@@ -82,7 +82,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeEqualsSpacing do
     end
 
     context "with mixed valid and invalid attributes" do
-      let(:template) { '<div class="foo" id ="bar">text</div>' }
+      let(:source) { '<div class="foo" id ="bar">text</div>' }
 
       it "reports offense only for the invalid attribute" do
         expect(subject.size).to eq(1)
@@ -91,7 +91,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeEqualsSpacing do
     end
 
     context "with nested elements having spacing issues" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div class="outer">
             <span id = "inner">text</span>
@@ -106,7 +106,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeEqualsSpacing do
     end
 
     context "with element that has no attributes" do
-      let(:template) { "<div>text</div>" }
+      let(:source) { "<div>text</div>" }
 
       it "does not report offenses" do
         expect(subject).to be_empty
@@ -114,7 +114,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeEqualsSpacing do
     end
 
     context "with multiple boolean attributes" do
-      let(:template) { "<input disabled checked readonly>" }
+      let(:source) { "<input disabled checked readonly>" }
 
       it "does not report offenses" do
         expect(subject).to be_empty

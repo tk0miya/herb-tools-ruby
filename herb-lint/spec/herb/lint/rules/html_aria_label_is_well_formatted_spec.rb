@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLabelIsWellFormatted do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when aria-label has a well-formatted value" do
-      let(:template) { '<button aria-label="Submit form">Submit</button>' }
+      let(:source) { '<button aria-label="Submit form">Submit</button>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLabelIsWellFormatted do
     end
 
     context "when aria-label value is empty" do
-      let(:template) { '<button aria-label="">Submit</button>' }
+      let(:source) { '<button aria-label="">Submit</button>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -47,7 +47,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLabelIsWellFormatted do
     end
 
     context "when aria-label value is whitespace only" do
-      let(:template) { '<button aria-label="   ">Submit</button>' }
+      let(:source) { '<button aria-label="   ">Submit</button>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -56,7 +56,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLabelIsWellFormatted do
     end
 
     context "when aria-label value starts with a lowercase letter" do
-      let(:template) { '<button aria-label="submit form">Submit</button>' }
+      let(:source) { '<button aria-label="submit form">Submit</button>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -65,7 +65,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLabelIsWellFormatted do
     end
 
     context "when aria-label value has leading whitespace" do
-      let(:template) { '<button aria-label=" Submit form">Submit</button>' }
+      let(:source) { '<button aria-label=" Submit form">Submit</button>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -74,7 +74,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLabelIsWellFormatted do
     end
 
     context "when aria-label value has trailing whitespace" do
-      let(:template) { '<button aria-label="Submit form ">Submit</button>' }
+      let(:source) { '<button aria-label="Submit form ">Submit</button>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -83,7 +83,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLabelIsWellFormatted do
     end
 
     context "when aria-label starts with a number" do
-      let(:template) { '<button aria-label="3 items in cart">Cart</button>' }
+      let(:source) { '<button aria-label="3 items in cart">Cart</button>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -91,7 +91,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLabelIsWellFormatted do
     end
 
     context "when element has no aria-label" do
-      let(:template) { "<button>Submit</button>" }
+      let(:source) { "<button>Submit</button>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -99,7 +99,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLabelIsWellFormatted do
     end
 
     context "when ARIA-LABEL attribute is uppercase" do
-      let(:template) { '<button ARIA-LABEL="Submit form">Submit</button>' }
+      let(:source) { '<button ARIA-LABEL="Submit form">Submit</button>' }
 
       it "does not report an offense (case insensitive)" do
         expect(subject).to be_empty
@@ -107,7 +107,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLabelIsWellFormatted do
     end
 
     context "when multiple elements have invalid aria-label values" do
-      let(:template) { '<button aria-label="">Submit</button><nav aria-label="">Nav</nav>' }
+      let(:source) { '<button aria-label="">Submit</button><nav aria-label="">Nav</nav>' }
 
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
@@ -116,7 +116,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLabelIsWellFormatted do
     end
 
     context "with non-labeled elements" do
-      let(:template) { '<div class="container"><p>Hello</p></div>' }
+      let(:source) { '<div class="container"><p>Hello</p></div>' }
 
       it "does not report offenses" do
         expect(subject).to be_empty
@@ -124,7 +124,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLabelIsWellFormatted do
     end
 
     context "with mixed valid and invalid aria-labels on multiple lines" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <button aria-label="Submit form">Submit</button>
           <button aria-label="">Cancel</button>

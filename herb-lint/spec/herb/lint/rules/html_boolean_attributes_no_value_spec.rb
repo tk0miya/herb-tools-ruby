@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlBooleanAttributesNoValue do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when boolean attribute has no value" do
-      let(:template) { "<input disabled>" }
+      let(:source) { "<input disabled>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBooleanAttributesNoValue do
     end
 
     context "when multiple boolean attributes have no values" do
-      let(:template) { "<input disabled checked readonly>" }
+      let(:source) { "<input disabled checked readonly>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -44,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBooleanAttributesNoValue do
     end
 
     context "when non-boolean attribute has a value" do
-      let(:template) { '<input type="text" name="user">' }
+      let(:source) { '<input type="text" name="user">' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -52,7 +52,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBooleanAttributesNoValue do
     end
 
     context "when boolean attribute has a self-referencing value" do
-      let(:template) { '<input disabled="disabled">' }
+      let(:source) { '<input disabled="disabled">' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -63,7 +63,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBooleanAttributesNoValue do
     end
 
     context "when boolean attribute has value 'true'" do
-      let(:template) { '<button disabled="true">Submit</button>' }
+      let(:source) { '<button disabled="true">Submit</button>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -72,7 +72,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBooleanAttributesNoValue do
     end
 
     context "when multiple boolean attributes have values" do
-      let(:template) { '<input checked="checked" disabled="disabled">' }
+      let(:source) { '<input checked="checked" disabled="disabled">' }
 
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
@@ -84,7 +84,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBooleanAttributesNoValue do
     end
 
     context "when boolean attribute has uppercase name with value" do
-      let(:template) { '<input DISABLED="disabled">' }
+      let(:source) { '<input DISABLED="disabled">' }
 
       it "reports an offense (case-insensitive check)" do
         expect(subject.size).to eq(1)
@@ -93,7 +93,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBooleanAttributesNoValue do
     end
 
     context "when boolean attribute has an arbitrary value" do
-      let(:template) { '<video controls="something-else"></video>' }
+      let(:source) { '<video controls="something-else"></video>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -102,7 +102,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBooleanAttributesNoValue do
     end
 
     context "with mixed boolean and non-boolean attributes" do
-      let(:template) { '<form novalidate="novalidate" action="/submit" method="post"></form>' }
+      let(:source) { '<form novalidate="novalidate" action="/submit" method="post"></form>' }
 
       it "reports offense only for the boolean attribute" do
         expect(subject.size).to eq(1)
@@ -111,7 +111,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBooleanAttributesNoValue do
     end
 
     context "with element having no attributes" do
-      let(:template) { "<div>text</div>" }
+      let(:source) { "<div>text</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -119,7 +119,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBooleanAttributesNoValue do
     end
 
     context "with nested elements having boolean attributes with values" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <form>
             <input disabled="disabled">

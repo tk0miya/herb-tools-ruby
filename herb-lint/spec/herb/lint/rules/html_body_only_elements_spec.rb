@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlBodyOnlyElements do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template) }
+    let(:document) { Herb.parse(source) }
     let(:context) { build(:context) }
 
     context "when body-only element is inside body" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <body>
             <div>Content in body</div>
@@ -42,7 +42,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBodyOnlyElements do
     end
 
     context "when body-only element is inside head" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <head>
             <div>Content in head</div>
@@ -59,7 +59,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBodyOnlyElements do
     end
 
     context "when multiple body-only elements are inside head" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <head>
             <p>Paragraph</p>
@@ -83,7 +83,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBodyOnlyElements do
     end
 
     context "when head-only elements are inside head" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <head>
             <title>Page Title</title>
@@ -101,7 +101,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBodyOnlyElements do
     end
 
     context "when head-and-body elements are inside head" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <head>
             <script src="app.js"></script>
@@ -117,7 +117,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBodyOnlyElements do
     end
 
     context "when body-only element is deeply nested inside head" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <html>
             <head>
@@ -136,7 +136,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBodyOnlyElements do
     end
 
     context "when body-only element uses uppercase tag name" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <HEAD>
             <DIV>Content</DIV>
@@ -151,7 +151,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBodyOnlyElements do
     end
 
     context "when element is outside both head and body" do
-      let(:template) { "<div>Content outside</div>" }
+      let(:source) { "<div>Content outside</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -159,7 +159,7 @@ RSpec.describe Herb::Lint::Rules::HtmlBodyOnlyElements do
     end
 
     context "when there is a complete document structure" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <html>
             <head>

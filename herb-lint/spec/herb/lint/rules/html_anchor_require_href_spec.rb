@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlAnchorRequireHref do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when anchor has href attribute" do
-      let(:template) { '<a href="/page">Click here</a>' }
+      let(:source) { '<a href="/page">Click here</a>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAnchorRequireHref do
     end
 
     context "when anchor has href with hash" do
-      let(:template) { '<a href="#">Click here</a>' }
+      let(:source) { '<a href="#">Click here</a>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -44,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAnchorRequireHref do
     end
 
     context "when anchor has empty href attribute" do
-      let(:template) { '<a href="">Click here</a>' }
+      let(:source) { '<a href="">Click here</a>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -52,7 +52,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAnchorRequireHref do
     end
 
     context "when anchor is missing href attribute" do
-      let(:template) { "<a>Click here</a>" }
+      let(:source) { "<a>Click here</a>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -63,7 +63,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAnchorRequireHref do
     end
 
     context "when anchor has name but no href" do
-      let(:template) { '<a name="anchor">Section</a>' }
+      let(:source) { '<a name="anchor">Section</a>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -72,7 +72,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAnchorRequireHref do
     end
 
     context "when multiple anchors are missing href" do
-      let(:template) { "<a>First</a><a>Second</a>" }
+      let(:source) { "<a>First</a><a>Second</a>" }
 
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
@@ -81,7 +81,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAnchorRequireHref do
     end
 
     context "when anchor has uppercase HREF attribute" do
-      let(:template) { '<a HREF="/page">Click here</a>' }
+      let(:source) { '<a HREF="/page">Click here</a>' }
 
       it "does not report an offense (case insensitive)" do
         expect(subject).to be_empty
@@ -89,7 +89,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAnchorRequireHref do
     end
 
     context "when A tag is uppercase" do
-      let(:template) { "<A>Click here</A>" }
+      let(:source) { "<A>Click here</A>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -97,7 +97,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAnchorRequireHref do
     end
 
     context "with non-anchor elements" do
-      let(:template) { '<div class="container"><p>Hello</p></div>' }
+      let(:source) { '<div class="container"><p>Hello</p></div>' }
 
       it "does not report offenses" do
         expect(subject).to be_empty
@@ -105,7 +105,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAnchorRequireHref do
     end
 
     context "with mixed anchors on multiple lines" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <a href="/first">First</a>
           <a>Second</a>

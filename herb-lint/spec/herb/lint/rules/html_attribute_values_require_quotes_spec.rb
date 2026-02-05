@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeValuesRequireQuotes do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when attribute has double-quoted value" do
-      let(:template) { '<div class="foo">text</div>' }
+      let(:source) { '<div class="foo">text</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeValuesRequireQuotes do
     end
 
     context "when attribute has single-quoted value" do
-      let(:template) { "<div class='foo'>text</div>" }
+      let(:source) { "<div class='foo'>text</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -44,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeValuesRequireQuotes do
     end
 
     context "when attribute has unquoted value" do
-      let(:template) { "<div class=foo>text</div>" }
+      let(:source) { "<div class=foo>text</div>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -55,7 +55,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeValuesRequireQuotes do
     end
 
     context "when boolean attribute has no value" do
-      let(:template) { "<input disabled />" }
+      let(:source) { "<input disabled />" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -63,7 +63,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeValuesRequireQuotes do
     end
 
     context "when multiple boolean attributes with no value" do
-      let(:template) { "<input disabled checked readonly />" }
+      let(:source) { "<input disabled checked readonly />" }
 
       it "does not report offenses" do
         expect(subject).to be_empty
@@ -71,7 +71,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeValuesRequireQuotes do
     end
 
     context "when multiple unquoted attributes" do
-      let(:template) { "<div class=foo id=bar>text</div>" }
+      let(:source) { "<div class=foo id=bar>text</div>" }
 
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
@@ -80,7 +80,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeValuesRequireQuotes do
     end
 
     context "with mixed quoted and unquoted attributes" do
-      let(:template) { '<div class="foo" id=bar>text</div>' }
+      let(:source) { '<div class="foo" id=bar>text</div>' }
 
       it "reports offense only for unquoted attribute" do
         expect(subject.size).to eq(1)
@@ -89,7 +89,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeValuesRequireQuotes do
     end
 
     context "with nested elements containing unquoted attributes" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div class="outer">
             <span id=inner>text</span>
@@ -104,7 +104,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeValuesRequireQuotes do
     end
 
     context "with empty quoted value" do
-      let(:template) { '<input value="" />' }
+      let(:source) { '<input value="" />' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -112,7 +112,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAttributeValuesRequireQuotes do
     end
 
     context "with element that has no attributes" do
-      let(:template) { "<div>text</div>" }
+      let(:source) { "<div>text</div>" }
 
       it "does not report offenses" do
         expect(subject).to be_empty

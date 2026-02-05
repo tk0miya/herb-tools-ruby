@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateIds do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when all ids are unique" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div id="header">Header</div>
           <div id="content">Content</div>
@@ -42,7 +42,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateIds do
     end
 
     context "when there are duplicate ids" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div id="content">First</div>
           <div id="content">Second</div>
@@ -59,7 +59,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateIds do
     end
 
     context "when the same id appears three times" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div id="nav">First</div>
           <div id="nav">Second</div>
@@ -74,7 +74,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateIds do
     end
 
     context "when elements have no id attribute" do
-      let(:template) { "<div>text</div>" }
+      let(:source) { "<div>text</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -82,7 +82,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateIds do
     end
 
     context "when id attribute has empty value" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div id="">First</div>
           <div id="">Second</div>
@@ -95,7 +95,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateIds do
     end
 
     context "with nested elements having duplicate ids" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div id="container">
             <span id="item">text</span>
@@ -112,7 +112,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateIds do
     end
 
     context "with different ids on same tag type" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div id="first">First</div>
           <div id="second">Second</div>
@@ -125,7 +125,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateIds do
     end
 
     context "when id has mixed case (case-sensitive check)" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div id="Content">First</div>
           <div id="content">Second</div>
@@ -138,7 +138,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateIds do
     end
 
     context "with single element having an id" do
-      let(:template) { '<div id="unique">text</div>' }
+      let(:source) { '<div id="unique">text</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty

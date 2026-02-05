@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::ErbNoCaseNodeChildren do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when case has no direct children (only whitespace)" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% case value %>
           <% when :a %>
@@ -45,7 +45,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoCaseNodeChildren do
     end
 
     context "when case has else clause without direct children" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% case value %>
           <% when :a %>
@@ -62,7 +62,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoCaseNodeChildren do
     end
 
     context "when case has direct HTML element children" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% case value %>
             <p>Direct content</p>
@@ -81,7 +81,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoCaseNodeChildren do
     end
 
     context "when case has direct text content (non-whitespace)" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% case value %>
             Some text content
@@ -98,7 +98,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoCaseNodeChildren do
     end
 
     context "when case has direct ERB output tag" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% case value %>
             <%= some_value %>
@@ -115,7 +115,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoCaseNodeChildren do
     end
 
     context "when case has only whitespace between tags" do
-      let(:template) { "<% case value %>\n  \n<% when :a %>\n  <p>A</p>\n<% end %>" }
+      let(:source) { "<% case value %>\n  \n<% when :a %>\n  <p>A</p>\n<% end %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -123,7 +123,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoCaseNodeChildren do
     end
 
     context "when nested case has direct children but parent does not" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% case outer %>
           <% when :a %>
@@ -143,7 +143,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoCaseNodeChildren do
     end
 
     context "when multiple case blocks have direct children" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% case first %>
             <p>First direct</p>
@@ -165,7 +165,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoCaseNodeChildren do
     end
 
     context "when case has empty children array" do
-      let(:template) { "<% case value %><% when :a %>\n<p>A</p>\n<% end %>" }
+      let(:source) { "<% case value %><% when :a %>\n<p>A</p>\n<% end %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty

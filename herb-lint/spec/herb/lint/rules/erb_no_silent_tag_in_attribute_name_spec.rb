@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when attribute name contains standard silent tag" do
-      let(:template) { '<div data-<% key %>-target="value"></div>' }
+      let(:source) { '<div data-<% key %>-target="value"></div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -40,7 +40,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
     end
 
     context "when attribute name contains silent tag with trim" do
-      let(:template) { '<div prefix-<%- variable -%>-suffix="test"></div>' }
+      let(:source) { '<div prefix-<%- variable -%>-suffix="test"></div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -50,7 +50,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
     end
 
     context "when attribute name contains comment tag" do
-      let(:template) { '<span id-<%# comment %>-name="test"></span>' }
+      let(:source) { '<span id-<%# comment %>-name="test"></span>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -60,7 +60,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
     end
 
     context "when attribute name contains output tag" do
-      let(:template) { '<div data-<%= key %>-target="value"></div>' }
+      let(:source) { '<div data-<%= key %>-target="value"></div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -68,7 +68,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
     end
 
     context "when output tag outputs entire attributes" do
-      let(:template) { "<div <%= data_attributes_for(user) %>></div>" }
+      let(:source) { "<div <%= data_attributes_for(user) %>></div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -76,7 +76,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
     end
 
     context "when silent tag is used for conditional attributes" do
-      let(:template) { '<div <% if valid? %>data-valid="true"<% else %>data-valid="false"<% end %>></div>' }
+      let(:source) { '<div <% if valid? %>data-valid="true"<% else %>data-valid="false"<% end %>></div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -84,7 +84,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
     end
 
     context "when silent tag is used for conditional class attribute" do
-      let(:template) { '<span <% if user.admin? %>class="admin"<% end %>></span>' }
+      let(:source) { '<span <% if user.admin? %>class="admin"<% end %>></span>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -92,7 +92,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
     end
 
     context "when element has static attributes" do
-      let(:template) { '<div class="container" id="main"></div>' }
+      let(:source) { '<div class="container" id="main"></div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -100,7 +100,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
     end
 
     context "when multiple attributes have silent tags in names" do
-      let(:template) do
+      let(:source) do
         '<div data-<% key1 %>-first="1" data-<% key2 %>-second="2"></div>'
       end
 
@@ -111,7 +111,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
     end
 
     context "when attribute value contains silent tag" do
-      let(:template) { '<div data-target="<% value %>"></div>' }
+      let(:source) { '<div data-target="<% value %>"></div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -119,7 +119,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
     end
 
     context "when attribute has both silent tag in name and value" do
-      let(:template) { '<div data-<% key %>-target="<% value %>"></div>' }
+      let(:source) { '<div data-<% key %>-target="<% value %>"></div>' }
 
       it "reports offense only for the name" do
         expect(subject.size).to eq(1)
@@ -128,7 +128,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
     end
 
     context "when mixed with valid and invalid attributes" do
-      let(:template) do
+      let(:source) do
         '<div class="static" data-<% key %>-target="value" id="main"></div>'
       end
 
@@ -139,7 +139,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
     end
 
     context "when element has no attributes" do
-      let(:template) { "<div></div>" }
+      let(:source) { "<div></div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -147,7 +147,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
     end
 
     context "when self-closing element has silent tag in attribute name" do
-      let(:template) { '<input data-<% field %>-name="test" />' }
+      let(:source) { '<input data-<% field %>-name="test" />' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -156,7 +156,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
     end
 
     context "when attribute name is at end of attribute" do
-      let(:template) { '<div data-target-<% suffix %>="value"></div>' }
+      let(:source) { '<div data-target-<% suffix %>="value"></div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)

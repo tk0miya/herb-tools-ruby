@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::ErbRightTrim do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when ERB tag uses obscure =%> syntax" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% if condition =%>
             <p>Content</p>
@@ -47,7 +47,7 @@ RSpec.describe Herb::Lint::Rules::ErbRightTrim do
     end
 
     context "when ERB tag uses standard %> syntax" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% if condition %>
             <p>Content</p>
@@ -61,7 +61,7 @@ RSpec.describe Herb::Lint::Rules::ErbRightTrim do
     end
 
     context "when ERB tag uses standard -%> syntax" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% if condition -%>
             <p>Content</p>
@@ -75,7 +75,7 @@ RSpec.describe Herb::Lint::Rules::ErbRightTrim do
     end
 
     context "when ERB output tag uses =%> syntax" do
-      let(:template) { "<%= value =%>" }
+      let(:source) { "<%= value =%>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -84,7 +84,7 @@ RSpec.describe Herb::Lint::Rules::ErbRightTrim do
     end
 
     context "when mixing =%> with other syntaxes" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% if condition =%>
             <%= value %>
@@ -99,7 +99,7 @@ RSpec.describe Herb::Lint::Rules::ErbRightTrim do
     end
 
     context "when no ERB tags exist" do
-      let(:template) { "<div>Plain HTML</div>" }
+      let(:source) { "<div>Plain HTML</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -107,7 +107,7 @@ RSpec.describe Herb::Lint::Rules::ErbRightTrim do
     end
 
     context "when ERB comment uses =%> syntax" do
-      let(:template) { "<%# comment =%>" }
+      let(:source) { "<%# comment =%>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)

@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleMustBeValid do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when element has a valid role" do
-      let(:template) { '<div role="button">Click me</div>' }
+      let(:source) { '<div role="button">Click me</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleMustBeValid do
     end
 
     context "when element has an invalid role" do
-      let(:template) { '<div role="invalid-role">Content</div>' }
+      let(:source) { '<div role="invalid-role">Content</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -47,7 +47,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleMustBeValid do
     end
 
     context "when role attribute is empty" do
-      let(:template) { '<div role="">Content</div>' }
+      let(:source) { '<div role="">Content</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -56,7 +56,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleMustBeValid do
     end
 
     context "when role attribute is whitespace-only" do
-      let(:template) { '<div role="   ">Content</div>' }
+      let(:source) { '<div role="   ">Content</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -65,7 +65,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleMustBeValid do
     end
 
     context "when element has no role attribute" do
-      let(:template) { "<div>Content</div>" }
+      let(:source) { "<div>Content</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -73,7 +73,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleMustBeValid do
     end
 
     context "when role attribute has multiple valid roles" do
-      let(:template) { '<div role="button link">Content</div>' }
+      let(:source) { '<div role="button link">Content</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -81,7 +81,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleMustBeValid do
     end
 
     context "when role attribute has one invalid role among valid ones" do
-      let(:template) { '<div role="button foobar">Content</div>' }
+      let(:source) { '<div role="button foobar">Content</div>' }
 
       it "reports an offense for the invalid role" do
         expect(subject.size).to eq(1)
@@ -90,7 +90,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleMustBeValid do
     end
 
     context "when role attribute has multiple invalid roles" do
-      let(:template) { '<div role="foo bar">Content</div>' }
+      let(:source) { '<div role="foo bar">Content</div>' }
 
       it "reports an offense for each invalid role" do
         expect(subject.size).to eq(2)
@@ -102,7 +102,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleMustBeValid do
     end
 
     context "when role value is case-insensitive" do
-      let(:template) { '<div role="Button">Content</div>' }
+      let(:source) { '<div role="Button">Content</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -110,7 +110,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleMustBeValid do
     end
 
     context "when ROLE attribute name is uppercase" do
-      let(:template) { '<div ROLE="navigation">Content</div>' }
+      let(:source) { '<div ROLE="navigation">Content</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -118,7 +118,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleMustBeValid do
     end
 
     context "when multiple elements have role attributes" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div role="button">OK</div>
           <div role="invalid">Bad</div>
@@ -134,7 +134,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleMustBeValid do
     end
 
     context "when role is an abstract WAI-ARIA role" do
-      let(:template) { '<div role="command">Content</div>' }
+      let(:source) { '<div role="command">Content</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -143,7 +143,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleMustBeValid do
     end
 
     context "with nested elements" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div role="navigation">
             <div role="invalid">Content</div>

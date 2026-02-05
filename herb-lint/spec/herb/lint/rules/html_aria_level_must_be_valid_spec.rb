@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLevelMustBeValid do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when aria-level is 1" do
-      let(:template) { '<div role="heading" aria-level="1">Heading</div>' }
+      let(:source) { '<div role="heading" aria-level="1">Heading</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLevelMustBeValid do
     end
 
     context "when aria-level is 6" do
-      let(:template) { '<div role="heading" aria-level="6">Heading</div>' }
+      let(:source) { '<div role="heading" aria-level="6">Heading</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -44,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLevelMustBeValid do
     end
 
     context "when aria-level is 0" do
-      let(:template) { '<div role="heading" aria-level="0">Heading</div>' }
+      let(:source) { '<div role="heading" aria-level="0">Heading</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -55,7 +55,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLevelMustBeValid do
     end
 
     context "when aria-level is 7" do
-      let(:template) { '<div role="heading" aria-level="7">Heading</div>' }
+      let(:source) { '<div role="heading" aria-level="7">Heading</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -64,7 +64,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLevelMustBeValid do
     end
 
     context "when aria-level is a non-numeric string" do
-      let(:template) { '<div role="heading" aria-level="abc">Heading</div>' }
+      let(:source) { '<div role="heading" aria-level="abc">Heading</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -73,7 +73,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLevelMustBeValid do
     end
 
     context "when there is no aria-level attribute" do
-      let(:template) { '<div role="heading">Heading</div>' }
+      let(:source) { '<div role="heading">Heading</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -81,7 +81,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLevelMustBeValid do
     end
 
     context "when there are multiple elements with invalid aria-level" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div role="heading" aria-level="0">First</div>
           <div role="heading" aria-level="7">Second</div>
@@ -94,7 +94,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLevelMustBeValid do
     end
 
     context "when only some elements have invalid aria-level" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div role="heading" aria-level="2">Valid</div>
           <div role="heading" aria-level="0">Invalid</div>
@@ -109,7 +109,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLevelMustBeValid do
     end
 
     context "with aria-level attribute in different case" do
-      let(:template) { '<div role="heading" ARIA-LEVEL="0">Heading</div>' }
+      let(:source) { '<div role="heading" ARIA-LEVEL="0">Heading</div>' }
 
       it "reports an offense (case-insensitive check)" do
         expect(subject.size).to eq(1)
@@ -118,7 +118,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLevelMustBeValid do
     end
 
     context "with nested elements" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div role="heading" aria-level="0">
             <span role="heading" aria-level="8">Nested</span>
@@ -132,7 +132,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaLevelMustBeValid do
     end
 
     context "with other attributes present" do
-      let(:template) { '<div class="title" role="heading" aria-level="0" id="main-heading">Heading</div>' }
+      let(:source) { '<div class="title" role="heading" aria-level="0" id="main-heading">Heading</div>' }
 
       it "reports an offense for the invalid aria-level" do
         expect(subject.size).to eq(1)

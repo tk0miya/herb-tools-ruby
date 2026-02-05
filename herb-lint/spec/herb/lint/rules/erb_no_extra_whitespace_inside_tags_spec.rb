@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraWhitespaceInsideTags do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when ERB tag has single space on each side" do
-      let(:template) { "<% value %>" }
+      let(:source) { "<% value %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraWhitespaceInsideTags do
     end
 
     context "when ERB output tag has single space on each side" do
-      let(:template) { "<%= value %>" }
+      let(:source) { "<%= value %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -44,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraWhitespaceInsideTags do
     end
 
     context "when ERB tag has no spaces (touching delimiters)" do
-      let(:template) { "<%value%>" }
+      let(:source) { "<%value%>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -52,7 +52,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraWhitespaceInsideTags do
     end
 
     context "when ERB tag has two spaces at the beginning" do
-      let(:template) { "<%  value %>" }
+      let(:source) { "<%  value %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -63,7 +63,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraWhitespaceInsideTags do
     end
 
     context "when ERB tag has two spaces at the end" do
-      let(:template) { "<% value  %>" }
+      let(:source) { "<% value  %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -72,7 +72,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraWhitespaceInsideTags do
     end
 
     context "when ERB tag has two spaces on both sides" do
-      let(:template) { "<%  value  %>" }
+      let(:source) { "<%  value  %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -81,7 +81,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraWhitespaceInsideTags do
     end
 
     context "when ERB output tag has multiple spaces at the beginning" do
-      let(:template) { "<%=   value %>" }
+      let(:source) { "<%=   value %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -90,7 +90,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraWhitespaceInsideTags do
     end
 
     context "when ERB tag has tabs at the beginning" do
-      let(:template) { "<%\t\tvalue %>" }
+      let(:source) { "<%\t\tvalue %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -99,7 +99,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraWhitespaceInsideTags do
     end
 
     context "when ERB tag has tabs at the end" do
-      let(:template) { "<% value\t\t%>" }
+      let(:source) { "<% value\t\t%>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -108,7 +108,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraWhitespaceInsideTags do
     end
 
     context "when ERB tag has mixed spaces and tabs" do
-      let(:template) { "<% \tvalue %>" }
+      let(:source) { "<% \tvalue %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -117,7 +117,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraWhitespaceInsideTags do
     end
 
     context "when ERB tag is empty" do
-      let(:template) { "<%  %>" }
+      let(:source) { "<%  %>" }
 
       it "does not report an offense (handled by erb-no-empty-tags)" do
         expect(subject).to be_empty
@@ -125,7 +125,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraWhitespaceInsideTags do
     end
 
     context "when content has spaces within it" do
-      let(:template) { "<% foo bar %>" }
+      let(:source) { "<% foo bar %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -133,7 +133,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraWhitespaceInsideTags do
     end
 
     context "when multiple tags have extra whitespace" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <%  first  %>
           <p>content</p>
@@ -148,7 +148,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraWhitespaceInsideTags do
     end
 
     context "when only one tag has extra whitespace" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% first %>
           <%  second  %>
@@ -163,7 +163,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraWhitespaceInsideTags do
     end
 
     context "when ERB tag is inside HTML" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <div>
             <%  value  %>

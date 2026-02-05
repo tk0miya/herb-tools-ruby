@@ -20,8 +20,8 @@ RSpec.describe Herb::Lint::Rules::NodeHelpers do
     end
 
     context "when node has lowercase tag name" do
-      let(:template) { "<div>content</div>" }
-      let(:node) { Herb.parse(template, track_whitespace: true).value.children.first }
+      let(:source) { "<div>content</div>" }
+      let(:node) { Herb.parse(source, track_whitespace: true).value.children.first }
 
       it "returns the tag name in original case" do
         expect(helper.raw_tag_name(node)).to eq("div")
@@ -29,8 +29,8 @@ RSpec.describe Herb::Lint::Rules::NodeHelpers do
     end
 
     context "when node has uppercase tag name" do
-      let(:template) { "<DIV>content</DIV>" }
-      let(:node) { Herb.parse(template, track_whitespace: true).value.children.first }
+      let(:source) { "<DIV>content</DIV>" }
+      let(:node) { Herb.parse(source, track_whitespace: true).value.children.first }
 
       it "returns the tag name in original case" do
         expect(helper.raw_tag_name(node)).to eq("DIV")
@@ -46,8 +46,8 @@ RSpec.describe Herb::Lint::Rules::NodeHelpers do
     end
 
     context "when node has lowercase tag name" do
-      let(:template) { "<div>content</div>" }
-      let(:node) { Herb.parse(template, track_whitespace: true).value.children.first }
+      let(:source) { "<div>content</div>" }
+      let(:node) { Herb.parse(source, track_whitespace: true).value.children.first }
 
       it "returns the lowercase tag name" do
         expect(helper.tag_name(node)).to eq("div")
@@ -55,8 +55,8 @@ RSpec.describe Herb::Lint::Rules::NodeHelpers do
     end
 
     context "when node has uppercase tag name" do
-      let(:template) { "<DIV>content</DIV>" }
-      let(:node) { Herb.parse(template, track_whitespace: true).value.children.first }
+      let(:source) { "<DIV>content</DIV>" }
+      let(:node) { Herb.parse(source, track_whitespace: true).value.children.first }
 
       it "returns the lowercase tag name" do
         expect(helper.tag_name(node)).to eq("div")

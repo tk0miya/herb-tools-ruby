@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyHeadings do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when heading has text content" do
-      let(:template) { "<h1>Page Title</h1>" }
+      let(:source) { "<h1>Page Title</h1>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyHeadings do
     end
 
     context "when heading has ERB content" do
-      let(:template) { "<h2><%= title %></h2>" }
+      let(:source) { "<h2><%= title %></h2>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -44,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyHeadings do
     end
 
     context "when heading has nested element" do
-      let(:template) { "<h3><span>Hello</span></h3>" }
+      let(:source) { "<h3><span>Hello</span></h3>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -52,7 +52,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyHeadings do
     end
 
     context "when heading is empty" do
-      let(:template) { "<h1></h1>" }
+      let(:source) { "<h1></h1>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -63,7 +63,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyHeadings do
     end
 
     context "when heading contains only whitespace" do
-      let(:template) { "<h2>   </h2>" }
+      let(:source) { "<h2>   </h2>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -73,7 +73,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyHeadings do
     end
 
     context "when multiple empty headings exist" do
-      let(:template) { "<h1></h1><h2></h2><h3></h3>" }
+      let(:source) { "<h1></h1><h2></h2><h3></h3>" }
 
       it "reports an offense for each" do
         expect(subject.size).to eq(3)
@@ -82,7 +82,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyHeadings do
     end
 
     context "when heading tag is uppercase" do
-      let(:template) { "<H1></H1>" }
+      let(:source) { "<H1></H1>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -90,7 +90,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyHeadings do
     end
 
     context "with non-heading elements" do
-      let(:template) { "<div></div><p></p><span></span>" }
+      let(:source) { "<div></div><p></p><span></span>" }
 
       it "does not report offenses" do
         expect(subject).to be_empty
@@ -98,7 +98,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyHeadings do
     end
 
     context "with mixed headings on multiple lines" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <h1>Page Title</h1>
           <h2></h2>
@@ -113,7 +113,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyHeadings do
     end
 
     context "when heading has text with surrounding whitespace" do
-      let(:template) { "<h1>  Hello  </h1>" }
+      let(:source) { "<h1>  Hello  </h1>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty

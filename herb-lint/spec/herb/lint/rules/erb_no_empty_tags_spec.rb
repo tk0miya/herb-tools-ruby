@@ -30,11 +30,11 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when ERB tag has content" do
-      let(:template) { "<% do_something %>" }
+      let(:source) { "<% do_something %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -42,7 +42,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
     end
 
     context "when ERB output tag has content" do
-      let(:template) { "<%= value %>" }
+      let(:source) { "<%= value %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -50,7 +50,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
     end
 
     context "when ERB tag is completely empty" do
-      let(:template) { "<%=%>" }
+      let(:source) { "<%=%>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -61,7 +61,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
     end
 
     context "when ERB tag contains only one space" do
-      let(:template) { "<% %>" }
+      let(:source) { "<% %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -71,7 +71,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
     end
 
     context "when ERB tag contains only multiple spaces" do
-      let(:template) { "<%  %>" }
+      let(:source) { "<%  %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -80,7 +80,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
     end
 
     context "when ERB output tag contains only whitespace" do
-      let(:template) { "<%= %>" }
+      let(:source) { "<%= %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -89,7 +89,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
     end
 
     context "when multiple empty tags exist" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% %>
           <p>content</p>
@@ -104,7 +104,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
     end
 
     context "when both empty and non-empty tags exist" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% value %>
           <% %>
@@ -119,7 +119,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
     end
 
     context "when ERB tag contains only whitespace (tabs/newlines/mixed)" do
-      let(:template) { "<% \t\n %>" }
+      let(:source) { "<% \t\n %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -128,7 +128,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
     end
 
     context "when empty tags are in HTML" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <div>
             <% %>
@@ -144,7 +144,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
     end
 
     context "when ERB tag has content with leading/trailing spaces" do
-      let(:template) { "<%  foo  %>" }
+      let(:source) { "<%  foo  %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -155,10 +155,10 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
   describe "#autofix" do
     subject { described_class.new.autofix(node, document) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
 
     context "when fixing a simple empty tag" do
-      let(:template) { "<% %>" }
+      let(:source) { "<% %>" }
       let(:node) { document.value.children.first }
 
       it "removes the empty tag and returns true" do
@@ -169,7 +169,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
     end
 
     context "when fixing an empty output tag" do
-      let(:template) { "<%= %>" }
+      let(:source) { "<%= %>" }
       let(:node) { document.value.children.first }
 
       it "removes the empty tag" do
@@ -180,7 +180,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
     end
 
     context "when fixing an empty tag with surrounding content" do
-      let(:template) { "<p>before</p><% %><p>after</p>" }
+      let(:source) { "<p>before</p><% %><p>after</p>" }
       let(:node) { document.value.children.find { |n| n.is_a?(Herb::AST::ERBContentNode) } }
 
       it "removes only the empty tag" do
@@ -191,7 +191,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
     end
 
     context "when fixing multiple empty tags in sequence" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% %>
           <p>content</p>
@@ -217,7 +217,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
     end
 
     context "when fixing an empty tag with tabs and newlines" do
-      let(:template) { "<% \t\n %>" }
+      let(:source) { "<% \t\n %>" }
       let(:node) { document.value.children.first }
 
       it "removes the empty tag" do
@@ -228,7 +228,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoEmptyTags do
     end
 
     context "when empty tags are in HTML structure" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <div>
             <% %>
