@@ -39,7 +39,8 @@ module Herb
 
         @seen_strict_locals_comment: bool
 
-        def initialize: () -> untyped
+        # @rbs override
+        def on_new_investigation: () -> void
 
         # @rbs override
         def visit_erb_content_node: ...

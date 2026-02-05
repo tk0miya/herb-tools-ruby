@@ -43,7 +43,8 @@ module Herb
         # @rbs @seen_strict_locals_comment: bool
         # @rbs @first_strict_locals_location: Location?
 
-        def initialize
+        # @rbs override
+        def on_new_investigation #: void
           super
           @seen_strict_locals_comment = false
           @first_strict_locals_location = nil
