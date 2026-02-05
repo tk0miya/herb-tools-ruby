@@ -52,23 +52,36 @@ Rules are grouped by theme:
 - [ ] Add tests
 - [ ] Update RuleRegistry
 
-**Description:** Disallow extra blank lines inside ERB tags.
+**Description:** Disallow more than 2 consecutive blank lines in ERB files.
 
 **Complexity:** Low
 
 **Fixable:** Yes
 
+**Implementation Details:**
+- Detect sequences of 4 or more consecutive newlines (`/\n{4,}/g`)
+- Maximum allowed: 2 consecutive blank lines (3 newline characters)
+- Apply to entire file, not just inside ERB tags
+
 **Example:**
 ```erb
-<!-- Bad -->
-<%
+<!-- Bad: 3 blank lines (4 newlines) -->
+<div>First</div>
 
-  value
 
-%>
 
-<!-- Good -->
-<% value %>
+
+<div>Second</div>
+
+<!-- Good: Maximum 2 blank lines allowed -->
+<div>First</div>
+
+
+<div>Second</div>
+
+<!-- Good: No blank lines -->
+<div>First</div>
+<div>Second</div>
 ```
 
 ---

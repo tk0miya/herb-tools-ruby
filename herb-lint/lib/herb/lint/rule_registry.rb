@@ -14,6 +14,7 @@ module Herb
           Rules::ErbCommentSyntax,
           Rules::ErbNoCaseNodeChildren,
           Rules::ErbNoEmptyTags,
+          Rules::ErbNoExtraNewline,
           Rules::ErbNoExtraWhitespaceInsideTags,
           Rules::ErbNoOutputControlFlow,
           Rules::ErbPreferImageTagHelper,
