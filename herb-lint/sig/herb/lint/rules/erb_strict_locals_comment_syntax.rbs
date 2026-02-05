@@ -56,14 +56,10 @@ module Herb
         def check_ruby_comment_in_execution_tag: (Herb::AST::ERBContentNode node, String content) -> void
 
         # @rbs content: String
-        def ruby_comment_looks_like_locals_declaration?: (String content) -> bool
+        def looks_like_locals_declaration?: (String content) -> bool
 
         # @rbs content: String
-        # @rbs return: String?
-        def extract_locals_remainder: (String content) -> String?
-
-        # @rbs remainder: String
-        def locals_like_syntax?: (String remainder) -> bool
+        def ruby_comment_looks_like_locals_declaration?: (String content) -> bool
 
         # @rbs comment_content: String
         # @rbs node: Herb::AST::ERBContentNode

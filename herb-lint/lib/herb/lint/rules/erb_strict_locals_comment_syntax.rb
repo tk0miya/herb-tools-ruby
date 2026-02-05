@@ -71,8 +71,7 @@ module Herb
         # @rbs content: String
         def check_erb_comment_node(node, content) #: void
           comment_content = content.strip
-          remainder = extract_locals_remainder(comment_content)
-          return unless remainder && locals_like_syntax?(remainder)
+          return unless looks_like_locals_declaration?(comment_content)
 
           validate_locals_comment(comment_content, node)
         end
@@ -90,24 +89,21 @@ module Herb
         end
 
         # @rbs content: String
+        def looks_like_locals_declaration?(content) #: bool
+          match = content.match(/\Alocals?\b(.*)/)
+          return false unless match
+
+          remainder = match[1]
+          /[(:)]/.match?(remainder)
+        end
+
+        # @rbs content: String
         def ruby_comment_looks_like_locals_declaration?(content) #: bool
           match = content.match(/\A\s*#\s*(.*)/)
           return false unless match
 
           comment_text = match[1].strip
           /\Alocals?\b/.match?(comment_text) && /[(:)]/.match?(comment_text)
-        end
-
-        # @rbs content: String
-        # @rbs return: String?
-        def extract_locals_remainder(content)
-          match = content.match(/\Alocals?\b(.*)/)
-          match ? match[1] : nil
-        end
-
-        # @rbs remainder: String
-        def locals_like_syntax?(remainder) #: bool
-          /[(:)]/.match?(remainder)
         end
 
         # @rbs comment_content: String
