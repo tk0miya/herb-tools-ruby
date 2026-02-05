@@ -40,18 +40,20 @@ module Herb
         @seen_strict_locals_comment: bool
 
         # @rbs override
-        def on_new_investigation: () -> void
+        def on_new_investigation: ...
 
         # @rbs override
         def visit_erb_content_node: ...
 
         private
 
-        # @rbs opening_tag: String?
-        # @rbs content: String
         # @rbs node: Herb::AST::ERBContentNode
-        # @rbs return: String?
-        def extract_comment_content: (String? opening_tag, String content, Herb::AST::ERBContentNode node) -> String?
+        # @rbs content: String
+        def check_erb_comment_node: (Herb::AST::ERBContentNode node, String content) -> void
+
+        # @rbs node: Herb::AST::ERBContentNode
+        # @rbs content: String
+        def check_ruby_comment_in_execution_tag: (Herb::AST::ERBContentNode node, String content) -> void
 
         # @rbs content: String
         # @rbs return: String?

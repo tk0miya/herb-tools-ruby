@@ -52,42 +52,42 @@ module Herb
 
         # @rbs override
         def visit_erb_content_node(node)
-          opening_tag = node.tag_opening&.value
           content = node.content&.value
-
           return super unless content
 
-          comment_content = extract_comment_content(opening_tag, content, node)
-          return super unless comment_content
-
-          remainder = extract_locals_remainder(comment_content)
-          return super unless remainder && locals_like_syntax?(remainder)
-
-          validate_locals_comment(comment_content, node)
+          case node.tag_opening&.value
+          when "<%#"
+            check_erb_comment_node(node, content)
+          when "<%", "<%-"
+            check_ruby_comment_in_execution_tag(node, content)
+          end
 
           super
         end
 
         private
 
-        # @rbs opening_tag: String?
-        # @rbs content: String
         # @rbs node: Herb::AST::ERBContentNode
-        # @rbs return: String?
-        def extract_comment_content(opening_tag, content, node)
-          if opening_tag == "<%#"
-            content.strip
-          elsif ["<%", "<%-"].include?(opening_tag)
-            ruby_comment = extract_ruby_comment_content(content)
-            if ruby_comment && looks_like_locals_declaration?(ruby_comment)
-              add_offense(
-                message: "Use `<%#` instead of `#{opening_tag} #` for strict locals comments. " \
-                         "Only ERB comment syntax is recognized by Rails.",
-                location: node.location
-              )
-            end
-            nil
-          end
+        # @rbs content: String
+        def check_erb_comment_node(node, content) #: void
+          comment_content = content.strip
+          remainder = extract_locals_remainder(comment_content)
+          return unless remainder && locals_like_syntax?(remainder)
+
+          validate_locals_comment(comment_content, node)
+        end
+
+        # @rbs node: Herb::AST::ERBContentNode
+        # @rbs content: String
+        def check_ruby_comment_in_execution_tag(node, content) #: void
+          ruby_comment = extract_ruby_comment_content(content)
+          return unless ruby_comment && looks_like_locals_declaration?(ruby_comment)
+
+          add_offense(
+            message: "Use `<%#` instead of `#{node.tag_opening&.value} #` for strict locals comments. " \
+                     "Only ERB comment syntax is recognized by Rails.",
+            location: node.location
+          )
         end
 
         # @rbs content: String
