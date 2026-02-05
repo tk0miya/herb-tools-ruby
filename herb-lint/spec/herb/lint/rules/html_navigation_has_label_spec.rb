@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNavigationHasLabel do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when nav has aria-label attribute" do
-      let(:template) { '<nav aria-label="Main navigation"><a href="/">Home</a></nav>' }
+      let(:source) { '<nav aria-label="Main navigation"><a href="/">Home</a></nav>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNavigationHasLabel do
     end
 
     context "when nav has aria-labelledby attribute" do
-      let(:template) { '<nav aria-labelledby="nav-heading"><a href="/">Home</a></nav>' }
+      let(:source) { '<nav aria-labelledby="nav-heading"><a href="/">Home</a></nav>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -44,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNavigationHasLabel do
     end
 
     context "when nav is missing both aria-label and aria-labelledby" do
-      let(:template) { '<nav><a href="/">Home</a></nav>' }
+      let(:source) { '<nav><a href="/">Home</a></nav>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -56,7 +56,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNavigationHasLabel do
     end
 
     context "when nav has empty aria-label" do
-      let(:template) { '<nav aria-label=""><a href="/">Home</a></nav>' }
+      let(:source) { '<nav aria-label=""><a href="/">Home</a></nav>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -65,7 +65,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNavigationHasLabel do
     end
 
     context "when nav has whitespace-only aria-label" do
-      let(:template) { '<nav aria-label="   "><a href="/">Home</a></nav>' }
+      let(:source) { '<nav aria-label="   "><a href="/">Home</a></nav>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -73,7 +73,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNavigationHasLabel do
     end
 
     context "when nav has empty aria-labelledby" do
-      let(:template) { '<nav aria-labelledby=""><a href="/">Home</a></nav>' }
+      let(:source) { '<nav aria-labelledby=""><a href="/">Home</a></nav>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -81,7 +81,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNavigationHasLabel do
     end
 
     context "when nav has uppercase ARIA-LABEL attribute" do
-      let(:template) { '<nav ARIA-LABEL="Main navigation"><a href="/">Home</a></nav>' }
+      let(:source) { '<nav ARIA-LABEL="Main navigation"><a href="/">Home</a></nav>' }
 
       it "does not report an offense (case insensitive)" do
         expect(subject).to be_empty
@@ -89,7 +89,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNavigationHasLabel do
     end
 
     context "when NAV tag is uppercase" do
-      let(:template) { '<NAV><a href="/">Home</a></NAV>' }
+      let(:source) { '<NAV><a href="/">Home</a></NAV>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -97,7 +97,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNavigationHasLabel do
     end
 
     context "when multiple navs are missing labels" do
-      let(:template) { '<nav><a href="/">Home</a></nav><nav><a href="/about">About</a></nav>' }
+      let(:source) { '<nav><a href="/">Home</a></nav><nav><a href="/about">About</a></nav>' }
 
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
@@ -106,7 +106,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNavigationHasLabel do
     end
 
     context "with non-nav elements" do
-      let(:template) { '<div class="container"><p>Hello</p></div>' }
+      let(:source) { '<div class="container"><p>Hello</p></div>' }
 
       it "does not report offenses" do
         expect(subject).to be_empty
@@ -114,7 +114,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNavigationHasLabel do
     end
 
     context "with mixed navs on multiple lines" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <nav aria-label="Main navigation"><a href="/">Home</a></nav>
           <nav><a href="/about">About</a></nav>

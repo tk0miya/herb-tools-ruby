@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateAttributes do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when there are no duplicate attributes" do
-      let(:template) { '<div class="foo" id="bar">content</div>' }
+      let(:source) { '<div class="foo" id="bar">content</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateAttributes do
     end
 
     context "when there are duplicate attributes" do
-      let(:template) { '<div class="foo" class="bar">content</div>' }
+      let(:source) { '<div class="foo" class="bar">content</div>' }
 
       it "reports an offense for the duplicate" do
         expect(subject.size).to eq(1)
@@ -47,7 +47,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateAttributes do
     end
 
     context "when the same attribute appears three times" do
-      let(:template) { '<div class="a" class="b" class="c">content</div>' }
+      let(:source) { '<div class="a" class="b" class="c">content</div>' }
 
       it "reports an offense for each duplicate" do
         expect(subject.size).to eq(2)
@@ -56,7 +56,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateAttributes do
     end
 
     context "when there are multiple different duplicate attributes" do
-      let(:template) { '<div class="a" id="x" class="b" id="y">content</div>' }
+      let(:source) { '<div class="a" id="x" class="b" id="y">content</div>' }
 
       it "reports an offense for each duplicate" do
         expect(subject.size).to eq(2)
@@ -68,7 +68,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateAttributes do
     end
 
     context "with attributes having different cases" do
-      let(:template) { '<div CLASS="foo" class="bar">content</div>' }
+      let(:source) { '<div CLASS="foo" class="bar">content</div>' }
 
       it "reports an offense (case-insensitive check)" do
         expect(subject.size).to eq(1)
@@ -77,7 +77,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateAttributes do
     end
 
     context "with self-closing element having duplicate attributes" do
-      let(:template) { '<input type="text" type="number">' }
+      let(:source) { '<input type="text" type="number">' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -86,7 +86,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateAttributes do
     end
 
     context "with nested elements having separate duplicates" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div class="a" class="b">
             <span class="c" class="d">text</span>
@@ -100,7 +100,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateAttributes do
     end
 
     context "with element having no attributes" do
-      let(:template) { "<div>text</div>" }
+      let(:source) { "<div>text</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -108,7 +108,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateAttributes do
     end
 
     context "with boolean attributes not duplicated" do
-      let(:template) { "<input disabled readonly>" }
+      let(:source) { "<input disabled readonly>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -116,7 +116,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateAttributes do
     end
 
     context "with duplicate boolean attributes" do
-      let(:template) { "<input disabled disabled>" }
+      let(:source) { "<input disabled disabled>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -125,7 +125,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateAttributes do
     end
 
     context "with data attributes not duplicated" do
-      let(:template) { '<div data-id="1" data-name="foo">text</div>' }
+      let(:source) { '<div data-id="1" data-name="foo">text</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -133,7 +133,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateAttributes do
     end
 
     context "with duplicate data attributes" do
-      let(:template) { '<div data-id="1" data-id="2">text</div>' }
+      let(:source) { '<div data-id="1" data-id="2">text</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)

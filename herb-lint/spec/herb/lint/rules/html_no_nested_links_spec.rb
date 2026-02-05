@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoNestedLinks do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when anchor is not nested" do
-      let(:template) { '<a href="/page">Link</a>' }
+      let(:source) { '<a href="/page">Link</a>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoNestedLinks do
     end
 
     context "when multiple anchors are siblings" do
-      let(:template) { '<a href="/first">First</a><a href="/second">Second</a>' }
+      let(:source) { '<a href="/first">First</a><a href="/second">Second</a>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -44,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoNestedLinks do
     end
 
     context "when anchor is nested inside another anchor" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <a href="/outer">
             <a href="/inner">Nested link</a>
@@ -61,7 +61,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoNestedLinks do
     end
 
     context "when anchor is deeply nested inside another anchor" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <a href="/outer">
             <div>
@@ -80,7 +80,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoNestedLinks do
     end
 
     context "when multiple anchors are nested" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <a href="/outer">
             <a href="/inner1">First nested</a>
@@ -96,7 +96,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoNestedLinks do
     end
 
     context "when anchors are triply nested" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <a href="/outer">
             <a href="/middle">
@@ -113,7 +113,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoNestedLinks do
     end
 
     context "when anchor tags use uppercase" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <A href="/outer">
             <A href="/inner">Nested</A>
@@ -128,7 +128,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoNestedLinks do
     end
 
     context "with non-anchor elements" do
-      let(:template) { "<div><span>Hello</span></div>" }
+      let(:source) { "<div><span>Hello</span></div>" }
 
       it "does not report offenses" do
         expect(subject).to be_empty
@@ -136,7 +136,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoNestedLinks do
     end
 
     context "when anchors are inside different parent elements" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div><a href="/first">First</a></div>
           <div><a href="/second">Second</a></div>

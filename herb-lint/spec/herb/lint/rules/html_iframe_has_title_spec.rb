@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlIframeHasTitle do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when iframe has title attribute" do
-      let(:template) { '<iframe src="content.html" title="Embedded content"></iframe>' }
+      let(:source) { '<iframe src="content.html" title="Embedded content"></iframe>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlIframeHasTitle do
     end
 
     context "when iframe is missing title attribute" do
-      let(:template) { '<iframe src="content.html"></iframe>' }
+      let(:source) { '<iframe src="content.html"></iframe>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -47,7 +47,7 @@ RSpec.describe Herb::Lint::Rules::HtmlIframeHasTitle do
     end
 
     context "when iframe has empty title attribute" do
-      let(:template) { '<iframe src="content.html" title=""></iframe>' }
+      let(:source) { '<iframe src="content.html" title=""></iframe>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -57,7 +57,7 @@ RSpec.describe Herb::Lint::Rules::HtmlIframeHasTitle do
     end
 
     context "when iframe has whitespace-only title attribute" do
-      let(:template) { '<iframe src="content.html" title="   "></iframe>' }
+      let(:source) { '<iframe src="content.html" title="   "></iframe>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -65,7 +65,7 @@ RSpec.describe Herb::Lint::Rules::HtmlIframeHasTitle do
     end
 
     context "when iframe has uppercase TITLE attribute" do
-      let(:template) { '<iframe src="content.html" TITLE="Embedded content"></iframe>' }
+      let(:source) { '<iframe src="content.html" TITLE="Embedded content"></iframe>' }
 
       it "does not report an offense (case insensitive)" do
         expect(subject).to be_empty
@@ -73,7 +73,7 @@ RSpec.describe Herb::Lint::Rules::HtmlIframeHasTitle do
     end
 
     context "when IFRAME tag is uppercase" do
-      let(:template) { '<IFRAME src="content.html"></IFRAME>' }
+      let(:source) { '<IFRAME src="content.html"></IFRAME>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -81,7 +81,7 @@ RSpec.describe Herb::Lint::Rules::HtmlIframeHasTitle do
     end
 
     context "when multiple iframes are missing title" do
-      let(:template) { '<iframe src="a.html"></iframe><iframe src="b.html"></iframe>' }
+      let(:source) { '<iframe src="a.html"></iframe><iframe src="b.html"></iframe>' }
 
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
@@ -90,7 +90,7 @@ RSpec.describe Herb::Lint::Rules::HtmlIframeHasTitle do
     end
 
     context "with non-iframe elements" do
-      let(:template) { '<div class="container"><p>Hello</p></div>' }
+      let(:source) { '<div class="container"><p>Hello</p></div>' }
 
       it "does not report offenses" do
         expect(subject).to be_empty
@@ -98,7 +98,7 @@ RSpec.describe Herb::Lint::Rules::HtmlIframeHasTitle do
     end
 
     context "with mixed iframes on multiple lines" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <iframe src="a.html" title="First"></iframe>
           <iframe src="b.html"></iframe>

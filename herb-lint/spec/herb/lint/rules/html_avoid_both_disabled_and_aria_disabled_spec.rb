@@ -26,11 +26,11 @@ RSpec.describe Herb::Lint::Rules::HtmlAvoidBothDisabledAndAriaDisabled do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when element has only disabled attribute" do
-      let(:template) { "<button disabled>Submit</button>" }
+      let(:source) { "<button disabled>Submit</button>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -38,7 +38,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAvoidBothDisabledAndAriaDisabled do
     end
 
     context "when element has only aria-disabled attribute" do
-      let(:template) { '<button aria-disabled="true">Submit</button>' }
+      let(:source) { '<button aria-disabled="true">Submit</button>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -46,7 +46,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAvoidBothDisabledAndAriaDisabled do
     end
 
     context "when element has both disabled and aria-disabled" do
-      let(:template) { '<button disabled aria-disabled="true">Submit</button>' }
+      let(:source) { '<button disabled aria-disabled="true">Submit</button>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -59,7 +59,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAvoidBothDisabledAndAriaDisabled do
     end
 
     context "when element has neither disabled nor aria-disabled" do
-      let(:template) { "<button>Submit</button>" }
+      let(:source) { "<button>Submit</button>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -67,7 +67,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAvoidBothDisabledAndAriaDisabled do
     end
 
     context "when element has both with aria-disabled set to false" do
-      let(:template) { '<button disabled aria-disabled="false">Submit</button>' }
+      let(:source) { '<button disabled aria-disabled="false">Submit</button>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -75,7 +75,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAvoidBothDisabledAndAriaDisabled do
     end
 
     context "when element has both with uppercase attribute names" do
-      let(:template) { '<button DISABLED ARIA-DISABLED="true">Submit</button>' }
+      let(:source) { '<button DISABLED ARIA-DISABLED="true">Submit</button>' }
 
       it "reports an offense (case-insensitive)" do
         expect(subject.size).to eq(1)
@@ -84,7 +84,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAvoidBothDisabledAndAriaDisabled do
     end
 
     context "when multiple elements each have both attributes" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <button disabled aria-disabled="true">Submit</button>
           <input disabled aria-disabled="true">
@@ -97,7 +97,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAvoidBothDisabledAndAriaDisabled do
     end
 
     context "when nested elements have different attributes" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <fieldset disabled>
             <button aria-disabled="true">Submit</button>
@@ -111,7 +111,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAvoidBothDisabledAndAriaDisabled do
     end
 
     context "when element has other attributes alongside both disabled and aria-disabled" do
-      let(:template) { '<button class="btn" disabled aria-disabled="true" id="submit">Submit</button>' }
+      let(:source) { '<button class="btn" disabled aria-disabled="true" id="submit">Submit</button>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -119,7 +119,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAvoidBothDisabledAndAriaDisabled do
     end
 
     context "when element has no attributes" do
-      let(:template) { "<div>text</div>" }
+      let(:source) { "<div>text</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -127,7 +127,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAvoidBothDisabledAndAriaDisabled do
     end
 
     context "when input element has only disabled" do
-      let(:template) { '<input type="text" disabled>' }
+      let(:source) { '<input type="text" disabled>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -135,7 +135,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAvoidBothDisabledAndAriaDisabled do
     end
 
     context "when select element has both disabled and aria-disabled" do
-      let(:template) { '<select disabled aria-disabled="true"><option>A</option></select>' }
+      let(:source) { '<select disabled aria-disabled="true"><option>A</option></select>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)

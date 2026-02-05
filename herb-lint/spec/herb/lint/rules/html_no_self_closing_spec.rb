@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSelfClosing do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when void element has no self-closing slash" do
-      let(:template) { "<br>" }
+      let(:source) { "<br>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSelfClosing do
     end
 
     context "when void element has self-closing slash" do
-      let(:template) { "<br/>" }
+      let(:source) { "<br/>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -47,7 +47,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSelfClosing do
     end
 
     context "when void element has self-closing slash with space" do
-      let(:template) { "<br />" }
+      let(:source) { "<br />" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -56,7 +56,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSelfClosing do
     end
 
     context "when void element with attributes has self-closing slash" do
-      let(:template) { '<img src="photo.jpg" />' }
+      let(:source) { '<img src="photo.jpg" />' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -65,7 +65,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSelfClosing do
     end
 
     context "when non-void element has closing tag" do
-      let(:template) { "<div>content</div>" }
+      let(:source) { "<div>content</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -73,7 +73,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSelfClosing do
     end
 
     context "when multiple void elements have self-closing slashes" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <br/>
           <hr/>
@@ -92,7 +92,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSelfClosing do
     end
 
     context "when void element is nested inside non-void element" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div>
             <img src="photo.jpg" />

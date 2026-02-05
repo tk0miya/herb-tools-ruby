@@ -20,13 +20,13 @@ RSpec.describe Herb::Lint::Rules::VisitorRule do
   end
 
   describe "#check" do
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { instance_double(Object) }
 
     context "when no visit methods are overridden" do
       subject { test_rule_class.new.check(document, context) }
 
-      let(:template) { "<div><p>Hello</p></div>" }
+      let(:source) { "<div><p>Hello</p></div>" }
 
       it "returns empty array (no offenses)" do
         expect(subject).to eq([])
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::VisitorRule do
     context "when visit method is overridden" do
       subject { element_counting_rule.new.check(document, context) }
 
-      let(:template) { "<div><p>Hello</p><span>World</span></div>" }
+      let(:source) { "<div><p>Hello</p><span>World</span></div>" }
       let(:element_counting_rule) do
         Class.new(described_class) do
           def self.rule_name
@@ -88,7 +88,7 @@ RSpec.describe Herb::Lint::Rules::VisitorRule do
       end
 
       context "with img missing alt" do
-        let(:template) { '<img src="test.png">' }
+        let(:source) { '<img src="test.png">' }
 
         it "reports an offense" do
           expect(subject.size).to eq(1)
@@ -97,7 +97,7 @@ RSpec.describe Herb::Lint::Rules::VisitorRule do
       end
 
       context "with img having alt" do
-        let(:template) { '<img src="test.png" alt="Test image">' }
+        let(:source) { '<img src="test.png" alt="Test image">' }
 
         it "reports no offenses" do
           expect(subject).to be_empty
@@ -106,7 +106,7 @@ RSpec.describe Herb::Lint::Rules::VisitorRule do
     end
 
     context "when on_new_investigation is overridden" do
-      let(:template) { "<div>Test</div>" }
+      let(:source) { "<div>Test</div>" }
       let(:stateful_rule) do
         Class.new(described_class) do
           attr_reader :investigation_count
@@ -128,7 +128,7 @@ RSpec.describe Herb::Lint::Rules::VisitorRule do
 
       it "calls on_new_investigation before visiting nodes" do
         rule = stateful_rule.new
-        document = Herb.parse(template, track_whitespace: true)
+        document = Herb.parse(source, track_whitespace: true)
 
         rule.check(document, context)
         expect(rule.investigation_count).to eq(1)

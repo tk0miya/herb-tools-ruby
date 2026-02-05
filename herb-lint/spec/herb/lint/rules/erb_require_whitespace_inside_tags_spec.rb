@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::ErbRequireWhitespaceInsideTags do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when ERB statement tag has whitespace inside" do
-      let(:template) { "<% value %>" }
+      let(:source) { "<% value %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::ErbRequireWhitespaceInsideTags do
     end
 
     context "when ERB output tag has whitespace inside" do
-      let(:template) { "<%= value %>" }
+      let(:source) { "<%= value %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -44,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::ErbRequireWhitespaceInsideTags do
     end
 
     context "when ERB statement tag has no whitespace inside" do
-      let(:template) { "<%value%>" }
+      let(:source) { "<%value%>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -55,7 +55,7 @@ RSpec.describe Herb::Lint::Rules::ErbRequireWhitespaceInsideTags do
     end
 
     context "when ERB output tag has no whitespace inside" do
-      let(:template) { "<%=value%>" }
+      let(:source) { "<%=value%>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -64,7 +64,7 @@ RSpec.describe Herb::Lint::Rules::ErbRequireWhitespaceInsideTags do
     end
 
     context "when whitespace is missing only after opening delimiter" do
-      let(:template) { "<%value %>" }
+      let(:source) { "<%value %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -72,7 +72,7 @@ RSpec.describe Herb::Lint::Rules::ErbRequireWhitespaceInsideTags do
     end
 
     context "when whitespace is missing only before closing delimiter" do
-      let(:template) { "<% value%>" }
+      let(:source) { "<% value%>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -80,7 +80,7 @@ RSpec.describe Herb::Lint::Rules::ErbRequireWhitespaceInsideTags do
     end
 
     context "when ERB tag uses tab as whitespace" do
-      let(:template) { "<%\tvalue\t%>" }
+      let(:source) { "<%\tvalue\t%>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -88,7 +88,7 @@ RSpec.describe Herb::Lint::Rules::ErbRequireWhitespaceInsideTags do
     end
 
     context "when ERB tag uses newline as whitespace" do
-      let(:template) { "<%\nvalue\n%>" }
+      let(:source) { "<%\nvalue\n%>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -96,7 +96,7 @@ RSpec.describe Herb::Lint::Rules::ErbRequireWhitespaceInsideTags do
     end
 
     context "when ERB trim tag has no whitespace inside" do
-      let(:template) { "<%-value-%>" }
+      let(:source) { "<%-value-%>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -104,7 +104,7 @@ RSpec.describe Herb::Lint::Rules::ErbRequireWhitespaceInsideTags do
     end
 
     context "when ERB trim tag has whitespace inside" do
-      let(:template) { "<%- value -%>" }
+      let(:source) { "<%- value -%>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -112,7 +112,7 @@ RSpec.describe Herb::Lint::Rules::ErbRequireWhitespaceInsideTags do
     end
 
     context "when ERB comment tag has no whitespace" do
-      let(:template) { "<%#comment%>" }
+      let(:source) { "<%#comment%>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -120,7 +120,7 @@ RSpec.describe Herb::Lint::Rules::ErbRequireWhitespaceInsideTags do
     end
 
     context "when ERB tag is empty" do
-      let(:template) { "<% %>" }
+      let(:source) { "<% %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -128,7 +128,7 @@ RSpec.describe Herb::Lint::Rules::ErbRequireWhitespaceInsideTags do
     end
 
     context "when multiple tags with missing whitespace exist" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <%value%>
           <p>content</p>
@@ -142,7 +142,7 @@ RSpec.describe Herb::Lint::Rules::ErbRequireWhitespaceInsideTags do
     end
 
     context "when both valid and invalid tags exist" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% good %>
           <%bad%>

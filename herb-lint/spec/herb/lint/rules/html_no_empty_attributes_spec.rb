@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyAttributes do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when attribute has a non-empty value" do
-      let(:template) { '<div class="container">text</div>' }
+      let(:source) { '<div class="container">text</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyAttributes do
     end
 
     context "when attribute has an empty value" do
-      let(:template) { '<div class="">text</div>' }
+      let(:source) { '<div class="">text</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -47,7 +47,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyAttributes do
     end
 
     context "when multiple attributes have empty values" do
-      let(:template) { '<div class="" id="">text</div>' }
+      let(:source) { '<div class="" id="">text</div>' }
 
       it "reports an offense for each empty attribute" do
         expect(subject.size).to eq(2)
@@ -59,7 +59,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyAttributes do
     end
 
     context "when alt attribute has an empty value" do
-      let(:template) { '<img alt="">' }
+      let(:source) { '<img alt="">' }
 
       it "does not report an offense (alt='' is semantically valid)" do
         expect(subject).to be_empty
@@ -67,7 +67,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyAttributes do
     end
 
     context "when alt attribute has an empty value with uppercase name" do
-      let(:template) { '<img ALT="">' }
+      let(:source) { '<img ALT="">' }
 
       it "does not report an offense (case-insensitive check)" do
         expect(subject).to be_empty
@@ -75,7 +75,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyAttributes do
     end
 
     context "when boolean attribute has no value" do
-      let(:template) { "<input disabled>" }
+      let(:source) { "<input disabled>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -83,7 +83,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyAttributes do
     end
 
     context "with mixed empty and non-empty attributes" do
-      let(:template) { '<div class="" id="main">text</div>' }
+      let(:source) { '<div class="" id="main">text</div>' }
 
       it "reports offense only for the empty attribute" do
         expect(subject.size).to eq(1)
@@ -92,7 +92,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyAttributes do
     end
 
     context "with nested elements containing empty attributes" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div class="">
             <span id="">text</span>
@@ -106,7 +106,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyAttributes do
     end
 
     context "with element that has no attributes" do
-      let(:template) { "<div>text</div>" }
+      let(:source) { "<div>text</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -114,7 +114,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoEmptyAttributes do
     end
 
     context "with img element having both alt and other empty attributes" do
-      let(:template) { '<img alt="" class="">' }
+      let(:source) { '<img alt="" class="">' }
 
       it "reports offense only for the non-exempted attribute" do
         expect(subject.size).to eq(1)

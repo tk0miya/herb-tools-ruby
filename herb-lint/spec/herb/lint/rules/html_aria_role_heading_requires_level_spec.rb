@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleHeadingRequiresLevel do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when element has role='heading' and aria-level" do
-      let(:template) { '<div role="heading" aria-level="2">Title</div>' }
+      let(:source) { '<div role="heading" aria-level="2">Title</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleHeadingRequiresLevel do
     end
 
     context "when element has role='heading' without aria-level" do
-      let(:template) { '<div role="heading">Title</div>' }
+      let(:source) { '<div role="heading">Title</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -47,7 +47,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleHeadingRequiresLevel do
     end
 
     context "when element has a different role" do
-      let(:template) { '<div role="button">Click</div>' }
+      let(:source) { '<div role="button">Click</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -55,7 +55,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleHeadingRequiresLevel do
     end
 
     context "when element has no role attribute" do
-      let(:template) { "<div>Content</div>" }
+      let(:source) { "<div>Content</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -63,7 +63,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleHeadingRequiresLevel do
     end
 
     context "when element has role='heading' with uppercase ARIA-LEVEL" do
-      let(:template) { '<div role="heading" ARIA-LEVEL="3">Title</div>' }
+      let(:source) { '<div role="heading" ARIA-LEVEL="3">Title</div>' }
 
       it "does not report an offense (case insensitive)" do
         expect(subject).to be_empty
@@ -71,7 +71,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleHeadingRequiresLevel do
     end
 
     context "when element has uppercase ROLE='HEADING'" do
-      let(:template) { '<div ROLE="HEADING">Title</div>' }
+      let(:source) { '<div ROLE="HEADING">Title</div>' }
 
       it "reports an offense when aria-level is missing" do
         expect(subject.size).to eq(1)
@@ -79,7 +79,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleHeadingRequiresLevel do
     end
 
     context "when multiple elements with role='heading' are missing aria-level" do
-      let(:template) { '<div role="heading">A</div><span role="heading">B</span>' }
+      let(:source) { '<div role="heading">A</div><span role="heading">B</span>' }
 
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
@@ -88,7 +88,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleHeadingRequiresLevel do
     end
 
     context "with non-heading elements" do
-      let(:template) { '<p>Hello</p><span class="title">World</span>' }
+      let(:source) { '<p>Hello</p><span class="title">World</span>' }
 
       it "does not report offenses" do
         expect(subject).to be_empty
@@ -96,7 +96,7 @@ RSpec.describe Herb::Lint::Rules::HtmlAriaRoleHeadingRequiresLevel do
     end
 
     context "with mixed elements on multiple lines" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div role="heading" aria-level="1">First</div>
           <div role="heading">Second</div>

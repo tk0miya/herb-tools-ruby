@@ -25,11 +25,11 @@ RSpec.describe Herb::Lint::Rules::HtmlInputRequireAutocomplete do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when input has autocomplete attribute" do
-      let(:template) { '<input type="text" name="email" autocomplete="email">' }
+      let(:source) { '<input type="text" name="email" autocomplete="email">' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -37,7 +37,7 @@ RSpec.describe Herb::Lint::Rules::HtmlInputRequireAutocomplete do
     end
 
     context "when input type='text' is missing autocomplete" do
-      let(:template) { '<input type="text" name="email">' }
+      let(:source) { '<input type="text" name="email">' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -48,7 +48,7 @@ RSpec.describe Herb::Lint::Rules::HtmlInputRequireAutocomplete do
     end
 
     context "when input type='checkbox' is missing autocomplete" do
-      let(:template) { '<input type="checkbox" name="agree">' }
+      let(:source) { '<input type="checkbox" name="agree">' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -56,7 +56,7 @@ RSpec.describe Herb::Lint::Rules::HtmlInputRequireAutocomplete do
     end
 
     context "when input has no type attribute" do
-      let(:template) { '<input name="data">' }
+      let(:source) { '<input name="data">' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -64,7 +64,7 @@ RSpec.describe Herb::Lint::Rules::HtmlInputRequireAutocomplete do
     end
 
     context "when input type is uppercase" do
-      let(:template) { '<input type="TEXT" name="email">' }
+      let(:source) { '<input type="TEXT" name="email">' }
 
       it "reports an offense (case insensitive)" do
         expect(subject.size).to eq(1)
@@ -72,7 +72,7 @@ RSpec.describe Herb::Lint::Rules::HtmlInputRequireAutocomplete do
     end
 
     context "when INPUT tag is uppercase" do
-      let(:template) { '<INPUT type="text" name="email">' }
+      let(:source) { '<INPUT type="text" name="email">' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -80,7 +80,7 @@ RSpec.describe Herb::Lint::Rules::HtmlInputRequireAutocomplete do
     end
 
     context "when autocomplete attribute is uppercase" do
-      let(:template) { '<input type="text" name="email" AUTOCOMPLETE="email">' }
+      let(:source) { '<input type="text" name="email" AUTOCOMPLETE="email">' }
 
       it "does not report an offense (case insensitive)" do
         expect(subject).to be_empty
@@ -88,7 +88,7 @@ RSpec.describe Herb::Lint::Rules::HtmlInputRequireAutocomplete do
     end
 
     context "when multiple inputs are missing autocomplete" do
-      let(:template) { '<input type="text" name="first"><input type="email" name="email">' }
+      let(:source) { '<input type="text" name="first"><input type="email" name="email">' }
 
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
@@ -97,7 +97,7 @@ RSpec.describe Herb::Lint::Rules::HtmlInputRequireAutocomplete do
     end
 
     context "with non-input elements" do
-      let(:template) { '<div class="container"><p>Hello</p></div>' }
+      let(:source) { '<div class="container"><p>Hello</p></div>' }
 
       it "does not report offenses" do
         expect(subject).to be_empty
@@ -105,7 +105,7 @@ RSpec.describe Herb::Lint::Rules::HtmlInputRequireAutocomplete do
     end
 
     context "with mixed inputs on multiple lines" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <input type="text" name="first" autocomplete="given-name">
           <input type="email" name="email">

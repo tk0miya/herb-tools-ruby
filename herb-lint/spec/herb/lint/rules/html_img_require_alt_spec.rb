@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlImgRequireAlt do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when img tag has alt attribute" do
-      let(:template) { '<img src="image.png" alt="Description">' }
+      let(:source) { '<img src="image.png" alt="Description">' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlImgRequireAlt do
     end
 
     context "when img tag has empty alt attribute" do
-      let(:template) { '<img src="decorative.png" alt="">' }
+      let(:source) { '<img src="decorative.png" alt="">' }
 
       it "does not report an offense (empty alt is valid for decorative images)" do
         expect(subject).to be_empty
@@ -44,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::HtmlImgRequireAlt do
     end
 
     context "when img tag is missing alt attribute" do
-      let(:template) { '<img src="image.png">' }
+      let(:source) { '<img src="image.png">' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -55,7 +55,7 @@ RSpec.describe Herb::Lint::Rules::HtmlImgRequireAlt do
     end
 
     context "when multiple img tags are missing alt attribute" do
-      let(:template) { '<img src="a.png"><img src="b.png">' }
+      let(:source) { '<img src="a.png"><img src="b.png">' }
 
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
@@ -64,7 +64,7 @@ RSpec.describe Herb::Lint::Rules::HtmlImgRequireAlt do
     end
 
     context "when img tag has uppercase ALT attribute" do
-      let(:template) { '<img src="image.png" ALT="Description">' }
+      let(:source) { '<img src="image.png" ALT="Description">' }
 
       it "does not report an offense (case insensitive)" do
         expect(subject).to be_empty
@@ -72,7 +72,7 @@ RSpec.describe Herb::Lint::Rules::HtmlImgRequireAlt do
     end
 
     context "when IMG tag is uppercase" do
-      let(:template) { '<IMG src="image.png">' }
+      let(:source) { '<IMG src="image.png">' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -80,7 +80,7 @@ RSpec.describe Herb::Lint::Rules::HtmlImgRequireAlt do
     end
 
     context "with non-img elements" do
-      let(:template) { '<div class="container"><p>Hello</p></div>' }
+      let(:source) { '<div class="container"><p>Hello</p></div>' }
 
       it "does not report offenses" do
         expect(subject).to be_empty
@@ -88,7 +88,7 @@ RSpec.describe Herb::Lint::Rules::HtmlImgRequireAlt do
     end
 
     context "with mixed img tags on multiple lines" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <img src="a.png" alt="A">
           <img src="b.png">

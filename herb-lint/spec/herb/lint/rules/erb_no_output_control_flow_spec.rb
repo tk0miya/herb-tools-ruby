@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::ErbNoOutputControlFlow do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when if statement uses silent tag" do
-      let(:template) { "<% if condition %><% end %>" }
+      let(:source) { "<% if condition %><% end %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoOutputControlFlow do
     end
 
     context "when if statement uses output tag" do
-      let(:template) { "<%= if condition %><% end %>" }
+      let(:source) { "<%= if condition %><% end %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -47,7 +47,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoOutputControlFlow do
     end
 
     context "when unless statement uses output tag" do
-      let(:template) { "<%= unless condition %><% end %>" }
+      let(:source) { "<%= unless condition %><% end %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -57,7 +57,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoOutputControlFlow do
     end
 
     context "when case statement uses silent tag" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% case value %>
           <% when :a %>
@@ -71,7 +71,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoOutputControlFlow do
     end
 
     context "when case statement uses output tag" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <%= case value %>
           <% when :a %>
@@ -87,7 +87,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoOutputControlFlow do
     end
 
     context "when while loop uses output tag" do
-      let(:template) { "<%= while condition %><% end %>" }
+      let(:source) { "<%= while condition %><% end %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -97,7 +97,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoOutputControlFlow do
     end
 
     context "when for loop uses output tag" do
-      let(:template) { "<%= for item in items %><% end %>" }
+      let(:source) { "<%= for item in items %><% end %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -107,7 +107,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoOutputControlFlow do
     end
 
     context "when until loop uses output tag" do
-      let(:template) { "<%= until condition %><% end %>" }
+      let(:source) { "<%= until condition %><% end %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -117,7 +117,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoOutputControlFlow do
     end
 
     context "when multiple control flow statements use output tags" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <%= if condition %>
             <p>text</p>
@@ -135,7 +135,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoOutputControlFlow do
     end
 
     context "when regular output tag is used" do
-      let(:template) { "<%= value %>" }
+      let(:source) { "<%= value %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -143,7 +143,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoOutputControlFlow do
     end
 
     context "when output tag contains method call" do
-      let(:template) { "<%= user.name %>" }
+      let(:source) { "<%= user.name %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -151,7 +151,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoOutputControlFlow do
     end
 
     context "when control flow is in HTML context" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <div>
             <%= if active? %>
@@ -168,7 +168,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoOutputControlFlow do
     end
 
     context "when nested control flow has mixed tags" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% if outer %>
             <%= if inner %>

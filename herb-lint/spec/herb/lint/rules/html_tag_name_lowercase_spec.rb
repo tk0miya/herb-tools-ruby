@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlTagNameLowercase do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when tag names are lowercase" do
-      let(:template) { "<div>text</div>" }
+      let(:source) { "<div>text</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlTagNameLowercase do
     end
 
     context "when open tag has uppercase letters" do
-      let(:template) { "<DIV>text</div>" }
+      let(:source) { "<DIV>text</div>" }
 
       it "reports an offense for the open tag" do
         expect(subject.size).to eq(1)
@@ -47,7 +47,7 @@ RSpec.describe Herb::Lint::Rules::HtmlTagNameLowercase do
     end
 
     context "when close tag has uppercase letters" do
-      let(:template) { "<div>text</DIV>" }
+      let(:source) { "<div>text</DIV>" }
 
       it "reports an offense for the close tag" do
         expect(subject.size).to eq(1)
@@ -57,7 +57,7 @@ RSpec.describe Herb::Lint::Rules::HtmlTagNameLowercase do
     end
 
     context "when both open and close tags have uppercase letters" do
-      let(:template) { "<DIV>text</DIV>" }
+      let(:source) { "<DIV>text</DIV>" }
 
       it "reports offenses for both tags" do
         expect(subject.size).to eq(2)
@@ -66,7 +66,7 @@ RSpec.describe Herb::Lint::Rules::HtmlTagNameLowercase do
     end
 
     context "when tag has mixed case" do
-      let(:template) { "<Div>text</Div>" }
+      let(:source) { "<Div>text</Div>" }
 
       it "reports offenses for mixed case tags" do
         expect(subject.size).to eq(2)
@@ -75,7 +75,7 @@ RSpec.describe Herb::Lint::Rules::HtmlTagNameLowercase do
     end
 
     context "with multiple elements" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <DIV>
             <SPAN>text</SPAN>
@@ -89,7 +89,7 @@ RSpec.describe Herb::Lint::Rules::HtmlTagNameLowercase do
     end
 
     context "with nested elements having different cases" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div>
             <SPAN>text</SPAN>
@@ -104,7 +104,7 @@ RSpec.describe Herb::Lint::Rules::HtmlTagNameLowercase do
     end
 
     context "with void element in uppercase" do
-      let(:template) { "<BR>" }
+      let(:source) { "<BR>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -113,7 +113,7 @@ RSpec.describe Herb::Lint::Rules::HtmlTagNameLowercase do
     end
 
     context "with void element in lowercase" do
-      let(:template) { "<br>" }
+      let(:source) { "<br>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty

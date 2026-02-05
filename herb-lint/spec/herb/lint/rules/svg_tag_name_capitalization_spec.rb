@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::SvgTagNameCapitalization do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when SVG elements have correct capitalization" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <svg>
             <clipPath id="clip">
@@ -47,7 +47,7 @@ RSpec.describe Herb::Lint::Rules::SvgTagNameCapitalization do
     end
 
     context "when multiple SVG elements have incorrect capitalization" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <svg>
             <clippath id="clip">
@@ -70,7 +70,7 @@ RSpec.describe Herb::Lint::Rules::SvgTagNameCapitalization do
     end
 
     context "when SVG filter elements are lowercase" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <svg>
             <filter>
@@ -96,7 +96,7 @@ RSpec.describe Herb::Lint::Rules::SvgTagNameCapitalization do
     end
 
     context "when elements are outside of SVG context" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div>
             <clippath>Not SVG</clippath>
@@ -110,7 +110,7 @@ RSpec.describe Herb::Lint::Rules::SvgTagNameCapitalization do
     end
 
     context "when regular HTML elements inside SVG" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <svg>
             <div>Regular HTML</div>
@@ -124,7 +124,7 @@ RSpec.describe Herb::Lint::Rules::SvgTagNameCapitalization do
     end
 
     context "when SVG elements have correct capitalization but mixed with incorrect ones" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <svg>
             <clipPath id="correct">
@@ -144,7 +144,7 @@ RSpec.describe Herb::Lint::Rules::SvgTagNameCapitalization do
     end
 
     context "when nested SVG elements" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <svg>
             <svg>
@@ -163,7 +163,7 @@ RSpec.describe Herb::Lint::Rules::SvgTagNameCapitalization do
     end
 
     context "when SVG element is self-closing with incorrect capitalization" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <svg>
             <animatemotion/>

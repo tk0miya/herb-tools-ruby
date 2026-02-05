@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraNewline do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
-    let(:context) { build(:context, source: template) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
+    let(:context) { build(:context, source:) }
 
     context "when there are no blank lines" do
-      let(:template) { "<div>First</div>\n<div>Second</div>" }
+      let(:source) { "<div>First</div>\n<div>Second</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraNewline do
     end
 
     context "when there is 1 blank line (2 newlines)" do
-      let(:template) { "<div>First</div>\n\n<div>Second</div>" }
+      let(:source) { "<div>First</div>\n\n<div>Second</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -44,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraNewline do
     end
 
     context "when there are 2 blank lines (3 newlines)" do
-      let(:template) { "<div>First</div>\n\n\n<div>Second</div>" }
+      let(:source) { "<div>First</div>\n\n\n<div>Second</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -52,7 +52,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraNewline do
     end
 
     context "when there are 3 blank lines (4 newlines)" do
-      let(:template) { "<div>First</div>\n\n\n\n<div>Second</div>" }
+      let(:source) { "<div>First</div>\n\n\n\n<div>Second</div>" }
 
       it "reports an offense for 1 extra line" do
         expect(subject.size).to eq(1)
@@ -65,7 +65,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraNewline do
     end
 
     context "when there are 4 blank lines (5 newlines)" do
-      let(:template) { "<div>First</div>\n\n\n\n\n<div>Second</div>" }
+      let(:source) { "<div>First</div>\n\n\n\n\n<div>Second</div>" }
 
       it "reports an offense for 2 extra lines" do
         expect(subject.size).to eq(1)
@@ -78,7 +78,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraNewline do
     end
 
     context "when there are 5 blank lines (6 newlines)" do
-      let(:template) { "<div>First</div>\n\n\n\n\n\n<div>Second</div>" }
+      let(:source) { "<div>First</div>\n\n\n\n\n\n<div>Second</div>" }
 
       it "reports an offense for 3 extra lines" do
         expect(subject.size).to eq(1)
@@ -91,7 +91,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraNewline do
     end
 
     context "when there are multiple violations" do
-      let(:template) do
+      let(:source) do
         "<div>First</div>\n\n\n\n<div>Second</div>\n\n\n\n\n<div>Third</div>"
       end
 
@@ -107,7 +107,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraNewline do
     end
 
     context "when excess newlines are inside ERB tags" do
-      let(:template) { "<%\n\n\n\nvalue\n%>" }
+      let(:source) { "<%\n\n\n\nvalue\n%>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -116,7 +116,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraNewline do
     end
 
     context "when excess newlines are between ERB tags and HTML" do
-      let(:template) { "<% if true %>\n\n\n\n<div>content</div>\n<% end %>" }
+      let(:source) { "<% if true %>\n\n\n\n<div>content</div>\n<% end %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -125,7 +125,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraNewline do
     end
 
     context "when file is empty" do
-      let(:template) { "" }
+      let(:source) { "" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -133,7 +133,7 @@ RSpec.describe Herb::Lint::Rules::ErbNoExtraNewline do
     end
 
     context "when file contains only newlines" do
-      let(:template) { "\n\n\n\n\n" }
+      let(:source) { "\n\n\n\n\n" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)

@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::ErbPreferImageTagHelper do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when using image_tag helper" do
-      let(:template) { "<%= image_tag 'logo.png' %>" }
+      let(:source) { "<%= image_tag 'logo.png' %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::ErbPreferImageTagHelper do
     end
 
     context "when using raw img tag" do
-      let(:template) { '<img src="logo.png" alt="Company Logo">' }
+      let(:source) { '<img src="logo.png" alt="Company Logo">' }
 
       it "reports an offense with correct details" do
         expect(subject.size).to eq(1)
@@ -47,7 +47,7 @@ RSpec.describe Herb::Lint::Rules::ErbPreferImageTagHelper do
     end
 
     context "when using uppercase IMG tag" do
-      let(:template) { '<IMG src="logo.png">' }
+      let(:source) { '<IMG src="logo.png">' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -56,7 +56,7 @@ RSpec.describe Herb::Lint::Rules::ErbPreferImageTagHelper do
     end
 
     context "when multiple img tags exist" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <img src="logo.png">
           <img src="banner.jpg" alt="Banner">
@@ -71,7 +71,7 @@ RSpec.describe Herb::Lint::Rules::ErbPreferImageTagHelper do
     end
 
     context "when mixing img tags and image_tag helpers" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <%= image_tag 'logo.png' %>
           <img src="banner.jpg">
@@ -86,7 +86,7 @@ RSpec.describe Herb::Lint::Rules::ErbPreferImageTagHelper do
     end
 
     context "with non-img elements" do
-      let(:template) { '<div><p>Hello</p><a href="#">Link</a></div>' }
+      let(:source) { '<div><p>Hello</p><a href="#">Link</a></div>' }
 
       it "does not report offenses" do
         expect(subject).to be_empty

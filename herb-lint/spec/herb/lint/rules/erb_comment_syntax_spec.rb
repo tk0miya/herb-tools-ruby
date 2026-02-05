@@ -30,11 +30,11 @@ RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when using proper ERB comment syntax" do
-      let(:template) { "<%# This is a comment %>" }
+      let(:source) { "<%# This is a comment %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -42,7 +42,7 @@ RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
     end
 
     context "when using statement tag with Ruby line comment" do
-      let(:template) { "<% # This is a comment %>" }
+      let(:source) { "<% # This is a comment %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -53,7 +53,7 @@ RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
     end
 
     context "when ERB tag contains code, not a comment" do
-      let(:template) { "<% foo %>" }
+      let(:source) { "<% foo %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -61,7 +61,7 @@ RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
     end
 
     context "when ERB output tag is used" do
-      let(:template) { "<%= output %>" }
+      let(:source) { "<%= output %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -69,7 +69,7 @@ RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
     end
 
     context "when multiple bad comments exist" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% # first comment %>
           <p>content</p>
@@ -83,7 +83,7 @@ RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
     end
 
     context "when both good and bad comments exist" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <%# good comment %>
           <% # bad comment %>
@@ -97,7 +97,7 @@ RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
     end
 
     context "when statement tag has multiple spaces before hash" do
-      let(:template) { "<%   # comment %>" }
+      let(:source) { "<%   # comment %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -106,7 +106,7 @@ RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
     end
 
     context "when code contains a hash character in non-comment context" do
-      let(:template) { "<% foo(a: 1) # inline comment %>" }
+      let(:source) { "<% foo(a: 1) # inline comment %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -117,10 +117,10 @@ RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
   describe "#autofix" do
     subject { described_class.new.autofix(node, document) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
 
     context "when fixing a simple comment" do
-      let(:template) { "<% # This is a comment %>" }
+      let(:source) { "<% # This is a comment %>" }
       let(:node) { document.value.children.first }
 
       it "converts to ERB comment tag and returns true" do
@@ -131,7 +131,7 @@ RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
     end
 
     context "when fixing a comment with multiple spaces before hash" do
-      let(:template) { "<%   # comment %>" }
+      let(:source) { "<%   # comment %>" }
       let(:node) { document.value.children.first }
 
       it "converts to ERB comment tag" do
@@ -142,7 +142,7 @@ RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
     end
 
     context "when fixing a comment with no space after hash" do
-      let(:template) { "<% #comment %>" }
+      let(:source) { "<% #comment %>" }
       let(:node) { document.value.children.first }
 
       it "converts to ERB comment tag" do
@@ -153,7 +153,7 @@ RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
     end
 
     context "when fixing multiple comments in sequence" do
-      let(:template) do
+      let(:source) do
         <<~ERB
           <% # first comment %>
           <p>content</p>

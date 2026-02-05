@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoTitleAttribute do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when element has no title attribute" do
-      let(:template) { '<span class="info">More info available</span>' }
+      let(:source) { '<span class="info">More info available</span>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoTitleAttribute do
     end
 
     context "when element has a title attribute" do
-      let(:template) { '<span title="More info">Hover me</span>' }
+      let(:source) { '<span title="More info">Hover me</span>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -49,7 +49,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoTitleAttribute do
     end
 
     context "when element has a title attribute with uppercase name" do
-      let(:template) { '<span TITLE="More info">Hover me</span>' }
+      let(:source) { '<span TITLE="More info">Hover me</span>' }
 
       it "reports an offense (case-insensitive)" do
         expect(subject.size).to eq(1)
@@ -58,7 +58,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoTitleAttribute do
     end
 
     context "when multiple elements have title attributes" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <span title="Info 1">Text 1</span>
           <div title="Info 2">Text 2</div>
@@ -71,7 +71,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoTitleAttribute do
     end
 
     context "when element has title attribute with empty value" do
-      let(:template) { '<span title="">Hover me</span>' }
+      let(:source) { '<span title="">Hover me</span>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -79,7 +79,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoTitleAttribute do
     end
 
     context "when element has other attributes but no title" do
-      let(:template) { '<div class="container" id="main">text</div>' }
+      let(:source) { '<div class="container" id="main">text</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -87,7 +87,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoTitleAttribute do
     end
 
     context "when element has no attributes" do
-      let(:template) { "<div>text</div>" }
+      let(:source) { "<div>text</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -95,7 +95,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoTitleAttribute do
     end
 
     context "when element has both title and other attributes" do
-      let(:template) { '<a href="/page" title="Go to page">Link</a>' }
+      let(:source) { '<a href="/page" title="Go to page">Link</a>' }
 
       it "reports an offense only for the title attribute" do
         expect(subject.size).to eq(1)
@@ -104,7 +104,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoTitleAttribute do
     end
 
     context "with nested elements where only inner has title" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div>
             <span title="tooltip">text</span>
@@ -119,7 +119,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoTitleAttribute do
     end
 
     context "when attribute value contains 'title' but attribute name is not title" do
-      let(:template) { '<div data-label="title">text</div>' }
+      let(:source) { '<div data-label="title">text</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty

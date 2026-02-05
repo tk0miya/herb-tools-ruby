@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateMetaNames do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when all meta names are unique" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <meta name="description" content="Page description">
           <meta name="viewport" content="width=device-width">
@@ -42,7 +42,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateMetaNames do
     end
 
     context "when there are duplicate meta names" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <meta name="description" content="First">
           <meta name="description" content="Second">
@@ -59,7 +59,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateMetaNames do
     end
 
     context "when the same meta name appears three times" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <meta name="description" content="First">
           <meta name="description" content="Second">
@@ -74,7 +74,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateMetaNames do
     end
 
     context "when meta elements have no name attribute" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <meta charset="utf-8">
           <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -87,7 +87,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateMetaNames do
     end
 
     context "when meta name attribute has empty value" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <meta name="" content="First">
           <meta name="" content="Second">
@@ -100,7 +100,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateMetaNames do
     end
 
     context "when meta names differ only in case" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <meta name="Description" content="First">
           <meta name="description" content="Second">
@@ -114,7 +114,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateMetaNames do
     end
 
     context "when non-meta elements have the same name attribute" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <input name="email" type="text">
           <input name="email" type="hidden">
@@ -127,7 +127,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateMetaNames do
     end
 
     context "with a mix of meta and non-meta elements" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <meta name="description" content="Page">
           <input name="description" type="text">
@@ -141,7 +141,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateMetaNames do
     end
 
     context "with a single meta element" do
-      let(:template) { '<meta name="description" content="Page">' }
+      let(:source) { '<meta name="description" content="Page">' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -149,7 +149,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateMetaNames do
     end
 
     context "with nested meta elements in head" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <head>
             <meta name="description" content="First">

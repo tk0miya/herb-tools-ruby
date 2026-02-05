@@ -24,9 +24,9 @@ RSpec.describe Herb::Lint::Rules::ParserNoErrors do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
-    let(:template) { "<div>Hello</div>" }
+    let(:source) { "<div>Hello</div>" }
 
     it "returns empty array (parser errors are handled by Linter)" do
       expect(subject).to be_empty

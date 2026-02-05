@@ -24,12 +24,12 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     describe "when space is correct" do
       context "when tags have no extra spaces" do
-        let(:template) { "<div>content</div>" }
+        let(:source) { "<div>content</div>" }
 
         it "does not report an offense" do
           expect(subject).to be_empty
@@ -37,7 +37,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when tag has attributes with correct spacing" do
-        let(:template) { '<div class="foo">content</div>' }
+        let(:source) { '<div class="foo">content</div>' }
 
         it "does not report an offense" do
           expect(subject).to be_empty
@@ -45,7 +45,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when tag has multiple attributes with correct spacing" do
-        let(:template) { '<input class="foo" name="bar">' }
+        let(:source) { '<input class="foo" name="bar">' }
 
         it "does not report an offense" do
           expect(subject).to be_empty
@@ -53,7 +53,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when self-closing tag has correct single space before />" do
-        let(:template) { "<br />" }
+        let(:source) { "<br />" }
 
         it "does not report an offense" do
           expect(subject).to be_empty
@@ -61,7 +61,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when correct multiline tag" do
-        let(:template) do
+        let(:source) do
           <<~HTML.chomp
             <input
               type="password"
@@ -78,7 +78,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
 
     describe "when no space should be present" do
       context "when open tag has extra space before >" do
-        let(:template) { "<div   >content</div>" }
+        let(:source) { "<div   >content</div>" }
 
         it "reports an offense" do
           expect(subject.size).to eq(1)
@@ -87,7 +87,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when open tag has two spaces before >" do
-        let(:template) { "<div  >content</div>" }
+        let(:source) { "<div  >content</div>" }
 
         it "reports an offense" do
           expect(subject.size).to eq(1)
@@ -96,7 +96,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when close tag has space after </" do
-        let(:template) { "<div>content</   div>" }
+        let(:source) { "<div>content</   div>" }
 
         it "reports an offense" do
           expect(subject.size).to eq(1)
@@ -105,7 +105,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when close tag has space after tag name" do
-        let(:template) { "<div>content</div >" }
+        let(:source) { "<div>content</div >" }
 
         it "reports an offense" do
           expect(subject.size).to eq(1)
@@ -114,7 +114,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when close tag has spaces both before and after tag name" do
-        let(:template) { "<div>content</  div  >" }
+        let(:source) { "<div>content</  div  >" }
 
         it "reports two offenses" do
           expect(subject.size).to eq(2)
@@ -125,7 +125,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
 
     describe "when space is missing" do
       context "when self-closing tag has no space before />" do
-        let(:template) { "<br/>" }
+        let(:source) { "<br/>" }
 
         it "reports an offense for missing space" do
           expect(subject.size).to eq(1)
@@ -134,7 +134,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when self-closing tag with attribute has no space before />" do
-        let(:template) { "<div class=\"foo\"/>" }
+        let(:source) { "<div class=\"foo\"/>" }
 
         it "reports an offense for missing space" do
           expect(subject.size).to eq(1)
@@ -145,7 +145,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
 
     describe "when extra space is present" do
       context "when extra space between tag name and first attribute" do
-        let(:template) { '<img   class="hide">' }
+        let(:source) { '<img   class="hide">' }
 
         it "reports an offense" do
           expect(subject.size).to eq(1)
@@ -154,7 +154,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when extra space between tag name and end solidus" do
-        let(:template) { "<br   />" }
+        let(:source) { "<br   />" }
 
         it "reports an offense" do
           expect(subject.size).to eq(1)
@@ -163,7 +163,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when extra space between last attribute and solidus" do
-        let(:template) { '<br class="hide"   />' }
+        let(:source) { '<br class="hide"   />' }
 
         it "reports an offense" do
           expect(subject.size).to eq(1)
@@ -172,7 +172,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when extra space between last attribute and end of tag" do
-        let(:template) { '<img class="hide"    >' }
+        let(:source) { '<img class="hide"    >' }
 
         it "reports an offense" do
           expect(subject.size).to eq(1)
@@ -181,7 +181,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when extra space between attributes" do
-        let(:template) { "<div class=\"a\"      id=\"b\">content</div>" }
+        let(:source) { "<div class=\"a\"      id=\"b\">content</div>" }
 
         it "reports an offense" do
           expect(subject.size).to eq(1)
@@ -190,7 +190,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when multiple spacing issues in one tag" do
-        let(:template) { '<img   class="hide"    >' }
+        let(:source) { '<img   class="hide"    >' }
 
         it "reports offenses for each issue" do
           expect(subject.size).to eq(2)
@@ -201,7 +201,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when extra newline between tag name and first attribute" do
-        let(:template) do
+        let(:source) do
           <<~HTML.chomp
             <input
 
@@ -219,7 +219,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when extra newline between tag name and end of tag" do
-        let(:template) do
+        let(:source) do
           <<~HTML.chomp
             <input
 
@@ -237,7 +237,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when extra newline between attributes" do
-        let(:template) do
+        let(:source) do
           <<~HTML.chomp
             <input
               type="password"
@@ -256,7 +256,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when end solidus is on newline with wrong indentation" do
-        let(:template) do
+        let(:source) do
           <<~HTML.chomp
             <input
               type="password"
@@ -272,7 +272,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "when end of tag is on newline with wrong indentation" do
-        let(:template) do
+        let(:source) do
           <<~HTML.chomp
             <input
               type="password"
@@ -290,7 +290,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
 
     describe "location" do
       context "with correct location for open tag offense" do
-        let(:template) { "<div  >content</div>" }
+        let(:source) { "<div  >content</div>" }
 
         it "reports the location of the whitespace gap" do
           expect(subject.first.line).to eq(1)
@@ -299,7 +299,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
       end
 
       context "with correct location for close tag offense" do
-        let(:template) { "<div>content</  div>" }
+        let(:source) { "<div>content</  div>" }
 
         it "reports the location of the whitespace gap" do
           expect(subject.first.line).to eq(1)

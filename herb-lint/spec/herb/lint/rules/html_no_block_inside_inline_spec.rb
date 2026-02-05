@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoBlockInsideInline do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template) }
+    let(:document) { Herb.parse(source) }
     let(:context) { build(:context) }
 
     context "when block element is inside block element" do
-      let(:template) { "<div><p>Hello</p></div>" }
+      let(:source) { "<div><p>Hello</p></div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoBlockInsideInline do
     end
 
     context "when inline element is inside block element" do
-      let(:template) { "<div><span>Hello</span></div>" }
+      let(:source) { "<div><span>Hello</span></div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -44,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoBlockInsideInline do
     end
 
     context "when inline element is inside inline element" do
-      let(:template) { "<span><strong>Hello</strong></span>" }
+      let(:source) { "<span><strong>Hello</strong></span>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -52,7 +52,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoBlockInsideInline do
     end
 
     context "when block element is nested inside inline element" do
-      let(:template) { "<span><div>Block in inline</div></span>" }
+      let(:source) { "<span><div>Block in inline</div></span>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -63,7 +63,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoBlockInsideInline do
     end
 
     context "when block element is deeply nested inside inline element" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <span>
             <em>
@@ -81,7 +81,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoBlockInsideInline do
     end
 
     context "when multiple block elements are inside inline element" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <span>
             <div>First block</div>
@@ -97,7 +97,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoBlockInsideInline do
     end
 
     context "when list is nested inside inline element" do
-      let(:template) { "<span><ul><li>Item</li></ul></span>" }
+      let(:source) { "<span><ul><li>Item</li></ul></span>" }
 
       it "reports an offense for the list" do
         expect(subject.size).to eq(1)
@@ -106,7 +106,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoBlockInsideInline do
     end
 
     context "when tags use uppercase" do
-      let(:template) { "<SPAN><DIV>Block</DIV></SPAN>" }
+      let(:source) { "<SPAN><DIV>Block</DIV></SPAN>" }
 
       it "reports an offense (case insensitive)" do
         expect(subject.size).to eq(1)
@@ -115,7 +115,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoBlockInsideInline do
     end
 
     context "with sibling elements without nesting violation" do
-      let(:template) { "<span>Hello</span><div>World</div>" }
+      let(:source) { "<span>Hello</span><div>World</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -123,7 +123,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoBlockInsideInline do
     end
 
     context "with block inside inline that is inside block" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div>
             <span>
@@ -140,7 +140,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoBlockInsideInline do
     end
 
     context "with non-block non-inline elements" do
-      let(:template) { "<custom-element><div>Block</div></custom-element>" }
+      let(:source) { "<custom-element><div>Block</div></custom-element>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -148,7 +148,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoBlockInsideInline do
     end
 
     context "with ERB content inside inline element" do
-      let(:template) { "<span><%= content %></span>" }
+      let(:source) { "<span><%= content %></span>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -156,7 +156,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoBlockInsideInline do
     end
 
     context "with multiple inline parents" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <span>
             <div>First violation</div>

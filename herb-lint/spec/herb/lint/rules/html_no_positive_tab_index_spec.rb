@@ -24,11 +24,11 @@ RSpec.describe Herb::Lint::Rules::HtmlNoPositiveTabIndex do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
-    let(:document) { Herb.parse(template, track_whitespace: true) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
     context "when tabindex is 0" do
-      let(:template) { '<button tabindex="0">Click</button>' }
+      let(:source) { '<button tabindex="0">Click</button>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoPositiveTabIndex do
     end
 
     context "when tabindex is -1" do
-      let(:template) { '<button tabindex="-1">Click</button>' }
+      let(:source) { '<button tabindex="-1">Click</button>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -44,7 +44,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoPositiveTabIndex do
     end
 
     context "when tabindex is a positive integer" do
-      let(:template) { '<button tabindex="1">Click</button>' }
+      let(:source) { '<button tabindex="1">Click</button>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -55,7 +55,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoPositiveTabIndex do
     end
 
     context "when there is no tabindex attribute" do
-      let(:template) { "<button>Click</button>" }
+      let(:source) { "<button>Click</button>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -63,7 +63,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoPositiveTabIndex do
     end
 
     context "when there are multiple elements with positive tabindex" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <button tabindex="1">First</button>
           <button tabindex="2">Second</button>
@@ -76,7 +76,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoPositiveTabIndex do
     end
 
     context "when only some elements have positive tabindex" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <button tabindex="0">OK</button>
           <button tabindex="1">Bad</button>
@@ -91,7 +91,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoPositiveTabIndex do
     end
 
     context "with non-numeric tabindex value" do
-      let(:template) { '<button tabindex="abc">Click</button>' }
+      let(:source) { '<button tabindex="abc">Click</button>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -99,7 +99,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoPositiveTabIndex do
     end
 
     context "with other attributes present" do
-      let(:template) { '<button class="btn" tabindex="3" id="submit">Click</button>' }
+      let(:source) { '<button class="btn" tabindex="3" id="submit">Click</button>' }
 
       it "reports an offense for the positive tabindex" do
         expect(subject.size).to eq(1)
@@ -108,7 +108,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoPositiveTabIndex do
     end
 
     context "with tabindex attribute in different case" do
-      let(:template) { '<button TABINDEX="1">Click</button>' }
+      let(:source) { '<button TABINDEX="1">Click</button>' }
 
       it "reports an offense (case-insensitive check)" do
         expect(subject.size).to eq(1)
@@ -117,7 +117,7 @@ RSpec.describe Herb::Lint::Rules::HtmlNoPositiveTabIndex do
     end
 
     context "with nested elements" do
-      let(:template) do
+      let(:source) do
         <<~HTML
           <div tabindex="1">
             <button tabindex="2">Click</button>
