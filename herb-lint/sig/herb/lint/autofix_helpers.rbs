@@ -35,6 +35,17 @@ module Herb
       # @rbs new_node: Herb::AST::Node -- the replacement node
       def replace_node: (Herb::ParseResult parse_result, Herb::AST::Node old_node, Herb::AST::Node new_node) -> bool
 
+      # Remove a node from the AST.
+      # Finds the parent, locates the array containing the node,
+      # and removes it from the array.
+      #
+      # This is a convenience method that combines find_parent, parent_array_for,
+      # and array deletion.
+      #
+      # @rbs parse_result: Herb::ParseResult -- the parse result to search
+      # @rbs node: Herb::AST::Node -- the node to remove
+      def remove_node: (Herb::ParseResult parse_result, Herb::AST::Node node) -> bool
+
       # Create a new token by copying an existing token with optional attribute overrides.
       # This is useful for creating modified tokens during autofix operations.
       #

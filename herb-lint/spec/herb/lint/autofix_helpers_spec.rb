@@ -253,6 +253,89 @@ RSpec.describe Herb::Lint::AutofixHelpers do
     end
   end
 
+  describe "#remove_node" do
+    context "when removing a node from children array" do
+      subject { helper.remove_node(parse_result, element_to_remove) }
+
+      let(:source) { "<div>hello</div><span>world</span>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:document) { parse_result.value }
+      let(:element_to_remove) { document.children.first }
+
+      it "removes the node and returns true" do
+        original_size = document.children.size
+        expect(subject).to be(true)
+        expect(document.children.size).to eq(original_size - 1)
+        expect(document.children).not_to include(element_to_remove)
+      end
+    end
+
+    context "when removing a node from body array" do
+      subject { helper.remove_node(parse_result, span_to_remove) }
+
+      let(:source) { "<div><span>hello</span><p>world</p></div>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:div) { parse_result.value.children.first }
+      let(:span_to_remove) { div.body.first }
+
+      it "removes the node and returns true" do
+        original_size = div.body.size
+        expect(subject).to be(true)
+        expect(div.body.size).to eq(original_size - 1)
+        expect(div.body).not_to include(span_to_remove)
+      end
+    end
+
+    context "when node has no parent in the parse result" do
+      subject { helper.remove_node(parse_result, stale_node) }
+
+      let(:source) { "<p>hello</p>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:other_parse_result) { Herb.parse("<div>world</div>", track_whitespace: true) }
+      let(:stale_node) { other_parse_result.value.children.first }
+
+      it "returns false without modifying the tree" do
+        original_children = parse_result.value.children.dup
+        expect(subject).to be(false)
+        expect(parse_result.value.children).to eq(original_children)
+      end
+    end
+
+    context "when removing an ERB tag from document children" do
+      subject { helper.remove_node(parse_result, erb_to_remove) }
+
+      let(:source) { "<% %>text<%= value %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:document) { parse_result.value }
+      let(:erb_to_remove) { document.children.first }
+
+      it "removes the ERB tag and returns true" do
+        original_size = document.children.size
+        expect(subject).to be(true)
+        expect(document.children.size).to eq(original_size - 1)
+        expect(document.children).not_to include(erb_to_remove)
+      end
+    end
+
+    context "when parent array does not contain the node" do
+      subject { helper.remove_node(parse_result, orphan_node) }
+
+      let(:source) { "<div>hello</div>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:orphan_node) do
+        other_source = "<span>orphan</span>"
+        other_parse = Herb.parse(other_source, track_whitespace: true)
+        other_parse.value.children.first
+      end
+
+      it "returns false without modifying the tree" do
+        original_children = parse_result.value.children.dup
+        expect(subject).to be(false)
+        expect(parse_result.value.children).to eq(original_children)
+      end
+    end
+  end
+
   describe "#copy_token" do
     context "when copying a token without overrides" do
       subject { helper.copy_token(original_token) }
