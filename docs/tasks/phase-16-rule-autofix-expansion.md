@@ -96,13 +96,16 @@ cd herb-lint && ./bin/steep check
 
 ### Task 16.3: ErbNoEmptyTags Autofix
 
+**Status:** Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/erb_no_empty_tags.rb`
 
-- [ ] Add `def self.autocorrectable? = true`
-- [ ] Change `add_offense` to `add_offense_with_autofix`
-- [ ] Implement `autofix(node, parse_result)` method
-  - [ ] Remove empty ERB tags
-- [ ] Add autofix tests
+- [x] Add `def self.autocorrectable? = true`
+- [x] Change `add_offense` to `add_offense_with_autofix`
+- [x] Implement `autofix(node, parse_result)` method
+  - [x] Remove empty ERB tags
+- [x] Add autofix tests
+- [x] Add `remove_node` helper to `AutofixHelpers`
 
 **Example:**
 
