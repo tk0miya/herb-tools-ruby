@@ -44,69 +44,21 @@ module Herb
 
         # @rbs override
         def autofix(node, parse_result)
-          parent = find_parent(parse_result, node)
-          return false unless parent
+          # Create new opening tag token with <%# instead of <%
+          tag_opening = copy_token(node.tag_opening, content: "<%#")
 
-          parent_array = parent_array_for(parent, node)
-          return false unless parent_array
+          # Remove leading whitespace and # from content
+          new_content_value = node.content.value.sub(/\A\s*#/, "")
+          content = copy_token(node.content, content: new_content_value)
 
-          new_node = build_comment_node(node)
-          replace_node_in_array(parent_array, node, new_node)
+          # Create new ERBContentNode with modified tokens
+          new_node = copy_erb_content_node(node, tag_opening:, content:)
+
+          # Replace the node in the AST
+          replace_node(parse_result, node, new_node)
         end
 
         private
-
-        # @rbs node: Herb::AST::ERBContentNode
-        def build_comment_node(node) #: Herb::AST::ERBContentNode
-          new_tag_opening = Herb::Token.new(
-            "<%#",
-            node.tag_opening.range,
-            node.tag_opening.location,
-            node.tag_opening.type
-          )
-
-          new_content = build_comment_content(node)
-
-          Herb::AST::ERBContentNode.new(
-            node.type,
-            node.location,
-            node.errors,
-            new_tag_opening,
-            new_content,
-            node.tag_closing,
-            node.parsed,
-            node.valid,
-            node.analyzed_ruby
-          )
-        end
-
-        # @rbs node: Herb::AST::ERBContentNode
-        def build_comment_content(node) #: Herb::Token
-          # Remove leading whitespace and # from content
-          # Keep everything after the # including any leading space
-          content = node.content.value
-          new_content_value = content.sub(/\A\s*#/, "")
-
-          Herb::Token.new(
-            new_content_value,
-            node.content.range,
-            node.content.location,
-            node.content.type
-          )
-        end
-
-        # @rbs parent_array: Array[Herb::AST::Node]
-        # @rbs old_node: Herb::AST::Node
-        # @rbs new_node: Herb::AST::Node
-        # rubocop:disable Naming/PredicateMethod
-        def replace_node_in_array(parent_array, old_node, new_node) #: bool
-          idx = parent_array.index(old_node)
-          return false unless idx
-
-          parent_array[idx] = new_node
-          true
-        end
-        # rubocop:enable Naming/PredicateMethod
 
         # @rbs node: Herb::AST::ERBContentNode
         def statement_tag?(node) #: bool
