@@ -117,16 +117,16 @@ Each gem has its own binstubs in its `bin/` directory. Run commands from within 
 
 ```bash
 # Run all checks (spec, rubocop, steep) for a gem
-cd herb-config && ./bin/rake
+(cd herb-config && ./bin/rake)
 
 # Run tests only
-cd herb-config && ./bin/rspec
+(cd herb-config && ./bin/rspec)
 
 # Run type checker
-cd herb-config && ./bin/steep check
+(cd herb-config && ./bin/steep check)
 
 # Run linter
-cd herb-config && ./bin/rubocop
+(cd herb-config && ./bin/rubocop)
 ```
 
 Each gem's binstubs use that gem's Gemfile, ensuring proper dependency resolution.
@@ -316,10 +316,10 @@ end
 
 ```bash
 # Run all tests for a gem (from gem directory)
-cd herb-config && ./bin/rspec
+(cd herb-config && ./bin/rspec)
 
 # Run specific test file
-cd herb-config && ./bin/rspec spec/herb/config_spec.rb
+(cd herb-config && ./bin/rspec spec/herb/config_spec.rb)
 ```
 
 ## Writing Type Annotations
