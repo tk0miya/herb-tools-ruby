@@ -74,13 +74,15 @@ cd herb-lint && ./bin/steep check
 
 ### Task 16.2: ErbCommentSyntax Autofix
 
+**Status:** Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/erb_comment_syntax.rb`
 
-- [ ] Add `def self.autocorrectable? = true`
-- [ ] Change `add_offense` to `add_offense_with_autofix` (pass `node:` parameter)
-- [ ] Implement `autofix(node, parse_result)` method
-  - [ ] Convert HTML comment to ERB comment
-- [ ] Add autofix tests
+- [x] Add `def self.safe_autocorrectable? = true`
+- [x] Change `add_offense` to `add_offense_with_autofix` (pass `node:` parameter)
+- [x] Implement `autofix(node, parse_result)` method
+  - [x] Convert statement tag with Ruby comment to ERB comment tag
+- [x] Add autofix tests
 
 **Example:**
 
