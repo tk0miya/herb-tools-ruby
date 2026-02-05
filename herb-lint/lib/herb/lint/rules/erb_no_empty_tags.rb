@@ -28,15 +28,26 @@ module Herb
           "warning"
         end
 
+        def self.autocorrectable? #: bool
+          true
+        end
+
         # @rbs override
         def visit_erb_content_node(node)
           if empty_tag?(node)
-            add_offense(
+            add_offense_with_autofix(
               message: "Remove empty ERB tag",
-              location: node.location
+              location: node.location,
+              node:
             )
           end
           super
+        end
+
+        # @rbs override
+        def autofix(node, parse_result)
+          # Remove the empty ERB tag from the AST
+          remove_node(parse_result, node)
         end
 
         private

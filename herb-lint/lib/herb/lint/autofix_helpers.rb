@@ -55,6 +55,29 @@ module Herb
         true
       end
 
+      # Remove a node from the AST.
+      # Finds the parent, locates the array containing the node,
+      # and removes it from the array.
+      #
+      # This is a convenience method that combines find_parent, parent_array_for,
+      # and array deletion.
+      #
+      # @rbs parse_result: Herb::ParseResult -- the parse result to search
+      # @rbs node: Herb::AST::Node -- the node to remove
+      def remove_node(parse_result, node) #: bool # rubocop:disable Naming/PredicateMethod
+        parent = find_parent(parse_result, node)
+        return false unless parent
+
+        parent_array = parent_array_for(parent, node)
+        return false unless parent_array
+
+        index = parent_array.index(node)
+        return false unless index
+
+        parent_array.delete_at(index)
+        true
+      end
+
       # Create a new token by copying an existing token with optional attribute overrides.
       # This is useful for creating modified tokens during autofix operations.
       #
