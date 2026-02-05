@@ -5,7 +5,7 @@ module Herb
     # Utility helpers for autofix implementations.
     # Provides common methods for locating parents and finding mutable arrays
     # in the AST during autofix operations.
-    module AutofixHelpers
+    module AutofixHelpers # rubocop:disable Metrics/ModuleLength
       # Find the parent node of a given node in the AST.
       # Wrapper around NodeLocator.find_parent for convenience.
       #
@@ -95,6 +95,207 @@ module Herb
         )
       end
 
+      # Create a new HTMLAttributeNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified attribute nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::HTMLAttributeNode -- the node to copy
+      # @rbs name: Herb::AST::HTMLAttributeNameNode? -- override the name node
+      # @rbs equals: Herb::Token? -- override the equals token
+      # @rbs value: Herb::AST::HTMLAttributeValueNode? -- override the value node
+      def copy_html_attribute_node(node, name: nil, equals: nil, value: nil) #: Herb::AST::HTMLAttributeNode
+        Herb::AST::HTMLAttributeNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          name || node.name,
+          equals || node.equals,
+          value || node.value
+        )
+      end
+
+      # Create a new HTMLElementNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified element nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::HTMLElementNode -- the node to copy
+      # @rbs open_tag: Herb::AST::HTMLOpenTagNode? -- override the open tag
+      # @rbs tag_name: Herb::Token? -- override the tag name token
+      # @rbs body: Array[Herb::AST::Node]? -- override the body array
+      # @rbs close_tag: Herb::AST::HTMLCloseTagNode? -- override the close tag
+      # @rbs is_void: bool? -- override the is_void flag
+      # @rbs source: Herb::Token? -- override the source token
+      def copy_html_element_node( # rubocop:disable Metrics/ParameterLists
+        node,
+        open_tag: nil,
+        tag_name: nil,
+        body: nil,
+        close_tag: nil,
+        is_void: nil,
+        source: nil
+      ) #: Herb::AST::HTMLElementNode
+        Herb::AST::HTMLElementNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          open_tag || node.open_tag,
+          tag_name || node.tag_name,
+          body || node.body,
+          close_tag || node.close_tag,
+          is_void.nil? ? node.is_void : is_void,
+          source || node.source
+        )
+      end
+
+      # Create a new HTMLTextNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified text nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::HTMLTextNode -- the node to copy
+      # @rbs content: String? -- override the content string
+      def copy_html_text_node(node, content: nil) #: Herb::AST::HTMLTextNode
+        Herb::AST::HTMLTextNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          content&.dup || node.content
+        )
+      end
+
+      # Create a new ERBBeginNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB begin nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBBeginNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
+      # @rbs rescue_clause: Herb::AST::ERBRescueNode? -- override the rescue clause
+      # @rbs else_clause: Herb::AST::ERBElseNode? -- override the else clause
+      # @rbs ensure_clause: Herb::AST::ERBEnsureNode? -- override the ensure clause
+      # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
+      def copy_erb_begin_node( # rubocop:disable Metrics/CyclomaticComplexity, Metrics/ParameterLists, Metrics/PerceivedComplexity
+        node,
+        tag_opening: nil,
+        content: nil,
+        tag_closing: nil,
+        statements: nil,
+        rescue_clause: nil,
+        else_clause: nil,
+        ensure_clause: nil,
+        end_node: nil
+      ) #: Herb::AST::ERBBeginNode
+        Herb::AST::ERBBeginNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          tag_opening || node.tag_opening,
+          content || node.content,
+          tag_closing || node.tag_closing,
+          statements || node.statements,
+          rescue_clause || node.rescue_clause,
+          else_clause || node.else_clause,
+          ensure_clause || node.ensure_clause,
+          end_node || node.end_node
+        )
+      end
+
+      # Create a new ERBBlockNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB block nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBBlockNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      # @rbs body: Array[Herb::AST::Node]? -- override the body array
+      # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
+      def copy_erb_block_node( # rubocop:disable Metrics/ParameterLists
+        node,
+        tag_opening: nil,
+        content: nil,
+        tag_closing: nil,
+        body: nil,
+        end_node: nil
+      ) #: Herb::AST::ERBBlockNode
+        Herb::AST::ERBBlockNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          tag_opening || node.tag_opening,
+          content || node.content,
+          tag_closing || node.tag_closing,
+          body || node.body,
+          end_node || node.end_node
+        )
+      end
+
+      # Create a new ERBCaseMatchNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB case-match nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBCaseMatchNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      # @rbs children: Array[Herb::AST::Node]? -- override the children array
+      # @rbs conditions: Array[Herb::AST::ERBInNode]? -- override the conditions array
+      # @rbs else_clause: Herb::AST::ERBElseNode? -- override the else clause
+      # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
+      def copy_erb_case_match_node( # rubocop:disable Metrics/CyclomaticComplexity, Metrics/ParameterLists
+        node,
+        tag_opening: nil,
+        content: nil,
+        tag_closing: nil,
+        children: nil,
+        conditions: nil,
+        else_clause: nil,
+        end_node: nil
+      ) #: Herb::AST::ERBCaseMatchNode
+        Herb::AST::ERBCaseMatchNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          tag_opening || node.tag_opening,
+          content || node.content,
+          tag_closing || node.tag_closing,
+          children || node.children,
+          conditions || node.conditions,
+          else_clause || node.else_clause,
+          end_node || node.end_node
+        )
+      end
+
+      # Create a new ERBCaseNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB case nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBCaseNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      # @rbs children: Array[Herb::AST::Node]? -- override the children array
+      # @rbs conditions: Array[Herb::AST::ERBWhenNode]? -- override the conditions array
+      # @rbs else_clause: Herb::AST::ERBElseNode? -- override the else clause
+      # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
+      def copy_erb_case_node( # rubocop:disable Metrics/CyclomaticComplexity, Metrics/ParameterLists
+        node,
+        tag_opening: nil,
+        content: nil,
+        tag_closing: nil,
+        children: nil,
+        conditions: nil,
+        else_clause: nil,
+        end_node: nil
+      ) #: Herb::AST::ERBCaseNode
+        Herb::AST::ERBCaseNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          tag_opening || node.tag_opening,
+          content || node.content,
+          tag_closing || node.tag_closing,
+          children || node.children,
+          conditions || node.conditions,
+          else_clause || node.else_clause,
+          end_node || node.end_node
+        )
+      end
+
       # Create a new ERBContentNode by copying an existing node with optional attribute overrides.
       # This is useful for creating modified ERB content nodes during autofix operations.
       #
@@ -124,6 +325,326 @@ module Herb
           analyzed_ruby || node.analyzed_ruby,
           parsed.nil? ? node.parsed : parsed,
           valid.nil? ? node.valid : valid
+        )
+      end
+
+      # Create a new ERBElseNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB else nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBElseNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
+      def copy_erb_else_node(node, tag_opening: nil, content: nil, tag_closing: nil, statements: nil) #: Herb::AST::ERBElseNode
+        Herb::AST::ERBElseNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          tag_opening || node.tag_opening,
+          content || node.content,
+          tag_closing || node.tag_closing,
+          statements || node.statements
+        )
+      end
+
+      # Create a new ERBEndNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB end nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBEndNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      def copy_erb_end_node(node, tag_opening: nil, content: nil, tag_closing: nil) #: Herb::AST::ERBEndNode
+        Herb::AST::ERBEndNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          tag_opening || node.tag_opening,
+          content || node.content,
+          tag_closing || node.tag_closing
+        )
+      end
+
+      # Create a new ERBEnsureNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB ensure nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBEnsureNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
+      def copy_erb_ensure_node(node, tag_opening: nil, content: nil, tag_closing: nil, statements: nil) #: Herb::AST::ERBEnsureNode
+        Herb::AST::ERBEnsureNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          tag_opening || node.tag_opening,
+          content || node.content,
+          tag_closing || node.tag_closing,
+          statements || node.statements
+        )
+      end
+
+      # Create a new ERBForNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB for nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBForNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
+      # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
+      def copy_erb_for_node( # rubocop:disable Metrics/ParameterLists
+        node,
+        tag_opening: nil,
+        content: nil,
+        tag_closing: nil,
+        statements: nil,
+        end_node: nil
+      ) #: Herb::AST::ERBForNode
+        Herb::AST::ERBForNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          tag_opening || node.tag_opening,
+          content || node.content,
+          tag_closing || node.tag_closing,
+          statements || node.statements,
+          end_node || node.end_node
+        )
+      end
+
+      # Create a new ERBIfNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB if nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBIfNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      # @rbs then_keyword: Herb::Token? -- override the then keyword token
+      # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
+      # @rbs subsequent: Herb::AST::Node? -- override the subsequent node (elsif/else)
+      # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
+      def copy_erb_if_node( # rubocop:disable Metrics/CyclomaticComplexity, Metrics/ParameterLists
+        node,
+        tag_opening: nil,
+        content: nil,
+        tag_closing: nil,
+        then_keyword: nil,
+        statements: nil,
+        subsequent: nil,
+        end_node: nil
+      ) #: Herb::AST::ERBIfNode
+        Herb::AST::ERBIfNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          tag_opening || node.tag_opening,
+          content || node.content,
+          tag_closing || node.tag_closing,
+          then_keyword || node.then_keyword,
+          statements || node.statements,
+          subsequent || node.subsequent,
+          end_node || node.end_node
+        )
+      end
+
+      # Create a new ERBInNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB in nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBInNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      # @rbs then_keyword: Herb::Location? -- override the then keyword location
+      # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
+      def copy_erb_in_node( # rubocop:disable Metrics/ParameterLists
+        node,
+        tag_opening: nil,
+        content: nil,
+        tag_closing: nil,
+        then_keyword: nil,
+        statements: nil
+      ) #: Herb::AST::ERBInNode
+        Herb::AST::ERBInNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          tag_opening || node.tag_opening,
+          content || node.content,
+          tag_closing || node.tag_closing,
+          then_keyword || node.then_keyword,
+          statements || node.statements
+        )
+      end
+
+      # Create a new ERBRescueNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB rescue nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBRescueNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
+      # @rbs subsequent: Herb::AST::ERBRescueNode? -- override the subsequent rescue node
+      def copy_erb_rescue_node( # rubocop:disable Metrics/ParameterLists
+        node,
+        tag_opening: nil,
+        content: nil,
+        tag_closing: nil,
+        statements: nil,
+        subsequent: nil
+      ) #: Herb::AST::ERBRescueNode
+        Herb::AST::ERBRescueNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          tag_opening || node.tag_opening,
+          content || node.content,
+          tag_closing || node.tag_closing,
+          statements || node.statements,
+          subsequent || node.subsequent
+        )
+      end
+
+      # Create a new ERBUnlessNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB unless nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBUnlessNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      # @rbs then_keyword: Herb::Token? -- override the then keyword token
+      # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
+      # @rbs else_clause: Herb::AST::ERBElseNode? -- override the else clause node
+      # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
+      def copy_erb_unless_node( # rubocop:disable Metrics/CyclomaticComplexity, Metrics/ParameterLists
+        node,
+        tag_opening: nil,
+        content: nil,
+        tag_closing: nil,
+        then_keyword: nil,
+        statements: nil,
+        else_clause: nil,
+        end_node: nil
+      ) #: Herb::AST::ERBUnlessNode
+        Herb::AST::ERBUnlessNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          tag_opening || node.tag_opening,
+          content || node.content,
+          tag_closing || node.tag_closing,
+          then_keyword || node.then_keyword,
+          statements || node.statements,
+          else_clause || node.else_clause,
+          end_node || node.end_node
+        )
+      end
+
+      # Create a new ERBUntilNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB until nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBUntilNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
+      # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
+      def copy_erb_until_node( # rubocop:disable Metrics/ParameterLists
+        node,
+        tag_opening: nil,
+        content: nil,
+        tag_closing: nil,
+        statements: nil,
+        end_node: nil
+      ) #: Herb::AST::ERBUntilNode
+        Herb::AST::ERBUntilNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          tag_opening || node.tag_opening,
+          content || node.content,
+          tag_closing || node.tag_closing,
+          statements || node.statements,
+          end_node || node.end_node
+        )
+      end
+
+      # Create a new ERBWhenNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB when nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBWhenNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      # @rbs then_keyword: Herb::Location? -- override the then keyword location
+      # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
+      def copy_erb_when_node( # rubocop:disable Metrics/ParameterLists
+        node,
+        tag_opening: nil,
+        content: nil,
+        tag_closing: nil,
+        then_keyword: nil,
+        statements: nil
+      ) #: Herb::AST::ERBWhenNode
+        Herb::AST::ERBWhenNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          tag_opening || node.tag_opening,
+          content || node.content,
+          tag_closing || node.tag_closing,
+          then_keyword || node.then_keyword,
+          statements || node.statements
+        )
+      end
+
+      # Create a new ERBWhileNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB while nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBWhileNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
+      # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
+      def copy_erb_while_node( # rubocop:disable Metrics/ParameterLists
+        node,
+        tag_opening: nil,
+        content: nil,
+        tag_closing: nil,
+        statements: nil,
+        end_node: nil
+      ) #: Herb::AST::ERBWhileNode
+        Herb::AST::ERBWhileNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          tag_opening || node.tag_opening,
+          content || node.content,
+          tag_closing || node.tag_closing,
+          statements || node.statements,
+          end_node || node.end_node
+        )
+      end
+
+      # Create a new ERBYieldNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified ERB yield nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::ERBYieldNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening tag token
+      # @rbs content: Herb::Token? -- override the content token
+      # @rbs tag_closing: Herb::Token? -- override the closing tag token
+      def copy_erb_yield_node(node, tag_opening: nil, content: nil, tag_closing: nil) #: Herb::AST::ERBYieldNode
+        Herb::AST::ERBYieldNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          tag_opening || node.tag_opening,
+          content || node.content,
+          tag_closing || node.tag_closing
         )
       end
     end

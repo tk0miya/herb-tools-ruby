@@ -376,6 +376,198 @@ RSpec.describe Herb::Lint::AutofixHelpers do
     end
   end
 
+  describe "#copy_html_attribute_node" do
+    context "when copying an attribute node without overrides" do
+      subject { helper.copy_html_attribute_node(original_attr) }
+
+      let(:source) { '<div class="foo">hello</div>' }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:element) { parse_result.value.children.first }
+      let(:original_attr) do
+        element.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+      end
+
+      it "creates a new attribute node with same attributes" do
+        expect(subject).to be_a(Herb::AST::HTMLAttributeNode)
+        expect(subject).not_to equal(original_attr)
+        expect(subject).to have_attributes(
+          type: original_attr.type,
+          location: original_attr.location,
+          errors: original_attr.errors,
+          name: original_attr.name,
+          equals: original_attr.equals,
+          value: original_attr.value
+        )
+      end
+    end
+
+    context "when copying an attribute node with overrides" do
+      subject do
+        helper.copy_html_attribute_node(
+          original_attr,
+          name: new_name_node,
+          value: new_value_node
+        )
+      end
+
+      let(:source) { '<div class="foo" id="bar">hello</div>' }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:element) { parse_result.value.children.first }
+      let(:original_attr) do
+        element.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) && c.name.children.first.content == "class" }
+      end
+      let(:new_attr) do
+        element.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) && c.name.children.first.content == "id" }
+      end
+      let(:new_name_node) { new_attr.name }
+      let(:new_value_node) { new_attr.value }
+
+      it "creates a new attribute node with overridden attributes" do
+        expect(subject.name).to equal(new_name_node)
+        expect(subject.value).to equal(new_value_node)
+        expect(subject.equals).to eq(original_attr.equals)
+      end
+    end
+  end
+
+  describe "#copy_html_element_node" do
+    context "when copying an element node without overrides" do
+      subject { helper.copy_html_element_node(original_element) }
+
+      let(:source) { "<div>hello</div>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_element) { parse_result.value.children.first }
+
+      it "creates a new element node with same attributes" do
+        expect(subject).to be_a(Herb::AST::HTMLElementNode)
+        expect(subject).not_to equal(original_element)
+        expect(subject).to have_attributes(
+          type: original_element.type,
+          location: original_element.location,
+          errors: original_element.errors,
+          open_tag: original_element.open_tag,
+          tag_name: original_element.tag_name,
+          body: original_element.body,
+          close_tag: original_element.close_tag,
+          is_void: original_element.is_void,
+          source: original_element.source
+        )
+      end
+    end
+
+    context "when copying an element node with overrides" do
+      subject do
+        helper.copy_html_element_node(
+          original_element,
+          tag_name: new_tag_name_token,
+          body: new_body
+        )
+      end
+
+      let(:source) { "<div>hello</div>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_element) { parse_result.value.children.first }
+      let(:new_tag_name_token) { helper.copy_token(original_element.tag_name, content: "span") }
+      let(:new_body) { [] }
+
+      it "creates a new element node with overridden attributes" do
+        expect(subject).to have_attributes(
+          tag_name: have_attributes(value: "span"),
+          body: [],
+          open_tag: original_element.open_tag,
+          close_tag: original_element.close_tag
+        )
+      end
+    end
+  end
+
+  describe "#copy_html_text_node" do
+    context "when copying a text node without overrides" do
+      subject { helper.copy_html_text_node(original_text) }
+
+      let(:source) { "<div>hello</div>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:element) { parse_result.value.children.first }
+      let(:original_text) { element.body.first }
+
+      it "creates a new text node with same attributes" do
+        expect(subject).to be_a(Herb::AST::HTMLTextNode)
+        expect(subject).not_to equal(original_text)
+        expect(subject).to have_attributes(
+          type: original_text.type,
+          location: original_text.location,
+          errors: original_text.errors,
+          content: original_text.content
+        )
+      end
+    end
+
+    context "when copying a text node with overrides" do
+      subject do
+        helper.copy_html_text_node(original_text, content: "goodbye")
+      end
+
+      let(:source) { "<div>hello</div>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:element) { parse_result.value.children.first }
+      let(:original_text) { element.body.first }
+
+      it "creates a new text node with overridden content" do
+        expect(subject).to have_attributes(
+          content: "goodbye"
+        )
+      end
+    end
+  end
+
+  describe "#copy_erb_block_node" do
+    context "when copying an ERB block node without overrides" do
+      subject { helper.copy_erb_block_node(original_node) }
+
+      let(:source) { "<% [1,2,3].each do |i| %><p><%= i %></p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with same attributes" do
+        expect(subject).to be_a(Herb::AST::ERBBlockNode)
+        expect(subject).not_to equal(original_node)
+        expect(subject).to have_attributes(
+          type: original_node.type,
+          location: original_node.location,
+          errors: original_node.errors,
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          body: original_node.body,
+          end_node: original_node.end_node
+        )
+      end
+    end
+
+    context "when copying an ERB block node with overrides" do
+      subject do
+        helper.copy_erb_block_node(
+          original_node,
+          body: []
+        )
+      end
+
+      let(:source) { "<% [1,2,3].each do |i| %><p><%= i %></p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with overridden attributes" do
+        expect(subject).to have_attributes(
+          body: [],
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          end_node: original_node.end_node
+        )
+      end
+    end
+  end
+
   describe "#copy_erb_content_node" do
     context "when copying an ERB node without overrides" do
       subject { helper.copy_erb_content_node(original_node) }
@@ -423,6 +615,677 @@ RSpec.describe Herb::Lint::AutofixHelpers do
           content: have_attributes(value: " 'goodbye' "),
           parsed: false,
           valid: false,
+          tag_opening: original_node.tag_opening,
+          tag_closing: original_node.tag_closing
+        )
+      end
+    end
+  end
+
+  describe "#copy_erb_if_node" do
+    context "when copying an ERB if node without overrides" do
+      subject { helper.copy_erb_if_node(original_node) }
+
+      let(:source) { "<% if true %><p>yes</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with same attributes" do
+        expect(subject).to be_a(Herb::AST::ERBIfNode)
+        expect(subject).not_to equal(original_node)
+        expect(subject).to have_attributes(
+          type: original_node.type,
+          location: original_node.location,
+          errors: original_node.errors,
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          then_keyword: original_node.then_keyword,
+          statements: original_node.statements,
+          subsequent: original_node.subsequent,
+          end_node: original_node.end_node
+        )
+      end
+    end
+
+    context "when copying an ERB if node with overrides" do
+      subject do
+        helper.copy_erb_if_node(
+          original_node,
+          statements: []
+        )
+      end
+
+      let(:source) { "<% if true %><p>yes</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with overridden attributes" do
+        expect(subject).to have_attributes(
+          statements: [],
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          end_node: original_node.end_node
+        )
+      end
+    end
+  end
+
+  describe "#copy_erb_unless_node" do
+    context "when copying an ERB unless node without overrides" do
+      subject { helper.copy_erb_unless_node(original_node) }
+
+      let(:source) { "<% unless false %><p>yes</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with same attributes" do
+        expect(subject).to be_a(Herb::AST::ERBUnlessNode)
+        expect(subject).not_to equal(original_node)
+        expect(subject).to have_attributes(
+          type: original_node.type,
+          location: original_node.location,
+          errors: original_node.errors,
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          then_keyword: original_node.then_keyword,
+          statements: original_node.statements,
+          else_clause: original_node.else_clause,
+          end_node: original_node.end_node
+        )
+      end
+    end
+
+    context "when copying an ERB unless node with overrides" do
+      subject do
+        helper.copy_erb_unless_node(
+          original_node,
+          statements: []
+        )
+      end
+
+      let(:source) { "<% unless false %><p>yes</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with overridden attributes" do
+        expect(subject).to have_attributes(
+          statements: [],
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          end_node: original_node.end_node
+        )
+      end
+    end
+  end
+
+  describe "#copy_erb_begin_node" do
+    context "when copying an ERB begin node without overrides" do
+      subject { helper.copy_erb_begin_node(original_node) }
+
+      let(:source) { "<% begin %><p>text</p><% rescue %><p>error</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with same attributes" do
+        expect(subject).to be_a(Herb::AST::ERBBeginNode)
+        expect(subject).not_to equal(original_node)
+        expect(subject).to have_attributes(
+          type: original_node.type,
+          location: original_node.location,
+          errors: original_node.errors,
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          statements: original_node.statements,
+          rescue_clause: original_node.rescue_clause,
+          else_clause: original_node.else_clause,
+          ensure_clause: original_node.ensure_clause,
+          end_node: original_node.end_node
+        )
+      end
+    end
+
+    context "when copying an ERB begin node with overrides" do
+      subject { helper.copy_erb_begin_node(original_node, statements: []) }
+
+      let(:source) { "<% begin %><p>text</p><% rescue %><p>error</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with overridden attributes" do
+        expect(subject).to have_attributes(
+          statements: [],
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          rescue_clause: original_node.rescue_clause,
+          end_node: original_node.end_node
+        )
+      end
+    end
+  end
+
+  describe "#copy_erb_case_match_node" do
+    context "when copying an ERB case-match node without overrides" do
+      subject { helper.copy_erb_case_match_node(original_node) }
+
+      let(:source) { "<% case x %><% in 1 %><p>one</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with same attributes" do
+        expect(subject).to be_a(Herb::AST::ERBCaseMatchNode)
+        expect(subject).not_to equal(original_node)
+        expect(subject).to have_attributes(
+          type: original_node.type,
+          location: original_node.location,
+          errors: original_node.errors,
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          children: original_node.children,
+          conditions: original_node.conditions,
+          else_clause: original_node.else_clause,
+          end_node: original_node.end_node
+        )
+      end
+    end
+
+    context "when copying an ERB case-match node with overrides" do
+      subject { helper.copy_erb_case_match_node(original_node, children: []) }
+
+      let(:source) { "<% case x %><% in 1 %><p>one</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with overridden attributes" do
+        expect(subject).to have_attributes(
+          children: [],
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          conditions: original_node.conditions,
+          end_node: original_node.end_node
+        )
+      end
+    end
+  end
+
+  describe "#copy_erb_case_node" do
+    context "when copying an ERB case node without overrides" do
+      subject { helper.copy_erb_case_node(original_node) }
+
+      let(:source) { "<% case x %><% when 1 %><p>one</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with same attributes" do
+        expect(subject).to be_a(Herb::AST::ERBCaseNode)
+        expect(subject).not_to equal(original_node)
+        expect(subject).to have_attributes(
+          type: original_node.type,
+          location: original_node.location,
+          errors: original_node.errors,
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          children: original_node.children,
+          conditions: original_node.conditions,
+          else_clause: original_node.else_clause,
+          end_node: original_node.end_node
+        )
+      end
+    end
+
+    context "when copying an ERB case node with overrides" do
+      subject { helper.copy_erb_case_node(original_node, children: []) }
+
+      let(:source) { "<% case x %><% when 1 %><p>one</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with overridden attributes" do
+        expect(subject).to have_attributes(
+          children: [],
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          conditions: original_node.conditions,
+          end_node: original_node.end_node
+        )
+      end
+    end
+  end
+
+  describe "#copy_erb_else_node" do
+    context "when copying an ERB else node without overrides" do
+      subject { helper.copy_erb_else_node(original_node) }
+
+      let(:source) { "<% if true %><p>yes</p><% else %><p>no</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:if_node) { parse_result.value.children.first }
+      let(:original_node) { if_node.subsequent }
+
+      it "creates a new node with same attributes" do
+        expect(subject).to be_a(Herb::AST::ERBElseNode)
+        expect(subject).not_to equal(original_node)
+        expect(subject).to have_attributes(
+          type: original_node.type,
+          location: original_node.location,
+          errors: original_node.errors,
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          statements: original_node.statements
+        )
+      end
+    end
+
+    context "when copying an ERB else node with overrides" do
+      subject { helper.copy_erb_else_node(original_node, statements: []) }
+
+      let(:source) { "<% if true %><p>yes</p><% else %><p>no</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:if_node) { parse_result.value.children.first }
+      let(:original_node) { if_node.subsequent }
+
+      it "creates a new node with overridden attributes" do
+        expect(subject).to have_attributes(
+          statements: [],
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing
+        )
+      end
+    end
+  end
+
+  describe "#copy_erb_end_node" do
+    context "when copying an ERB end node without overrides" do
+      subject { helper.copy_erb_end_node(original_node) }
+
+      let(:source) { "<% if true %><p>yes</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:if_node) { parse_result.value.children.first }
+      let(:original_node) { if_node.end_node }
+
+      it "creates a new node with same attributes" do
+        expect(subject).to be_a(Herb::AST::ERBEndNode)
+        expect(subject).not_to equal(original_node)
+        expect(subject).to have_attributes(
+          type: original_node.type,
+          location: original_node.location,
+          errors: original_node.errors,
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing
+        )
+      end
+    end
+
+    context "when copying an ERB end node with overrides" do
+      subject { helper.copy_erb_end_node(original_node, content: new_token) }
+
+      let(:source) { "<% if true %><p>yes</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:if_node) { parse_result.value.children.first }
+      let(:original_node) { if_node.end_node }
+      let(:new_token) { helper.copy_token(original_node.content, content: "end") }
+
+      it "creates a new node with overridden attributes" do
+        expect(subject).to have_attributes(
+          content: new_token,
+          tag_opening: original_node.tag_opening,
+          tag_closing: original_node.tag_closing
+        )
+      end
+    end
+  end
+
+  describe "#copy_erb_ensure_node" do
+    context "when copying an ERB ensure node without overrides" do
+      subject { helper.copy_erb_ensure_node(original_node) }
+
+      let(:source) { "<% begin %><p>text</p><% ensure %><p>cleanup</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:begin_node) { parse_result.value.children.first }
+      let(:original_node) { begin_node.ensure_clause }
+
+      it "creates a new node with same attributes" do
+        expect(subject).to be_a(Herb::AST::ERBEnsureNode)
+        expect(subject).not_to equal(original_node)
+        expect(subject).to have_attributes(
+          type: original_node.type,
+          location: original_node.location,
+          errors: original_node.errors,
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          statements: original_node.statements
+        )
+      end
+    end
+
+    context "when copying an ERB ensure node with overrides" do
+      subject { helper.copy_erb_ensure_node(original_node, statements: []) }
+
+      let(:source) { "<% begin %><p>text</p><% ensure %><p>cleanup</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:begin_node) { parse_result.value.children.first }
+      let(:original_node) { begin_node.ensure_clause }
+
+      it "creates a new node with overridden attributes" do
+        expect(subject).to have_attributes(
+          statements: [],
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing
+        )
+      end
+    end
+  end
+
+  describe "#copy_erb_for_node" do
+    context "when copying an ERB for node without overrides" do
+      subject { helper.copy_erb_for_node(original_node) }
+
+      let(:source) { "<% for i in [1,2,3] %><p><%= i %></p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with same attributes" do
+        expect(subject).to be_a(Herb::AST::ERBForNode)
+        expect(subject).not_to equal(original_node)
+        expect(subject).to have_attributes(
+          type: original_node.type,
+          location: original_node.location,
+          errors: original_node.errors,
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          statements: original_node.statements,
+          end_node: original_node.end_node
+        )
+      end
+    end
+
+    context "when copying an ERB for node with overrides" do
+      subject { helper.copy_erb_for_node(original_node, statements: []) }
+
+      let(:source) { "<% for i in [1,2,3] %><p><%= i %></p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with overridden attributes" do
+        expect(subject).to have_attributes(
+          statements: [],
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          end_node: original_node.end_node
+        )
+      end
+    end
+  end
+
+  describe "#copy_erb_in_node" do
+    context "when copying an ERB in node without overrides" do
+      subject { helper.copy_erb_in_node(original_node) }
+
+      let(:source) { "<% case x %><% in 1 %><p>one</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:case_match_node) { parse_result.value.children.first }
+      let(:original_node) { case_match_node.conditions.first }
+
+      it "creates a new node with same attributes" do
+        expect(subject).to be_a(Herb::AST::ERBInNode)
+        expect(subject).not_to equal(original_node)
+        expect(subject).to have_attributes(
+          type: original_node.type,
+          location: original_node.location,
+          errors: original_node.errors,
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          then_keyword: original_node.then_keyword,
+          statements: original_node.statements
+        )
+      end
+    end
+
+    context "when copying an ERB in node with overrides" do
+      subject { helper.copy_erb_in_node(original_node, statements: []) }
+
+      let(:source) { "<% case x %><% in 1 %><p>one</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:case_match_node) { parse_result.value.children.first }
+      let(:original_node) { case_match_node.conditions.first }
+
+      it "creates a new node with overridden attributes" do
+        expect(subject).to have_attributes(
+          statements: [],
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          then_keyword: original_node.then_keyword
+        )
+      end
+    end
+  end
+
+  describe "#copy_erb_rescue_node" do
+    context "when copying an ERB rescue node without overrides" do
+      subject { helper.copy_erb_rescue_node(original_node) }
+
+      let(:source) { "<% begin %><p>text</p><% rescue %><p>error</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:begin_node) { parse_result.value.children.first }
+      let(:original_node) { begin_node.rescue_clause }
+
+      it "creates a new node with same attributes" do
+        expect(subject).to be_a(Herb::AST::ERBRescueNode)
+        expect(subject).not_to equal(original_node)
+        expect(subject).to have_attributes(
+          type: original_node.type,
+          location: original_node.location,
+          errors: original_node.errors,
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          statements: original_node.statements,
+          subsequent: original_node.subsequent
+        )
+      end
+    end
+
+    context "when copying an ERB rescue node with overrides" do
+      subject { helper.copy_erb_rescue_node(original_node, statements: []) }
+
+      let(:source) { "<% begin %><p>text</p><% rescue %><p>error</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:begin_node) { parse_result.value.children.first }
+      let(:original_node) { begin_node.rescue_clause }
+
+      it "creates a new node with overridden attributes" do
+        expect(subject).to have_attributes(
+          statements: [],
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          subsequent: original_node.subsequent
+        )
+      end
+    end
+  end
+
+  describe "#copy_erb_until_node" do
+    context "when copying an ERB until node without overrides" do
+      subject { helper.copy_erb_until_node(original_node) }
+
+      let(:source) { "<% until false %><p>text</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with same attributes" do
+        expect(subject).to be_a(Herb::AST::ERBUntilNode)
+        expect(subject).not_to equal(original_node)
+        expect(subject).to have_attributes(
+          type: original_node.type,
+          location: original_node.location,
+          errors: original_node.errors,
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          statements: original_node.statements,
+          end_node: original_node.end_node
+        )
+      end
+    end
+
+    context "when copying an ERB until node with overrides" do
+      subject { helper.copy_erb_until_node(original_node, statements: []) }
+
+      let(:source) { "<% until false %><p>text</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with overridden attributes" do
+        expect(subject).to have_attributes(
+          statements: [],
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          end_node: original_node.end_node
+        )
+      end
+    end
+  end
+
+  describe "#copy_erb_when_node" do
+    context "when copying an ERB when node without overrides" do
+      subject { helper.copy_erb_when_node(original_node) }
+
+      let(:source) { "<% case x %><% when 1 %><p>one</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:case_node) { parse_result.value.children.first }
+      let(:original_node) { case_node.conditions.first }
+
+      it "creates a new node with same attributes" do
+        expect(subject).to be_a(Herb::AST::ERBWhenNode)
+        expect(subject).not_to equal(original_node)
+        expect(subject).to have_attributes(
+          type: original_node.type,
+          location: original_node.location,
+          errors: original_node.errors,
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          then_keyword: original_node.then_keyword,
+          statements: original_node.statements
+        )
+      end
+    end
+
+    context "when copying an ERB when node with overrides" do
+      subject { helper.copy_erb_when_node(original_node, statements: []) }
+
+      let(:source) { "<% case x %><% when 1 %><p>one</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:case_node) { parse_result.value.children.first }
+      let(:original_node) { case_node.conditions.first }
+
+      it "creates a new node with overridden attributes" do
+        expect(subject).to have_attributes(
+          statements: [],
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          then_keyword: original_node.then_keyword
+        )
+      end
+    end
+  end
+
+  describe "#copy_erb_while_node" do
+    context "when copying an ERB while node without overrides" do
+      subject { helper.copy_erb_while_node(original_node) }
+
+      let(:source) { "<% while false %><p>text</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with same attributes" do
+        expect(subject).to be_a(Herb::AST::ERBWhileNode)
+        expect(subject).not_to equal(original_node)
+        expect(subject).to have_attributes(
+          type: original_node.type,
+          location: original_node.location,
+          errors: original_node.errors,
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          statements: original_node.statements,
+          end_node: original_node.end_node
+        )
+      end
+    end
+
+    context "when copying an ERB while node with overrides" do
+      subject { helper.copy_erb_while_node(original_node, statements: []) }
+
+      let(:source) { "<% while false %><p>text</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with overridden attributes" do
+        expect(subject).to have_attributes(
+          statements: [],
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          end_node: original_node.end_node
+        )
+      end
+    end
+  end
+
+  describe "#copy_erb_yield_node" do
+    context "when copying an ERB yield node without overrides" do
+      subject { helper.copy_erb_yield_node(original_node) }
+
+      let(:source) { "<% yield %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with same attributes" do
+        expect(subject).to be_a(Herb::AST::ERBYieldNode)
+        expect(subject).not_to equal(original_node)
+        expect(subject).to have_attributes(
+          type: original_node.type,
+          location: original_node.location,
+          errors: original_node.errors,
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing
+        )
+      end
+    end
+
+    context "when copying an ERB yield node with overrides" do
+      subject { helper.copy_erb_yield_node(original_node, content: new_token) }
+
+      let(:source) { "<% yield %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+      let(:new_token) { helper.copy_token(original_node.content, content: "yield") }
+
+      it "creates a new node with overridden attributes" do
+        expect(subject).to have_attributes(
+          content: new_token,
           tag_opening: original_node.tag_opening,
           tag_closing: original_node.tag_closing
         )
