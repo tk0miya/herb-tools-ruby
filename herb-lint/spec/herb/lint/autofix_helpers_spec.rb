@@ -252,4 +252,98 @@ RSpec.describe Herb::Lint::AutofixHelpers do
       end
     end
   end
+
+  describe "#copy_token" do
+    context "when copying a token without overrides" do
+      subject { helper.copy_token(original_token) }
+
+      let(:source) { "<div>hello</div>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:element) { parse_result.value.children.first }
+      let(:original_token) { element.open_tag.tag_name }
+
+      it "creates a new token with same attributes" do
+        expect(subject).to be_a(Herb::Token)
+        expect(subject).not_to equal(original_token)
+        expect(subject).to have_attributes(
+          value: original_token.value,
+          range: original_token.range,
+          location: original_token.location,
+          type: original_token.type
+        )
+      end
+    end
+
+    context "when copying a token with overrides" do
+      subject { helper.copy_token(original_token, content: "p", type: "custom_type") }
+
+      let(:source) { "<div>hello</div>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:element) { parse_result.value.children.first }
+      let(:original_token) { element.open_tag.tag_name }
+
+      it "creates a new token with overridden attributes" do
+        expect(subject).to have_attributes(
+          value: "p",
+          type: "custom_type",
+          range: original_token.range,
+          location: original_token.location
+        )
+      end
+    end
+  end
+
+  describe "#copy_erb_content_node" do
+    context "when copying an ERB node without overrides" do
+      subject { helper.copy_erb_content_node(original_node) }
+
+      let(:source) { "<%= 'hello' %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+
+      it "creates a new node with same attributes" do
+        expect(subject).to be_a(Herb::AST::ERBContentNode)
+        expect(subject).not_to equal(original_node)
+        expect(subject).to have_attributes(
+          type: original_node.type,
+          location: original_node.location,
+          errors: original_node.errors,
+          tag_opening: original_node.tag_opening,
+          content: original_node.content,
+          tag_closing: original_node.tag_closing,
+          analyzed_ruby: original_node.analyzed_ruby,
+          parsed: original_node.parsed,
+          valid: original_node.valid
+        )
+      end
+    end
+
+    context "when copying an ERB node with overrides" do
+      subject do
+        helper.copy_erb_content_node(
+          original_node,
+          content: new_content_token,
+          parsed: false,
+          valid: false
+        )
+      end
+
+      let(:source) { "<%= 'hello' %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:original_node) { parse_result.value.children.first }
+      let(:new_content_token) do
+        helper.copy_token(original_node.content, content: " 'goodbye' ")
+      end
+
+      it "creates a new node with overridden attributes" do
+        expect(subject).to have_attributes(
+          content: have_attributes(value: " 'goodbye' "),
+          parsed: false,
+          valid: false,
+          tag_opening: original_node.tag_opening,
+          tag_closing: original_node.tag_closing
+        )
+      end
+    end
+  end
 end
