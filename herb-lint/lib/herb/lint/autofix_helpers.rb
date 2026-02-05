@@ -30,6 +30,30 @@ module Herb
           parent.body
         end
       end
+
+      # Replace a node in the AST with a new node.
+      # Finds the parent, locates the array containing the old node,
+      # and replaces it with the new node.
+      #
+      # This is a convenience method that combines find_parent, parent_array_for,
+      # and array index replacement.
+      #
+      # @rbs parse_result: Herb::ParseResult -- the parse result to search
+      # @rbs old_node: Herb::AST::Node -- the node to replace
+      # @rbs new_node: Herb::AST::Node -- the replacement node
+      def replace_node(parse_result, old_node, new_node) #: bool # rubocop:disable Naming/PredicateMethod
+        parent = find_parent(parse_result, old_node)
+        return false unless parent
+
+        parent_array = parent_array_for(parent, old_node)
+        return false unless parent_array
+
+        index = parent_array.index(old_node)
+        return false unless index
+
+        parent_array[index] = new_node
+        true
+      end
     end
   end
 end
