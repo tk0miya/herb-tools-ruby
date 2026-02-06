@@ -76,7 +76,21 @@ module Herb
           comment_content = content.strip
           return unless looks_like_locals_declaration?(comment_content)
 
+          check_partial_file(node)
           @validator.validate(comment_content, node)
+        end
+
+        # @rbs node: Herb::AST::ERBContentNode
+        def check_partial_file(node) #: void
+          is_partial = partial_file?(@context&.file_path)
+
+          if is_partial == false # rubocop:disable Style/GuardClause
+            add_offense(
+              message: "Strict locals (`locals:`) only work in partials (files starting with `_`). " \
+                       "This declaration will be ignored.",
+              location: node.location
+            )
+          end
         end
 
         # @rbs node: Herb::AST::ERBContentNode
@@ -105,7 +119,6 @@ module Herb
         # rubocop:disable Metrics/ClassLength
         class Validator
           include StringHelpers
-          include FileHelpers
 
           STRICT_LOCALS_PATTERN = /\Alocals:\s+\([^)]*\)\s*\z/
 
@@ -128,8 +141,6 @@ module Herb
           # @rbs comment_content: String
           # @rbs node: Herb::AST::ERBContentNode
           def validate(comment_content, node) #: void
-            check_partial_file(node)
-
             unless balanced_parentheses?(comment_content)
               add_offense(
                 message: "Unbalanced parentheses in `locals:` comment. " \
@@ -147,19 +158,6 @@ module Herb
           end
 
           private
-
-          # @rbs node: Herb::AST::ERBContentNode
-          def check_partial_file(node) #: void
-            is_partial = partial_file?(context&.file_path)
-
-            if is_partial == false # rubocop:disable Style/GuardClause
-              add_offense(
-                message: "Strict locals (`locals:`) only work in partials (files starting with `_`). " \
-                         "This declaration will be ignored.",
-                location: node.location
-              )
-            end
-          end
 
           # @rbs content: String
           def valid_strict_locals_format?(content) #: bool
@@ -319,10 +317,6 @@ module Herb
           # @rbs location: Herb::Location
           def add_offense(message:, location:) #: void
             @rule.add_offense(message:, location:)
-          end
-
-          def context #: Herb::Lint::Context?
-            @rule.instance_variable_get(:@context)
           end
         end
         # rubocop:enable Metrics/ClassLength

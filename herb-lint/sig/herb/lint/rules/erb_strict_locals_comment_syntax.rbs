@@ -49,6 +49,9 @@ module Herb
         def check_erb_comment_node: (Herb::AST::ERBContentNode node, String content) -> void
 
         # @rbs node: Herb::AST::ERBContentNode
+        def check_partial_file: (Herb::AST::ERBContentNode node) -> void
+
+        # @rbs node: Herb::AST::ERBContentNode
         # @rbs content: String
         def check_ruby_comment_in_execution_tag: (Herb::AST::ERBContentNode node, String content) -> void
 
@@ -62,8 +65,6 @@ module Herb
         # rubocop:disable Metrics/ClassLength
         class Validator
           include StringHelpers
-
-          include FileHelpers
 
           STRICT_LOCALS_PATTERN: ::Regexp
 
@@ -83,9 +84,6 @@ module Herb
           def validate: (String comment_content, Herb::AST::ERBContentNode node) -> void
 
           private
-
-          # @rbs node: Herb::AST::ERBContentNode
-          def check_partial_file: (Herb::AST::ERBContentNode node) -> void
 
           # @rbs content: String
           def valid_strict_locals_format?: (String content) -> bool
@@ -130,8 +128,6 @@ module Herb
           # @rbs message: String
           # @rbs location: Herb::Location
           def add_offense: (message: String, location: Herb::Location) -> void
-
-          def context: () -> Herb::Lint::Context?
         end
       end
     end
