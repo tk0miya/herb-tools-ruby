@@ -93,20 +93,12 @@ module Herb
 
         # @rbs content: String
         def looks_like_locals_declaration?(content) #: bool
-          match = content.match(/\Alocals?\b(.*)/)
-          return false unless match
-
-          remainder = match[1]
-          /[(:)]/.match?(remainder)
+          /\Alocals?\s*[:(]/.match?(content)
         end
 
         # @rbs content: String
         def ruby_comment_looks_like_locals_declaration?(content) #: bool
-          match = content.match(/\A\s*#\s*(.*)/)
-          return false unless match
-
-          comment_text = match[1].strip
-          /\Alocals?\b/.match?(comment_text) && /[(:)]/.match?(comment_text)
+          /\A\s*#\s*locals?\s*[:(]/.match?(content)
         end
 
         # Validator for strict locals comment syntax
