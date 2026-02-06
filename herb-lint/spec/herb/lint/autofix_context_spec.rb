@@ -4,7 +4,7 @@ RSpec.describe Herb::Lint::AutofixContext do
   let(:source) { '<img src="test.png">' }
   let(:parse_result) { Herb.parse(source, track_whitespace: true) }
   let(:node) { parse_result.value.children.first }
-  let(:rule_class) { Herb::Lint::Rules::HtmlImgRequireAlt }
+  let(:rule_class) { Herb::Lint::Rules::Html::ImgRequireAlt }
   let(:autofix_context) { described_class.new(node:, rule_class:) }
 
   describe "#node" do
@@ -19,7 +19,7 @@ RSpec.describe Herb::Lint::AutofixContext do
     subject { autofix_context.rule_class }
 
     it "returns the rule class" do
-      expect(subject).to eq(Herb::Lint::Rules::HtmlImgRequireAlt)
+      expect(subject).to eq(Herb::Lint::Rules::Html::ImgRequireAlt)
     end
   end
 
@@ -98,7 +98,7 @@ RSpec.describe Herb::Lint::AutofixContext do
     end
 
     it "is not equal when rule_class differs" do
-      other = described_class.new(node:, rule_class: Herb::Lint::Rules::HtmlTagNameLowercase)
+      other = described_class.new(node:, rule_class: Herb::Lint::Rules::Html::TagNameLowercase)
       expect(autofix_context).not_to eq(other)
     end
   end

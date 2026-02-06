@@ -1,0 +1,31 @@
+# Generated from lib/herb/lint/rules/html/no_title_attribute.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Html
+        # Rule that disallows the `title` attribute on HTML elements.
+        #
+        # The `title` attribute is an accessibility concern because it is
+        # unreliable for screen readers and does not work on touch devices.
+        # Content should be made visible in the page instead.
+        #
+        # Good:
+        #   <span>More info available</span>
+        #
+        # Bad:
+        #   <span title="More info">Hover me</span>
+        class NoTitleAttribute < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # @rbs override
+          def visit_html_attribute_node: ...
+        end
+      end
+    end
+  end
+end

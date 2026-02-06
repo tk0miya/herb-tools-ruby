@@ -1,0 +1,41 @@
+# Generated from lib/herb/lint/rules/html/no_positive_tab_index.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Html
+        # Rule that disallows positive tabindex values.
+        #
+        # Using a positive tabindex value is an accessibility anti-pattern.
+        # It disrupts the natural tab order of the page, making navigation
+        # confusing for keyboard and assistive technology users.
+        #
+        # Good:
+        #   <button tabindex="0">Click</button>
+        #   <button tabindex="-1">Click</button>
+        #
+        # Bad:
+        #   <button tabindex="1">Click</button>
+        #   <div tabindex="5">Content</div>
+        class NoPositiveTabIndex < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # @rbs override
+          def visit_html_attribute_node: ...
+
+          private
+
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          def tabindex_attribute?: (Herb::AST::HTMLAttributeNode node) -> bool
+
+          # @rbs value: String?
+          def positive_tabindex?: (String? value) -> bool
+        end
+      end
+    end
+  end
+end

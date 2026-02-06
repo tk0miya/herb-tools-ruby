@@ -1,0 +1,32 @@
+# Generated from lib/herb/lint/rules/herb/disable_comment_malformed.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module HerbDirective
+        # Meta-rule that detects syntactically malformed `herb:disable` directive comments.
+        #
+        # Detects:
+        # - Missing space after `herb:disable` prefix (e.g. `herb:disablerule-name`)
+        # - Leading commas in the rule list (e.g. `herb:disable ,rule-name`)
+        # - Trailing commas in the rule list (e.g. `herb:disable rule-name,`)
+        # - Consecutive commas in the rule list (e.g. `herb:disable rule1,,rule2`)
+        class DisableCommentMalformed < DirectiveRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          private
+
+          # @rbs override
+          def check_disable_comment: ...
+
+          # @rbs comment: DirectiveParser::DisableComment
+          def check_comma_issues: (DirectiveParser::DisableComment comment) -> void
+        end
+      end
+    end
+  end
+end

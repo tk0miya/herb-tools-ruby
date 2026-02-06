@@ -1,0 +1,39 @@
+# Generated from lib/herb/lint/rules/html/iframe_has_title.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Html
+        # Rule that requires title attribute on iframe elements.
+        #
+        # Iframes must have a title attribute to provide an accessible name
+        # for screen reader users to understand the content of the iframe.
+        #
+        # Good:
+        #   <iframe src="content.html" title="Embedded content"></iframe>
+        #
+        # Bad:
+        #   <iframe src="content.html"></iframe>
+        #   <iframe src="content.html" title=""></iframe>
+        class IframeHasTitle < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # @rbs override
+          def visit_html_element_node: ...
+
+          private
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def iframe_element?: (Herb::AST::HTMLElementNode node) -> bool
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def valid_title?: (Herb::AST::HTMLElementNode node) -> bool
+        end
+      end
+    end
+  end
+end

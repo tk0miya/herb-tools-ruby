@@ -1,0 +1,31 @@
+# Generated from lib/herb/lint/rules/html/avoid_both_disabled_and_aria_disabled.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Html
+        # Rule that disallows using both `disabled` and `aria-disabled` on the same element.
+        #
+        # Using both attributes is redundant and potentially confusing.
+        # Use one or the other, but not both.
+        #
+        # Good:
+        #   <button disabled>Submit</button>
+        #   <button aria-disabled="true">Submit</button>
+        #
+        # Bad:
+        #   <button disabled aria-disabled="true">Submit</button>
+        class AvoidBothDisabledAndAriaDisabled < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # @rbs override
+          def visit_html_element_node: ...
+        end
+      end
+    end
+  end
+end

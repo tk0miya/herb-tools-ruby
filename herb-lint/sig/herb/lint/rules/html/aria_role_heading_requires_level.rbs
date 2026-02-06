@@ -1,0 +1,35 @@
+# Generated from lib/herb/lint/rules/html/aria_role_heading_requires_level.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Html
+        # Rule that requires aria-level on elements with role="heading".
+        #
+        # Elements with `role="heading"` must include an `aria-level` attribute
+        # to indicate the heading level to assistive technologies.
+        #
+        # Good:
+        #   <div role="heading" aria-level="2">Title</div>
+        #
+        # Bad:
+        #   <div role="heading">Title</div>
+        class AriaRoleHeadingRequiresLevel < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # @rbs override
+          def visit_html_element_node: ...
+
+          private
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def role_heading?: (Herb::AST::HTMLElementNode node) -> bool
+        end
+      end
+    end
+  end
+end

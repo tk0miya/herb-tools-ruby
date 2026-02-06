@@ -1,0 +1,43 @@
+# Generated from lib/herb/lint/rules/html/tag_name_lowercase.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Html
+        # Rule that enforces lowercase tag names.
+        #
+        # HTML tag names are case-insensitive, but lowercase is the standard
+        # convention for modern HTML. This rule ensures consistency.
+        #
+        # Good:
+        #   <div></div>
+        #   <span>text</span>
+        #
+        # Bad:
+        #   <DIV></DIV>
+        #   <Span>text</Span>
+        class TagNameLowercase < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # @rbs override
+          def visit_html_element_node: ...
+
+          private
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def check_open_tag: (Herb::AST::HTMLElementNode node) -> void
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def check_close_tag: (Herb::AST::HTMLElementNode node) -> void
+
+          # @rbs str: String
+          def lowercase?: (String str) -> bool
+        end
+      end
+    end
+  end
+end

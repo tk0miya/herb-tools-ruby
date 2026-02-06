@@ -1,0 +1,32 @@
+# Generated from lib/herb/lint/rules/herb/disable_comment_no_duplicate_rules.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module HerbDirective
+        # Meta-rule that detects duplicate rule names in herb:disable comments.
+        #
+        # Listing the same rule name more than once in a single herb:disable
+        # comment is redundant and likely a mistake.
+        #
+        # Good:
+        #   <%# herb:disable rule1, rule2 %>
+        #
+        # Bad:
+        #   <%# herb:disable rule1, rule1 %>
+        class DisableCommentNoDuplicateRules < DirectiveRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          private
+
+          # @rbs override
+          def check_disable_comment: ...
+        end
+      end
+    end
+  end
+end

@@ -1,0 +1,48 @@
+# Generated from lib/herb/lint/rules/erb/no_extra_whitespace_inside_tags.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Erb
+        # Rule that disallows extra whitespace inside ERB tag delimiters.
+        #
+        # ERB tags should have exactly one space between the delimiter and content,
+        # not multiple spaces.
+        #
+        # Good:
+        #   <% value %>
+        #   <%= value %>
+        #
+        # Bad:
+        #   <%  value  %>
+        #   <%=  value  %>
+        class NoExtraWhitespaceInsideTags < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          def self.autocorrectable?: () -> bool
+
+          # @rbs override
+          def visit_erb_content_node: ...
+
+          # @rbs override
+          def autofix: ...
+
+          private
+
+          # @rbs node: Herb::AST::ERBContentNode
+          def extra_whitespace?: (Herb::AST::ERBContentNode node) -> bool
+
+          # @rbs content: String
+          def leading_extra_whitespace?: (String content) -> bool
+
+          # @rbs content: String
+          def trailing_extra_whitespace?: (String content) -> bool
+        end
+      end
+    end
+  end
+end
