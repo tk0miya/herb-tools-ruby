@@ -1,0 +1,61 @@
+# Generated from lib/herb/lint/rules/erb/strict_locals_comment_syntax.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Erb
+        # Rule that enforces correct syntax for strict_locals magic comments.
+        #
+        # Uses StrictLocalsValidator to detect and validate locals declarations
+        # in ERB comment tags. Also detects locals declarations in statement tags
+        # (`<% # locals: ... %>`) and duplicate declarations.
+        #
+        # Good:
+        #   <%# locals: (name:) %>
+        #   <%# locals: (name:, age: 0) %>
+        #   <%# locals: () %>
+        #
+        # Bad:
+        #   <%# locals: (name) %>
+        #   <%# locals(name:) %>
+        #   <%# local: (name:) %>
+        #   <% # locals: (name:) %>
+        class StrictLocalsCommentSyntax < VisitorRule
+          STATEMENT_TAG_COMMENT_PATTERN: ::Regexp
+
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          @first_locals_line: Integer?
+
+          # @rbs override
+          def on_new_investigation: ...
+
+          # @rbs override
+          def visit_erb_content_node: ...
+
+          private
+
+          # Check a statement tag (`<% ... %>` / `<%- ... %>`) for locals declarations
+          # written as Ruby comments (e.g. `<% # locals: (name:) %>`).
+          # @rbs node: Herb::AST::ERBContentNode
+          def check_statement_tag: (Herb::AST::ERBContentNode node) -> void
+
+          # Check an ERB comment tag (`<%# ... %>`) for locals declarations.
+          # @rbs node: Herb::AST::ERBContentNode
+          def check_comment_tag: (Herb::AST::ERBContentNode node) -> void
+
+          # Check if the current file is a partial (basename starts with underscore).
+          def partial_file?: () -> bool
+
+          # Track first locals declaration line. Returns true if a declaration was already seen.
+          # @rbs node: Herb::AST::ERBContentNode
+          def locals_already_declared?: (Herb::AST::ERBContentNode node) -> bool
+        end
+      end
+    end
+  end
+end
