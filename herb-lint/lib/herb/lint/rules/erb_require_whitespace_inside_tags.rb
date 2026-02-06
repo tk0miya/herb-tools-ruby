@@ -31,17 +31,35 @@ module Herb
           "warning"
         end
 
+        def self.autocorrectable? #: bool
+          true
+        end
+
         # @rbs override
         def visit_erb_content_node(node)
           content_value = node.content&.value
 
           if missing_whitespace?(node, content_value)
-            add_offense(
+            add_offense_with_autofix(
               message: "Add whitespace inside ERB tag delimiters",
-              location: node.location
+              location: node.location,
+              node:
             )
           end
           super
+        end
+
+        # @rbs override
+        def autofix(node, parse_result)
+          content_value = node.content&.value
+          return false if content_value.nil?
+
+          content_value = " #{content_value}" unless content_value.start_with?(" ", "\t", "\n")
+          content_value = "#{content_value} " unless content_value.end_with?(" ", "\t", "\n")
+
+          content = copy_token(node.content, content: content_value)
+          new_node = copy_erb_content_node(node, content:)
+          replace_node(parse_result, node, new_node)
         end
 
         private

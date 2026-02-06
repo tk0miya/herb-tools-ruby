@@ -21,6 +21,12 @@ RSpec.describe Herb::Lint::Rules::ErbRequireWhitespaceInsideTags do
     end
   end
 
+  describe ".autocorrectable?" do
+    it "returns true" do
+      expect(described_class.autocorrectable?).to be(true)
+    end
+  end
+
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
@@ -153,6 +159,97 @@ RSpec.describe Herb::Lint::Rules::ErbRequireWhitespaceInsideTags do
       it "reports only one offense for the invalid tag" do
         expect(subject.size).to eq(1)
         expect(subject.first.line).to eq(2)
+      end
+    end
+  end
+
+  describe "#autofix" do
+    subject { described_class.new.autofix(node, document) }
+
+    let(:document) { Herb.parse(source, track_whitespace: true) }
+
+    context "when fixing a tag with no whitespace on either side" do
+      let(:source) { "<%value%>" }
+      let(:expected) { "<% value %>" }
+      let(:node) { document.value.children.first }
+
+      it "adds whitespace on both sides and returns true" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing an output tag with no whitespace" do
+      let(:source) { "<%=value%>" }
+      let(:expected) { "<%= value %>" }
+      let(:node) { document.value.children.first }
+
+      it "adds whitespace on both sides" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing a tag missing whitespace only after opening" do
+      let(:source) { "<%value %>" }
+      let(:expected) { "<% value %>" }
+      let(:node) { document.value.children.first }
+
+      it "adds whitespace after opening" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing a tag missing whitespace only before closing" do
+      let(:source) { "<% value%>" }
+      let(:expected) { "<% value %>" }
+      let(:node) { document.value.children.first }
+
+      it "adds whitespace before closing" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing a trim tag with no whitespace" do
+      let(:source) { "<%-value-%>" }
+      let(:expected) { "<%- value -%>" }
+      let(:node) { document.value.children.first }
+
+      it "adds whitespace on both sides" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing multiple tags in sequence" do
+      let(:source) do
+        <<~ERB
+          <%value%>
+          <p>content</p>
+          <%=other%>
+        ERB
+      end
+      let(:expected) { "<% value %>\n<p>content</p>\n<%= other %>\n" }
+
+      it "can fix each tag independently" do
+        nodes = document.value.children.select { |n| n.is_a?(Herb::AST::ERBContentNode) }
+        expect(nodes.size).to eq(2)
+
+        result1 = described_class.new.autofix(nodes[0], document)
+        expect(result1).to be(true)
+
+        result2 = described_class.new.autofix(nodes[1], document)
+        expect(result2).to be(true)
+
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
       end
     end
   end
