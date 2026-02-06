@@ -22,6 +22,7 @@ module Herb
           Rules::Erb::RequireTrailingNewline,
           Rules::Erb::RequireWhitespaceInsideTags,
           Rules::Erb::RightTrim,
+          Rules::Erb::StrictLocalsCommentSyntax,
           Rules::Erb::StrictLocalsRequired,
           Rules::HerbDirective::DisableCommentMalformed,
           Rules::HerbDirective::DisableCommentMissingRules,
