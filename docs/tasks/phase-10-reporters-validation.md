@@ -88,9 +88,9 @@ end
 
 **Location:** `herb-lint/lib/herb/lint/reporter/github_reporter.rb`
 
-- [ ] Implement GithubReporter class
-- [ ] Add unit tests
-- [ ] Generate RBS types
+- [x] Implement GithubReporter class
+- [x] Add unit tests
+- [x] Generate RBS types
 
 **Interface:**
 
