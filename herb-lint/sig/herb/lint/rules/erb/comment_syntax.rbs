@@ -1,0 +1,43 @@
+# Generated from lib/herb/lint/rules/erb/comment_syntax.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Erb
+        # Rule that enforces ERB comment syntax.
+        #
+        # ERB comments should use the dedicated comment tag syntax (`<%#`)
+        # rather than a statement tag with a Ruby line comment (`<% #`).
+        #
+        # Good:
+        #   <%# This is a comment %>
+        #
+        # Bad:
+        #   <% # This is a comment %>
+        class CommentSyntax < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          def self.safe_autocorrectable?: () -> bool
+
+          # @rbs override
+          def visit_erb_content_node: ...
+
+          # @rbs override
+          def autofix: ...
+
+          private
+
+          # @rbs node: Herb::AST::ERBContentNode
+          def statement_tag?: (Herb::AST::ERBContentNode node) -> bool
+
+          # @rbs node: Herb::AST::ERBContentNode
+          def comment_content?: (Herb::AST::ERBContentNode node) -> bool
+        end
+      end
+    end
+  end
+end

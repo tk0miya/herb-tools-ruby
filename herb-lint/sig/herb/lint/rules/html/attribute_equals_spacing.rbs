@@ -1,0 +1,46 @@
+# Generated from lib/herb/lint/rules/html/attribute_equals_spacing.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Html
+        # Rule that disallows spaces around `=` in attribute assignments.
+        #
+        # Spaces around the equals sign in HTML attributes are valid but
+        # unconventional. Removing them improves readability and consistency.
+        #
+        # Good:
+        #   <div class="foo">
+        #
+        # Bad:
+        #   <div class = "foo">
+        #   <div class ="foo">
+        #   <div class= "foo">
+        class AttributeEqualsSpacing < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # @rbs override
+          def visit_html_attribute_node: ...
+
+          private
+
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          def check_spacing: (Herb::AST::HTMLAttributeNode node) -> void
+
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          def spacing_message: (Herb::AST::HTMLAttributeNode node) -> String?
+
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          def space_before_equals?: (Herb::AST::HTMLAttributeNode node) -> bool
+
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          def space_after_equals?: (Herb::AST::HTMLAttributeNode node) -> bool
+        end
+      end
+    end
+  end
+end

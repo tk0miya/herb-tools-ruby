@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::ErbCommentSyntax do
+RSpec.describe Herb::Lint::Rules::Erb::CommentSyntax do
   describe ".rule_name" do
     it "returns 'erb-comment-syntax'" do
       expect(described_class.rule_name).to eq("erb-comment-syntax")

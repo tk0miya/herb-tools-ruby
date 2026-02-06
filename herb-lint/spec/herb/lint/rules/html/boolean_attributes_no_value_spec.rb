@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlBooleanAttributesNoValue do
+RSpec.describe Herb::Lint::Rules::Html::BooleanAttributesNoValue do
   describe ".rule_name" do
     it "returns 'html-boolean-attributes-no-value'" do
       expect(described_class.rule_name).to eq("html-boolean-attributes-no-value")

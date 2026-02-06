@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HerbDisableCommentMissingRules do
+RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentMissingRules do
   describe ".rule_name" do
     it "returns 'herb-disable-comment-missing-rules'" do
       expect(described_class.rule_name).to eq("herb-disable-comment-missing-rules")

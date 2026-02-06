@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlAriaRoleHeadingRequiresLevel do
+RSpec.describe Herb::Lint::Rules::Html::AriaRoleHeadingRequiresLevel do
   describe ".rule_name" do
     it "returns 'html-aria-role-heading-requires-level'" do
       expect(described_class.rule_name).to eq("html-aria-role-heading-requires-level")

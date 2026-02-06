@@ -1,0 +1,43 @@
+# Generated from lib/herb/lint/rules/html/head_only_elements.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Html
+        # Rule that disallows head-only elements outside of `<head>`.
+        #
+        # Certain elements (`<title>`, `<meta>`, `<link>`, `<base>`) are only
+        # valid inside the `<head>` section of an HTML document. Placing them
+        # elsewhere (e.g., inside `<body>`) is invalid HTML.
+        #
+        # Good:
+        #   <head>
+        #     <title>Page Title</title>
+        #     <meta charset="utf-8">
+        #   </head>
+        #
+        # Bad:
+        #   <body>
+        #     <title>Page Title</title>
+        #   </body>
+        class HeadOnlyElements < VisitorRule
+          HEAD_ONLY_ELEMENTS: Array[String]
+
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          @inside_head: bool
+
+          # @rbs override
+          def on_new_investigation: ...
+
+          # @rbs override
+          def visit_html_element_node: ...
+        end
+      end
+    end
+  end
+end

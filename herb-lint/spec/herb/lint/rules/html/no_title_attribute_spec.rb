@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlNoTitleAttribute do
+RSpec.describe Herb::Lint::Rules::Html::NoTitleAttribute do
   describe ".rule_name" do
     it "returns 'html-no-title-attribute'" do
       expect(described_class.rule_name).to eq("html-no-title-attribute")

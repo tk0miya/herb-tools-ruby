@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoRedundantAll do
+RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentNoRedundantAll do
   describe ".rule_name" do
     it "returns 'herb-disable-comment-no-redundant-all'" do
       expect(described_class.rule_name).to eq("herb-disable-comment-no-redundant-all")

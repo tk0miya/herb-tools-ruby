@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlNoAriaHiddenOnFocusable do
+RSpec.describe Herb::Lint::Rules::Html::NoAriaHiddenOnFocusable do
   describe ".rule_name" do
     it "returns 'html-no-aria-hidden-on-focusable'" do
       expect(described_class.rule_name).to eq("html-no-aria-hidden-on-focusable")

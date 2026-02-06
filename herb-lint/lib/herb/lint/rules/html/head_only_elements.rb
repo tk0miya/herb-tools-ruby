@@ -6,61 +6,63 @@
 module Herb
   module Lint
     module Rules
-      # Rule that disallows head-only elements outside of `<head>`.
-      #
-      # Certain elements (`<title>`, `<meta>`, `<link>`, `<base>`) are only
-      # valid inside the `<head>` section of an HTML document. Placing them
-      # elsewhere (e.g., inside `<body>`) is invalid HTML.
-      #
-      # Good:
-      #   <head>
-      #     <title>Page Title</title>
-      #     <meta charset="utf-8">
-      #   </head>
-      #
-      # Bad:
-      #   <body>
-      #     <title>Page Title</title>
-      #   </body>
-      class HtmlHeadOnlyElements < VisitorRule
-        HEAD_ONLY_ELEMENTS = %w[title meta link base].freeze #: Array[String]
+      module Html
+        # Rule that disallows head-only elements outside of `<head>`.
+        #
+        # Certain elements (`<title>`, `<meta>`, `<link>`, `<base>`) are only
+        # valid inside the `<head>` section of an HTML document. Placing them
+        # elsewhere (e.g., inside `<body>`) is invalid HTML.
+        #
+        # Good:
+        #   <head>
+        #     <title>Page Title</title>
+        #     <meta charset="utf-8">
+        #   </head>
+        #
+        # Bad:
+        #   <body>
+        #     <title>Page Title</title>
+        #   </body>
+        class HeadOnlyElements < VisitorRule
+          HEAD_ONLY_ELEMENTS = %w[title meta link base].freeze #: Array[String]
 
-        def self.rule_name #: String
-          "html-head-only-elements"
-        end
+          def self.rule_name #: String
+            "html-head-only-elements"
+          end
 
-        def self.description #: String
-          "Disallow head-only elements outside of <head>"
-        end
+          def self.description #: String
+            "Disallow head-only elements outside of <head>"
+          end
 
-        def self.default_severity #: String
-          "error"
-        end
+          def self.default_severity #: String
+            "error"
+          end
 
-        # @rbs @inside_head: bool
+          # @rbs @inside_head: bool
 
-        # @rbs override
-        def on_new_investigation #: void
-          super
-          @inside_head = false
-        end
-
-        # @rbs override
-        def visit_html_element_node(node)
-          tag = tag_name(node)
-
-          if tag == "head"
-            @inside_head = true
+          # @rbs override
+          def on_new_investigation #: void
             super
             @inside_head = false
-          else
-            if !@inside_head && HEAD_ONLY_ELEMENTS.include?(tag)
-              add_offense(
-                message: "`<#{tag}>` element should only appear inside `<head>`",
-                location: node.location
-              )
+          end
+
+          # @rbs override
+          def visit_html_element_node(node)
+            tag = tag_name(node)
+
+            if tag == "head"
+              @inside_head = true
+              super
+              @inside_head = false
+            else
+              if !@inside_head && HEAD_ONLY_ELEMENTS.include?(tag)
+                add_offense(
+                  message: "`<#{tag}>` element should only appear inside `<head>`",
+                  location: node.location
+                )
+              end
+              super
             end
-            super
           end
         end
       end

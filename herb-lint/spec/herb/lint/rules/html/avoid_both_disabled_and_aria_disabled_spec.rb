@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlAvoidBothDisabledAndAriaDisabled do
+RSpec.describe Herb::Lint::Rules::Html::AvoidBothDisabledAndAriaDisabled do
   describe ".rule_name" do
     it "returns 'html-avoid-both-disabled-and-aria-disabled'" do
       expect(described_class.rule_name).to eq("html-avoid-both-disabled-and-aria-disabled")

@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::ParserNoErrors do
+RSpec.describe Herb::Lint::Rules::Parser::NoErrors do
   describe ".rule_name" do
     it "returns 'parser-no-errors'" do
       expect(described_class.rule_name).to eq("parser-no-errors")

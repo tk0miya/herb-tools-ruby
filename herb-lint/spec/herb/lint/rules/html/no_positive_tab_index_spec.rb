@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlNoPositiveTabIndex do
+RSpec.describe Herb::Lint::Rules::Html::NoPositiveTabIndex do
   describe ".rule_name" do
     it "returns 'html-no-positive-tab-index'" do
       expect(described_class.rule_name).to eq("html-no-positive-tab-index")

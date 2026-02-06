@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlImgRequireAlt do
+RSpec.describe Herb::Lint::Rules::Html::ImgRequireAlt do
   describe ".rule_name" do
     it "returns 'html-img-require-alt'" do
       expect(described_class.rule_name).to eq("html-img-require-alt")

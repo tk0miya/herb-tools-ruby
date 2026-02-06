@@ -1,0 +1,38 @@
+# Generated from lib/herb/lint/rules/html/input_require_autocomplete.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Html
+        # Rule that requires autocomplete attribute on input elements that accept text input.
+        #
+        # Input elements with text-accepting types should have an autocomplete
+        # attribute to improve form accessibility and user experience.
+        #
+        # Good:
+        #   <input type="text" name="email" autocomplete="email">
+        #   <input type="checkbox" name="agree">
+        #
+        # Bad:
+        #   <input type="text" name="email">
+        class InputRequireAutocomplete < VisitorRule
+          TYPES_REQUIRING_AUTOCOMPLETE: Set[String]
+
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # @rbs override
+          def visit_html_element_node: ...
+
+          private
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def input_element?: (Herb::AST::HTMLElementNode node) -> bool
+        end
+      end
+    end
+  end
+end

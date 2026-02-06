@@ -1,0 +1,46 @@
+# Generated from lib/herb/lint/rules/herb/disable_comment_valid_rule_name.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module HerbDirective
+        # Meta-rule that detects unknown rule names in herb:disable comments.
+        #
+        # Uses the list of registered rule names to validate each rule name
+        # in the directive. Reports offense with "did you mean?" suggestions
+        # for close matches.
+        #
+        # Good:
+        #   <%# herb:disable html-img-require-alt %>
+        #
+        # Bad:
+        #   <%# herb:disable html-img-require-alts %>
+        #   <%# herb:disable nonexistent-rule %>
+        class DisableCommentValidRuleName < DirectiveRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          private
+
+          # @rbs override
+          def check_disable_comment: ...
+
+          # Build an offense message, including "did you mean?" suggestions when available.
+          #
+          # @rbs name: String -- the invalid rule name
+          # @rbs valid_names: Array[String] -- the list of valid rule names
+          def build_message: (String name, Array[String] valid_names) -> String
+
+          # Find close matches for a misspelled rule name.
+          #
+          # @rbs name: String
+          # @rbs valid_names: Array[String]
+          def find_suggestions: (String name, Array[String] valid_names) -> Array[String]
+        end
+      end
+    end
+  end
+end

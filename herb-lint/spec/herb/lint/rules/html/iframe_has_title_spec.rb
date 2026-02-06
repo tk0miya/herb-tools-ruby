@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlIframeHasTitle do
+RSpec.describe Herb::Lint::Rules::Html::IframeHasTitle do
   describe ".rule_name" do
     it "returns 'html-iframe-has-title'" do
       expect(described_class.rule_name).to eq("html-iframe-has-title")

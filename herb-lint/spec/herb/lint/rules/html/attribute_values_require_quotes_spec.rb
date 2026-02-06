@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlAttributeValuesRequireQuotes do
+RSpec.describe Herb::Lint::Rules::Html::AttributeValuesRequireQuotes do
   describe ".rule_name" do
     it "returns 'html-attribute-values-require-quotes'" do
       expect(described_class.rule_name).to eq("html-attribute-values-require-quotes")

@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlNoBlockInsideInline do
+RSpec.describe Herb::Lint::Rules::Html::NoBlockInsideInline do
   describe ".rule_name" do
     it "returns 'html-no-block-inside-inline'" do
       expect(described_class.rule_name).to eq("html-no-block-inside-inline")

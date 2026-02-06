@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlNoEmptyAttributes do
+RSpec.describe Herb::Lint::Rules::Html::NoEmptyAttributes do
   describe ".rule_name" do
     it "returns 'html-no-empty-attributes'" do
       expect(described_class.rule_name).to eq("html-no-empty-attributes")

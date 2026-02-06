@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::ErbNoOutputControlFlow do
+RSpec.describe Herb::Lint::Rules::Erb::NoOutputControlFlow do
   describe ".rule_name" do
     it "returns 'erb-no-output-control-flow'" do
       expect(described_class.rule_name).to eq("erb-no-output-control-flow")

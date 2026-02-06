@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::ErbNoExtraWhitespaceInsideTags do
+RSpec.describe Herb::Lint::Rules::Erb::NoExtraWhitespaceInsideTags do
   describe ".rule_name" do
     it "returns 'erb-no-extra-whitespace-inside-tags'" do
       expect(described_class.rule_name).to eq("erb-no-extra-whitespace-inside-tags")

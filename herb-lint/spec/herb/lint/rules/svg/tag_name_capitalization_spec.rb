@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::SvgTagNameCapitalization do
+RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
   describe ".rule_name" do
     it "returns 'svg-tag-name-capitalization'" do
       expect(described_class.rule_name).to eq("svg-tag-name-capitalization")

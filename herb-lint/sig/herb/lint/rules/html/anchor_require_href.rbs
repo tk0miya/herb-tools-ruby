@@ -1,0 +1,38 @@
+# Generated from lib/herb/lint/rules/html/anchor_require_href.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Html
+        # Rule that requires href attribute on anchor elements.
+        #
+        # Anchor elements should have an href attribute to function
+        # as proper hyperlinks. Without href, the anchor element
+        # does not behave as a link.
+        #
+        # Good:
+        #   <a href="/page">Click here</a>
+        #   <a href="#">Click here</a>
+        #
+        # Bad:
+        #   <a>Click here</a>
+        #   <a name="anchor">Section</a>
+        class AnchorRequireHref < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # @rbs override
+          def visit_html_element_node: ...
+
+          private
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def anchor_element?: (Herb::AST::HTMLElementNode node) -> bool
+        end
+      end
+    end
+  end
+end

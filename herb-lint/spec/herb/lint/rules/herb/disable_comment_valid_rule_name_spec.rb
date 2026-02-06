@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
+RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentValidRuleName do
   describe ".rule_name" do
     it "returns 'herb-disable-comment-valid-rule-name'" do
       expect(described_class.rule_name).to eq("herb-disable-comment-valid-rule-name")
@@ -28,12 +28,12 @@ RSpec.describe Herb::Lint::Rules::HerbDisableCommentValidRuleName do
     let(:rule_registry) do
       registry = Herb::Lint::RuleRegistry.new
       [
-        Herb::Lint::Rules::ErbCommentSyntax,
-        Herb::Lint::Rules::HtmlAnchorRequireHref,
-        Herb::Lint::Rules::HtmlAttributeDoubleQuotes,
-        Herb::Lint::Rules::HtmlImgRequireAlt,
-        Herb::Lint::Rules::HtmlNoSelfClosing,
-        Herb::Lint::Rules::HtmlTagNameLowercase
+        Herb::Lint::Rules::Erb::CommentSyntax,
+        Herb::Lint::Rules::Html::AnchorRequireHref,
+        Herb::Lint::Rules::Html::AttributeDoubleQuotes,
+        Herb::Lint::Rules::Html::ImgRequireAlt,
+        Herb::Lint::Rules::Html::NoSelfClosing,
+        Herb::Lint::Rules::Html::TagNameLowercase
       ].each { |rule_class| registry.register(rule_class) }
       registry
     end

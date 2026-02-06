@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HerbDisableCommentNoDuplicateRules do
+RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentNoDuplicateRules do
   describe ".rule_name" do
     it "returns 'herb-disable-comment-no-duplicate-rules'" do
       expect(described_class.rule_name).to eq("herb-disable-comment-no-duplicate-rules")

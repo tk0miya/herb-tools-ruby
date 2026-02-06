@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlHeadOnlyElements do
+RSpec.describe Herb::Lint::Rules::Html::HeadOnlyElements do
   describe ".rule_name" do
     it "returns 'html-head-only-elements'" do
       expect(described_class.rule_name).to eq("html-head-only-elements")

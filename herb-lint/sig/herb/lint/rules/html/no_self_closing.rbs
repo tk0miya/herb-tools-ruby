@@ -1,0 +1,48 @@
+# Generated from lib/herb/lint/rules/html/no_self_closing.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Html
+        # Rule that enforces consistent self-closing style for void elements.
+        #
+        # Void elements (e.g., br, img, input) cannot have children, so
+        # a trailing slash is unnecessary. This rule enforces omitting
+        # the self-closing slash for consistency.
+        #
+        # Good:
+        #   <br>
+        #   <img src="photo.jpg">
+        #   <input type="text">
+        #
+        # Bad:
+        #   <br/>
+        #   <img src="photo.jpg" />
+        #   <input type="text" />
+        class NoSelfClosing < VisitorRule
+          VOID_ELEMENTS: Array[String]
+
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # @rbs override
+          def visit_html_element_node: ...
+
+          private
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def void_element?: (Herb::AST::HTMLElementNode node) -> bool
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def self_closing?: (Herb::AST::HTMLElementNode node) -> bool
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def tag_name: (Herb::AST::HTMLElementNode node) -> String?
+        end
+      end
+    end
+  end
+end

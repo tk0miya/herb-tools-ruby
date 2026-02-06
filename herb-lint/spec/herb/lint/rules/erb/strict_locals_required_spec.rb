@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::ErbStrictLocalsRequired do
+RSpec.describe Herb::Lint::Rules::Erb::StrictLocalsRequired do
   describe ".rule_name" do
     it "returns 'erb-strict-locals-required'" do
       expect(described_class.rule_name).to eq("erb-strict-locals-required")

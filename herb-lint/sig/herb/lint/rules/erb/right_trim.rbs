@@ -1,0 +1,40 @@
+# Generated from lib/herb/lint/rules/erb/right_trim.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Erb
+        # Rule that detects the obscure `=%>` right-trim syntax in ERB tags.
+        #
+        # The `=%>` syntax is obscure and not well-supported in most ERB engines.
+        # Use `-%>` instead for right-trimming whitespace after ERB tags.
+        #
+        # Bad:
+        #   <% if condition =%>
+        #     <p>Content</p>
+        #   <% end =%>
+        #
+        # Good:
+        #   <% if condition -%>
+        #     <p>Content</p>
+        #   <% end -%>
+        class RightTrim < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # Check each ERB node for the obscure =%> syntax
+          # @rbs override
+          def visit_child_nodes: ...
+
+          private
+
+          # @rbs node: untyped
+          def check_erb_node: (untyped node) -> void
+        end
+      end
+    end
+  end
+end

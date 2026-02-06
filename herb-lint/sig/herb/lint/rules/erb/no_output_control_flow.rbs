@@ -1,0 +1,61 @@
+# Generated from lib/herb/lint/rules/erb/no_output_control_flow.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Erb
+        # Rule that disallows control flow statements in ERB output tags.
+        #
+        # Control flow keywords (if, unless, case, while, for, until) should use
+        # silent tags (`<% %>`) instead of output tags (`<%= %>`).
+        #
+        # Good:
+        #   <% if condition %>
+        #   <% case value %>
+        #   <% while loop %>
+        #
+        # Bad:
+        #   <%= if condition %>
+        #   <%= case value %>
+        #   <%= while loop %>
+        class NoOutputControlFlow < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # @rbs override
+          def visit_erb_if_node: ...
+
+          # @rbs override
+          def visit_erb_unless_node: ...
+
+          # @rbs override
+          def visit_erb_case_node: ...
+
+          # @rbs override
+          def visit_erb_case_match_node: ...
+
+          # @rbs override
+          def visit_erb_while_node: ...
+
+          # @rbs override
+          def visit_erb_for_node: ...
+
+          # @rbs override
+          def visit_erb_until_node: ...
+
+          private
+
+          # @rbs node: untyped
+          # @rbs keyword: String
+          def check_output_tag: (untyped node, String keyword) -> void
+
+          # @rbs node: untyped
+          def output_tag?: (untyped node) -> bool
+        end
+      end
+    end
+  end
+end

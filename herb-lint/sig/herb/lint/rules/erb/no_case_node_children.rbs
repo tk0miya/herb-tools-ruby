@@ -1,0 +1,43 @@
+# Generated from lib/herb/lint/rules/erb/no_case_node_children.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Erb
+        # Rule that disallows direct children inside case ERB blocks.
+        #
+        # Content should be inside when/else branches, not directly in the case block.
+        #
+        # Good:
+        #   <% case value %>
+        #   <% when :a %>
+        #     <p>A</p>
+        #   <% else %>
+        #     <p>Default</p>
+        #   <% end %>
+        #
+        # Bad:
+        #   <% case value %>
+        #     <p>Direct content</p>
+        #   <% when :a %>
+        #     <p>A</p>
+        #   <% end %>
+        class NoCaseNodeChildren < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # @rbs override
+          def visit_erb_case_node: ...
+
+          private
+
+          # @rbs node: Herb::AST::ERBCaseNode
+          def non_whitespace_children?: (Herb::AST::ERBCaseNode node) -> bool
+        end
+      end
+    end
+  end
+end

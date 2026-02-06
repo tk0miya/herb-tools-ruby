@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::ErbNoCaseNodeChildren do
+RSpec.describe Herb::Lint::Rules::Erb::NoCaseNodeChildren do
   describe ".rule_name" do
     it "returns 'erb-no-case-node-children'" do
       expect(described_class.rule_name).to eq("erb-no-case-node-children")

@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlAnchorRequireHref do
+RSpec.describe Herb::Lint::Rules::Html::AnchorRequireHref do
   describe ".rule_name" do
     it "returns 'html-anchor-require-href'" do
       expect(described_class.rule_name).to eq("html-anchor-require-href")

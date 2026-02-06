@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlAriaRoleMustBeValid do
+RSpec.describe Herb::Lint::Rules::Html::AriaRoleMustBeValid do
   describe ".rule_name" do
     it "returns 'html-aria-role-must-be-valid'" do
       expect(described_class.rule_name).to eq("html-aria-role-must-be-valid")

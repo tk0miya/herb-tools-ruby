@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlAriaLabelIsWellFormatted do
+RSpec.describe Herb::Lint::Rules::Html::AriaLabelIsWellFormatted do
   describe ".rule_name" do
     it "returns 'html-aria-label-is-well-formatted'" do
       expect(described_class.rule_name).to eq("html-aria-label-is-well-formatted")

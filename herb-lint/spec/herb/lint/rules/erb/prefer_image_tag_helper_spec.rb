@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::ErbPreferImageTagHelper do
+RSpec.describe Herb::Lint::Rules::Erb::PreferImageTagHelper do
   describe ".rule_name" do
     it "returns 'erb-prefer-image-tag-helper'" do
       expect(described_class.rule_name).to eq("erb-prefer-image-tag-helper")

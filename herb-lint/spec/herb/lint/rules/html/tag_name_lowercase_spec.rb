@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlTagNameLowercase do
+RSpec.describe Herb::Lint::Rules::Html::TagNameLowercase do
   describe ".rule_name" do
     it "returns 'html-tag-name-lowercase'" do
       expect(described_class.rule_name).to eq("html-tag-name-lowercase")

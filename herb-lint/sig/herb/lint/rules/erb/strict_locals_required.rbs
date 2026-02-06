@@ -1,0 +1,51 @@
+# Generated from lib/herb/lint/rules/erb/strict_locals_required.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Erb
+        # Rule that requires strict_locals magic comment in partial files.
+        #
+        # Partial files (files whose basename starts with underscore) should have
+        # a strict_locals magic comment at the top of the file to declare local variables.
+        #
+        # Good:
+        #   <%# locals: (name: String) %>
+        #   <div><%= name %></div>
+        #
+        # Bad (missing strict_locals in partial):
+        #   <div><%= name %></div>
+        class StrictLocalsRequired < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          @locals_definition_found: bool
+
+          # @rbs override
+          def on_new_investigation: ...
+
+          # @rbs override
+          def visit_document_node: ...
+
+          # @rbs override
+          def visit_erb_content_node: ...
+
+          # @rbs override
+          def visit_child_nodes: ...
+
+          private
+
+          # Check if the current file is a partial (basename starts with underscore)
+          def partial_file?: () -> bool
+
+          # Check if an ERB content node is a comment with locals definition
+          # @rbs node: Herb::AST::ERBContentNode
+          def erb_comment_with_locals?: (Herb::AST::ERBContentNode node) -> bool
+        end
+      end
+    end
+  end
+end

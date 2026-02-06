@@ -1,0 +1,48 @@
+# Generated from lib/herb/lint/rules/erb/no_silent_tag_in_attribute_name.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Erb
+        # Rule that disallows silent ERB tags within HTML attribute names.
+        #
+        # Silent ERB tags (<%>, <%->, <%#>) do not output content and cannot
+        # form part of an attribute name. This rule does not prevent using
+        # silent tags for conditional attribute logic in the attribute list.
+        #
+        # Good:
+        #   <div data-<%= key %>-target="value"></div>
+        #   <div <%= data_attributes_for(user) %>></div>
+        #   <div <% if valid? %>data-valid="true"<% end %>></div>
+        #
+        # Bad:
+        #   <div data-<% key %>-target="value"></div>
+        #   <div prefix-<%- variable -%>-suffix="test"></div>
+        #   <span id-<%# comment %>-name="test"></span>
+        class NoSilentTagInAttributeName < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # @rbs override
+          def visit_html_element_node: ...
+
+          SILENT_TAG_OPENINGS: Array[String]
+
+          private
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def check_attributes: (Herb::AST::HTMLElementNode node) -> void
+
+          # @rbs attr_node: Herb::AST::HTMLAttributeNode
+          def check_attribute_name: (Herb::AST::HTMLAttributeNode attr_node) -> void
+
+          # @rbs node: Herb::AST::ERBContentNode
+          def silent_tag?: (Herb::AST::ERBContentNode node) -> bool
+        end
+      end
+    end
+  end
+end

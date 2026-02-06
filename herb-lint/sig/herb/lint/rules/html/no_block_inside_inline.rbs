@@ -1,0 +1,51 @@
+# Generated from lib/herb/lint/rules/html/no_block_inside_inline.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Html
+        # Rule that disallows block-level elements nested inside inline elements.
+        #
+        # Block-level elements like `<div>`, `<p>`, `<blockquote>` must not be
+        # placed inside inline elements like `<span>`, `<a>`, `<em>`. This
+        # violates HTML nesting rules and causes unpredictable rendering.
+        #
+        # Good:
+        #   <div><span>Inline in block</span></div>
+        #
+        # Bad:
+        #   <span><div>Block in inline</div></span>
+        #   <a href="/"><p>Paragraph in anchor</p></a>
+        class NoBlockInsideInline < VisitorRule
+          # @see https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements
+          INLINE_ELEMENTS: Set[String]
+
+          # @see https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements
+          BLOCK_ELEMENTS: Set[String]
+
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          @inline_depth: Integer
+
+          # @rbs override
+          def on_new_investigation: ...
+
+          # @rbs override
+          def visit_html_element_node: ...
+
+          private
+
+          # @rbs tag: String?
+          def inline_element?: (String? tag) -> bool
+
+          # @rbs tag: String?
+          def block_element?: (String? tag) -> bool
+        end
+      end
+    end
+  end
+end

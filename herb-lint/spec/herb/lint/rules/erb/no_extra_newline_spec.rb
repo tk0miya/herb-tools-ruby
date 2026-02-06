@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::ErbNoExtraNewline do
+RSpec.describe Herb::Lint::Rules::Erb::NoExtraNewline do
   describe ".rule_name" do
     it "returns 'erb-no-extra-newline'" do
       expect(described_class.rule_name).to eq("erb-no-extra-newline")

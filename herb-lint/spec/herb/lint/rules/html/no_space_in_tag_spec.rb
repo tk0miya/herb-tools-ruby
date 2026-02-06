@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlNoSpaceInTag do
+RSpec.describe Herb::Lint::Rules::Html::NoSpaceInTag do
   describe ".rule_name" do
     it "returns 'html-no-space-in-tag'" do
       expect(described_class.rule_name).to eq("html-no-space-in-tag")

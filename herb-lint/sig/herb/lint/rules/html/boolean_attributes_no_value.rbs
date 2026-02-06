@@ -1,0 +1,41 @@
+# Generated from lib/herb/lint/rules/html/boolean_attributes_no_value.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Html
+        # Rule that disallows values on boolean HTML attributes.
+        #
+        # Boolean attributes are attributes that represent true/false values.
+        # In HTML, the presence of the attribute represents true, and
+        # absence represents false. They should not have a value assigned.
+        #
+        # Good:
+        #   <input disabled>
+        #   <input checked readonly>
+        #
+        # Bad:
+        #   <input disabled="disabled">
+        #   <input disabled="true">
+        class BooleanAttributesNoValue < VisitorRule
+          # Standard HTML boolean attributes.
+          BOOLEAN_ATTRIBUTES: Set[String]
+
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # @rbs override
+          def visit_html_attribute_node: ...
+
+          private
+
+          # @rbs name: String
+          def boolean_attribute?: (String name) -> bool
+        end
+      end
+    end
+  end
+end

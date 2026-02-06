@@ -1,0 +1,41 @@
+# Generated from lib/herb/lint/rules/erb/require_trailing_newline.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Erb
+        # Rule that requires a trailing newline at the end of the file.
+        #
+        # Files should end with exactly one newline character.
+        #
+        # Good:
+        #   <div>content</div>
+        #   [newline here]
+        #
+        # Bad:
+        #   <div>content</div>[no newline]
+        #
+        # Also Bad:
+        #   <div>content</div>
+        #   [multiple newlines]
+        class RequireTrailingNewline < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          # @rbs override
+          def visit_document_node: ...
+
+          private
+
+          @context: Context
+
+          # @rbs node: Herb::AST::HTMLTextNode
+          def check_text_node_trailing_newline: (Herb::AST::HTMLTextNode node) -> void
+        end
+      end
+    end
+  end
+end

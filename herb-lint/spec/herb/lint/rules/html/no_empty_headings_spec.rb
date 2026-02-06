@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlNoEmptyHeadings do
+RSpec.describe Herb::Lint::Rules::Html::NoEmptyHeadings do
   describe ".rule_name" do
     it "returns 'html-no-empty-headings'" do
       expect(described_class.rule_name).to eq("html-no-empty-headings")

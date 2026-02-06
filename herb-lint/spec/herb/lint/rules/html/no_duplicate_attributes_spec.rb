@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlNoDuplicateAttributes do
+RSpec.describe Herb::Lint::Rules::Html::NoDuplicateAttributes do
   describe ".rule_name" do
     it "returns 'html-no-duplicate-attributes'" do
       expect(described_class.rule_name).to eq("html-no-duplicate-attributes")

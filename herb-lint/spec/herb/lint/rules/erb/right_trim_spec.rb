@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::ErbRightTrim do
+RSpec.describe Herb::Lint::Rules::Erb::RightTrim do
   describe ".rule_name" do
     it "returns 'erb-right-trim'" do
       expect(described_class.rule_name).to eq("erb-right-trim")

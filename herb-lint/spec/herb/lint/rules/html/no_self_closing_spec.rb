@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlNoSelfClosing do
+RSpec.describe Herb::Lint::Rules::Html::NoSelfClosing do
   describe ".rule_name" do
     it "returns 'html-no-self-closing'" do
       expect(described_class.rule_name).to eq("html-no-self-closing")

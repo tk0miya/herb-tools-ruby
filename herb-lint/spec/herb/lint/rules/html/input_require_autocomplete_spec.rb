@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::HtmlInputRequireAutocomplete do
+RSpec.describe Herb::Lint::Rules::Html::InputRequireAutocomplete do
   describe ".rule_name" do
     it "returns 'html-input-require-autocomplete'" do
       expect(described_class.rule_name).to eq("html-input-require-autocomplete")

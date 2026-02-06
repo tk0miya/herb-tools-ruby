@@ -2,7 +2,7 @@
 
 require_relative "../../../../spec_helper"
 
-RSpec.describe Herb::Lint::Rules::ErbNoSilentTagInAttributeName do
+RSpec.describe Herb::Lint::Rules::Erb::NoSilentTagInAttributeName do
   describe ".rule_name" do
     it "returns 'erb-no-silent-tag-in-attribute-name'" do
       expect(described_class.rule_name).to eq("erb-no-silent-tag-in-attribute-name")

@@ -1,0 +1,42 @@
+# Generated from lib/herb/lint/rules/erb/no_empty_tags.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      module Erb
+        # Rule that disallows empty ERB tags.
+        #
+        # Empty ERB tags (`<% %>` with no content or only whitespace) should be removed.
+        #
+        # Good:
+        #   <% do_something %>
+        #   <%= value %>
+        #
+        # Bad:
+        #   <% %>
+        #   <%  %>
+        #   <%= %>
+        class NoEmptyTags < VisitorRule
+          def self.rule_name: () -> String
+
+          def self.description: () -> String
+
+          def self.default_severity: () -> String
+
+          def self.autocorrectable?: () -> bool
+
+          # @rbs override
+          def visit_erb_content_node: ...
+
+          # @rbs override
+          def autofix: ...
+
+          private
+
+          # @rbs node: Herb::AST::ERBContentNode
+          def empty_tag?: (Herb::AST::ERBContentNode node) -> bool
+        end
+      end
+    end
+  end
+end
