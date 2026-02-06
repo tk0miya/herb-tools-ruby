@@ -7,17 +7,7 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that requires strict_locals magic comment in partial files.
-        #
-        # Partial files (files whose basename starts with underscore) should have
-        # a strict_locals magic comment at the top of the file to declare local variables.
-        #
-        # Good:
-        #   <%# locals: (name: String) %>
-        #   <div><%= name %></div>
-        #
-        # Bad (missing strict_locals in partial):
-        #   <div><%= name %></div>
+        # Enforces strict locals declarations in ERB partial templates.
         class StrictLocalsRequired < VisitorRule
           def self.rule_name #: String
             "erb-strict-locals-required"
@@ -28,7 +18,7 @@ module Herb
           end
 
           def self.default_severity #: String
-            "warning"
+            "error"
           end
 
           # @rbs @locals_definition_found: bool

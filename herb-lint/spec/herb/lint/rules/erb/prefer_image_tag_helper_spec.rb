@@ -41,7 +41,10 @@ RSpec.describe Herb::Lint::Rules::Erb::PreferImageTagHelper do
       it "reports an offense with correct details" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("erb-prefer-image-tag-helper")
-        expect(subject.first.message).to eq("Prefer using <%= image_tag %> helper instead of <img> tag")
+        expect(subject.first.message).to eq(
+          "Prefer `image_tag` helper over manual `<img>` with dynamic ERB expressions. " \
+          "Use `<%= image_tag ... %>` instead."
+        )
         expect(subject.first.severity).to eq("warning")
       end
     end

@@ -7,18 +7,7 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that requires whitespace between ERB tag delimiters and content.
-        #
-        # ERB tags should have whitespace separating the opening/closing delimiters
-        # from the tag content for readability.
-        #
-        # Good:
-        #   <% value %>
-        #   <%= value %>
-        #
-        # Bad:
-        #   <%value%>
-        #   <%=value%>
+        # Enforces whitespace requirements inside ERB template tags for improved readability.
         class RequireWhitespaceInsideTags < VisitorRule
           def self.rule_name #: String
             "erb-require-whitespace-inside-tags"
@@ -29,7 +18,7 @@ module Herb
           end
 
           def self.default_severity #: String
-            "warning"
+            "error"
           end
 
           def self.autocorrectable? #: bool

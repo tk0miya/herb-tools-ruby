@@ -7,16 +7,10 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that enforces ERB comment syntax.
+        # Enforces ERB comment syntax.
         #
-        # ERB comments should use the dedicated comment tag syntax (`<%#`)
-        # rather than a statement tag with a Ruby line comment (`<% #`).
-        #
-        # Good:
-        #   <%# This is a comment %>
-        #
-        # Bad:
-        #   <% # This is a comment %>
+        # Detects when developers use <% # (which can cause parsing issues)
+        # instead of the correct <%# syntax.
         class CommentSyntax < VisitorRule
           def self.rule_name #: String
             "erb-comment-syntax"
@@ -27,7 +21,7 @@ module Herb
           end
 
           def self.default_severity #: String
-            "warning"
+            "error"
           end
 
           def self.safe_autocorrectable? #: bool
@@ -37,8 +31,9 @@ module Herb
           # @rbs override
           def visit_erb_content_node(node)
             if statement_tag?(node) && comment_content?(node)
+              message = build_message(node)
               add_offense_with_autofix(
-                message: "Use ERB comment tag `<%#` instead of `<% #`",
+                message:,
                 location: node.tag_opening.location,
                 node:
               )
@@ -51,8 +46,8 @@ module Herb
             # Create new opening tag token with <%# instead of <%
             tag_opening = copy_token(node.tag_opening, content: "<%#")
 
-            # Remove leading whitespace and # from content
-            new_content_value = node.content.value.sub(/\A\s*#/, "")
+            # Remove leading spaces and # from content
+            new_content_value = node.content.value.sub(/\A +#/, "")
             content = copy_token(node.content, content: new_content_value)
 
             # Create new ERBContentNode with modified tokens
@@ -71,7 +66,19 @@ module Herb
 
           # @rbs node: Herb::AST::ERBContentNode
           def comment_content?(node) #: bool
-            node.content.value.match?(/\A\s*#/)
+            node.content.value.match?(/\A +#/)
+          end
+
+          # @rbs node: Herb::AST::ERBContentNode
+          def build_message(node) #: String
+            opening_tag = node.tag_opening.value
+            content = node.content.value
+
+            if content.include?("herb:disable")
+              "Use `<%#` instead of `#{opening_tag} #` for `herb:disable` directives."
+            else
+              "Use `<%#` instead of `#{opening_tag} #`. Ruby comments may cause parsing issues."
+            end
           end
         end
       end

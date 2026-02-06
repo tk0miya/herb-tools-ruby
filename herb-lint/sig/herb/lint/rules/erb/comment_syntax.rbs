@@ -4,16 +4,10 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that enforces ERB comment syntax.
+        # Enforces ERB comment syntax.
         #
-        # ERB comments should use the dedicated comment tag syntax (`<%#`)
-        # rather than a statement tag with a Ruby line comment (`<% #`).
-        #
-        # Good:
-        #   <%# This is a comment %>
-        #
-        # Bad:
-        #   <% # This is a comment %>
+        # Detects when developers use <% # (which can cause parsing issues)
+        # instead of the correct <%# syntax.
         class CommentSyntax < VisitorRule
           def self.rule_name: () -> String
 
@@ -36,6 +30,9 @@ module Herb
 
           # @rbs node: Herb::AST::ERBContentNode
           def comment_content?: (Herb::AST::ERBContentNode node) -> bool
+
+          # @rbs node: Herb::AST::ERBContentNode
+          def build_message: (Herb::AST::ERBContentNode node) -> String
         end
       end
     end

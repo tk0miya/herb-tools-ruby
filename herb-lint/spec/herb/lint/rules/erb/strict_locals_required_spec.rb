@@ -16,8 +16,8 @@ RSpec.describe Herb::Lint::Rules::Erb::StrictLocalsRequired do
   end
 
   describe ".default_severity" do
-    it "returns 'warning'" do
-      expect(described_class.default_severity).to eq("warning")
+    it "returns 'error'" do
+      expect(described_class.default_severity).to eq("error")
     end
   end
 
@@ -102,7 +102,7 @@ RSpec.describe Herb::Lint::Rules::Erb::StrictLocalsRequired do
           expect(subject.size).to eq(1)
           expect(subject.first.rule_name).to eq("erb-strict-locals-required")
           expect(subject.first.message).to eq(expected_message)
-          expect(subject.first.severity).to eq("warning")
+          expect(subject.first.severity).to eq("error")
         end
       end
 

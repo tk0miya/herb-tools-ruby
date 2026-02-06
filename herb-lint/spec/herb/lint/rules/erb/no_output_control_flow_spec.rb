@@ -16,8 +16,8 @@ RSpec.describe Herb::Lint::Rules::Erb::NoOutputControlFlow do
   end
 
   describe ".default_severity" do
-    it "returns 'warning'" do
-      expect(described_class.default_severity).to eq("warning")
+    it "returns 'error'" do
+      expect(described_class.default_severity).to eq("error")
     end
   end
 
@@ -41,8 +41,10 @@ RSpec.describe Herb::Lint::Rules::Erb::NoOutputControlFlow do
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("erb-no-output-control-flow")
-        expect(subject.first.message).to eq("Use '<% if %>' instead of '<%= if %>' for control flow")
-        expect(subject.first.severity).to eq("warning")
+        expect(subject.first.message).to eq(
+          "Control flow statements like `if` should not be used with output tags. Use `<% if ... %>` instead."
+        )
+        expect(subject.first.severity).to eq("error")
       end
     end
 
@@ -52,67 +54,33 @@ RSpec.describe Herb::Lint::Rules::Erb::NoOutputControlFlow do
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("erb-no-output-control-flow")
-        expect(subject.first.message).to eq("Use '<% unless %>' instead of '<%= unless %>' for control flow")
+        expect(subject.first.message).to eq(
+          "Control flow statements like `unless` should not be used with output tags. Use `<% unless ... %>` instead."
+        )
       end
     end
 
-    context "when case statement uses silent tag" do
-      let(:source) do
-        <<~ERB
-          <% case value %>
-          <% when :a %>
-          <% end %>
-        ERB
-      end
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when case statement uses output tag" do
-      let(:source) do
-        <<~ERB
-          <%= case value %>
-          <% when :a %>
-          <% end %>
-        ERB
-      end
+    context "when else statement uses output tag" do
+      let(:source) { "<% if condition %><p>yes</p><%= else %><p>no</p><% end %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("erb-no-output-control-flow")
-        expect(subject.first.message).to eq("Use '<% case %>' instead of '<%= case %>' for control flow")
+        expect(subject.first.message).to eq(
+          "Control flow statements like `else` should not be used with output tags. Use `<% else ... %>` instead."
+        )
       end
     end
 
-    context "when while loop uses output tag" do
-      let(:source) { "<%= while condition %><% end %>" }
+    context "when end statement uses output tag" do
+      let(:source) { "<% if condition %><p>content</p><%= end %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("erb-no-output-control-flow")
-        expect(subject.first.message).to eq("Use '<% while %>' instead of '<%= while %>' for control flow")
-      end
-    end
-
-    context "when for loop uses output tag" do
-      let(:source) { "<%= for item in items %><% end %>" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("erb-no-output-control-flow")
-        expect(subject.first.message).to eq("Use '<% for %>' instead of '<%= for %>' for control flow")
-      end
-    end
-
-    context "when until loop uses output tag" do
-      let(:source) { "<%= until condition %><% end %>" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("erb-no-output-control-flow")
-        expect(subject.first.message).to eq("Use '<% until %>' instead of '<%= until %>' for control flow")
+        expect(subject.first.message).to eq(
+          "Control flow statements like `end` should not be used with output tags. Use `<% end ... %>` instead."
+        )
       end
     end
 
@@ -121,16 +89,13 @@ RSpec.describe Herb::Lint::Rules::Erb::NoOutputControlFlow do
         <<~ERB
           <%= if condition %>
             <p>text</p>
-          <% end %>
-          <%= case value %>
-          <% when :a %>
-          <% end %>
+          <%= end %>
         ERB
       end
 
       it "reports an offense for each control flow statement" do
         expect(subject.size).to eq(2)
-        expect(subject.map(&:line)).to contain_exactly(1, 4)
+        expect(subject.map(&:line)).to contain_exactly(1, 3)
       end
     end
 

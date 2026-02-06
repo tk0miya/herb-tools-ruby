@@ -16,8 +16,8 @@ RSpec.describe Herb::Lint::Rules::Erb::NoExtraWhitespaceInsideTags do
   end
 
   describe ".default_severity" do
-    it "returns 'warning'" do
-      expect(described_class.default_severity).to eq("warning")
+    it "returns 'error'" do
+      expect(described_class.default_severity).to eq("error")
     end
   end
 
@@ -64,7 +64,7 @@ RSpec.describe Herb::Lint::Rules::Erb::NoExtraWhitespaceInsideTags do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("erb-no-extra-whitespace-inside-tags")
         expect(subject.first.message).to eq("Remove extra whitespace inside ERB tag")
-        expect(subject.first.severity).to eq("warning")
+        expect(subject.first.severity).to eq("error")
       end
     end
 

@@ -16,8 +16,8 @@ RSpec.describe Herb::Lint::Rules::Erb::CommentSyntax do
   end
 
   describe ".default_severity" do
-    it "returns 'warning'" do
-      expect(described_class.default_severity).to eq("warning")
+    it "returns 'error'" do
+      expect(described_class.default_severity).to eq("error")
     end
   end
 
@@ -47,8 +47,8 @@ RSpec.describe Herb::Lint::Rules::Erb::CommentSyntax do
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("erb-comment-syntax")
-        expect(subject.first.message).to eq("Use ERB comment tag `<%#` instead of `<% #`")
-        expect(subject.first.severity).to eq("warning")
+        expect(subject.first.message).to eq("Use `<%#` instead of `<% #`. Ruby comments may cause parsing issues.")
+        expect(subject.first.severity).to eq("error")
       end
     end
 
@@ -110,6 +110,15 @@ RSpec.describe Herb::Lint::Rules::Erb::CommentSyntax do
 
       it "does not report an offense" do
         expect(subject).to be_empty
+      end
+    end
+
+    context "when comment has herb:disable directive" do
+      let(:source) { "<% # herb:disable rule-name %>" }
+
+      it "reports an offense with special message for herb:disable" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to eq("Use `<%#` instead of `<% #` for `herb:disable` directives.")
       end
     end
   end

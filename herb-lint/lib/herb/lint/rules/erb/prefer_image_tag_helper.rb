@@ -7,19 +7,8 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that prefers Rails image_tag helper over raw <img> tags.
-        #
-        # In Rails applications, it's conventional to use the image_tag helper
-        # instead of raw <img> HTML tags. The helper provides automatic asset
-        # pipeline integration and better defaults.
-        #
-        # Good:
-        #   <%= image_tag 'logo.png' %>
-        #   <%= image_tag 'logo.png', alt: 'Company Logo' %>
-        #
-        # Bad:
-        #   <img src="<%= asset_path('logo.png') %>">
-        #   <img src="logo.png" alt="Logo">
+        # Flags manual <img> tags containing dynamic ERB expressions,
+        # recommending the Rails image_tag helper instead.
         class PreferImageTagHelper < VisitorRule
           def self.rule_name #: String
             "erb-prefer-image-tag-helper"
@@ -37,7 +26,8 @@ module Herb
           def visit_html_element_node(node)
             if img_element?(node)
               add_offense(
-                message: "Prefer using <%= image_tag %> helper instead of <img> tag",
+                message: "Prefer `image_tag` helper over manual `<img>` with dynamic ERB expressions. " \
+                         "Use `<%= image_tag ... %>` instead.",
                 location: node.location
               )
             end
