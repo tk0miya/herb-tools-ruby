@@ -8,6 +8,12 @@ module Herb
         #
         # Detects when developers use <% # (which can cause parsing issues)
         # instead of the correct <%# syntax.
+        #
+        # Good:
+        #   <%# This is a comment %>
+        #
+        # Bad:
+        #   <% # This is a comment %>
         class CommentSyntax < VisitorRule
           def self.rule_name: () -> String
 

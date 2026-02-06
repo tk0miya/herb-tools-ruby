@@ -9,6 +9,14 @@ module Herb
       module Erb
         # Flags manual <img> tags containing dynamic ERB expressions,
         # recommending the Rails image_tag helper instead.
+        #
+        # Good:
+        #   <%= image_tag 'logo.png' %>
+        #   <%= image_tag 'logo.png', alt: 'Company Logo' %>
+        #
+        # Bad:
+        #   <img src="<%= asset_path('logo.png') %>">
+        #   <img src="logo.png" alt="Logo">
         class PreferImageTagHelper < VisitorRule
           def self.rule_name #: String
             "erb-prefer-image-tag-helper"

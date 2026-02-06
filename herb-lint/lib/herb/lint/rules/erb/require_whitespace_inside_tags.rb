@@ -8,6 +8,14 @@ module Herb
     module Rules
       module Erb
         # Enforces whitespace requirements inside ERB template tags for improved readability.
+        #
+        # Good:
+        #   <% value %>
+        #   <%= value %>
+        #
+        # Bad:
+        #   <%value%>
+        #   <%=value%>
         class RequireWhitespaceInsideTags < VisitorRule
           def self.rule_name #: String
             "erb-require-whitespace-inside-tags"

@@ -8,6 +8,18 @@ module Herb
     module Rules
       module Erb
         # Control flow statements should not be used with output tags.
+        #
+        # Good:
+        #   <% if condition %>
+        #   <% unless condition %>
+        #   <% else %>
+        #   <% end %>
+        #
+        # Bad:
+        #   <%= if condition %>
+        #   <%= unless condition %>
+        #   <%= else %>
+        #   <%= end %>
         class NoOutputControlFlow < VisitorRule
           def self.rule_name #: String
             "erb-no-output-control-flow"

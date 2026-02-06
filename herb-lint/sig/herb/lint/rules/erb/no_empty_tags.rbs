@@ -5,6 +5,15 @@ module Herb
     module Rules
       module Erb
         # ERB tag should not be empty. Remove empty ERB tags or add content.
+        #
+        # Good:
+        #   <% do_something %>
+        #   <%= value %>
+        #
+        # Bad:
+        #   <% %>
+        #   <%  %>
+        #   <%= %>
         class NoEmptyTags < VisitorRule
           def self.rule_name: () -> String
 

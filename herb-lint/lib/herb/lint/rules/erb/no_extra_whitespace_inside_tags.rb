@@ -8,6 +8,14 @@ module Herb
     module Rules
       module Erb
         # Detects and corrects excessive whitespace within ERB template tags.
+        #
+        # Good:
+        #   <% value %>
+        #   <%= value %>
+        #
+        # Bad:
+        #   <%  value  %>
+        #   <%=  value  %>
         class NoExtraWhitespaceInsideTags < VisitorRule
           def self.rule_name #: String
             "erb-no-extra-whitespace-inside-tags"
