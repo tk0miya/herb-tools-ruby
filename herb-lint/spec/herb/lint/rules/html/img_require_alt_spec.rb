@@ -28,7 +28,7 @@ RSpec.describe Herb::Lint::Rules::Html::ImgRequireAlt do
     let(:context) { build(:context) }
 
     context "when img tag has alt attribute" do
-      let(:source) { '<img src="image.png" alt="Description">' }
+      let(:source) { '<img src="/logo.png" alt="Company logo">' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Rules::Html::ImgRequireAlt do
     end
 
     context "when img tag has empty alt attribute" do
-      let(:source) { '<img src="decorative.png" alt="">' }
+      let(:source) { '<img src="/divider.png" alt="">' }
 
       it "does not report an offense (empty alt is valid for decorative images)" do
         expect(subject).to be_empty
@@ -44,18 +44,21 @@ RSpec.describe Herb::Lint::Rules::Html::ImgRequireAlt do
     end
 
     context "when img tag is missing alt attribute" do
-      let(:source) { '<img src="image.png">' }
+      let(:source) { '<img src="/logo.png">' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-img-require-alt")
-        expect(subject.first.message).to eq("Missing alt attribute on img tag")
+        expect(subject.first.message).to eq(
+          "Missing required `alt` attribute on `<img>` tag. " \
+          "Add `alt=\"\"` for decorative images or `alt=\"description\"` for informative images."
+        )
         expect(subject.first.severity).to eq("error")
       end
     end
 
     context "when multiple img tags are missing alt attribute" do
-      let(:source) { '<img src="a.png"><img src="b.png">' }
+      let(:source) { '<img src="/logo.png"><img src="/banner.jpg">' }
 
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
@@ -64,7 +67,7 @@ RSpec.describe Herb::Lint::Rules::Html::ImgRequireAlt do
     end
 
     context "when img tag has uppercase ALT attribute" do
-      let(:source) { '<img src="image.png" ALT="Description">' }
+      let(:source) { '<img src="/logo.png" ALT="Logo">' }
 
       it "does not report an offense (case insensitive)" do
         expect(subject).to be_empty
@@ -72,7 +75,7 @@ RSpec.describe Herb::Lint::Rules::Html::ImgRequireAlt do
     end
 
     context "when IMG tag is uppercase" do
-      let(:source) { '<IMG src="image.png">' }
+      let(:source) { '<IMG src="/logo.png">' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
