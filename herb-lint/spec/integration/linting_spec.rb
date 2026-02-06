@@ -21,7 +21,7 @@ RSpec.describe "End-to-end linting integration" do # rubocop:disable RSpec/Descr
       it "detects missing alt attribute offense" do
         expect(subject[:exit_code]).to eq(Herb::Lint::CLI::EXIT_LINT_ERROR)
         expect(subject[:stdout]).to include("html-img-require-alt")
-        expect(subject[:stdout]).to include("Missing alt attribute")
+        expect(subject[:stdout]).to include("Missing required `alt` attribute")
       end
     end
 
