@@ -31,28 +31,34 @@ module Herb
         end
       end
 
+      # Structural attribute names used to link parent ERB nodes to child ERB nodes
+      # (e.g. ERBIfNode#end_node, ERBIfNode#subsequent).
+      STRUCTURAL_ATTRIBUTES = %i[else_clause end_node ensure_clause rescue_clause subsequent].freeze #: Array[Symbol]
+
       # Replace a node in the AST with a new node.
-      # Finds the parent, locates the array containing the old node,
-      # and replaces it with the new node.
       #
-      # This is a convenience method that combines find_parent, parent_array_for,
-      # and array index replacement.
+      # First tries array-based replacement (children/body). If the node is not
+      # in an array (e.g. it is a structural attribute like end_node or subsequent),
+      # creates a copy of the parent with the new child and recursively replaces
+      # the parent.
       #
       # @rbs parse_result: Herb::ParseResult -- the parse result to search
       # @rbs old_node: Herb::AST::Node -- the node to replace
       # @rbs new_node: Herb::AST::Node -- the replacement node
-      def replace_node(parse_result, old_node, new_node) #: bool # rubocop:disable Naming/PredicateMethod
+      def replace_node(parse_result, old_node, new_node) #: bool
         parent = find_parent(parse_result, old_node)
         return false unless parent
 
         parent_array = parent_array_for(parent, old_node)
-        return false unless parent_array
+        if parent_array
+          index = parent_array.index(old_node)
+          return false unless index
 
-        index = parent_array.index(old_node)
-        return false unless index
+          parent_array[index] = new_node
+          return true
+        end
 
-        parent_array[index] = new_node
-        true
+        replace_structural_child(parse_result, parent, old_node, new_node)
       end
 
       # Remove a node from the AST.
@@ -646,6 +652,71 @@ module Herb
           content || node.content,
           tag_closing || node.tag_closing
         )
+      end
+
+      private
+
+      # Replace a node that is stored as a structural attribute of its parent
+      # (e.g. end_node, subsequent, rescue_clause, else_clause, ensure_clause).
+      # Creates a copy of the parent with the new child, then recursively
+      # replaces the parent in the tree.
+      #
+      # @rbs parse_result: Herb::ParseResult
+      # @rbs parent: Herb::AST::Node -- the parent node containing the structural child
+      # @rbs old_node: Herb::AST::Node -- the structural child to replace
+      # @rbs new_node: Herb::AST::Node -- the replacement node
+      def replace_structural_child(parse_result, parent, old_node, new_node) #: bool
+        attr = STRUCTURAL_ATTRIBUTES.find { |a| parent.respond_to?(a) && parent.send(a).equal?(old_node) }
+        return false unless attr
+
+        new_parent = copy_erb_node(parent, attr => new_node)
+        replace_node(parse_result, parent, new_parent)
+      end
+
+      public
+
+      # Create a copy of any ERB node with overridden attributes.
+      # Dispatches to the appropriate copy_erb_*_node method based on the node's class.
+      #
+      # rubocop:disable Layout/LineLength
+      #: (Herb::AST::ERBBeginNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?rescue_clause: Herb::AST::ERBRescueNode?, ?else_clause: Herb::AST::ERBElseNode?, ?ensure_clause: Herb::AST::ERBEnsureNode?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBBeginNode
+      #: (Herb::AST::ERBBlockNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?body: Array[Herb::AST::Node]?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBBlockNode
+      #: (Herb::AST::ERBCaseMatchNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?children: Array[Herb::AST::Node]?, ?conditions: Array[Herb::AST::ERBInNode]?, ?else_clause: Herb::AST::ERBElseNode?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBCaseMatchNode
+      #: (Herb::AST::ERBCaseNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?children: Array[Herb::AST::Node]?, ?conditions: Array[Herb::AST::ERBWhenNode]?, ?else_clause: Herb::AST::ERBElseNode?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBCaseNode
+      #: (Herb::AST::ERBContentNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?analyzed_ruby: nil, ?parsed: bool?, ?valid: bool?) -> Herb::AST::ERBContentNode
+      #: (Herb::AST::ERBElseNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?) -> Herb::AST::ERBElseNode
+      #: (Herb::AST::ERBEndNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?) -> Herb::AST::ERBEndNode
+      #: (Herb::AST::ERBEnsureNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?) -> Herb::AST::ERBEnsureNode
+      #: (Herb::AST::ERBForNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBForNode
+      #: (Herb::AST::ERBIfNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?then_keyword: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?subsequent: Herb::AST::Node?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBIfNode
+      #: (Herb::AST::ERBInNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?then_keyword: Herb::Location?, ?statements: Array[Herb::AST::Node]?) -> Herb::AST::ERBInNode
+      #: (Herb::AST::ERBRescueNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?subsequent: Herb::AST::ERBRescueNode?) -> Herb::AST::ERBRescueNode
+      #: (Herb::AST::ERBUnlessNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?then_keyword: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?else_clause: Herb::AST::ERBElseNode?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBUnlessNode
+      #: (Herb::AST::ERBUntilNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBUntilNode
+      #: (Herb::AST::ERBWhenNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?then_keyword: Herb::Location?, ?statements: Array[Herb::AST::Node]?) -> Herb::AST::ERBWhenNode
+      #: (Herb::AST::ERBWhileNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBWhileNode
+      #: (Herb::AST::ERBYieldNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?) -> Herb::AST::ERBYieldNode
+      # rubocop:enable Layout/LineLength
+      def copy_erb_node(node, **overrides) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
+        case node
+        when Herb::AST::ERBBeginNode     then copy_erb_begin_node(node, **overrides)
+        when Herb::AST::ERBBlockNode     then copy_erb_block_node(node, **overrides)
+        when Herb::AST::ERBCaseMatchNode then copy_erb_case_match_node(node, **overrides)
+        when Herb::AST::ERBCaseNode      then copy_erb_case_node(node, **overrides)
+        when Herb::AST::ERBContentNode   then copy_erb_content_node(node, **overrides)
+        when Herb::AST::ERBElseNode      then copy_erb_else_node(node, **overrides)
+        when Herb::AST::ERBEndNode       then copy_erb_end_node(node, **overrides)
+        when Herb::AST::ERBEnsureNode    then copy_erb_ensure_node(node, **overrides)
+        when Herb::AST::ERBForNode       then copy_erb_for_node(node, **overrides)
+        when Herb::AST::ERBIfNode        then copy_erb_if_node(node, **overrides)
+        when Herb::AST::ERBInNode        then copy_erb_in_node(node, **overrides)
+        when Herb::AST::ERBRescueNode    then copy_erb_rescue_node(node, **overrides)
+        when Herb::AST::ERBUnlessNode    then copy_erb_unless_node(node, **overrides)
+        when Herb::AST::ERBUntilNode     then copy_erb_until_node(node, **overrides)
+        when Herb::AST::ERBWhenNode      then copy_erb_when_node(node, **overrides)
+        when Herb::AST::ERBWhileNode     then copy_erb_while_node(node, **overrides)
+        when Herb::AST::ERBYieldNode     then copy_erb_yield_node(node, **overrides)
+        end
       end
     end
   end
