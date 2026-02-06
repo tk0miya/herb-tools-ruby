@@ -119,13 +119,15 @@ cd herb-lint && ./bin/steep check
 
 ### Task 16.4: ErbNoExtraWhitespaceInsideTags Autofix
 
+**Status:** Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/erb_no_extra_whitespace_inside_tags.rb`
 
-- [ ] Add `def self.autocorrectable? = true`
-- [ ] Change `add_offense` to `add_offense_with_autofix`
-- [ ] Implement `autofix(node, parse_result)` method
-  - [ ] Remove extra whitespace inside ERB tags
-- [ ] Add autofix tests
+- [x] Add `def self.autocorrectable? = true`
+- [x] Change `add_offense` to `add_offense_with_autofix`
+- [x] Implement `autofix(node, parse_result)` method
+  - [x] Remove extra whitespace inside ERB tags
+- [x] Add autofix tests
 
 **Example:**
 

@@ -28,15 +28,28 @@ module Herb
           "warning"
         end
 
+        def self.autocorrectable? #: bool
+          true
+        end
+
         # @rbs override
         def visit_erb_content_node(node)
           if extra_whitespace?(node)
-            add_offense(
+            add_offense_with_autofix(
               message: "Remove extra whitespace inside ERB tag",
-              location: node.location
+              location: node.location,
+              node:
             )
           end
           super
+        end
+
+        # @rbs override
+        def autofix(node, parse_result)
+          new_content_value = node.content.value.gsub(/\A[ \t]{2,}/, " ").gsub(/[ \t]{2,}\z/, " ")
+          content = copy_token(node.content, content: new_content_value)
+          new_node = copy_erb_content_node(node, content:)
+          replace_node(parse_result, node, new_node)
         end
 
         private
