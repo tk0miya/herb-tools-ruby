@@ -9,17 +9,21 @@ module Herb
       module Erb
         # Control flow statements should not be used with output tags.
         #
+        # Use <% for control flow logic and <%= only when you need to render content.
+        #
         # Good:
         #   <% if condition %>
-        #   <% unless condition %>
-        #   <% else %>
+        #     Content here
         #   <% end %>
+        #   <%= user.name %>
         #
         # Bad:
         #   <%= if condition %>
-        #   <%= unless condition %>
-        #   <%= else %>
-        #   <%= end %>
+        #     Content here
+        #   <% end %>
+        #   <%= unless user.nil? %>
+        #     Welcome!
+        #   <% end %>
         class NoOutputControlFlow < VisitorRule
           def self.rule_name #: String
             "erb-no-output-control-flow"

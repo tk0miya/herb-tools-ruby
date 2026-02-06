@@ -6,13 +6,19 @@ module Herb
       module Erb
         # Enforces whitespace requirements inside ERB template tags for improved readability.
         #
+        # Requires a single space before and after Ruby code inside ERB tags.
+        #
         # Good:
-        #   <% value %>
-        #   <%= value %>
+        #   <%= user.name %>
+        #   <% if admin %>
+        #     Hello, admin.
+        #   <% end %>
         #
         # Bad:
-        #   <%value%>
-        #   <%=value%>
+        #   <%=user.name %>
+        #   <%if admin %>
+        #     Hello, admin.
+        #   <% end%>
         class RequireWhitespaceInsideTags < VisitorRule
           def self.rule_name: () -> String
 

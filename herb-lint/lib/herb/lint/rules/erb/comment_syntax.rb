@@ -9,14 +9,18 @@ module Herb
       module Erb
         # Enforces ERB comment syntax.
         #
-        # Detects when developers use <% # (which can cause parsing issues)
-        # instead of the correct <%# syntax.
+        # Ruby comments starting immediately after an ERB tag opening (e.g., <% # comment %>)
+        # can cause parsing issues in some contexts.
         #
         # Good:
-        #   <%# This is a comment %>
+        #   <%# This is a proper ERB comment %>
+        #   <%
+        #     # This is a proper ERB comment
+        #   %>
         #
         # Bad:
-        #   <% # This is a comment %>
+        #   <% # This should be an ERB comment %>
+        #   <%= # This should also be an ERB comment %>
         class CommentSyntax < VisitorRule
           def self.rule_name #: String
             "erb-comment-syntax"

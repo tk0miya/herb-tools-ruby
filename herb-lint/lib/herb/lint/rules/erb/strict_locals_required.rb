@@ -10,11 +10,17 @@ module Herb
         # Enforces strict locals declarations in ERB partial templates.
         #
         # Good:
-        #   <%# locals: (name: String) %>
-        #   <div><%= name %></div>
+        #   <%# locals: (user:) %>
+        #   <div><%= user.name %></div>
+        #
+        #   <%# locals: (user:, admin: false) %>
+        #   <div><%= user.name %></div>
+        #
+        #   <%# locals: () %>
+        #   <div>Static content</div>
         #
         # Bad (missing strict_locals in partial):
-        #   <div><%= name %></div>
+        #   <div><%= user.name %></div>
         class StrictLocalsRequired < VisitorRule
           def self.rule_name #: String
             "erb-strict-locals-required"

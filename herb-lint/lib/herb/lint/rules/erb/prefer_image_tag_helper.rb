@@ -10,13 +10,17 @@ module Herb
         # Flags manual <img> tags containing dynamic ERB expressions,
         # recommending the Rails image_tag helper instead.
         #
+        # The image_tag helper provides advantages including proper escaping
+        # to prevent XSS vulnerabilities.
+        #
         # Good:
-        #   <%= image_tag 'logo.png' %>
-        #   <%= image_tag 'logo.png', alt: 'Company Logo' %>
+        #   <%= image_tag "logo.png", alt: "Logo" %>
+        #   <%= image_tag user.avatar.url, alt: "User avatar" %>
+        #   <img src="/static/logo.png" alt="Logo">
         #
         # Bad:
-        #   <img src="<%= asset_path('logo.png') %>">
-        #   <img src="logo.png" alt="Logo">
+        #   <img src="<%= image_path("logo.png") %>" alt="Logo">
+        #   <img src="<%= user.avatar.url %>" alt="User avatar">
         class PreferImageTagHelper < VisitorRule
           def self.rule_name #: String
             "erb-prefer-image-tag-helper"

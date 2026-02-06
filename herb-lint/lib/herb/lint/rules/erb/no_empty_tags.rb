@@ -10,13 +10,16 @@ module Herb
         # ERB tag should not be empty. Remove empty ERB tags or add content.
         #
         # Good:
-        #   <% do_something %>
-        #   <%= value %>
+        #   <%= user.name %>
+        #   <% if user.admin? %>
+        #     Admin tools
+        #   <% end %>
         #
         # Bad:
         #   <% %>
-        #   <%  %>
-        #   <%= %>
+        #   <%=  %>
+        #   <%
+        #   %>
         class NoEmptyTags < VisitorRule
           def self.rule_name #: String
             "erb-no-empty-tags"
