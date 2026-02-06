@@ -1,1 +1,11 @@
 inherit_from: ../.rubocop-common.yml
+
+RSpec/SpecFilePathFormat:
+  Exclude:
+    - "spec/herb/lint/rules/autofix_helpers_spec.rb"
+    - "spec/herb/lint/rules/erb/**/*"
+    - "spec/herb/lint/rules/herb/**/*"
+    - "spec/herb/lint/rules/html/**/*"
+    - "spec/herb/lint/rules/node_locator_spec.rb"
+    - "spec/herb/lint/rules/parser/**/*"
+    - "spec/herb/lint/rules/svg/**/*"

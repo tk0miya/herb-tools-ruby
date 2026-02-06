@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
+require_relative "autofix_helpers"
 require_relative "node_helpers"
 require_relative "rule_methods"
-require_relative "../autofix_helpers"
 
 module Herb
   module Lint
