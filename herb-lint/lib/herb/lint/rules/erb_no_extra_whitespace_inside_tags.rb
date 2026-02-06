@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Source: https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/erb-no-extra-whitespace-inside-tags.ts
+# Documentation: https://herb-tools.dev/linter/rules/erb-no-extra-whitespace-inside-tags
+
 module Herb
   module Lint
     module Rules

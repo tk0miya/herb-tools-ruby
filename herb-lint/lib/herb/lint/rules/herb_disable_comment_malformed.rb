@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Source: https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/herb-disable-comment-malformed.ts
+# Documentation: https://herb-tools.dev/linter/rules/herb-disable-comment-malformed
+
 module Herb
   module Lint
     module Rules

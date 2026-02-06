@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Source: https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/erb-no-silent-tag-in-attribute-name.ts
+# Documentation: https://herb-tools.dev/linter/rules/erb-no-silent-tag-in-attribute-name
+
 module Herb
   module Lint
     module Rules

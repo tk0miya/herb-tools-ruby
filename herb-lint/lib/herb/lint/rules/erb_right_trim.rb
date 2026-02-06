@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Source: https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/erb-right-trim.ts
+# Documentation: https://herb-tools.dev/linter/rules/erb-right-trim
+
 module Herb
   module Lint
     module Rules

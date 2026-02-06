@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Source: https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/svg-tag-name-capitalization.ts
+# Documentation: https://herb-tools.dev/linter/rules/svg-tag-name-capitalization
+
 module Herb
   module Lint
     module Rules
