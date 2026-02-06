@@ -251,6 +251,69 @@ RSpec.describe Herb::Lint::AutofixHelpers do
         expect(parse_result.value.children).to eq(original_children)
       end
     end
+
+    context "when replacing a structural child (end_node)" do
+      subject { helper.replace_node(parse_result, old_end_node, new_end_node) }
+
+      let(:source) { "<% if true %><p>yes</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:if_node) { parse_result.value.children.first }
+      let(:old_end_node) { if_node.end_node }
+      let(:new_end_node) do
+        helper.copy_erb_end_node(
+          old_end_node,
+          tag_closing: helper.copy_token(old_end_node.tag_closing, content: "-%>")
+        )
+      end
+
+      it "replaces the structural child and returns true" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(parse_result)
+        expect(result).to eq("<% if true %><p>yes</p><% end -%>")
+      end
+    end
+
+    context "when replacing a structural child (subsequent)" do
+      subject { helper.replace_node(parse_result, old_else_node, new_else_node) }
+
+      let(:source) { "<% if true %><p>yes</p><% else %><p>no</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:if_node) { parse_result.value.children.first }
+      let(:old_else_node) { if_node.subsequent }
+      let(:new_else_node) do
+        helper.copy_erb_else_node(
+          old_else_node,
+          tag_closing: helper.copy_token(old_else_node.tag_closing, content: "-%>")
+        )
+      end
+
+      it "replaces the structural child and returns true" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(parse_result)
+        expect(result).to eq("<% if true %><p>yes</p><% else -%><p>no</p><% end %>")
+      end
+    end
+
+    context "when replacing a structural child on a node with multiple structural attributes" do
+      subject { helper.replace_node(parse_result, old_rescue_node, new_rescue_node) }
+
+      let(:source) { "<% begin %><p>text</p><% rescue %><p>error</p><% end %>" }
+      let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+      let(:begin_node) { parse_result.value.children.first }
+      let(:old_rescue_node) { begin_node.rescue_clause }
+      let(:new_rescue_node) do
+        helper.copy_erb_rescue_node(
+          old_rescue_node,
+          tag_closing: helper.copy_token(old_rescue_node.tag_closing, content: "-%>")
+        )
+      end
+
+      it "replaces only the targeted attribute and preserves others" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(parse_result)
+        expect(result).to eq("<% begin %><p>text</p><% rescue -%><p>error</p><% end %>")
+      end
+    end
   end
 
   describe "#remove_node" do

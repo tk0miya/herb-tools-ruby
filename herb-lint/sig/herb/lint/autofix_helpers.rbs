@@ -23,12 +23,16 @@ module Herb
       # @rbs node: Herb::AST::Node -- the node to find within the parent
       def parent_array_for: (Herb::AST::Node parent, Herb::AST::Node node) -> Array[Herb::AST::Node]?
 
+      # Structural attribute names used to link parent ERB nodes to child ERB nodes
+      # (e.g. ERBIfNode#end_node, ERBIfNode#subsequent).
+      STRUCTURAL_ATTRIBUTES: Array[Symbol]
+
       # Replace a node in the AST with a new node.
-      # Finds the parent, locates the array containing the old node,
-      # and replaces it with the new node.
       #
-      # This is a convenience method that combines find_parent, parent_array_for,
-      # and array index replacement.
+      # First tries array-based replacement (children/body). If the node is not
+      # in an array (e.g. it is a structural attribute like end_node or subsequent),
+      # creates a copy of the parent with the new child and recursively replaces
+      # the parent.
       #
       # @rbs parse_result: Herb::ParseResult -- the parse result to search
       # @rbs old_node: Herb::AST::Node -- the node to replace
@@ -276,6 +280,61 @@ module Herb
       # @rbs content: Herb::Token? -- override the content token
       # @rbs tag_closing: Herb::Token? -- override the closing tag token
       def copy_erb_yield_node: (Herb::AST::ERBYieldNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?) -> Herb::AST::ERBYieldNode
+
+      private
+
+      # Replace a node that is stored as a structural attribute of its parent
+      # (e.g. end_node, subsequent, rescue_clause, else_clause, ensure_clause).
+      # Creates a copy of the parent with the new child, then recursively
+      # replaces the parent in the tree.
+      #
+      # @rbs parse_result: Herb::ParseResult
+      # @rbs parent: Herb::AST::Node -- the parent node containing the structural child
+      # @rbs old_node: Herb::AST::Node -- the structural child to replace
+      # @rbs new_node: Herb::AST::Node -- the replacement node
+      def replace_structural_child: (Herb::ParseResult parse_result, Herb::AST::Node parent, Herb::AST::Node old_node, Herb::AST::Node new_node) -> bool
+
+      public
+
+      # Create a copy of any ERB node with overridden attributes.
+      # Dispatches to the appropriate copy_erb_*_node method based on the node's class.
+      #
+      # rubocop:disable Layout/LineLength
+      # : (Herb::AST::ERBBeginNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?rescue_clause: Herb::AST::ERBRescueNode?, ?else_clause: Herb::AST::ERBElseNode?, ?ensure_clause: Herb::AST::ERBEnsureNode?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBBeginNode
+      # : (Herb::AST::ERBBlockNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?body: Array[Herb::AST::Node]?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBBlockNode
+      # : (Herb::AST::ERBCaseMatchNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?children: Array[Herb::AST::Node]?, ?conditions: Array[Herb::AST::ERBInNode]?, ?else_clause: Herb::AST::ERBElseNode?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBCaseMatchNode
+      # : (Herb::AST::ERBCaseNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?children: Array[Herb::AST::Node]?, ?conditions: Array[Herb::AST::ERBWhenNode]?, ?else_clause: Herb::AST::ERBElseNode?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBCaseNode
+      # : (Herb::AST::ERBContentNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?analyzed_ruby: nil, ?parsed: bool?, ?valid: bool?) -> Herb::AST::ERBContentNode
+      # : (Herb::AST::ERBElseNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?) -> Herb::AST::ERBElseNode
+      # : (Herb::AST::ERBEndNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?) -> Herb::AST::ERBEndNode
+      # : (Herb::AST::ERBEnsureNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?) -> Herb::AST::ERBEnsureNode
+      # : (Herb::AST::ERBForNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBForNode
+      # : (Herb::AST::ERBIfNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?then_keyword: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?subsequent: Herb::AST::Node?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBIfNode
+      # : (Herb::AST::ERBInNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?then_keyword: Herb::Location?, ?statements: Array[Herb::AST::Node]?) -> Herb::AST::ERBInNode
+      # : (Herb::AST::ERBRescueNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?subsequent: Herb::AST::ERBRescueNode?) -> Herb::AST::ERBRescueNode
+      # : (Herb::AST::ERBUnlessNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?then_keyword: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?else_clause: Herb::AST::ERBElseNode?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBUnlessNode
+      # : (Herb::AST::ERBUntilNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBUntilNode
+      # : (Herb::AST::ERBWhenNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?then_keyword: Herb::Location?, ?statements: Array[Herb::AST::Node]?) -> Herb::AST::ERBWhenNode
+      # : (Herb::AST::ERBWhileNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBWhileNode
+      # : (Herb::AST::ERBYieldNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?) -> Herb::AST::ERBYieldNode
+      # rubocop:enable Layout/LineLength
+      def copy_erb_node: (Herb::AST::ERBBeginNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?rescue_clause: Herb::AST::ERBRescueNode?, ?else_clause: Herb::AST::ERBElseNode?, ?ensure_clause: Herb::AST::ERBEnsureNode?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBBeginNode
+                       | (Herb::AST::ERBBlockNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?body: Array[Herb::AST::Node]?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBBlockNode
+                       | (Herb::AST::ERBCaseMatchNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?children: Array[Herb::AST::Node]?, ?conditions: Array[Herb::AST::ERBInNode]?, ?else_clause: Herb::AST::ERBElseNode?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBCaseMatchNode
+                       | (Herb::AST::ERBCaseNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?children: Array[Herb::AST::Node]?, ?conditions: Array[Herb::AST::ERBWhenNode]?, ?else_clause: Herb::AST::ERBElseNode?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBCaseNode
+                       | (Herb::AST::ERBContentNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?analyzed_ruby: nil, ?parsed: bool?, ?valid: bool?) -> Herb::AST::ERBContentNode
+                       | (Herb::AST::ERBElseNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?) -> Herb::AST::ERBElseNode
+                       | (Herb::AST::ERBEndNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?) -> Herb::AST::ERBEndNode
+                       | (Herb::AST::ERBEnsureNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?) -> Herb::AST::ERBEnsureNode
+                       | (Herb::AST::ERBForNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBForNode
+                       | (Herb::AST::ERBIfNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?then_keyword: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?subsequent: Herb::AST::Node?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBIfNode
+                       | (Herb::AST::ERBInNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?then_keyword: Herb::Location?, ?statements: Array[Herb::AST::Node]?) -> Herb::AST::ERBInNode
+                       | (Herb::AST::ERBRescueNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?subsequent: Herb::AST::ERBRescueNode?) -> Herb::AST::ERBRescueNode
+                       | (Herb::AST::ERBUnlessNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?then_keyword: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?else_clause: Herb::AST::ERBElseNode?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBUnlessNode
+                       | (Herb::AST::ERBUntilNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBUntilNode
+                       | (Herb::AST::ERBWhenNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?then_keyword: Herb::Location?, ?statements: Array[Herb::AST::Node]?) -> Herb::AST::ERBWhenNode
+                       | (Herb::AST::ERBWhileNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBWhileNode
+                       | (Herb::AST::ERBYieldNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?) -> Herb::AST::ERBYieldNode
     end
   end
 end

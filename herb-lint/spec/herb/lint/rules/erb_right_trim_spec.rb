@@ -115,4 +115,130 @@ RSpec.describe Herb::Lint::Rules::ErbRightTrim do
       end
     end
   end
+
+  describe ".safe_autocorrectable?" do
+    it "returns true" do
+      expect(described_class.safe_autocorrectable?).to be(true)
+    end
+  end
+
+  describe "#autofix" do
+    subject { described_class.new.autofix(node, document) }
+
+    let(:document) { Herb.parse(source, track_whitespace: true) }
+
+    context "when fixing an ERB output tag" do
+      let(:source) { "<%= value =%>" }
+      let(:expected) { "<%= value -%>" }
+      let(:node) { document.value.children.first }
+
+      it "replaces =%> with -%> and returns true" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing an ERB statement tag" do
+      let(:source) { "<% foo =%>" }
+      let(:expected) { "<% foo -%>" }
+      let(:node) { document.value.children.first }
+
+      it "replaces =%> with -%>" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing an ERB comment tag" do
+      let(:source) { "<%# comment =%>" }
+      let(:expected) { "<%# comment -%>" }
+      let(:node) { document.value.children.first }
+
+      it "replaces =%> with -%>" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing an ERB if node" do
+      let(:source) do
+        <<~ERB.chomp
+          <% if condition =%>
+            <p>Content</p>
+          <% end %>
+        ERB
+      end
+      let(:expected) do
+        <<~ERB.chomp
+          <% if condition -%>
+            <p>Content</p>
+          <% end %>
+        ERB
+      end
+      let(:node) { document.value.children.first }
+
+      it "replaces =%> with -%> on the if tag" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing an ERB end node" do
+      let(:source) do
+        <<~ERB.chomp
+          <% if condition %>
+            <p>Content</p>
+          <% end =%>
+        ERB
+      end
+      let(:expected) do
+        <<~ERB.chomp
+          <% if condition %>
+            <p>Content</p>
+          <% end -%>
+        ERB
+      end
+      let(:node) do
+        document.value.children.first.end_node
+      end
+
+      it "replaces =%> with -%> on the end tag via parent" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing both if and end tags" do
+      let(:source) do
+        <<~ERB.chomp
+          <% if condition =%>
+            <p>Content</p>
+          <% end =%>
+        ERB
+      end
+      let(:expected) do
+        <<~ERB.chomp
+          <% if condition -%>
+            <p>Content</p>
+          <% end -%>
+        ERB
+      end
+
+      it "can fix each tag independently" do
+        if_node = document.value.children.first
+        end_node = if_node.end_node
+
+        expect(described_class.new.autofix(if_node, document)).to be(true)
+        expect(described_class.new.autofix(end_node, document)).to be(true)
+
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+  end
 end
