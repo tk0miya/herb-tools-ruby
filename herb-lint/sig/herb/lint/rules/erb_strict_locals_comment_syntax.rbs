@@ -32,9 +32,9 @@ module Herb
 
         def self.default_severity: () -> String
 
-        @validator: Validator
+        @first_strict_locals_location: Location?
 
-        def initialize: () -> untyped
+        @seen_strict_locals_comment: bool
 
         # @rbs override
         def on_new_investigation: ...
@@ -47,6 +47,9 @@ module Herb
         # @rbs node: Herb::AST::ERBContentNode
         # @rbs content: String
         def check_erb_comment_node: (Herb::AST::ERBContentNode node, String content) -> void
+
+        # @rbs node: Herb::AST::ERBContentNode
+        def check_duplicate_declaration: (Herb::AST::ERBContentNode node) -> void
 
         # @rbs node: Herb::AST::ERBContentNode
         def check_partial_file: (Herb::AST::ERBContentNode node) -> void
@@ -68,16 +71,10 @@ module Herb
 
           STRICT_LOCALS_PATTERN: ::Regexp
 
-          @first_strict_locals_location: Location?
-
-          @seen_strict_locals_comment: bool
-
           @rule: ErbStrictLocalsCommentSyntax
 
           # @rbs rule: ErbStrictLocalsCommentSyntax
           def initialize: (ErbStrictLocalsCommentSyntax rule) -> untyped
-
-          def reset: () -> void
 
           # @rbs comment_content: String
           # @rbs node: Herb::AST::ERBContentNode

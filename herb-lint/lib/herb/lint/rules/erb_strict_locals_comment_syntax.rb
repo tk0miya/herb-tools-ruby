@@ -40,17 +40,14 @@ module Herb
           "error"
         end
 
-        # @rbs @validator: Validator
-
-        def initialize
-          super
-          @validator = Validator.new(self)
-        end
+        # @rbs @seen_strict_locals_comment: bool
+        # @rbs @first_strict_locals_location: Location?
 
         # @rbs override
         def on_new_investigation #: void
           super
-          @validator.reset
+          @seen_strict_locals_comment = false
+          @first_strict_locals_location = nil
         end
 
         # @rbs override
@@ -77,7 +74,24 @@ module Herb
           return unless looks_like_locals_declaration?(comment_content)
 
           check_partial_file(node)
-          @validator.validate(comment_content, node)
+          check_duplicate_declaration(node)
+
+          validator = Validator.new(self)
+          validator.validate(comment_content, node)
+        end
+
+        # @rbs node: Herb::AST::ERBContentNode
+        def check_duplicate_declaration(node) #: void
+          if @seen_strict_locals_comment
+            add_offense(
+              message: "Duplicate `locals:` declaration. Only one `locals:` comment is allowed per partial " \
+                       "(first declaration at line #{@first_strict_locals_location&.start&.line}).",
+              location: node.location
+            )
+          else
+            @seen_strict_locals_comment = true
+            @first_strict_locals_location = node.location
+          end
         end
 
         # @rbs node: Herb::AST::ERBContentNode
@@ -123,19 +137,10 @@ module Herb
           STRICT_LOCALS_PATTERN = /\Alocals:\s+\([^)]*\)\s*\z/
 
           # @rbs @rule: ErbStrictLocalsCommentSyntax
-          # @rbs @seen_strict_locals_comment: bool
-          # @rbs @first_strict_locals_location: Location?
 
           # @rbs rule: ErbStrictLocalsCommentSyntax
           def initialize(rule)
             @rule = rule
-            @seen_strict_locals_comment = false
-            @first_strict_locals_location = nil
-          end
-
-          def reset #: void
-            @seen_strict_locals_comment = false
-            @first_strict_locals_location = nil
           end
 
           # @rbs comment_content: String
@@ -167,18 +172,6 @@ module Herb
           # @rbs comment_content: String
           # @rbs node: Herb::AST::ERBContentNode
           def handle_valid_format(comment_content, node) #: void
-            if @seen_strict_locals_comment
-              add_offense(
-                message: "Duplicate `locals:` declaration. Only one `locals:` comment is allowed per partial " \
-                         "(first declaration at line #{@first_strict_locals_location&.start&.line}).",
-                location: node.location
-              )
-              return
-            end
-
-            @seen_strict_locals_comment = true
-            @first_strict_locals_location = node.location
-
             params_match = comment_content.match(/\Alocals:\s*(\([\s\S]*\))\s*\z/)
             return unless params_match
 
