@@ -73,6 +73,7 @@ require_relative "lint/rules/html/no_title_attribute"
 require_relative "lint/rules/html/no_underscores_in_attribute_names"
 require_relative "lint/rules/html/tag_name_lowercase"
 require_relative "lint/rules/parser/no_errors"
+require_relative "lint/rules/strict_locals_validator"
 require_relative "lint/rules/svg/tag_name_capitalization"
 require_relative "lint/version"
 

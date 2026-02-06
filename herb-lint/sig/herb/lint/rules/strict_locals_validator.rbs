@@ -1,0 +1,121 @@
+# Generated from lib/herb/lint/rules/strict_locals_validator.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Rules
+      # Validates ERB strict locals comment syntax.
+      #
+      # This class is responsible for parsing and validating the content of ERB
+      # strict locals magic comments. It is independent of lint rule classes and
+      # focuses solely on string validation.
+      #
+      # @example Check if a string is a locals declaration
+      #   StrictLocalsValidator.locals_declaration?("locals: (name:)")  #=> true
+      #   StrictLocalsValidator.locals_declaration?("TODO: fix this")   #=> false
+      #
+      # @example Validate strict locals syntax
+      #   StrictLocalsValidator.validate("locals: (name:)")       #=> nil (valid)
+      #   StrictLocalsValidator.validate("locals: (name:, age:)") #=> nil (valid)
+      #   StrictLocalsValidator.validate("locals(name:)")         #=> "Use `locals:` ..."
+      class StrictLocalsValidator
+        STRICT_LOCALS_PATTERN: ::Regexp
+
+        # Check if a comment string looks like a strict locals declaration
+        # (whether valid or invalid syntax).
+        #
+        # @rbs comment: String
+        def self.locals_declaration?: (String comment) -> bool
+
+        # Validate a strict locals comment string.
+        #
+        # Assumes the input is a locals declaration (use .locals_declaration? to check first).
+        # Returns nil if the syntax is valid, or an error message String if invalid.
+        #
+        # @rbs comment: String
+        def self.validate: (String comment) -> String?
+
+        # @rbs comment: String
+        def initialize: (String comment) -> void
+
+        @comment: String
+
+        def validate: () -> String?
+
+        private
+
+        def valid_format?: () -> bool
+
+        def balanced_parentheses?: () -> bool
+
+        def detect_format_error: () -> String
+
+        def validate_parameters: () -> String?
+
+        # @rbs inner: String
+        def validate_each_parameter: (String inner) -> String?
+
+        # @rbs param: String
+        def validate_parameter: (String param) -> String?
+
+        # @rbs param: String
+        def validate_block_argument: (String param) -> String?
+
+        # @rbs param: String
+        def validate_splat_argument: (String param) -> String?
+
+        # @rbs param: String
+        def validate_double_splat_argument: (String param) -> String?
+
+        # @rbs param: String
+        def validate_keyword_argument: (String param) -> String?
+
+        # @rbs inner: String
+        def validate_comma_usage: (String inner) -> String?
+
+        def unbalanced_parentheses_message: () -> String
+
+        # Splits a string by commas at the top level only.
+        # Respects nested parentheses, brackets, braces, and strings.
+        class TopLevelCommaSplitter
+          QUOTE_CHARS: Array[String]
+
+          # @rbs str: String
+          def self.split: (String str) -> Array[String]
+
+          # @rbs str: String
+          def initialize: (String str) -> void
+
+          @chars: Array[String]
+
+          @result: Array[String]
+
+          @current: String
+
+          @paren_depth: Integer
+
+          @bracket_depth: Integer
+
+          @brace_depth: Integer
+
+          @in_string: bool
+
+          @string_char: String
+
+          def split: () -> Array[String]
+
+          private
+
+          # @rbs char: String
+          # @rbs index: Integer
+          def update_string_state: (String char, Integer index) -> void
+
+          # @rbs char: String
+          def structural_comma?: (String char) -> bool
+
+          # @rbs char: String
+          def update_depth: (String char) -> void
+        end
+      end
+    end
+  end
+end
