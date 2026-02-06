@@ -34,11 +34,22 @@ module Herb
             "error"
           end
 
+          def self.safe_autocorrectable? #: bool
+            true
+          end
+
           # Check each ERB node for the obscure =%> syntax
           # @rbs override
           def visit_child_nodes(node)
-            check_erb_node(node) if node.class.name.start_with?("Herb::AST::ERB")
+            check_erb_node(node) if node.class.name&.start_with?("Herb::AST::ERB")
             super
+          end
+
+          # @rbs override
+          def autofix(node, parse_result)
+            tag_closing = copy_token(node.tag_closing, content: "-%>")
+            new_node = copy_erb_node(node, tag_closing:)
+            replace_node(parse_result, node, new_node)
           end
 
           private
@@ -48,10 +59,11 @@ module Herb
             return unless node.tag_closing
             return unless node.tag_closing.value == "=%>"
 
-            add_offense(
+            add_offense_with_autofix(
               message: "Use `-%>` instead of `=%>` for right-trimming. " \
                        "The `=%>` syntax is obscure and not well-supported in most ERB engines.",
-              location: node.tag_closing.location
+              location: node.tag_closing.location,
+              node:
             )
           end
         end

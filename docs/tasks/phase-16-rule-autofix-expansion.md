@@ -165,11 +165,11 @@ cd herb-lint && ./bin/steep check
 
 **Location:** `herb-lint/lib/herb/lint/rules/erb_right_trim.rb`
 
-- [ ] Add `def self.autocorrectable? = true`
-- [ ] Change `add_offense` to `add_offense_with_autofix`
-- [ ] Implement `autofix(node, parse_result)` method
-  - [ ] Add right trim to ERB tags
-- [ ] Add autofix tests
+- [x] Add `def self.autocorrectable? = true`
+- [x] Change `add_offense` to `add_offense_with_autofix`
+- [x] Implement `autofix(node, parse_result)` method
+  - [x] Add right trim to ERB tags
+- [x] Add autofix tests
 
 **Example:**
 

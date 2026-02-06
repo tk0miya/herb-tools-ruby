@@ -25,9 +25,14 @@ module Herb
 
           def self.default_severity: () -> String
 
+          def self.safe_autocorrectable?: () -> bool
+
           # Check each ERB node for the obscure =%> syntax
           # @rbs override
           def visit_child_nodes: ...
+
+          # @rbs override
+          def autofix: ...
 
           private
 
