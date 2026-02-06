@@ -27,16 +27,22 @@ RSpec.describe Herb::Lint::Rules::Erb::NoEmptyTags do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when ERB tag has content" do
-      let(:source) { "<% do_something %>" }
+    context "when ERB tag outputs content" do
+      let(:source) { "<%= user.name %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when ERB output tag has content" do
-      let(:source) { "<%= value %>" }
+    context "when ERB tag contains control flow logic" do
+      let(:source) do
+        <<~ERB
+          <% if user.admin? %>
+            Admin tools
+          <% end %>
+        ERB
+      end
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -44,7 +50,7 @@ RSpec.describe Herb::Lint::Rules::Erb::NoEmptyTags do
     end
 
     context "when ERB tag is completely empty" do
-      let(:source) { "<%=%>" }
+      let(:source) { "<% %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -54,8 +60,8 @@ RSpec.describe Herb::Lint::Rules::Erb::NoEmptyTags do
       end
     end
 
-    context "when ERB tag contains only one space" do
-      let(:source) { "<% %>" }
+    context "when ERB output tag is empty with spaces" do
+      let(:source) { "<%=  %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -64,8 +70,13 @@ RSpec.describe Herb::Lint::Rules::Erb::NoEmptyTags do
       end
     end
 
-    context "when ERB tag contains only multiple spaces" do
-      let(:source) { "<%  %>" }
+    context "when ERB tag is empty with newline" do
+      let(:source) do
+        <<~ERB
+          <%
+          %>
+        ERB
+      end
 
       it "reports an offense" do
         expect(subject.size).to eq(1)

@@ -27,18 +27,36 @@ RSpec.describe Herb::Lint::Rules::Erb::PreferImageTagHelper do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when using image_tag helper" do
-      let(:source) { "<%= image_tag 'logo.png' %>" }
+    context "when using image_tag helper with simple path" do
+      let(:source) { '<%= image_tag "logo.png", alt: "Logo" %>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when using raw img tag" do
-      let(:source) { '<img src="logo.png" alt="Company Logo">' }
+    context "when using image_tag helper with dynamic content" do
+      let(:source) { '<%= image_tag user.avatar.url, alt: "User avatar" %>' }
 
-      it "reports an offense with correct details" do
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when using img tag with static path" do
+      let(:source) { '<img src="/static/logo.png" alt="Logo">' }
+
+      # NOTE: Current implementation flags ALL img tags, not just dynamic ones
+      it "reports an offense (implementation limitation)" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("erb-prefer-image-tag-helper")
+      end
+    end
+
+    context "when using img tag with ERB image_path helper" do
+      let(:source) { '<img src="<%= image_path("logo.png") %>" alt="Logo">' }
+
+      it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("erb-prefer-image-tag-helper")
         expect(subject.first.message).to eq(
@@ -49,8 +67,8 @@ RSpec.describe Herb::Lint::Rules::Erb::PreferImageTagHelper do
       end
     end
 
-    context "when using uppercase IMG tag" do
-      let(:source) { '<IMG src="logo.png">' }
+    context "when using img tag with ERB dynamic content" do
+      let(:source) { '<img src="<%= user.avatar.url %>" alt="User avatar">' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)

@@ -27,8 +27,22 @@ RSpec.describe Herb::Lint::Rules::Erb::NoOutputControlFlow do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when if statement uses silent tag" do
-      let(:source) { "<% if condition %><% end %>" }
+    context "when if statement uses silent tag for control flow" do
+      let(:source) do
+        <<~ERB
+          <% if condition %>
+            Content here
+          <% end %>
+        ERB
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when using output tag for content" do
+      let(:source) { "<%= user.name %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -36,7 +50,13 @@ RSpec.describe Herb::Lint::Rules::Erb::NoOutputControlFlow do
     end
 
     context "when if statement uses output tag" do
-      let(:source) { "<%= if condition %><% end %>" }
+      let(:source) do
+        <<~ERB
+          <%= if condition %>
+            Content here
+          <% end %>
+        ERB
+      end
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -49,7 +69,13 @@ RSpec.describe Herb::Lint::Rules::Erb::NoOutputControlFlow do
     end
 
     context "when unless statement uses output tag" do
-      let(:source) { "<%= unless condition %><% end %>" }
+      let(:source) do
+        <<~ERB
+          <%= unless user.nil? %>
+            Welcome!
+          <% end %>
+        ERB
+      end
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -101,14 +127,6 @@ RSpec.describe Herb::Lint::Rules::Erb::NoOutputControlFlow do
 
     context "when regular output tag is used" do
       let(:source) { "<%= value %>" }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when output tag contains method call" do
-      let(:source) { "<%= user.name %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
