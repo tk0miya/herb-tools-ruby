@@ -11,14 +11,6 @@ module Herb
         #   Disallow ERB tags that start with `<% #` (with a space before the `#`).
         #   Use the ERB comment syntax `<%#` instead.
         #
-        #   Ruby comments starting immediately after an ERB tag opening
-        #   (e.g., `<% # comment %>`) can cause parsing issues in some contexts.
-        #   The proper ERB comment syntax `<%# comment %>` is more reliable and
-        #   explicitly designed for comments in templates.
-        #
-        #   For multi-line comments or actual Ruby code with comments, ensure the
-        #   content starts on a new line after the opening tag.
-        #
         # Good:
         #   <%# This is a proper ERB comment %>
         #
