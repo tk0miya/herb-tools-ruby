@@ -12,6 +12,35 @@ This design follows the TypeScript reference implementation in `@herb-tools/lint
 
 The linting phase already parses with `track_whitespace: true`, producing an AST suitable for lossless round-trip serialization. The autofix phase reuses this same `ParseResult` rather than re-parsing the source. This eliminates the need to relocate nodes by location after re-parsing — offenses carry direct references to the original AST nodes detected during linting.
 
+### Two Rule Categories for Autofix
+
+Rules fall into two categories based on how they analyze and fix code:
+
+| Category | Base Class | Check Input | Autofix Input | Autofix Output | Use Case |
+|----------|-----------|-------------|---------------|----------------|----------|
+| **Visitor Rule** | `VisitorRule` | AST (`ParseResult`) | AST node + `ParseResult` | `bool` (AST mutated in-place) | Semantic analysis, node structure |
+| **Source Rule** | `SourceRule` | Source string | Offense + source string | `String?` (corrected source) | Text patterns, file-level formatting |
+
+**Visitor Rules** traverse the AST via the visitor pattern, detect offenses on specific nodes, and fix them by mutating the AST. The corrected source is obtained by serializing the modified AST via `IdentityPrinter`.
+
+**Source Rules** operate on raw source strings using regex or string scanning. They detect offenses by byte offset and fix them by returning a corrected source string. No AST manipulation is involved.
+
+### Future: Lexer Rule (Token-Based)
+
+The TypeScript reference defines a third rule type — `LexerRule` — that operates on token streams (`LexResult`) from `Herb.lex()`:
+
+| Category | Base Class | Check Input | Autofix Input | Autofix Output | Use Case |
+|----------|-----------|-------------|---------------|----------------|----------|
+| **Lexer Rule** | `LexerRule` | `LexResult` (tokens) | Offense + `LexResult` | `LexResult?` (corrected tokens) | Token-level validation |
+
+`LexResult` contains a `TokenList` (array of `Token` objects with `value`, `type`, `range`, `location`). Lexer Rules analyze token sequences without requiring full AST parsing.
+
+**Current status:** The TypeScript implementation defines `LexerRule` and includes infrastructure support (type guards, dispatch in `Linter.autofix()`), but **no built-in rules use it**. All existing rules are either `ParserRule` (→ `VisitorRule` in Ruby) or `SourceRule`. The Ruby implementation does not implement `LexerRule` at this time. If a concrete use case arises, it can be introduced following the same pattern as `SourceRule`:
+
+1. New `LexerRule` base class with `check_tokens(lex_result, context)` delegation
+2. Unified `AutofixContext` extended with token-level fields
+3. `AutoFixer` phase 3 for token-based fixes
+
 ## Reference Implementation
 
 The TypeScript reference is `@herb-tools/linter` in the [herb repository](https://github.com/marcoroth/herb):
@@ -50,9 +79,9 @@ Token.new(...)                         # new leaf
 Following the TypeScript reference, autofixes are applied in two phases:
 
 1. **AST phase**: Rules that operate on AST nodes (`VisitorRule`). All AST autofixes operate on the `ParseResult` from the lint phase; each autofix creates replacement nodes and substitutes them in the tree. After all AST autofixes, `IdentityPrinter` serializes the modified AST back to source.
-2. **Source phase**: Rules that operate on raw source strings (future `SourceRule`). Applied in reverse document order to avoid offset invalidation.
+2. **Source phase**: Rules that operate on raw source strings (`SourceRule`). Each offense carries byte offsets (`start_offset`, `end_offset`) recorded during the check phase. During autofix, the rule verifies that the content at the recorded offsets still matches the expected pattern. If the content has shifted due to a prior fix, the rule returns `nil` and the offense is added to the unfixed list — **offsets are never recalculated**.
 
-Currently all implemented rules are `VisitorRule`, so only the AST phase is needed. The source phase is a future extension point.
+This two-phase ordering is important: AST fixes are applied first and serialized to a source string, then source fixes operate on that resulting string.
 
 ## CLI Flags
 
@@ -85,8 +114,16 @@ CLI#run
           │   │   │   │   └── track fixed vs unfixed
           │   │   │   └── IdentityPrinter.print(parse_result) → new_source
           │   │   │
-          │   │   └── Phase 2: Source autofixes (future)
-          │   │       └── (not needed for current rules)
+          │   │   └── Phase 2: Source autofixes
+          │   │       ├── Partition fixable offenses: source_rule? vs visitor_rule?
+          │   │       ├── for each source offense:
+          │   │       │   ├── offense.autofix_context.{start_offset, end_offset}
+          │   │       │   ├── rule.autofix_source(offense, current_source)
+          │   │       │   │   ├── Verify content at offset matches expected pattern
+          │   │       │   │   ├── If match: apply fix, return corrected source
+          │   │       │   │   └── If mismatch: return nil (skip, add to unfixed)
+          │   │       │   └── current_source = corrected_source
+          │   │       └── Return final source
           │   │
           │   ├── File.write(file_path, fix_result.source)
           │   └── report unfixed offenses only
@@ -126,17 +163,50 @@ end
 
 #### Herb::Lint::AutofixContext
 
-Data class bridging the check phase and autofix phase. Carries a direct reference to the offending AST node and the rule class that can fix it.
+Data class bridging the check phase and autofix phase. Uses a unified structure for both Visitor Rules and Source Rules. The rule type is determined by which optional fields are present:
+
+- **Visitor Rule**: `node` is set, offsets are `nil`
+- **Source Rule**: `start_offset` and `end_offset` are set, `node` is `nil`
 
 ```rbs
 class Herb::Lint::AutofixContext
-  attr_reader node: Herb::AST::Node            # direct reference to the offending node
-  attr_reader rule_class: singleton(Rules::VisitorRule)  # rule that can fix this offense
+  attr_reader rule_class: singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)
+  attr_reader node: Herb::AST::Node?             # Visitor Rule: direct reference to offending node
+  attr_reader start_offset: Integer?              # Source Rule: byte offset of offense start
+  attr_reader end_offset: Integer?                # Source Rule: byte offset of offense end
 
   def initialize: (
-    node: Herb::AST::Node,
-    rule_class: singleton(Rules::VisitorRule)
+    rule_class: singleton(Rules::VisitorRule) | singleton(Rules::SourceRule),
+    ?node: Herb::AST::Node?,
+    ?start_offset: Integer?,
+    ?end_offset: Integer?
   ) -> void
+
+  # Returns true when offsets are present (Source Rule offense)
+  def source_rule?: () -> bool
+
+  # Returns true when node is present (Visitor Rule offense)
+  def visitor_rule?: () -> bool
+
+  # Returns true when the rule can autocorrect this offense.
+  def autocorrectable?: (?unsafe: bool) -> bool
+end
+```
+
+**Type discrimination by field presence:**
+
+```ruby
+# Visitor Rule creates context with node:
+AutofixContext.new(rule_class: self.class, node: some_node)
+
+# Source Rule creates context with offsets:
+AutofixContext.new(rule_class: self.class, start_offset: 42, end_offset: 50)
+
+# AutoFixer checks which type:
+if context.source_rule?   # start_offset present
+  rule.autofix_source(offense, source)
+else                       # node present
+  rule.autofix(context.node, parse_result)
 end
 ```
 
@@ -177,7 +247,28 @@ module Herb::Lint::Rules::RuleMethods
 end
 ```
 
-`add_offense_with_autofix` creates an `Offense` with an `AutofixContext` populated from the given node and the current rule class. Rules that are fixable call this method instead of `add_offense`.
+`add_offense_with_autofix` creates an `Offense` with an `AutofixContext` populated from the given node and the current rule class. Visitor Rules that are fixable call this method instead of `add_offense`.
+
+#### Source Rule Additions to RuleMethods
+
+```rbs
+module Herb::Lint::Rules::RuleMethods
+  # NEW: add_offense with source autofix context (byte offsets)
+  def add_offense_with_source_autofix: (
+    message: String,
+    location: Herb::Location,
+    start_offset: Integer,
+    end_offset: Integer
+  ) -> void
+
+  # NEW: source-based autofix method (override in fixable Source Rules)
+  # Receives the offense (with recorded offsets) and current source string.
+  # Returns corrected source string, or nil if fix cannot be applied.
+  def autofix_source: (Herb::Lint::Offense offense, String source) -> String?
+end
+```
+
+`add_offense_with_source_autofix` creates an `AutofixContext` with `start_offset` and `end_offset` (no node). Source Rules that are fixable call this method.
 
 #### Herb::Lint::LintResult
 
@@ -561,6 +652,202 @@ end
 - `herb-lint --fix` modifies files and reports remaining offenses
 - `herb-lint --fix-unsafely` applies unsafe autofixes
 - Exit code reflects remaining (unfixed) offenses
+
+## Source Rule Design
+
+### Overview
+
+Source Rules operate on raw source strings rather than the AST. They are suited for rules that detect patterns in the text itself — such as trailing newlines, consecutive blank lines, or other file-level formatting concerns.
+
+The TypeScript reference implementation (`@herb-tools/linter`) defines three rule types: `ParserRule`, `LexerRule`, and `SourceRule`. In the Ruby implementation, `VisitorRule` corresponds to `ParserRule`, and `SourceRule` is a new base class for source-level rules. `LexerRule` is not currently planned.
+
+### SourceRule Base Class
+
+```rbs
+class Herb::Lint::Rules::SourceRule < Herb::Lint::Rules::Base
+  # Delegates to check_source with the source string from context.
+  # parse_result is accepted but ignored (interface compatibility with Linter#collect_offenses).
+  def check: (Herb::ParseResult _parse_result, Herb::Lint::Context context) -> Array[Herb::Lint::Offense]
+
+  # Subclasses implement this method.
+  # Receives the raw source string and context for analysis.
+  def check_source: (String source, Herb::Lint::Context context) -> void
+
+  # Source-based autofix. Receives the offense (with recorded offsets) and current source.
+  # Subclasses override to apply fixes. Returns corrected source or nil.
+  # Must verify that content at recorded offsets still matches the expected pattern.
+  def autofix_source: (Herb::Lint::Offense offense, String source) -> String?
+
+  # Convenience method: add offense with source autofix context.
+  # Creates AutofixContext with start_offset and end_offset (no node).
+  def add_offense_with_source_autofix: (
+    message: String,
+    location: Herb::Location,
+    start_offset: Integer,
+    end_offset: Integer
+  ) -> void
+
+  private
+
+  # Convert byte offsets to a Location object.
+  def location_from_offsets: (Integer start_offset, Integer end_offset) -> Herb::Location
+
+  # Convert a byte offset to line/column position (0-indexed).
+  def position_from_offset: (Integer offset) -> { line: Integer, column: Integer }
+end
+```
+
+**Key design decisions:**
+
+1. **`check` accepts `parse_result` but ignores it.** This maintains a uniform interface with `VisitorRule` so `Linter#collect_offenses` does not need type dispatch. Both rule types are called with `rule.check(parse_result, context)`.
+
+2. **`check_source` is the subclass entry point.** Receives the source string extracted from `context.source`. Subclasses use regex, string scanning, etc. to find violations.
+
+3. **Position helpers are in the base class.** `location_from_offsets` and `position_from_offset` convert byte offsets to `Herb::Location` objects. These are needed by all source rules and are extracted from the current `NoExtraNewline` implementation.
+
+### Source Rule Autofix: Offset Verification
+
+Source Rule autofixes use byte offsets recorded at check time. When multiple fixes are applied sequentially to the same source string, earlier fixes may shift the byte positions of later offenses. Rather than recalculating offsets, the autofix method **verifies** that the content at the recorded offsets still matches the expected pattern:
+
+```ruby
+def autofix_source(offense, source)
+  ctx = offense.autofix_context
+  start_offset = ctx.start_offset
+  end_offset = ctx.end_offset
+
+  # Guard: verify content at recorded offsets
+  actual_content = source[start_offset...end_offset]
+  return nil unless valid_offense_content?(actual_content)
+
+  # Apply fix
+  apply_source_fix(source, start_offset, end_offset)
+end
+```
+
+**Design rationale:**
+
+- **No recalculation.** Recalculating offsets after each fix is complex and error-prone. Instead, if the content has shifted, the fix is skipped.
+- **Explicit verification.** Each rule defines `valid_offense_content?` to check that the content at the recorded offsets is what the rule expects. For example, `NoExtraNewline` checks that the content is newlines only (`/\A\n+\z/`).
+- **Idempotent safety.** If a fix was already applied (e.g., on a previous run), the verification will fail and the fix is safely skipped.
+- **No reverse-order requirement.** The TypeScript reference sorts source offenses in reverse document order to minimize offset drift. With verification, reverse-order is not strictly required but can be used as an optimization.
+
+### Source Rule Example: NoExtraNewline
+
+```ruby
+class NoExtraNewline < SourceRule
+  def self.rule_name = "erb-no-extra-newline"
+  def self.safe_autocorrectable? = true
+
+  def check_source(source, _context)
+    source.scan(/\n{4,}/) do
+      match_data = Regexp.last_match
+      match_start = match_data.begin(0)
+      match_length = match_data[0].length
+
+      offense_start = match_start + 3
+      offense_end = match_start + match_length
+      location = location_from_offsets(offense_start, offense_end)
+
+      add_offense_with_source_autofix(
+        message: "Extra blank line detected...",
+        location:,
+        start_offset: offense_start,
+        end_offset: offense_end
+      )
+    end
+  end
+
+  def autofix_source(offense, source)
+    ctx = offense.autofix_context
+    content = source[ctx.start_offset...ctx.end_offset]
+
+    # Verify: content at offsets should be newlines only
+    return nil unless content&.match?(/\A\n+\z/)
+
+    # Remove the extra newlines
+    source[0...ctx.start_offset] + source[ctx.end_offset..]
+  end
+end
+```
+
+### AutoFixer: Two-Phase Processing
+
+The `AutoFixer` separates offenses by type using `AutofixContext#source_rule?` and processes them in two phases:
+
+```rbs
+class Herb::Lint::AutoFixer
+  def apply: () -> AutoFixResult
+
+  private
+
+  # Phase 1: AST fixes (VisitorRule offenses)
+  # Mutates AST nodes via rule.autofix(node, parse_result)
+  # Serializes via IdentityPrinter.print(parse_result) → source string
+  def apply_ast_fixes: (Array[Offense] offenses) -> [String, Array[Offense], Array[Offense]]
+
+  # Phase 2: Source fixes (SourceRule offenses)
+  # Applies rule.autofix_source(offense, source) sequentially
+  # Each fix operates on the result of the previous fix
+  # Returns [final_source, fixed, unfixed]
+  def apply_source_fixes: (Array[Offense] offenses, String source) -> [String, Array[Offense], Array[Offense]]
+end
+```
+
+**Processing flow:**
+
+```
+AutoFixer#apply
+  ├── partition fixable offenses by autofix_context.source_rule?
+  │   ├── visitor_rule? offenses → ast_fixable
+  │   └── source_rule? offenses → source_fixable
+  │
+  ├── Phase 1: apply_ast_fixes(ast_fixable)
+  │   ├── for each offense: rule.autofix(node, parse_result) → bool
+  │   └── IdentityPrinter.print(parse_result) → source
+  │
+  ├── Phase 2: apply_source_fixes(source_fixable, source)
+  │   └── for each offense:
+  │       ├── rule.autofix_source(offense, current_source)
+  │       ├── verify content at offsets → skip if mismatch
+  │       └── current_source = corrected_source
+  │
+  └── return AutoFixResult(source, fixed, unfixed)
+```
+
+### Testing Strategy for Source Rules
+
+#### Unit Tests -- SourceRule Base Class
+
+- `check` delegates to `check_source` with source string from context
+- `check` ignores parse_result argument
+- `autofix_source` default returns `nil`
+- `add_offense_with_source_autofix` creates offense with `AutofixContext` containing offsets
+- `location_from_offsets` correctly converts byte offsets to Location
+- `position_from_offset` correctly handles newlines and multi-byte characters
+
+#### Unit Tests -- AutofixContext (unified)
+
+- `source_rule?` returns `true` when `start_offset` is present
+- `source_rule?` returns `false` when `node` is present
+- `visitor_rule?` returns `true` when `node` is present
+- `visitor_rule?` returns `false` when `start_offset` is present
+- `autocorrectable?` delegates to `rule_class.safe_autocorrectable?` and `unsafe_autocorrectable?`
+- Backward compatibility: existing creation with `node:` still works
+
+#### Unit Tests -- AutoFixer (source phase)
+
+- Source offenses with valid offsets are fixed correctly
+- Source offenses with shifted offsets (content mismatch) are skipped
+- Mixed AST + source offenses: AST fixes applied first, then source fixes
+- Multiple source offenses from the same rule applied sequentially
+- `autofix_source` returning `nil` adds offense to unfixed list
+
+#### Unit Tests -- NoExtraNewline (migrated to SourceRule)
+
+- Detection logic unchanged (existing tests should still pass)
+- Autofix removes extra newlines
+- Autofix skips when content at offset has changed
+- Autofix handles multiple occurrences in same file
 
 ## Related Documents
 

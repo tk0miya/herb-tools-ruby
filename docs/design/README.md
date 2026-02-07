@@ -78,8 +78,9 @@ Detailed design for the herb-lint `--fix` / `--fix-unsafely` autofix feature.
 - Safe vs unsafe autocorrect model
 - Two-phase autofix application (AST phase + source phase)
 - Whitespace preservation via `track_whitespace: true`
+- **Source Rule design**: SourceRule base class, offset-based autofix with verification, unified AutofixContext
 
-**Audience:** Developers implementing fixable rules, the AutoFixer infrastructure, or extending the autofix system.
+**Audience:** Developers implementing fixable rules, the AutoFixer infrastructure, or extending the autofix system (including source-level rules).
 
 ### [herb-format-design.md](./herb-format-design.md)
 Detailed design for the ERB template formatter.

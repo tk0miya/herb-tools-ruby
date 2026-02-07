@@ -27,6 +27,7 @@ Phases 1-9 have been completed and their task files have been removed from this 
 | Phase 14 | [phase-14-herb-printer.md](./phase-14-herb-printer.md) | 12 | herb-printer gem (AST-to-source) | 🚧 |
 | Phase 15 | [phase-15-autofix.md](./phase-15-autofix.md) | 8 | Autofix (`--fix` / `--fix-unsafely`) | 📋 |
 | Phase 16 | [phase-16-rule-autofix-expansion.md](./phase-16-rule-autofix-expansion.md) | TBD | Rule autofix expansion | 📋 |
+| Source Rule | [source-rule.md](./source-rule.md) | 6 | SourceRule base class, autofix, NoExtraNewline migration | 📋 |
 
 **Remaining Total: ~69 tasks**
 
@@ -94,6 +95,14 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 ### Phase 16: Rule Autofix Expansion
 
 Expand autofix capabilities to additional rules. Details in [phase-16-rule-autofix-expansion.md](./phase-16-rule-autofix-expansion.md).
+
+### Source Rule Introduction (6 tasks)
+
+| Part | Tasks | Description |
+|------|-------|-------------|
+| Part A | 3 | AutofixContext extension, SourceRule base class, AutoFixer source phase |
+| Part B | 1 | NoExtraNewline migration to SourceRule with autofix |
+| Part C | 2 | Type annotations, full verification |
 
 ## How to Proceed
 
