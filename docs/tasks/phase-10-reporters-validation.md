@@ -293,13 +293,13 @@ end
 
 **Location:** `herb-config/lib/herb/config/validator.rb`
 
-- [ ] Remove `known_rules` parameter from `initialize`
-- [ ] Remove `validate_known_rules` method
-- [ ] Remove `add_warning` method (unused)
-- [ ] Remove `actual_errors` method (no longer needed)
-- [ ] Simplify `valid?` and `validate!` methods
-- [ ] Update unit tests
-- [ ] Generate RBS types
+- [x] Remove `known_rules` parameter from `initialize`
+- [x] Remove `validate_known_rules` method
+- [x] Remove `add_warning` method (unused)
+- [x] Remove `actual_errors` method (no longer needed)
+- [x] Simplify `valid?` and `validate!` methods
+- [x] Update unit tests
+- [x] Generate RBS types
 
 **Rationale:**
 

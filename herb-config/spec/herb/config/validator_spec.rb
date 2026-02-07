@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Herb::Config::Validator do
-  let(:known_rules) { %w[html-alt-text html-attribute-quotes erb-no-debug] }
-
   describe "#valid?" do
-    subject { described_class.new(config, known_rules:).valid? }
+    subject { described_class.new(config).valid? }
 
     context "with valid configuration" do
       let(:config) do
@@ -34,26 +32,10 @@ RSpec.describe Herb::Config::Validator do
 
       it { is_expected.to be true }
     end
-
-    context "with unknown rule name" do
-      let(:config) do
-        {
-          "linter" => {
-            "rules" => {
-              "unknown-rule" => { "severity" => "error" }
-            }
-          }
-        }
-      end
-
-      it "is valid (unknown rules are warnings, not errors)" do
-        expect(subject).to be true
-      end
-    end
   end
 
   describe "#validate!" do
-    subject { described_class.new(config, known_rules:).validate! }
+    subject { described_class.new(config).validate! }
 
     context "with valid configuration" do
       let(:config) do
@@ -92,28 +74,12 @@ RSpec.describe Herb::Config::Validator do
         end
       end
     end
-
-    context "with unknown rule name" do
-      let(:config) do
-        {
-          "linter" => {
-            "rules" => {
-              "unknown-rule" => { "severity" => "error" }
-            }
-          }
-        }
-      end
-
-      it "does not raise an error (unknown rules are warnings)" do
-        expect { subject }.not_to raise_error
-      end
-    end
   end
 
   describe "#errors" do
     subject { validator.errors }
 
-    let(:validator) { described_class.new(config, known_rules:) }
+    let(:validator) { described_class.new(config) }
 
     context "with valid configuration" do
       let(:config) do
@@ -127,22 +93,6 @@ RSpec.describe Herb::Config::Validator do
       end
 
       it { is_expected.to be_empty }
-    end
-
-    context "with unknown rule" do
-      let(:config) do
-        {
-          "linter" => {
-            "rules" => {
-              "unknown-rule" => { "severity" => "error" }
-            }
-          }
-        }
-      end
-
-      it "returns warning about unknown rule" do
-        expect(subject).to include(match(/Warning:.*unknown rule 'unknown-rule'/))
-      end
     end
 
     context "with multiple errors" do
@@ -169,23 +119,6 @@ RSpec.describe Herb::Config::Validator do
           match(/value "critical" did not match one of the following values/),
           match(/did not have a minimum value of 1/)
         )
-      end
-    end
-
-    context "when no known_rules provided" do
-      let(:validator) { described_class.new(config, known_rules: []) }
-      let(:config) do
-        {
-          "linter" => {
-            "rules" => {
-              "unknown-rule" => { "severity" => "error" }
-            }
-          }
-        }
-      end
-
-      it "does not validate rule names" do
-        expect(subject).to be_empty
       end
     end
   end
