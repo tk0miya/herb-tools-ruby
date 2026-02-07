@@ -6,14 +6,39 @@ This document contains the task list for reviewing and updating all implemented 
 
 For each rule, complete the following 8 steps:
 
-1. Remove the existing comment at the top of the rule file
-2. Check the original herb-lint documentation at https://github.com/marcoroth/herb/tree/main/javascript/packages/linter/docs/rules
-3. Read the Description and Examples (Good/Bad) from the documentation
-4. Add the Description and Examples as comments at the top of the rule file (plain text format, not YARD format)
-5. Review test cases and update them based on the Description and Examples. Overwrite both success and failure cases. Add cases only if missing.
-6. Check the original herb-lint rule implementation
-7. Compare the Ruby version with the original version and list the differences
-8. Apply the original version's logic to the Ruby version
+1. **Remove the existing Description comment** at the top of the rule class (Description, Good, and Bad comment blocks)
+
+2. **Check the original herb-lint documentation** at https://github.com/marcoroth/herb/tree/main/javascript/packages/linter/docs/rules
+
+3. **Read the Description and Examples** (Good/Bad) from the documentation
+
+4. **Add the Description and Examples as comments** at the top of the rule class:
+   - Add "Description:" heading
+   - Copy the Description text verbatim (word-for-word, including all paragraphs)
+   - DO NOT paraphrase, rewrite, or add your own explanations
+   - Add blank line after Description
+   - Add "Good:" heading with blank line before it
+   - Copy all Good examples with `#   ` (hash + 3 spaces) before each line
+   - Use existing Ruby codebase indentation within the examples
+   - Add blank line after Good section
+   - Add "Bad:" heading with blank line before it
+   - Copy all Bad examples with `#   ` (hash + 3 spaces) before each line
+   - Add blank line after Bad section
+   - Use plain text format, not YARD format
+
+5. **Review and update test cases:**
+   - Add comments `# Good examples from documentation` and `# Bad examples from documentation`
+   - For each Good example: add test case with `it "does not report an offense"`
+   - For each Bad example: add test case with `it "reports an offense"`
+   - Keep existing additional test cases that provide useful coverage
+   - DO NOT delete test cases that test edge cases or provide better coverage
+   - Add test cases only if documentation examples are missing
+
+6. **Check the original herb-lint rule implementation** (TypeScript/JavaScript)
+
+7. **Compare the Ruby version with the original** and document differences
+
+8. **(Optional) Apply the original version's logic** if significant differences are found
 
 ## Rules to Review
 
