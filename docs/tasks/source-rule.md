@@ -257,9 +257,50 @@ end
 
 ---
 
+### Task S.5: Migrate RequireTrailingNewline from VisitorRule to SourceRule
+
+**Location:** `herb-lint/lib/herb/lint/rules/erb/require_trailing_newline.rb`
+
+The TypeScript reference implementation (`erb-require-trailing-newline.ts`) uses `SourceRule` — it receives the raw source string and checks for trailing newlines directly. The current Ruby implementation uses `VisitorRule` and inspects AST nodes (`visit_document_node`), which is unnecessarily complex for this rule.
+
+- [ ] Change base class from `VisitorRule` to `SourceRule`
+- [ ] Replace `visit_document_node` with `check_source(source, context)` that inspects the source string directly
+- [ ] Simplify detection: check `source.end_with?("\n")` and `source.end_with?("\n\n")` (matching TypeScript logic)
+- [ ] Replace AST-based autofix with `autofix_source(offense, source)` returning `source.rstrip + "\n"`
+- [ ] Remove AST node manipulation helpers (`copy_html_text_node`, `replace_node`, `append_trailing_newline_text_node`)
+- [ ] Update existing tests
+- [ ] Generate RBS types
+
+**Reference (TypeScript):**
+
+```typescript
+class ERBRequireTrailingNewlineVisitor extends BaseSourceRuleVisitor {
+  protected visitSource(source: string): void {
+    if (source.length === 0) return
+    if (!source.endsWith('\n')) {
+      this.addOffense("File must end with trailing newline.", createEndOfFileLocation(source))
+    } else if (source.endsWith('\n\n')) {
+      this.addOffense("File must end with exactly one trailing newline.", createEndOfFileLocation(source))
+    }
+  }
+}
+
+autofix(_offense, source) { return source.trimEnd() + "\n" }
+```
+
+**Test Cases:**
+- Empty file: no offense
+- File without trailing newline: offense reported
+- File with exactly one trailing newline: no offense
+- File with multiple trailing newlines: offense reported
+- Autofix returns `source.rstrip + "\n"`
+- Existing detection tests still pass (no behavior change)
+
+---
+
 ## Part C: Integration
 
-### Task S.5: Update Type Annotations and Registry
+### Task S.7: Update Type Annotations and Registry
 
 **Location:** `herb-lint/lib/herb/lint/linter.rb`, `herb-lint/lib/herb/lint/runner.rb`, `herb-lint/lib/herb/lint/rule_registry.rb`
 
@@ -283,7 +324,7 @@ def instantiate_rules #: Array[Rules::Base | Rules::VisitorRule | Rules::SourceR
 
 ---
 
-### Task S.6: Full Verification
+### Task S.8: Full Verification
 
 - [ ] Run `cd herb-lint && ./bin/rspec` -- all tests pass
 - [ ] Run `cd herb-lint && ./bin/rubocop` -- no offenses
@@ -291,6 +332,8 @@ def instantiate_rules #: Array[Rules::Base | Rules::VisitorRule | Rules::SourceR
 - [ ] Verify existing rules (VisitorRule-based) are unaffected
 - [ ] Verify `NoExtraNewline` detection behavior is unchanged
 - [ ] Verify `NoExtraNewline` autofix works end-to-end
+- [ ] Verify `RequireTrailingNewline` detection behavior is unchanged
+- [ ] Verify `RequireTrailingNewline` autofix works end-to-end
 
 ---
 
@@ -302,16 +345,16 @@ def instantiate_rules #: Array[Rules::Base | Rules::VisitorRule | Rules::SourceR
 | S.2 | A | Create SourceRule base class |
 | S.3 | A | Extend AutoFixer with source phase |
 | S.4 | B | Migrate NoExtraNewline to SourceRule with autofix |
-| S.5 | C | Update type annotations and registry |
-| S.6 | C | Full verification |
+| S.5 | B | Migrate RequireTrailingNewline from VisitorRule to SourceRule |
+| S.6 | C | Update type annotations and registry |
+| S.7 | C | Full verification |
 
-**Total: 6 tasks**
+**Total: 7 tasks**
 
 ## Future Work
 
 After the Source Rule infrastructure is established:
 
-- **Migrate `RequireTrailingNewline`** from `VisitorRule` to `SourceRule` (matches TypeScript reference). Currently works as a VisitorRule, so this is optional.
 - **New source rules** can be added by extending `SourceRule` (e.g., file encoding checks, line length limits).
 - **LexerRule (token-based rules)** -- The TypeScript reference defines a third rule type `LexerRule` that operates on token streams (`LexResult`) from `Herb.lex()`. Its `check` receives `LexResult` (a token list) and `autofix` returns a corrected `LexResult`. However, **no built-in rules currently use LexerRule** in the TypeScript implementation — all rules are either `ParserRule` or `SourceRule`. LexerRule support can be added if a concrete use case arises, following the same pattern as SourceRule (new base class, unified AutofixContext with token-level fields, AutoFixer phase 3).
 
