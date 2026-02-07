@@ -124,10 +124,9 @@ module Herb
       SCHEMA_PATH: String
 
       @config: Hash[String, untyped]
-      @known_rules: Array[String]
       @errors: Array[String]?
 
-      def initialize: (Hash[String, untyped] config, ?known_rules: Array[String]) -> void
+      def initialize: (Hash[String, untyped] config) -> void
 
       # Check if configuration is valid
       def valid?: () -> bool
@@ -144,8 +143,6 @@ module Herb
       def validate_config: () -> void
       def load_schema: () -> Hash[String, untyped]
       def format_schema_error_object: (Hash[Symbol, untyped] error) -> String
-      def validate_known_rules: () -> void
-      def add_warning: (String message) -> void
     end
   end
 end
@@ -156,7 +153,6 @@ end
 - **Type validation**: boolean, integer, string, array, object
 - **Severity levels**: `error`, `warning`, `info`, `hint` (4 levels only)
 - **Rule format**: Object form only `{ severity: "error", enabled: true, ... }`
-- **Known rules**: Optional validation, warnings only (not errors)
 
 ### Herb::Config Schema (schema.json)
 
@@ -376,7 +372,7 @@ loader = Herb::Config::Loader.new(path: "/path/to/.herb.yml")
 config = loader.load
 
 # Validate configuration
-validator = Herb::Config::Validator.new(config, known_rules: ["html-img-require-alt", "html-attribute-double-quotes"])
+validator = Herb::Config::Validator.new(config)
 validator.validate!  # Raises ValidationError if invalid
 ```
 
