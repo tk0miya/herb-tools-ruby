@@ -52,8 +52,10 @@ module Herb
         config = Herb::Config::LinterConfig.new(config_hash)
 
         ignore_disable_comments = options[:ignore_disable_comments] || false
+        fix = options[:fix] || false
+        fix_unsafely = options[:fix_unsafely] || false
 
-        runner = Runner.new(config, ignore_disable_comments:)
+        runner = Runner.new(config, ignore_disable_comments:, fix:, fix_unsafely:)
         result = runner.run(argv)
 
         reporter = create_reporter
@@ -99,6 +101,15 @@ module Herb
 
           opts.on("--ignore-disable-comments", "Report offenses even when suppressed by herb:disable") do
             options[:ignore_disable_comments] = true
+          end
+
+          opts.on("--fix", "Apply safe automatic fixes") do
+            options[:fix] = true
+          end
+
+          opts.on("--fix-unsafely", "Apply all fixes including unsafe ones") do
+            options[:fix] = true
+            options[:fix_unsafely] = true
           end
         end
 

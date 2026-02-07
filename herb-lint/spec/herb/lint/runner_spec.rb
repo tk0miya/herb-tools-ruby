@@ -138,4 +138,132 @@ RSpec.describe Herb::Lint::Runner do
       expect(subject).to eq(config)
     end
   end
+
+  describe "autofix support" do
+    around do |example|
+      Dir.mktmpdir do |temp_dir|
+        Dir.chdir(temp_dir) do
+          example.run
+        end
+      end
+    end
+
+    def create_file(relative_path, content = "")
+      full_path = File.join(Dir.pwd, relative_path)
+      FileUtils.mkdir_p(File.dirname(full_path))
+      # Ensure content ends with newline if not empty
+      content_with_newline = if content.empty? || content.end_with?("\n")
+                               content
+                             else
+                               "#{content}\n"
+                             end
+      File.write(full_path, content_with_newline)
+    end
+
+    let(:config) { Herb::Config::LinterConfig.new(config_hash) }
+    let(:config_hash) { { "linter" => { "include" => ["**/*.html.erb"], "exclude" => [] } } }
+    let(:file_path) { "app/views/test.html.erb" }
+
+    context "when fix is disabled" do
+      let(:runner) { described_class.new(config, fix: false) }
+
+      before do
+        create_file(file_path, "<% %>\n<p>Hello</p>")
+      end
+
+      it "does not modify files" do
+        original_content = File.read(file_path)
+        result = runner.run([file_path])
+
+        expect(result.offense_count).to eq(1)
+        expect(File.read(file_path)).to eq(original_content)
+      end
+    end
+
+    context "when fix is enabled" do
+      let(:runner) { described_class.new(config, fix: true) }
+
+      context "with fixable offenses" do
+        before do
+          create_file(file_path, "<% %>\n<p>Hello</p>")
+        end
+
+        it "applies fixes and writes file" do
+          result = runner.run([file_path])
+
+          expect(result.offense_count).to eq(0)
+          expect(File.read(file_path)).not_to include("<% %>")
+          expect(File.read(file_path)).to include("<p>Hello</p>")
+        end
+
+        it "reports only unfixed offenses" do
+          result = runner.run([file_path])
+          expect(result.offense_count).to eq(0)
+        end
+      end
+
+      context "with non-fixable offenses" do
+        before do
+          create_file(file_path, '<img src="test.png">')
+        end
+
+        it "does not modify files" do
+          original_content = File.read(file_path)
+          result = runner.run([file_path])
+
+          expect(result.offense_count).to be > 0
+          expect(File.read(file_path)).to eq(original_content)
+        end
+      end
+
+      context "with files without offenses" do
+        before do
+          create_file(file_path, "<p>Hello</p>")
+        end
+
+        it "does not modify files" do
+          original_content = File.read(file_path)
+          result = runner.run([file_path])
+
+          expect(result.success?).to be(true)
+          expect(File.read(file_path)).to eq(original_content)
+        end
+      end
+
+      context "with multiple files" do
+        before do
+          create_file("app/views/a.html.erb", "<% %>\n<p>A</p>")
+          create_file("app/views/b.html.erb", "<% %>\n<p>B</p>")
+          create_file("app/views/c.html.erb", "<p>C</p>")
+        end
+
+        it "applies fixes to all files with fixable offenses" do
+          result = runner.run(["app/views"])
+
+          expect(result.file_count).to eq(3)
+          expect(result.offense_count).to eq(0)
+          expect(File.read("app/views/a.html.erb")).not_to include("<% %>")
+          expect(File.read("app/views/b.html.erb")).not_to include("<% %>")
+          expect(File.read("app/views/c.html.erb")).to eq("<p>C</p>\n")
+        end
+      end
+    end
+
+    context "when fix_unsafely is enabled" do
+      let(:runner) { described_class.new(config, fix: true, fix_unsafely: true) }
+
+      context "with safe autocorrectable offenses" do
+        before do
+          create_file(file_path, "<% %>\n<p>Hello</p>")
+        end
+
+        it "applies safe fixes" do
+          result = runner.run([file_path])
+
+          expect(result.offense_count).to eq(0)
+          expect(File.read(file_path)).not_to include("<% %>")
+        end
+      end
+    end
+  end
 end

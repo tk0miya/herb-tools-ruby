@@ -9,18 +9,33 @@ module Herb
 
       attr_reader ignore_disable_comments: bool
 
+      attr_reader fix: bool
+
+      attr_reader fix_unsafely: bool
+
       # @rbs config: Herb::Config::LinterConfig
       # @rbs ignore_disable_comments: bool -- when true, report offenses even when suppressed
-      def initialize: (Herb::Config::LinterConfig config, ?ignore_disable_comments: bool) -> void
+      # @rbs fix: bool -- when true, apply safe automatic fixes
+      # @rbs fix_unsafely: bool -- when true, apply all fixes including unsafe ones
+      def initialize: (Herb::Config::LinterConfig config, ?ignore_disable_comments: bool, ?fix: bool, ?fix_unsafely: bool) -> void
 
       # Run linting on the given paths and return aggregated results.
       # @rbs paths: Array[String] -- explicit paths (files or directories) to lint
       def run: (?Array[String] paths) -> AggregatedResult
 
+      # Process a single file: lint and optionally apply fixes.
+      # @rbs file_path: String
+      def process_file: (String file_path) -> LintResult
+
       private
 
       # @rbs paths: Array[String]
       def discover_files: (Array[String] paths) -> Array[String]
+
+      def linter: () -> Linter
+
+      # @rbs result: LintResult
+      def apply_fixes: (LintResult result) -> AutoFixResult
 
       def rule_registry: () -> RuleRegistry
 
