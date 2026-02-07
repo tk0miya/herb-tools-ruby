@@ -11,7 +11,7 @@ This phase implements autofix methods for all existing fixable rules.
 This phase expands autofix support across all rule categories:
 
 - **Part A**: Complete autofix infrastructure (Task 16.1)
-- **Part B**: ERB rule autofix (12 implemented: 7 fixable + 5 not fixable)
+- **Part B**: ERB rule autofix (12 implemented: 6 fixable + 6 not fixable)
 - **Part C**: HTML rule autofix (31 implemented: 7 fixable + 24 not fixable)
 - **Part D**: Herb comment directive rules (5 implemented, detection-only)
 - **Part E**: SVG rule autofix (1 implemented: 1 fixable)
@@ -58,12 +58,12 @@ cd herb-lint && ./bin/steep check
 | `erb/comment-syntax` | ✅ | Yes | 16.2 |
 | `erb/no-case-node-children` | ✔️ | No | - |
 | `erb/no-empty-tags` | ✅ | Yes | 16.3 |
-| `erb/no-extra-newline` | 🔨 | Yes | 16.7 |
+| `erb/no-extra-newline` | ✔️ | No | - |
 | `erb/no-extra-whitespace-inside-tags` | ✅ | Yes | 16.4 |
 | `erb/no-output-control-flow` | ✔️ | No | - |
 | `erb/no-silent-tag-in-attribute-name` | ✔️ | No | - |
 | `erb/prefer-image-tag-helper` | ✔️ | No | - |
-| `erb/require-trailing-newline` | ✅ | Yes | 16.8 |
+| `erb/require-trailing-newline` | ✅ | Yes | 16.7 |
 | `erb/require-whitespace-inside-tags` | ✅ | Yes | 16.5 |
 | `erb/right-trim` | ✅ | Yes | 16.6 |
 | `erb/strict-locals-required` | ✔️ | No | - |
@@ -177,29 +177,7 @@ cd herb-lint && ./bin/steep check
 <% if true -%>
 ```
 
-### Task 16.7: ErbNoExtraNewline Autofix
-
-**Location:** `herb-lint/lib/herb/lint/rules/erb/no_extra_newline.rb`
-
-- [ ] Add `def self.autocorrectable? = true`
-- [ ] Change `add_offense` to `add_offense_with_autofix`
-- [ ] Implement `autofix(node, parse_result)` method
-  - [ ] Remove extra newlines inside ERB tags
-- [ ] Add autofix tests
-
-**Example:**
-
-```erb
-# Before
-<%=
-  foo
-%>
-
-# After
-<%= foo %>
-```
-
-### Task 16.8: ErbRequireTrailingNewline Autofix
+### Task 16.7: ErbRequireTrailingNewline Autofix
 
 **Status:** Complete
 
@@ -234,13 +212,13 @@ cd herb-lint && ./bin/steep check
 
 | Rule | Status | Fixable | Task |
 |------|--------|---------|------|
-| `html/attribute-double-quotes` | 🔨 | Yes | 16.9 |
-| `html/attribute-equals-spacing` | 🔨 | Yes | 16.10 |
-| `html/attribute-values-require-quotes` | 🔨 | Yes | 16.11 |
-| `html/boolean-attributes-no-value` | 🔨 | Yes | 16.12 |
-| `html/no-self-closing` | 🔨 | Yes | 16.13 |
-| `html/no-space-in-tag` | 🔨 | Yes | 16.14 |
-| `html/tag-name-lowercase` | 🔨 | Yes | 16.15 |
+| `html/attribute-double-quotes` | 🔨 | Yes | 16.8 |
+| `html/attribute-equals-spacing` | 🔨 | Yes | 16.9 |
+| `html/attribute-values-require-quotes` | 🔨 | Yes | 16.10 |
+| `html/boolean-attributes-no-value` | 🔨 | Yes | 16.11 |
+| `html/no-self-closing` | 🔨 | Yes | 16.12 |
+| `html/no-space-in-tag` | 🔨 | Yes | 16.13 |
+| `html/tag-name-lowercase` | 🔨 | Yes | 16.14 |
 
 ### Implemented Rules (Not Fixable)
 
@@ -271,7 +249,7 @@ cd herb-lint && ./bin/steep check
 | `html/no-title-attribute` | ✔️ | No |
 | `html/no-underscores-in-attribute-names` | ✔️ | No |
 
-### Task 16.9: HtmlAttributeDoubleQuotes Autofix
+### Task 16.8: HtmlAttributeDoubleQuotes Autofix
 
 **Location:** `herb-lint/lib/herb/lint/rules/html_attribute_double_quotes.rb`
 
@@ -281,7 +259,7 @@ cd herb-lint && ./bin/steep check
   - [ ] Convert single quotes to double quotes
 - [ ] Add autofix tests
 
-### Task 16.10: HtmlAttributeEqualsSpacing Autofix
+### Task 16.9: HtmlAttributeEqualsSpacing Autofix
 
 **Location:** `herb-lint/lib/herb/lint/rules/html_attribute_equals_spacing.rb`
 
@@ -291,7 +269,7 @@ cd herb-lint && ./bin/steep check
   - [ ] Remove spaces around `=` in attributes
 - [ ] Add autofix tests
 
-### Task 16.11: HtmlAttributeValuesRequireQuotes Autofix
+### Task 16.10: HtmlAttributeValuesRequireQuotes Autofix
 
 **Location:** `herb-lint/lib/herb/lint/rules/html_attribute_values_require_quotes.rb`
 
@@ -301,7 +279,7 @@ cd herb-lint && ./bin/steep check
   - [ ] Add quotes around unquoted attribute values
 - [ ] Add autofix tests
 
-### Task 16.12: HtmlBooleanAttributesNoValue Autofix
+### Task 16.11: HtmlBooleanAttributesNoValue Autofix
 
 **Location:** `herb-lint/lib/herb/lint/rules/html_boolean_attributes_no_value.rb`
 
@@ -311,7 +289,7 @@ cd herb-lint && ./bin/steep check
   - [ ] Remove value from boolean attributes
 - [ ] Add autofix tests
 
-### Task 16.13: HtmlNoSelfClosing Autofix
+### Task 16.12: HtmlNoSelfClosing Autofix
 
 **Location:** `herb-lint/lib/herb/lint/rules/html_no_self_closing.rb`
 
@@ -321,7 +299,7 @@ cd herb-lint && ./bin/steep check
   - [ ] Convert self-closing tags to proper form
 - [ ] Add autofix tests
 
-### Task 16.14: HtmlNoSpaceInTag Autofix
+### Task 16.13: HtmlNoSpaceInTag Autofix
 
 **Location:** `herb-lint/lib/herb/lint/rules/html_no_space_in_tag.rb`
 
@@ -331,7 +309,7 @@ cd herb-lint && ./bin/steep check
   - [ ] Remove space after `<` in tag names
 - [ ] Add autofix tests
 
-### Task 16.15: HtmlTagNameLowercase Autofix
+### Task 16.14: HtmlTagNameLowercase Autofix
 
 **Location:** `herb-lint/lib/herb/lint/rules/html_tag_name_lowercase.rb`
 
@@ -365,9 +343,9 @@ These rules validate herb directive comments and are not autofixable by design.
 
 | Rule | Status | Fixable | Task |
 |------|--------|---------|------|
-| `svg/tag-name-capitalization` | 🔨 | Yes | 16.16 |
+| `svg/tag-name-capitalization` | 🔨 | Yes | 16.15 |
 
-### Task 16.16: SvgTagNameCapitalization Autofix
+### Task 16.15: SvgTagNameCapitalization Autofix
 
 **Location:** `herb-lint/lib/herb/lint/rules/svg/tag_name_capitalization.rb`
 
@@ -441,13 +419,13 @@ cat test.html.erb
 | Part | Tasks | Description |
 |------|-------|-------------|
 | A | 16.1 | Complete autofix infrastructure |
-| B | 16.2-16.8 | ERB rules autofix (7 fixable rules) |
-| C | 16.9-16.15 | HTML rules autofix (7 fixable rules) |
+| B | 16.2-16.7 | ERB rules autofix (6 fixable rules) |
+| C | 16.8-16.14 | HTML rules autofix (7 fixable rules) |
 | D | - | Herb directive rules (detection-only, 5 rules) |
-| E | 16.16 | SVG rules autofix (1 fixable rule) |
+| E | 16.15 | SVG rules autofix (1 fixable rule) |
 | F | - | Parser rules (detection-only, 1 rule) |
 
-**Total: 16 tasks** (covering all 50 implemented rules: 15 fixable + 35 not fixable)
+**Total: 15 tasks** (covering all 50 implemented rules: 14 fixable + 36 not fixable)
 
 ## Task Priorities
 
@@ -457,24 +435,23 @@ cat test.html.erb
 - 16.3: ErbNoEmptyTags ✅
 - 16.4: ErbNoExtraWhitespaceInsideTags ✅
 - 16.5: ErbRequireWhitespaceInsideTags ✅
-- 16.9: HtmlAttributeDoubleQuotes
-- 16.11: HtmlAttributeValuesRequireQuotes
-- 16.15: HtmlTagNameLowercase
+- 16.8: HtmlAttributeDoubleQuotes
+- 16.10: HtmlAttributeValuesRequireQuotes
+- 16.14: HtmlTagNameLowercase
 
 ### Medium Priority (Style Rules)
 
 - 16.2: ErbCommentSyntax ✅
 - 16.6: ErbRightTrim ✅
-- 16.7: ErbNoExtraNewline
-- 16.8: ErbRequireTrailingNewline
-- 16.10: HtmlAttributeEqualsSpacing
-- 16.12: HtmlBooleanAttributesNoValue
-- 16.14: HtmlNoSpaceInTag
+- 16.7: ErbRequireTrailingNewline ✅
+- 16.9: HtmlAttributeEqualsSpacing
+- 16.11: HtmlBooleanAttributesNoValue
+- 16.13: HtmlNoSpaceInTag
 
 ### Lower Priority
 
-- 16.13: HtmlNoSelfClosing
-- 16.16: SvgTagNameCapitalization
+- 16.12: HtmlNoSelfClosing
+- 16.15: SvgTagNameCapitalization
 
 ## Related Documents
 
