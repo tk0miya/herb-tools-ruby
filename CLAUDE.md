@@ -329,7 +329,7 @@ This project uses [rbs-inline](https://github.com/soutaro/rbs-inline) style anno
 - **Argument types**: Use `@rbs argname: Type` comments before the method. Add `-- description` for documentation (e.g., `@rbs column: Integer -- 0-based column number`)
 - **Return types**: Use `#: Type` comment at the end of the `def` line
 - **Attributes**: Use `#: Type` comment at the end of `attr_accessor`/`attr_reader` (also defines instance variable type)
-- **Instance variables**: Use `@rbs @name: Type` comment (must have blank line before method definition)
+- **Instance variables**: Use `@rbs @name: Type` comment (must have blank line before method definition). Only use this for instance variables that are NOT exposed via attributes.
 - **Data classes**: Use `#: Type` comment at the end of each member in `Data.define`
 
 ```ruby
