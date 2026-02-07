@@ -22,7 +22,7 @@ The MVP provides core linting functionality:
 Features described in this specification but not yet implemented:
 
 - **Configuration**: Full validation, schema checking, environment variables, upward directory search
-- **CLI**: `--init`, `--fix`, `--fix-unsafely`, `--format`, `--github`, `--fail-level`, `--config` options
+- **CLI**: `--init`, `--fix`, `--fix-unsafely`, `--format`, `--github`, `--fail-level`, `--config-file` options
 - **Reporters**: DetailedReporter, JsonReporter, GithubReporter
 - **Rules**: Complete rule set (50+ rules across ERB, HTML, and A11y categories)
 - **Custom Rules**: Dynamic loading from `.herb/rules/` directory
@@ -55,7 +55,7 @@ herb-lint [options] [files...]
 | `--format <type>` | Output format: `detailed`, `simple`, `json` (default: `detailed`) |
 | `--github` | Output GitHub Actions annotation format |
 | `--fail-level <level>` | Minimum severity to cause non-zero exit: `error`, `warning`, `info`, `hint` (default: `error`) |
-| `--config <path>` | Path to configuration file (default: `.herb.yml`) |
+| `-c, --config-file <path>` | Path to configuration file (searches upward from current directory by default) |
 | `--ignore-disable-comments` | Ignore all inline disable comments and check all violations |
 | `--version` | Show version number |
 | `--help` | Show help message |

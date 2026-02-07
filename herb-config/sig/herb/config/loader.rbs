@@ -7,11 +7,23 @@ module Herb
       # Default configuration file name
       CONFIG_FILE_NAME: ::String
 
-      # Loads configuration from .herb.yml in the specified directory.
-      # Returns default configuration if file is not found.
-      # @rbs dir: String -- directory to search for configuration file
+      # Loads configuration from .herb.yml using the following search order:
+      # 1. Explicit path: parameter (error if not found) - mapped from --config-file CLI option
+      # 2. HERB_CONFIG environment variable
+      # 3. Upward directory traversal from Dir.pwd
+      # 4. Default configuration (if HERB_NO_CONFIG not set)
+      #
+      # @rbs path: String? -- explicit path to configuration file (from --config-file)
       # @rbs validate: bool -- whether to validate configuration (default: true)
-      def self.load: (?dir: String, ?validate: bool) -> Hash[String, untyped]
+      def self.load: (?path: String?, ?validate: bool) -> Hash[String, untyped]
+
+      # Finds configuration file path using search order.
+      # @rbs path: String? -- explicit path
+      def self.find_config_path: (?path: String?) -> String?
+
+      # Searches upward from the given directory for a configuration file.
+      # @rbs dir: String -- directory to start searching from
+      def self.search_upward: (String dir) -> String?
 
       # Loads configuration from a specific file path.
       # @rbs path: String -- path to the configuration file

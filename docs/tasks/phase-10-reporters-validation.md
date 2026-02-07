@@ -263,15 +263,15 @@ end
 
 **Location:** `herb-config/lib/herb/config/loader.rb`
 
-- [ ] Add environment variable support (`HERB_CONFIG`, `HERB_NO_CONFIG`)
-- [ ] Add upward directory traversal
-- [ ] Add unit tests
+- [x] Add environment variable support (`HERB_CONFIG`, `HERB_NO_CONFIG`)
+- [x] Add upward directory traversal
+- [x] Add unit tests
 
 **Search Order:**
 
-1. Explicit `path:` parameter (error if not found)
+1. Explicit `path:` parameter (error if not found) - mapped from `--config-file` CLI option
 2. `HERB_CONFIG` environment variable
-3. Upward directory traversal from `working_dir`
+3. Upward directory traversal from `Dir.pwd`
 4. Default configuration (if `HERB_NO_CONFIG` not set)
 
 **Environment Variables:**
