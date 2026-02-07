@@ -1,22 +1,39 @@
 # frozen_string_literal: true
 
-# Source: https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/erb-comment-syntax.ts
-# Documentation: https://herb-tools.dev/linter/rules/erb-comment-syntax
-
 module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that enforces ERB comment syntax.
+        # Description:
+        #   Disallow ERB tags that start with `<% #` (with a space before the `#`).
+        #   Use the ERB comment syntax `<%#` instead.
         #
-        # ERB comments should use the dedicated comment tag syntax (`<%#`)
-        # rather than a statement tag with a Ruby line comment (`<% #`).
+        #   Ruby comments starting immediately after an ERB tag opening
+        #   (e.g., `<% # comment %>`) can cause parsing issues in some contexts.
+        #   The proper ERB comment syntax `<%# comment %>` is more reliable and
+        #   explicitly designed for comments in templates.
+        #
+        #   For multi-line comments or actual Ruby code with comments, ensure the
+        #   content starts on a new line after the opening tag.
         #
         # Good:
-        #   <%# This is a comment %>
+        #   <%# This is a proper ERB comment %>
+        #
+        #   <%
+        #     # This is a proper ERB comment
+        #   %>
+        #
+        #   <%
+        #     # Multi-line Ruby comment
+        #     # spanning multiple lines
+        #   %>
         #
         # Bad:
-        #   <% # This is a comment %>
+        #   <% # This should be an ERB comment %>
+        #
+        #   <%= # This should also be an ERB comment %>
+        #
+        #   <%== # This should also be an ERB comment %>
         class CommentSyntax < VisitorRule
           def self.rule_name #: String
             "erb-comment-syntax"
@@ -27,7 +44,7 @@ module Herb
           end
 
           def self.default_severity #: String
-            "warning"
+            "error"
           end
 
           def self.safe_autocorrectable? #: bool
@@ -36,10 +53,12 @@ module Herb
 
           # @rbs override
           def visit_erb_content_node(node)
-            if statement_tag?(node) && comment_content?(node)
+            content = node.content.value
+
+            if content.match?(/\A +#/)
               add_offense_with_autofix(
-                message: "Use ERB comment tag `<%#` instead of `<% #`",
-                location: node.tag_opening.location,
+                message: offense_message(node.tag_opening.value, content),
+                location: node.location,
                 node:
               )
             end
@@ -48,30 +67,28 @@ module Herb
 
           # @rbs override
           def autofix(node, parse_result)
-            # Create new opening tag token with <%# instead of <%
             tag_opening = copy_token(node.tag_opening, content: "<%#")
 
-            # Remove leading whitespace and # from content
-            new_content_value = node.content.value.sub(/\A\s*#/, "")
+            new_content_value = node.content.value.sub(/\A +#/, "")
             content = copy_token(node.content, content: new_content_value)
 
-            # Create new ERBContentNode with modified tokens
             new_node = copy_erb_content_node(node, tag_opening:, content:)
 
-            # Replace the node in the AST
             replace_node(parse_result, node, new_node)
           end
 
           private
 
-          # @rbs node: Herb::AST::ERBContentNode
-          def statement_tag?(node) #: bool
-            node.tag_opening.value == "<%"
-          end
-
-          # @rbs node: Herb::AST::ERBContentNode
-          def comment_content?(node) #: bool
-            node.content.value.match?(/\A\s*#/)
+          # @rbs opening_tag: String
+          # @rbs content: String
+          def offense_message(opening_tag, content) #: String
+            if content.include?("herb:disable")
+              "Use `<%#` instead of `#{opening_tag} #` for `herb:disable` directives. " \
+                "Herb directives only work with ERB comment syntax (`<%# ... %>`)."
+            else
+              "Use `<%#` instead of `#{opening_tag} #`. " \
+                "Ruby comments immediately after ERB tags can cause parsing issues."
+            end
           end
         end
       end

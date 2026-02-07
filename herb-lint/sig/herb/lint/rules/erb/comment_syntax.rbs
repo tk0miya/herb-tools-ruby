@@ -4,16 +4,36 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that enforces ERB comment syntax.
+        # Description:
+        #   Disallow ERB tags that start with `<% #` (with a space before the `#`).
+        #   Use the ERB comment syntax `<%#` instead.
         #
-        # ERB comments should use the dedicated comment tag syntax (`<%#`)
-        # rather than a statement tag with a Ruby line comment (`<% #`).
+        #   Ruby comments starting immediately after an ERB tag opening
+        #   (e.g., `<% # comment %>`) can cause parsing issues in some contexts.
+        #   The proper ERB comment syntax `<%# comment %>` is more reliable and
+        #   explicitly designed for comments in templates.
+        #
+        #   For multi-line comments or actual Ruby code with comments, ensure the
+        #   content starts on a new line after the opening tag.
         #
         # Good:
-        #   <%# This is a comment %>
+        #   <%# This is a proper ERB comment %>
+        #
+        #   <%
+        #     # This is a proper ERB comment
+        #   %>
+        #
+        #   <%
+        #     # Multi-line Ruby comment
+        #     # spanning multiple lines
+        #   %>
         #
         # Bad:
-        #   <% # This is a comment %>
+        #   <% # This should be an ERB comment %>
+        #
+        #   <%= # This should also be an ERB comment %>
+        #
+        #   <%== # This should also be an ERB comment %>
         class CommentSyntax < VisitorRule
           def self.rule_name: () -> String
 
@@ -31,11 +51,9 @@ module Herb
 
           private
 
-          # @rbs node: Herb::AST::ERBContentNode
-          def statement_tag?: (Herb::AST::ERBContentNode node) -> bool
-
-          # @rbs node: Herb::AST::ERBContentNode
-          def comment_content?: (Herb::AST::ERBContentNode node) -> bool
+          # @rbs opening_tag: String
+          # @rbs content: String
+          def offense_message: (String opening_tag, String content) -> String
         end
       end
     end
