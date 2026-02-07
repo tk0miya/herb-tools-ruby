@@ -137,9 +137,9 @@ Configure individual rules.
 ```yaml
 linter:
   rules:
-    attribute-quotes: error
-    alt-text: warn
-    no-positive-tabindex: off
+    html-attribute-double-quotes: error
+    html-img-require-alt: warn
+    html-no-positive-tab-index: off
 ```
 
 #### With Options
@@ -147,7 +147,7 @@ linter:
 ```yaml
 linter:
   rules:
-    attribute-quotes:
+    html-attribute-double-quotes:
       severity: error
       options:
         style: double  # 'single' or 'double'
@@ -381,7 +381,7 @@ A single `.herb.yml` can be used by both implementations:
 linter:
   enabled: true
   rules:
-    attribute-quotes: error
+    html-attribute-double-quotes: error
 
 formatter:
   enabled: true

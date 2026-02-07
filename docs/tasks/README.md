@@ -8,40 +8,27 @@ The MVP (Minimum Viable Product) has been completed with:
 
 - ✅ Basic `.herb.yml` loading (linter.rules section only)
 - ✅ Simple file discovery (`**/*.html.erb` patterns only)
-- ✅ 3 rule implementations (html-img-require-alt, html-attribute-double-quotes, html-no-duplicate-ids)
+- ✅ Initial rule implementations (html-img-require-alt, html-attribute-double-quotes, html-no-duplicate-ids)
 - ✅ Basic CLI (`herb-lint <path>`, `--version`, `--help`)
 - ✅ SimpleReporter (text output only)
+- ✅ Inline directives (`herb:disable`, `herb:linter ignore`)
 
-## Phase Structure
+Phases 1-9 have been completed and their task files have been removed from this directory. The completed work is documented in the git history and reflected in the current implementation.
 
-### MVP Phases (Complete)
-
-| Phase | File | Tasks | Description | Status |
-|-------|------|-------|-------------|--------|
-| Phase 1 | [phase-1-herb-config.md](./phase-1-herb-config.md) | 5 | herb-config gem & CI setup | ✅ |
-| Phase 2 | [phase-2-herb-core.md](./phase-2-herb-core.md) | 3 | herb-core gem & CI setup | ✅ |
-| Phase 3 | [phase-3-herb-lint-foundation.md](./phase-3-herb-lint-foundation.md) | 4 | herb-lint gem foundation & CI setup | ✅ |
-| Phase 4 | [phase-4-rules.md](./phase-4-rules.md) | 2 | Lint rule implementation | ✅ |
-| Phase 5 | [phase-5-linter-runner.md](./phase-5-linter-runner.md) | 4 | Linter & Runner implementation | ✅ |
-| Phase 6 | [phase-6-reporter-cli.md](./phase-6-reporter-cli.md) | 2 | Reporter & CLI implementation | ✅ |
-| Phase 7 | [phase-7-integration.md](./phase-7-integration.md) | 3 | Integration testing & documentation | ✅ |
-
-**MVP Total: 23 tasks** ✅
-
-### Post-MVP Phases
+## Remaining Implementation Phases
 
 | Phase | File | Tasks | Description | Status |
 |-------|------|-------|-------------|--------|
 | Phase 8 | [phase-8-rule-expansion.md](./phase-8-rule-expansion.md) | 6 | herb-lint rule expansion | 🚧 |
-| Phase 9 | [phase-9-inline-directives.md](./phase-9-inline-directives.md) | 8 | Inline directives | ✅ |
 | Phase 10 | [phase-10-reporters-validation.md](./phase-10-reporters-validation.md) | 6 | Multiple reporters & Config validation | 📋 |
 | Phase 11 | [phase-11-html-rule-expansion.md](./phase-11-html-rule-expansion.md) | 23 | Remaining HTML rules | 📋 |
 | Phase 12 | [phase-12-erb-rule-expansion.md](./phase-12-erb-rule-expansion.md) | 12 | Remaining ERB rules | 📋 |
 | Phase 13 | [phase-13-svg-parser-rules.md](./phase-13-svg-parser-rules.md) | 2 | SVG & Parser rules | 📋 |
 | Phase 14 | [phase-14-herb-printer.md](./phase-14-herb-printer.md) | 12 | herb-printer gem (AST-to-source) | 🚧 |
 | Phase 15 | [phase-15-autofix.md](./phase-15-autofix.md) | 8 | Autofix (`--fix` / `--fix-unsafely`) | 📋 |
+| Phase 16 | [phase-16-rule-autofix-expansion.md](./phase-16-rule-autofix-expansion.md) | TBD | Rule autofix expansion | 📋 |
 
-**Post-MVP Total: 77 tasks**
+**Remaining Total: ~69 tasks**
 
 Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
@@ -54,13 +41,6 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 | Batch 1 | 3 | Simple HTML rules |
 | Batch 2 | 2 | Void elements & A11y |
 | Batch 3 | 1 | ERB rules |
-
-### Phase 9: Inline Directives (8 tasks) ✅
-
-| Part | Tasks | Description |
-|------|-------|-------------|
-| Part A | 2 | DirectiveParser implementation, Linter integration |
-| Part B | 6 | herb-disable-comment meta-rules (one task per rule) |
 
 ### Phase 10: Reporters & Validation (6 tasks)
 
@@ -110,6 +90,10 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 | Part A | 3 | AutofixContext, RuleMethods extensions, NodeLocator |
 | Part B | 3 | AutoFixResult, AutoFixer, Runner/CLI integration |
 | Part C | 2 | Autofix utility helpers, rule autofix methods |
+
+### Phase 16: Rule Autofix Expansion
+
+Expand autofix capabilities to additional rules. Details in [phase-16-rule-autofix-expansion.md](./phase-16-rule-autofix-expansion.md).
 
 ## How to Proceed
 

@@ -63,7 +63,7 @@ linter:
   exclude:
     - "vendor/**"
   rules:
-    attribute-quotes: error
+    html-attribute-double-quotes: error
 
 formatter:
   enabled: true
@@ -83,9 +83,9 @@ CLI options are designed to match the TypeScript implementation:
 
 Rule names are identical across implementations:
 
-- `attribute-quotes`
-- `alt-text`
-- `no-positive-tabindex`
+- `html-attribute-double-quotes`
+- `html-img-require-alt`
+- `html-no-positive-tab-index`
 - etc.
 
 ### Inline Directives

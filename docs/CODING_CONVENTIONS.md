@@ -173,7 +173,7 @@ RSpec.describe Herb::Lint::Rules::Html::AltText do
 
       it "reports an offense with correct rule name" do
         expect(subject.size).to eq(1)
-        expect(subject.first.rule).to eq("alt-text")
+        expect(subject.first.rule).to eq("html-img-require-alt")
       end
     end
   end
