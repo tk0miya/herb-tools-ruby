@@ -407,6 +407,8 @@ class Herb::Lint::Context
   @source: String
   @config: Herb::Config::LinterConfig
   @source_lines: Array[String]?
+  @valid_rule_names: Array[String]?
+  @ignore_disable_comments: bool
 
   attr_reader file_path: String
   attr_reader source: String
@@ -419,13 +421,22 @@ class Herb::Lint::Context
     file_path: String,
     source: String,
     config: Herb::Config::LinterConfig,
-    ?rule_registry: RuleRegistry?
+    ?rule_registry: RuleRegistry?,
+    ?valid_rule_names: Array[String]?,
+    ?ignore_disable_comments: bool
   ) -> void
 
   def severity_for: (String rule_name) -> Symbol
   def options_for: (String rule_name) -> Hash[Symbol, untyped]
   def source_line: (Integer line) -> String
   def line_count: () -> Integer
+
+  # Returns list of all valid rule names for directive validation.
+  # Used by herb-disable-comment-valid-rule-name meta-rule.
+  def valid_rule_names: () -> Array[String]
+
+  # Whether to ignore inline disable comments (from --ignore-disable-comments flag).
+  def ignore_disable_comments?: () -> bool
 
   private
 
@@ -559,7 +570,7 @@ Herb disable comment rules (6):
 | `herb-disable-comment-no-duplicate-rules` | Implemented |
 | `herb-disable-comment-no-redundant-all` | Implemented |
 | `herb-disable-comment-unnecessary` | Implemented (via UnnecessaryDirectiveDetector) |
-| `herb-disable-comment-valid-rule-name` | Not implemented |
+| `herb-disable-comment-valid-rule-name` | Implemented |
 
 SVG rules (1):
 

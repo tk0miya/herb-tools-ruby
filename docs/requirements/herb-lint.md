@@ -2,6 +2,35 @@
 
 Static analysis tool for ERB templates.
 
+## Implementation Status
+
+This specification describes the full feature set for herb-lint. The implementation is being developed incrementally:
+
+### MVP (Minimum Viable Product) - ✅ Complete
+
+The MVP provides core linting functionality:
+
+- **Configuration**: Basic `.herb.yml` loading (linter.rules section only)
+- **File Discovery**: Simple pattern matching (`**/*.html.erb` patterns)
+- **Rules**: Initial 3 rules implemented (html-img-require-alt, html-attribute-double-quotes, html-no-duplicate-ids)
+- **CLI**: Basic options (`--version`, `--help`, file/directory arguments)
+- **Reporter**: SimpleReporter (text output only)
+- **Inline Directives**: Support for `herb:disable` and `herb:linter ignore` comments
+
+### Post-MVP Features
+
+Features described in this specification but not yet implemented:
+
+- **Configuration**: Full validation, schema checking, environment variables, upward directory search
+- **CLI**: `--init`, `--fix`, `--fix-unsafely`, `--format`, `--github`, `--fail-level`, `--config` options
+- **Reporters**: DetailedReporter, JsonReporter, GithubReporter
+- **Rules**: Complete rule set (50+ rules across ERB, HTML, and A11y categories)
+- **Custom Rules**: Dynamic loading from `.herb/rules/` directory
+- **Autofix**: Safe and unsafe automatic fixes
+- **Advanced Features**: Parallel processing, caching, plugin system
+
+Refer to `docs/tasks/README.md` for the detailed implementation roadmap.
+
 ## CLI Interface
 
 ### Synopsis
@@ -27,6 +56,7 @@ herb-lint [options] [files...]
 | `--github` | Output GitHub Actions annotation format |
 | `--fail-level <level>` | Minimum severity to cause non-zero exit: `error`, `warning`, `info`, `hint` (default: `error`) |
 | `--config <path>` | Path to configuration file (default: `.herb.yml`) |
+| `--ignore-disable-comments` | Ignore all inline disable comments and check all violations |
 | `--version` | Show version number |
 | `--help` | Show help message |
 
@@ -110,14 +140,7 @@ Add at the top of the file to skip linting entirely:
 <!-- Rest of file is not linted -->
 ```
 
-### Re-enable Rules
-
-Re-enable previously disabled rules:
-
-```erb
-<%# herb:enable rule-name %>
-<%# herb:enable all %>
-```
+**Note**: Inline directives affect only the immediately following HTML/ERB node. There is no `herb:enable` directive - disabled rules remain disabled for the scope they affect.
 
 ## Output Formats
 
