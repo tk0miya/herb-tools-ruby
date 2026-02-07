@@ -109,9 +109,9 @@ linter:
     - "vendor/**"
     - "node_modules/**"
   rules:
-    attribute-quotes: error
-    alt-text: warn
-    no-positive-tabindex: off
+    html-attribute-double-quotes: error
+    html-img-require-alt: warn
+    html-no-positive-tab-index: off
 ```
 
 ## Inline Directives
@@ -150,8 +150,8 @@ Human-readable format with context:
 
 ```
 app/views/users/index.html.erb
-  12:5  error    Missing alt attribute on img tag  alt-text
-  24:3  warning  Prefer double quotes for attributes  attribute-quotes
+  12:5  error    Missing alt attribute on img tag  html-img-require-alt
+  24:3  warning  Prefer double quotes for attributes  html-attribute-double-quotes
 
 app/views/posts/show.html.erb
   8:10  error    Invalid tag nesting: <p> inside <span>  valid-tag-nesting
@@ -164,8 +164,8 @@ app/views/posts/show.html.erb
 Compact format, one issue per line:
 
 ```
-app/views/users/index.html.erb:12:5: error: Missing alt attribute on img tag [alt-text]
-app/views/users/index.html.erb:24:3: warning: Prefer double quotes for attributes [attribute-quotes]
+app/views/users/index.html.erb:12:5: error: Missing alt attribute on img tag [html-img-require-alt]
+app/views/users/index.html.erb:24:3: warning: Prefer double quotes for attributes [html-attribute-double-quotes]
 app/views/posts/show.html.erb:8:10: error: Invalid tag nesting: <p> inside <span> [valid-tag-nesting]
 ```
 
@@ -180,7 +180,7 @@ Machine-readable format:
       "path": "app/views/users/index.html.erb",
       "offenses": [
         {
-          "rule": "alt-text",
+          "rule": "html-img-require-alt",
           "severity": "error",
           "message": "Missing alt attribute on img tag",
           "line": 12,
@@ -207,8 +207,8 @@ Machine-readable format:
 Annotations for GitHub Actions workflows:
 
 ```
-::error file=app/views/users/index.html.erb,line=12,col=5::Missing alt attribute on img tag (alt-text)
-::warning file=app/views/users/index.html.erb,line=24,col=3::Prefer double quotes for attributes (attribute-quotes)
+::error file=app/views/users/index.html.erb,line=12,col=5::Missing alt attribute on img tag (html-img-require-alt)
+::warning file=app/views/users/index.html.erb,line=24,col=3::Prefer double quotes for attributes (html-attribute-double-quotes)
 ```
 
 ## Rule Categories
@@ -239,7 +239,7 @@ General HTML validation and best practices.
 
 | Rule | Description | Fixable |
 |------|-------------|---------|
-| `attribute-quotes` | Require quotes around attribute values | Yes |
+| `html-attribute-double-quotes` | Require quotes around attribute values | Yes |
 | `attribute-spacing` | No spaces around `=` in attributes | Yes |
 | `no-duplicate-attributes` | Disallow duplicate attributes | No |
 | `no-duplicate-id` | Disallow duplicate id values | No |
@@ -248,7 +248,7 @@ General HTML validation and best practices.
 | `lowercase-tags` | Enforce lowercase tag names | Yes |
 | `lowercase-attributes` | Enforce lowercase attribute names | Yes |
 | `no-obsolete-tags` | Disallow obsolete HTML tags | No |
-| `no-positive-tabindex` | Disallow positive tabindex values | No |
+| `html-no-positive-tab-index` | Disallow positive tabindex values | No |
 | `required-attributes` | Require mandatory attributes | No |
 | `no-inline-event-handlers` | Discourage inline event handlers | No |
 | `doctype` | Require DOCTYPE declaration | No |
@@ -271,7 +271,7 @@ ARIA and accessibility validation.
 
 | Rule | Description | Fixable |
 |------|-------------|---------|
-| `alt-text` | Require alt attribute on img tags | No |
+| `html-img-require-alt` | Require alt attribute on img tags | No |
 | `aria-valid-attr` | Valid ARIA attributes | No |
 | `aria-valid-attr-value` | Valid ARIA attribute values | No |
 | `aria-role` | Valid ARIA roles | No |

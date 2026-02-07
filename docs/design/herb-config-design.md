@@ -267,8 +267,8 @@ end
 ```
 
 **Rule Configuration Formats:**
-- String/Symbol: `"alt-text": "error"` (severity only)
-- Hash: `"alt-text": { severity: "error", options: { ... } }` (severity + options)
+- String/Symbol: `"html-img-require-alt": "error"` (severity only)
+- Hash: `"html-img-require-alt": { severity: "error", options: { ... } }` (severity + options)
 - Default: Rules not specified are enabled with `:warning` severity
 
 ### Herb::Config::FormatterConfig
@@ -366,7 +366,7 @@ loader = Herb::Config::Loader.new(path: "/path/to/.herb.yml")
 config = loader.load
 
 # Validate configuration
-validator = Herb::Config::Validator.new(config, known_rules: ["alt-text", "attribute-quotes"])
+validator = Herb::Config::Validator.new(config, known_rules: ["html-img-require-alt", "html-attribute-double-quotes"])
 validator.validate!  # Raises ValidationError if invalid
 ```
 
@@ -376,9 +376,9 @@ validator.validate!  # Raises ValidationError if invalid
 linter = Herb::Config::LinterConfig.new(config)
 linter.enabled?                    # => true
 linter.include_patterns            # => ["**/*.html.erb", ...]
-linter.rule_enabled?("alt-text")   # => true
-linter.rule_severity("alt-text")   # => :error
-linter.rule_options("alt-text")    # => { ... }
+linter.rule_enabled?("html-img-require-alt")   # => true
+linter.rule_severity("html-img-require-alt")   # => :error
+linter.rule_options("html-img-require-alt")    # => { ... }
 ```
 
 **Access formatter configuration:**
