@@ -10,7 +10,8 @@ module Herb
       # Loads configuration from .herb.yml in the specified directory.
       # Returns default configuration if file is not found.
       # @rbs dir: String -- directory to search for configuration file
-      def self.load: (?dir: String) -> Hash[String, untyped]
+      # @rbs validate: bool -- whether to validate configuration (default: true)
+      def self.load: (?dir: String, ?validate: bool) -> Hash[String, untyped]
 
       # Loads configuration from a specific file path.
       # @rbs path: String -- path to the configuration file

@@ -238,9 +238,9 @@ JSON Schema Draft 6 file at `lib/herb/config/schema.json`:
 
 **Location:** `herb-config/lib/herb/config/loader.rb`
 
-- [ ] Call Validator after loading config
-- [ ] Add `validate: true` option (default: true)
-- [ ] Update integration tests
+- [x] Call Validator after loading config
+- [x] Add `validate: true` option (default: true)
+- [x] Update integration tests
 
 **Loader Changes:**
 
@@ -286,6 +286,45 @@ end
 - HERB_NO_CONFIG returns defaults
 - Upward traversal finds config in parent
 - Stops at filesystem root
+
+---
+
+### Task 10.7: Remove known_rules from Validator
+
+**Location:** `herb-config/lib/herb/config/validator.rb`
+
+- [ ] Remove `known_rules` parameter from `initialize`
+- [ ] Remove `validate_known_rules` method
+- [ ] Remove `add_warning` method (unused)
+- [ ] Remove `actual_errors` method (no longer needed)
+- [ ] Simplify `valid?` and `validate!` methods
+- [ ] Update unit tests
+- [ ] Generate RBS types
+
+**Rationale:**
+
+The `known_rules` validation feature is **not needed** because:
+
+1. **TypeScript original does not validate unknown rules in config** - Config files with unknown rule names are silently ignored, not warned about
+2. **No output mechanism** - Even though warnings are generated, they are never displayed to users (Loader doesn't output them)
+3. **Unused feature** - The `known_rules` parameter is never passed in actual usage (defaults to empty array)
+4. **Adds complexity** - The warning/error distinction (`actual_errors` vs `errors`) adds unnecessary complexity for an unused feature
+5. **Out of scope** - Configuration validation should only check structure/types (JSON Schema), not rule names
+
+**Implementation:**
+
+Remove all warning-related code:
+- `known_rules` initialization parameter
+- `@known_rules` instance variable
+- `validate_known_rules` private method
+- `add_warning` private method
+- `actual_errors` private method (merge into `errors`)
+- Simplify `valid?` to just check `errors.empty?`
+
+**Files to Update:**
+- `lib/herb/config/validator.rb` - Remove warning logic
+- `spec/herb/config/validator_spec.rb` - Remove warning tests
+- `sig/herb/config/validator.rbs` - Update type signature
 
 ---
 
@@ -355,8 +394,9 @@ herb-lint .
 | 10.4 | herb-config | Validator implementation |
 | 10.5 | herb-config | Integrate Validator into Loader |
 | 10.6 | herb-config | Loader search path extension |
+| 10.7 | herb-config | Remove known_rules from Validator |
 
-**Total: 6 tasks**
+**Total: 7 tasks**
 
 ## Related Documents
 
