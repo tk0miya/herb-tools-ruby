@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "json"
 require "tmpdir"
 require "fileutils"
 require "stringio"
@@ -171,6 +172,64 @@ RSpec.describe Herb::Lint::CLI do
 
         it "returns EXIT_SUCCESS as the file is entirely ignored" do
           expect(subject).to eq(described_class::EXIT_SUCCESS)
+        end
+      end
+
+      context "with --format json option" do
+        let(:argv) { ["--format", "json"] }
+
+        before do
+          create_file("app/views/test.html.erb", '<img src="test.png">')
+        end
+
+        it "outputs JSON format" do
+          output = capture_stdout { subject }
+          expect(output).to include('"files"')
+          expect(output).to include('"summary"')
+          expect { JSON.parse(output) }.not_to raise_error
+        end
+      end
+
+      context "with --format simple option" do
+        let(:argv) { ["--format", "simple"] }
+
+        before do
+          create_file("app/views/test.html.erb", '<img src="test.png">')
+        end
+
+        it "outputs simple format" do
+          output = capture_stdout { subject }
+          expect(output).to include("app/views/test.html.erb")
+          expect(output).to include("html-img-require-alt")
+        end
+      end
+
+      context "with --github option" do
+        let(:argv) { ["--github"] }
+
+        before do
+          create_file("app/views/test.html.erb", '<img src="test.png">')
+        end
+
+        it "outputs GitHub Actions annotations" do
+          output = capture_stdout { subject }
+          expect(output).to include("::error")
+          expect(output).to include("file=app/views/test.html.erb")
+          expect(output).to include("html-img-require-alt")
+        end
+      end
+
+      context "with invalid --format option" do
+        let(:argv) { ["--format", "invalid"] }
+
+        before do
+          create_file("app/views/test.html.erb", '<img src="test.png">')
+        end
+
+        it "returns EXIT_RUNTIME_ERROR with error message" do
+          output = capture_stderr { subject }
+          expect(subject).to eq(described_class::EXIT_RUNTIME_ERROR)
+          expect(output).to include("Invalid format")
         end
       end
     end

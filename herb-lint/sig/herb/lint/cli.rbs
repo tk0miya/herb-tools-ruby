@@ -10,8 +10,6 @@ module Herb
 
       EXIT_RUNTIME_ERROR: Integer
 
-      HELP_TEXT: String
-
       # @rbs argv: Array[String]
       def initialize: (Array[String] argv) -> void
 
@@ -21,8 +19,11 @@ module Herb
 
       attr_reader argv: Array[String]
 
-      # Returns true if an option was handled, false otherwise.
-      def handle_option?: () -> bool
+      attr_reader options: Hash[Symbol, untyped]
+
+      attr_reader stdout: IO
+
+      attr_reader stderr: IO
 
       # @rbs message: String
       # @rbs backtrace: Array[String]?
@@ -30,7 +31,11 @@ module Herb
 
       def execute_lint: () -> Integer
 
-      def print_help: () -> void
+      # Parses command-line options using OptionParser.
+      def parse_options: () -> void
+
+      # Creates the appropriate reporter based on command-line options.
+      def create_reporter: () -> (Reporter::SimpleReporter | Reporter::JsonReporter | Reporter::GithubReporter)
     end
   end
 end

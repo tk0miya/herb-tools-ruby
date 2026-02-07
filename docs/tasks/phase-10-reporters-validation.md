@@ -137,10 +137,10 @@ end
 
 **Location:** `herb-lint/lib/herb/lint/cli.rb`
 
-- [ ] Add `--format` option with detailed/simple/json choices
-- [ ] Add `--github` option (shortcut for GitHub reporter)
-- [ ] Update reporter factory logic
-- [ ] Add integration tests
+- [x] Add `--format` option with detailed/simple/json choices
+- [x] Add `--github` option (shortcut for GitHub reporter)
+- [x] Update reporter factory logic
+- [x] Add integration tests
 
 **CLI Changes:**
 
