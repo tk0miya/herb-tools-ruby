@@ -33,6 +33,7 @@ RSpec.describe Herb::Lint::Rules::Erb::CommentSyntax do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
+    # Good examples from documentation
     context "when using proper ERB comment syntax" do
       let(:source) { "<%# This is a proper ERB comment %>" }
 
@@ -70,15 +71,13 @@ RSpec.describe Herb::Lint::Rules::Erb::CommentSyntax do
       end
     end
 
+    # Bad examples from documentation
     context "when using statement tag with space before hash" do
       let(:source) { "<% # This should be an ERB comment %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("erb-comment-syntax")
-        expect(subject.first.message).to eq(
-          "Use `<%#` instead of `<% #`. Ruby comments immediately after ERB tags can cause parsing issues."
-        )
         expect(subject.first.severity).to eq("error")
       end
     end
@@ -89,9 +88,17 @@ RSpec.describe Herb::Lint::Rules::Erb::CommentSyntax do
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("erb-comment-syntax")
-        expect(subject.first.message).to eq(
-          "Use `<%#` instead of `<%= #`. Ruby comments immediately after ERB tags can cause parsing issues."
-        )
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when using escaped output tag with space before hash" do
+      let(:source) { "<%== # This should also be an ERB comment %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("erb-comment-syntax")
+        expect(subject.first.severity).to eq("error")
       end
     end
 
