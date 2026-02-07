@@ -48,9 +48,9 @@ Rules are grouped by theme:
 ---
 
 ### Task 12.2: `erb-no-extra-newline`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow more than 2 consecutive blank lines in ERB files.
 
@@ -192,9 +192,9 @@ Rules are grouped by theme:
 ---
 
 ### Task 12.7: `erb-no-silent-tag-in-attribute-name`
-- [ ] Implement rule
-- [ ] Add tests
-- [ ] Update RuleRegistry
+- [x] Implement rule
+- [x] Add tests
+- [x] Update RuleRegistry
 
 **Description:** Disallow ERB silent tags (`<%`, `<%-`, `<%#`) **within** HTML attribute names. Silent tags do not output content and cannot form part of an attribute name. This rule does not prevent using silent tags for conditional attribute logic in the attribute list.
 
