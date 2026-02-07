@@ -119,4 +119,83 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeDoubleQuotes do
       end
     end
   end
+
+  describe ".autocorrectable?" do
+    it "returns true" do
+      expect(described_class.autocorrectable?).to be(true)
+    end
+  end
+
+  describe "#autofix" do
+    subject { described_class.new.autofix(node, document) }
+
+    let(:document) { Herb.parse(source, track_whitespace: true) }
+
+    # Helper to find the first HTMLAttributeNode in the document
+    def find_attribute_node(doc)
+      doc.value.children.first.open_tag.children.find do |child|
+        child.is_a?(Herb::AST::HTMLAttributeNode)
+      end
+    end
+
+    context "when attribute has unquoted value" do
+      let(:source) { "<div class=container>text</div>" }
+      let(:expected) { '<div class="container">text</div>' }
+      let(:node) { find_attribute_node(document) }
+
+      it "adds double quotes around the value" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when attribute has double-quoted value" do
+      let(:source) { '<div class="container">text</div>' }
+      let(:node) { find_attribute_node(document) }
+
+      it "returns false and does not modify" do
+        original = Herb::Printer::IdentityPrinter.print(document)
+        expect(subject).to be(false)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(original)
+      end
+    end
+
+    context "when attribute has single-quoted value" do
+      let(:source) { "<input type='text' />" }
+      let(:node) { find_attribute_node(document) }
+
+      it "returns false and does not modify" do
+        original = Herb::Printer::IdentityPrinter.print(document)
+        expect(subject).to be(false)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(original)
+      end
+    end
+
+    context "when boolean attribute has no value" do
+      let(:source) { "<input disabled />" }
+      let(:node) { find_attribute_node(document) }
+
+      it "returns false and does not modify" do
+        original = Herb::Printer::IdentityPrinter.print(document)
+        expect(subject).to be(false)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(original)
+      end
+    end
+
+    context "with alphanumeric attribute values" do
+      let(:source) { "<div data-value=test123>text</div>" }
+      let(:expected) { '<div data-value="test123">text</div>' }
+      let(:node) { find_attribute_node(document) }
+
+      it "adds quotes around unquoted alphanumeric values" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+  end
 end

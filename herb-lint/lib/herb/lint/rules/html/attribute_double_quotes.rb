@@ -33,15 +33,60 @@ module Herb
             "warning"
           end
 
+          def self.autocorrectable? #: bool
+            true
+          end
+
           # @rbs override
           def visit_html_attribute_node(node)
             if unquoted_value?(node)
-              add_offense(
+              add_offense_with_autofix(
                 message: "Attribute value should be quoted",
-                location: node.location
+                location: node.location,
+                node:
               )
             end
             super
+          end
+
+          # @rbs override
+          def autofix(node, parse_result) # rubocop:disable Metrics/MethodLength
+            value = node.value
+            return false if value.nil? || value.quoted
+
+            # Create a simple range and location for the quote tokens
+            # The printer will use these tokens' values but doesn't strictly need accurate positions
+            start_pos = value.location.start
+            quote_range = Herb::Range.new(start_pos, start_pos)
+            quote_location = Herb::Location.new(start_pos, start_pos)
+
+            # Create quote tokens for the attribute value
+            open_quote = Herb::Token.new(
+              '"',
+              quote_range,
+              quote_location,
+              "quote"
+            )
+            close_quote = Herb::Token.new(
+              '"',
+              quote_range,
+              quote_location,
+              "quote"
+            )
+
+            # Create new value node with quotes
+            new_value = copy_html_attribute_value_node(
+              value,
+              open_quote:,
+              close_quote:,
+              quoted: true
+            )
+
+            # Create new attribute node with the quoted value
+            new_node = copy_html_attribute_node(node, value: new_value)
+
+            # Replace the node in the AST
+            replace_node(parse_result, node, new_node)
           end
 
           private

@@ -119,6 +119,32 @@ module Herb
         )
       end
 
+      # Create a new HTMLAttributeValueNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified attribute value nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::HTMLAttributeValueNode -- the node to copy
+      # @rbs open_quote: Herb::Token? -- override the open quote token
+      # @rbs children: Array[Herb::AST::Node]? -- override the children array
+      # @rbs close_quote: Herb::Token? -- override the close quote token
+      # @rbs quoted: bool? -- override the quoted flag
+      def copy_html_attribute_value_node(
+        node,
+        open_quote: nil,
+        children: nil,
+        close_quote: nil,
+        quoted: nil
+      ) #: Herb::AST::HTMLAttributeValueNode
+        Herb::AST::HTMLAttributeValueNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          open_quote || node.open_quote,
+          children || node.children,
+          close_quote || node.close_quote,
+          quoted.nil? ? node.quoted : quoted
+        )
+      end
+
       # Create a new HTMLElementNode by copying an existing node with optional attribute overrides.
       # This is useful for creating modified element nodes during autofix operations.
       #

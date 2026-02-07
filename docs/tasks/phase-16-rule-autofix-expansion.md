@@ -251,13 +251,26 @@ cd herb-lint && ./bin/steep check
 
 ### Task 16.8: HtmlAttributeDoubleQuotes Autofix
 
-**Location:** `herb-lint/lib/herb/lint/rules/html_attribute_double_quotes.rb`
+**Status:** Complete
 
-- [ ] Add `def self.autocorrectable? = true`
-- [ ] Change `add_offense` to `add_offense_with_autofix`
-- [ ] Implement `autofix(node, parse_result)` method
-  - [ ] Convert single quotes to double quotes
-- [ ] Add autofix tests
+**Location:** `herb-lint/lib/herb/lint/rules/html/attribute_double_quotes.rb`
+
+- [x] Add `def self.autocorrectable? = true`
+- [x] Change `add_offense` to `add_offense_with_autofix`
+- [x] Implement `autofix(node, parse_result)` method
+  - [x] Add double quotes around unquoted attribute values
+- [x] Add autofix tests
+- [x] Add `copy_html_attribute_value_node` helper to AutofixHelpers
+
+**Example:**
+
+```erb
+# Before
+<div class=container>text</div>
+
+# After
+<div class="container">text</div>
+```
 
 ### Task 16.9: HtmlAttributeEqualsSpacing Autofix
 
