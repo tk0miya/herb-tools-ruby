@@ -33,6 +33,44 @@ RSpec.describe Herb::Lint::Rules::Erb::NoEmptyTags do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
+    # Good examples from documentation
+    context "when using ERB output tag with content (documentation example)" do
+      let(:source) { "<%= user.name %>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when using ERB control flow with content (documentation example)" do
+      let(:source) do
+        <<~ERB
+          <% if user.admin? %>
+           Admin tools
+          <% end %>
+        ERB
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "when ERB tag is empty with newline (documentation example)" do
+      let(:source) do
+        <<~ERB
+          <%
+          %>
+        ERB
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("erb-no-empty-tags")
+      end
+    end
+
     context "when ERB tag has content" do
       let(:source) { "<% do_something %>" }
 
@@ -60,6 +98,7 @@ RSpec.describe Herb::Lint::Rules::Erb::NoEmptyTags do
       end
     end
 
+    # Bad example from documentation: <% %>
     context "when ERB tag contains only one space" do
       let(:source) { "<% %>" }
 
@@ -79,6 +118,7 @@ RSpec.describe Herb::Lint::Rules::Erb::NoEmptyTags do
       end
     end
 
+    # Bad example from documentation: <%= %>
     context "when ERB output tag contains only whitespace" do
       let(:source) { "<%= %>" }
 
