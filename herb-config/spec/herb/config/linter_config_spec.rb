@@ -116,25 +116,14 @@ RSpec.describe Herb::Config::LinterConfig do
       {
         "linter" => {
           "rules" => {
-            "simple-rule" => "error",
-            "warn-rule" => "warn",
-            "warning-rule" => "warning",
-            "info-rule" => "info",
-            "hint-rule" => "hint",
-            "off-rule" => "off",
-            "hash-rule" => { "severity" => "error", "options" => { "style" => "double" } },
-            "hash-warning-rule" => { "severity" => "warning" }
+            "error-rule" => { "severity" => "error" },
+            "warning-rule" => { "severity" => "warning" },
+            "info-rule" => { "severity" => "info" },
+            "hint-rule" => { "severity" => "hint" },
+            "hash-rule" => { "severity" => "error", "options" => { "style" => "double" } }
           }
         }
       }
-    end
-
-    context "when rule has simple string severity" do
-      let(:rule_name) { "simple-rule" }
-
-      it "returns the severity" do
-        expect(subject).to eq("error")
-      end
     end
 
     context "when rule has hash configuration with severity" do
@@ -145,27 +134,19 @@ RSpec.describe Herb::Config::LinterConfig do
       end
     end
 
-    context "when rule has 'warn' severity" do
-      let(:rule_name) { "warn-rule" }
+    context "when rule has 'error' severity" do
+      let(:rule_name) { "error-rule" }
 
-      it "returns 'warn'" do
-        expect(subject).to eq("warn")
+      it "returns 'error'" do
+        expect(subject).to eq("error")
       end
     end
 
-    context "when rule has 'warning' severity (alias)" do
+    context "when rule has 'warning' severity" do
       let(:rule_name) { "warning-rule" }
 
-      it "normalizes to 'warn'" do
-        expect(subject).to eq("warn")
-      end
-    end
-
-    context "when rule has 'warning' severity in hash config" do
-      let(:rule_name) { "hash-warning-rule" }
-
-      it "normalizes to 'warn'" do
-        expect(subject).to eq("warn")
+      it "returns 'warning'" do
+        expect(subject).to eq("warning")
       end
     end
 
@@ -185,14 +166,6 @@ RSpec.describe Herb::Config::LinterConfig do
       end
     end
 
-    context "when rule has 'off' severity" do
-      let(:rule_name) { "off-rule" }
-
-      it "returns 'off'" do
-        expect(subject).to eq("off")
-      end
-    end
-
     context "when rule is not configured" do
       let(:rule_name) { "unconfigured-rule" }
 
@@ -209,9 +182,8 @@ RSpec.describe Herb::Config::LinterConfig do
       {
         "linter" => {
           "rules" => {
-            "simple-rule" => "error",
             "hash-rule" => { "severity" => "error", "options" => { "style" => "double" } },
-            "hash-no-options" => { "severity" => "warn" }
+            "hash-no-options" => { "severity" => "warning" }
           }
         }
       }
@@ -227,14 +199,6 @@ RSpec.describe Herb::Config::LinterConfig do
 
     context "when rule has hash configuration without options" do
       let(:rule_name) { "hash-no-options" }
-
-      it "returns an empty hash" do
-        expect(subject).to eq({})
-      end
-    end
-
-    context "when rule has simple string severity" do
-      let(:rule_name) { "simple-rule" }
 
       it "returns an empty hash" do
         expect(subject).to eq({})

@@ -1,0 +1,160 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$id": "https://github.com/marcoroth/herb/blob/main/herb-schema.json",
+  "title": "Herb Configuration",
+  "description": "Configuration schema for Herb linter and formatter",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Configuration file version"
+    },
+    "files": {
+      "type": "object",
+      "description": "Top-level file configuration",
+      "properties": {
+        "include": {
+          "type": "array",
+          "description": "Additional glob patterns to include beyond defaults (e.g., ['**/*.xml.erb', 'custom/**/*.html'])",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclude": {
+          "type": "array",
+          "description": "Glob patterns to exclude (e.g., ['node_modules/**/*', 'vendor/**/*', '**/*.html.erb'])",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "linter": {
+      "type": "object",
+      "description": "Linter configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether the linter is enabled"
+        },
+        "failLevel": {
+          "type": "string",
+          "enum": ["error", "warning", "info", "hint"],
+          "description": "Exit with error code when diagnostics of this severity or higher are present (e.g., 'warning' will fail on warnings and errors)"
+        },
+        "include": {
+          "type": "array",
+          "description": "Additional glob patterns to include beyond defaults (e.g., ['**/*.xml.erb', 'custom/**/*.html'])",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclude": {
+          "type": "array",
+          "description": "Glob patterns to exclude from linting",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rules": {
+          "type": "object",
+          "description": "Per-rule configuration",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "description": "Whether the rule is enabled"
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["error", "warning", "info", "hint"],
+                "description": "Severity level for the rule"
+              },
+              "include": {
+                "type": "array",
+                "description": "Additional glob patterns to include for this rule (additive, ignored when 'only' is present)",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "only": {
+                "type": "array",
+                "description": "Only apply this rule to files matching these glob patterns (overrides all 'include' patterns)",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "exclude": {
+                "type": "array",
+                "description": "Don't apply this rule to files matching these glob patterns",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "formatter": {
+      "type": "object",
+      "description": "Formatter configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether the formatter is enabled"
+        },
+        "include": {
+          "type": "array",
+          "description": "Additional glob patterns to include beyond defaults (e.g., ['**/*.xml.erb', 'custom/**/*.html'])",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclude": {
+          "type": "array",
+          "description": "Glob patterns to exclude from formatting",
+          "items": {
+            "type": "string"
+          }
+        },
+        "indentWidth": {
+          "type": "integer",
+          "description": "Number of spaces per indentation level",
+          "minimum": 1
+        },
+        "maxLineLength": {
+          "type": "integer",
+          "description": "Maximum line length before wrapping",
+          "minimum": 1
+        },
+        "rewriter": {
+          "type": "object",
+          "description": "Rewriter configuration for pre and post-format transformations",
+          "properties": {
+            "pre": {
+              "type": "array",
+              "description": "Pre-format rewriters to run (in order) before formatting the AST",
+              "items": {
+                "type": "string"
+              }
+            },
+            "post": {
+              "type": "array",
+              "description": "Post-format rewriters to run (in order) after formatting the document",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

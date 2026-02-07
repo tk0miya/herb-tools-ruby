@@ -177,10 +177,16 @@ end
 
 **Location:** `herb-config/lib/herb/config/validator.rb`
 
-- [ ] Implement Validator class
-- [ ] Add ValidationError to Errors module
-- [ ] Add unit tests
-- [ ] Generate RBS types
+- [x] Implement Validator class using JSON Schema
+- [x] Create schema.json matching TypeScript original Zod schema
+- [x] Add ValidationError to Errors module
+- [x] Add json-schema gem dependency
+- [x] Add unit tests (reduced to 10 tests, removing JSON Schema redundancies)
+- [x] Generate RBS types
+
+**Implementation Approach:**
+
+Uses `json-schema` gem (~> 6.0) for declarative validation against schema.json.
 
 **Interface:**
 
@@ -188,6 +194,8 @@ end
 module Herb
   module Config
     class Validator
+      SCHEMA_PATH = File.expand_path("schema.json", __dir__ || ".")
+
       def initialize(config, known_rules: [])
       def valid?  # => bool
       def validate!  # raises ValidationError if invalid
@@ -197,26 +205,32 @@ module Herb
 end
 ```
 
-**Validation Rules:**
+**Schema Definition:**
 
-| Field | Type | Validation |
-|-------|------|------------|
-| linter.enabled | boolean | Must be true/false |
-| linter.include | array | Each element must be string |
-| linter.exclude | array | Each element must be string |
-| linter.rules | hash | Keys should be known rules |
-| linter.rules.* | string/hash | Valid severity or hash with severity |
-| formatter.enabled | boolean | Must be true/false |
-| formatter.indentWidth | integer | Must be positive |
-| formatter.maxLineLength | integer | Must be positive |
+JSON Schema Draft 6 file at `lib/herb/config/schema.json`:
+- Matches TypeScript original Zod schema exactly
+- 4 severity levels only: error, warning, info, hint
+- Object form only for rules (no string shorthand)
+- Rule properties: enabled, severity, include, only, exclude
 
-**Test Cases:**
-- Valid configuration passes
-- Invalid type for enabled field
-- Invalid severity level
-- Unknown rule name (warning, not error)
-- Malformed glob pattern
-- Missing required fields use defaults
+**Validation Strategy:**
+
+1. **Structural validation**: JSON Schema validates all types and structure
+2. **Rule name validation**: Optional, generates warnings (not errors) for unknown rules
+3. **Error formatting**: Cleans up JSON Schema error messages for readability
+
+**Test Coverage:**
+
+- Schema validation (type checking, required fields, enums)
+- Known rules validation (warnings for unknown rule names)
+- Error formatting and aggregation
+- Integration with ValidationError
+
+**Files Created:**
+- `lib/herb/config/validator.rb` - Validator class
+- `lib/herb/config/schema.json` - JSON Schema definition
+- `lib/herb/config/errors.rb` - Error classes
+- `sig/gems/json-schema.rbs` - Type definitions for gem
 
 ---
 

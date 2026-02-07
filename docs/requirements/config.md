@@ -39,14 +39,17 @@ linter:
 
   # Rule configurations
   rules:
-    # Rule can be set to severity level
-    rule-name: error | warn | warning | info | hint | off
-
-    # Or with additional options
+    # Rule must be configured as object with severity
     rule-name:
-      severity: error
-      options:
-        # Rule-specific options
+      severity: error | warning | info | hint
+
+      # Optional: enable/disable the rule
+      enabled: true
+
+      # Optional: file patterns for this rule
+      include: ["**/*.erb"]
+      only: ["app/views/**"]
+      exclude: ["vendor/**"]
 
 # Formatter configuration
 formatter:
@@ -132,41 +135,46 @@ Default: All rules enabled with default severities
 
 Configure individual rules.
 
-#### Simple Severity
+#### Basic Configuration
 
 ```yaml
 linter:
   rules:
-    html-attribute-double-quotes: error
-    html-img-require-alt: warn
-    html-no-positive-tab-index: off
+    html-attribute-quotes:
+      severity: error
+
+    html-img-require-alt:
+      severity: warning
+
+    html-no-positive-tabindex:
+      enabled: false  # Disable the rule
 ```
 
-#### With Options
+#### Advanced Configuration
 
 ```yaml
 linter:
   rules:
-    html-attribute-double-quotes:
+    html-attribute-quotes:
       severity: error
-      options:
-        style: double  # 'single' or 'double'
+      include: ["app/views/**"]
+      exclude: ["app/views/legacy/**"]
 
-    heading-order:
-      severity: warn
-      options:
-        allowMultipleH1: false
+    html-heading-order:
+      severity: warning
+      only: ["app/views/articles/**"]
 ```
 
 #### Severity Levels
 
-| Level | Aliases | Description |
-|-------|---------|-------------|
-| `error` | - | Causes non-zero exit code |
-| `warn` | `warning` | Reported but doesn't fail |
-| `info` | - | Informational |
-| `hint` | - | Low priority |
-| `off` | - | Rule disabled |
+| Level | Description |
+|-------|-------------|
+| `error` | Causes non-zero exit code |
+| `warning` | Reported but doesn't fail |
+| `info` | Informational |
+| `hint` | Low priority |
+
+**Note:** To disable a rule, use `enabled: false` instead of a severity level.
 
 ## Formatter Configuration
 
@@ -303,10 +311,13 @@ linter:
     - "vendor/**"
     - "node_modules/**"
   rules:
-    # Uncomment to customize rule severity
-    # attribute-quotes: error
-    # alt-text: warn
-    # no-positive-tabindex: off
+    # Uncomment to customize rules
+    # html-attribute-quotes:
+    #   severity: error
+    # html-img-require-alt:
+    #   severity: warning
+    # html-no-positive-tabindex:
+    #   enabled: false
 
 formatter:
   enabled: true

@@ -1,0 +1,17 @@
+# Generated from lib/herb/config/errors.rb with RBS::Inline
+
+module Herb
+  module Config
+    # Base error class for configuration-related errors
+    class Error < StandardError
+    end
+
+    # Custom error raised when configuration validation fails
+    class ValidationError < Error
+      # @rbs errors: Array[String] -- validation error messages
+      def initialize: (Array[String] errors) -> void
+
+      attr_reader errors: Array[String]
+    end
+  end
+end
