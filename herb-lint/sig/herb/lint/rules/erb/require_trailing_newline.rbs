@@ -25,8 +25,13 @@ module Herb
 
           def self.default_severity: () -> String
 
+          def self.safe_autocorrectable?: () -> bool
+
           # @rbs override
           def visit_document_node: ...
+
+          # @rbs override
+          def autofix: ...
 
           private
 
@@ -34,6 +39,15 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLTextNode
           def check_text_node_trailing_newline: (Herb::AST::HTMLTextNode node) -> void
+
+          # Fix trailing newlines in an HTMLTextNode.
+          # @rbs node: Herb::AST::HTMLTextNode
+          # @rbs parse_result: Herb::ParseResult
+          def fix_text_node_trailing_newline: (Herb::AST::HTMLTextNode node, Herb::ParseResult parse_result) -> bool
+
+          # Append a text node with trailing newline when the last node is not an HTMLTextNode.
+          # @rbs document_node: Herb::AST::DocumentNode
+          def append_trailing_newline_text_node: (Herb::AST::DocumentNode document_node) -> bool
         end
       end
     end

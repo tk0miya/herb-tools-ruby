@@ -63,7 +63,7 @@ cd herb-lint && ./bin/steep check
 | `erb/no-output-control-flow` | ✔️ | No | - |
 | `erb/no-silent-tag-in-attribute-name` | ✔️ | No | - |
 | `erb/prefer-image-tag-helper` | ✔️ | No | - |
-| `erb/require-trailing-newline` | 🔨 | Yes | 16.8 |
+| `erb/require-trailing-newline` | ✅ | Yes | 16.8 |
 | `erb/require-whitespace-inside-tags` | ✅ | Yes | 16.5 |
 | `erb/right-trim` | ✅ | Yes | 16.6 |
 | `erb/strict-locals-required` | ✔️ | No | - |
@@ -201,13 +201,16 @@ cd herb-lint && ./bin/steep check
 
 ### Task 16.8: ErbRequireTrailingNewline Autofix
 
+**Status:** Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/erb/require_trailing_newline.rb`
 
-- [ ] Add `def self.autocorrectable? = true`
-- [ ] Change `add_offense` to `add_offense_with_autofix`
-- [ ] Implement `autofix(node, parse_result)` method
-  - [ ] Add trailing newline at end of file
-- [ ] Add autofix tests
+- [x] Add `def self.safe_autocorrectable? = true`
+- [x] Change `add_offense` to `add_offense_with_autofix`
+- [x] Implement `autofix(node, parse_result)` method
+  - [x] Add trailing newline at end of file
+  - [x] Remove extra trailing newlines
+- [x] Add autofix tests
 
 **Example:**
 
@@ -215,6 +218,11 @@ cd herb-lint && ./bin/steep check
 # Before (no trailing newline)
 <div>content</div>
 # After (trailing newline added)
+<div>content</div>
+
+# Before (multiple trailing newlines)
+<div>content</div>\n\n
+# After (only one trailing newline)
 <div>content</div>
 ```
 
