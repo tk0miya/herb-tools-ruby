@@ -8,8 +8,7 @@ module Herb
       SCHEMA_PATH: String
 
       # @rbs config: Hash[String, untyped] -- configuration hash to validate
-      # @rbs known_rules: Array[String] -- list of known rule names for validation
-      def initialize: (Hash[String, untyped] config, ?known_rules: Array[String]) -> void
+      def initialize: (Hash[String, untyped] config) -> void
 
       # Check if configuration is valid
       def valid?: () -> bool
@@ -25,8 +24,6 @@ module Herb
 
       attr_reader config: Hash[String, untyped]
 
-      attr_reader known_rules: Array[String]
-
       @errors: Array[String]
 
       def validate_config: () -> void
@@ -37,18 +34,6 @@ module Herb
       # Format JSON Schema error object to readable message
       # @rbs error: Hash[Symbol, untyped]
       def format_schema_error_object: (Hash[Symbol, untyped] error) -> String
-
-      # Validate rule names against known_rules list
-      def validate_known_rules: () -> void
-
-      # @rbs message: String
-      def add_error: (String message) -> void
-
-      # @rbs message: String
-      def add_warning: (String message) -> void
-
-      # Return only actual errors (excluding warnings)
-      def actual_errors: () -> Array[String]
     end
   end
 end
