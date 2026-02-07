@@ -25,6 +25,22 @@ Rules fall into two categories based on how they analyze and fix code:
 
 **Source Rules** operate on raw source strings using regex or string scanning. They detect offenses by byte offset and fix them by returning a corrected source string. No AST manipulation is involved.
 
+### Future: Lexer Rule (Token-Based)
+
+The TypeScript reference defines a third rule type — `LexerRule` — that operates on token streams (`LexResult`) from `Herb.lex()`:
+
+| Category | Base Class | Check Input | Autofix Input | Autofix Output | Use Case |
+|----------|-----------|-------------|---------------|----------------|----------|
+| **Lexer Rule** | `LexerRule` | `LexResult` (tokens) | Offense + `LexResult` | `LexResult?` (corrected tokens) | Token-level validation |
+
+`LexResult` contains a `TokenList` (array of `Token` objects with `value`, `type`, `range`, `location`). Lexer Rules analyze token sequences without requiring full AST parsing.
+
+**Current status:** The TypeScript implementation defines `LexerRule` and includes infrastructure support (type guards, dispatch in `Linter.autofix()`), but **no built-in rules use it**. All existing rules are either `ParserRule` (→ `VisitorRule` in Ruby) or `SourceRule`. The Ruby implementation does not implement `LexerRule` at this time. If a concrete use case arises, it can be introduced following the same pattern as `SourceRule`:
+
+1. New `LexerRule` base class with `check_tokens(lex_result, context)` delegation
+2. Unified `AutofixContext` extended with token-level fields
+3. `AutoFixer` phase 3 for token-based fixes
+
 ## Reference Implementation
 
 The TypeScript reference is `@herb-tools/linter` in the [herb repository](https://github.com/marcoroth/herb):

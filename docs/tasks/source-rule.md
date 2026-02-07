@@ -313,6 +313,7 @@ After the Source Rule infrastructure is established:
 
 - **Migrate `RequireTrailingNewline`** from `VisitorRule` to `SourceRule` (matches TypeScript reference). Currently works as a VisitorRule, so this is optional.
 - **New source rules** can be added by extending `SourceRule` (e.g., file encoding checks, line length limits).
+- **LexerRule (token-based rules)** -- The TypeScript reference defines a third rule type `LexerRule` that operates on token streams (`LexResult`) from `Herb.lex()`. Its `check` receives `LexResult` (a token list) and `autofix` returns a corrected `LexResult`. However, **no built-in rules currently use LexerRule** in the TypeScript implementation — all rules are either `ParserRule` or `SourceRule`. LexerRule support can be added if a concrete use case arises, following the same pattern as SourceRule (new base class, unified AutofixContext with token-level fields, AutoFixer phase 3).
 
 ## Related Documents
 
