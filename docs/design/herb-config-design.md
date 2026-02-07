@@ -102,14 +102,18 @@ end
 
 ### Herb::Config::Validator
 
-Validates configuration structure and values against the schema.
+Validates configuration structure and values using JSON Schema.
 
 **Key Responsibilities:**
-- Validate configuration type constraints (boolean, integer, array, hash)
-- Verify glob patterns are well-formed
-- Check rule names against known rules list
-- Validate severity levels
-- Collect and format validation errors
+- Validate configuration against JSON Schema (schema.json)
+- Check rule names against known rules list (optional, warning only)
+- Format validation error messages
+- Match TypeScript original Zod schema exactly
+
+**Implementation:**
+- Uses `json-schema` gem (~> 6.0) for declarative validation
+- Schema file: `lib/herb/config/schema.json`
+- Validates structure only by default; rule name validation is optional
 
 **Public Interface:**
 
@@ -117,11 +121,11 @@ Validates configuration structure and values against the schema.
 module Herb
   module Config
     class Validator
-      attr_reader errors: Array[String]
+      SCHEMA_PATH: String
 
       @config: Hash[String, untyped]
       @known_rules: Array[String]
-      @errors: Array[String]
+      @errors: Array[String]?
 
       def initialize: (Hash[String, untyped] config, ?known_rules: Array[String]) -> void
 
@@ -132,58 +136,63 @@ module Herb
       # @raise [ValidationError] With formatted error messages
       def validate!: () -> void
 
+      # Get validation errors
+      def errors: () -> Array[String]
+
       private
 
-      def validate_linter_section: () -> void
-      def validate_formatter_section: () -> void
-      def validate_rules: (Hash[String | Symbol, untyped] rules) -> void
-      def validate_severity: (String | Symbol severity, String rule_name) -> void
-      def validate_glob_array: (Array[String] patterns, String field_name) -> void
-      def add_error: (String message) -> void
+      def validate_config: () -> void
+      def load_schema: () -> Hash[String, untyped]
+      def format_schema_error_object: (Hash[Symbol, untyped] error) -> String
+      def validate_known_rules: () -> void
+      def add_warning: (String message) -> void
     end
   end
 end
 ```
 
 **Validation Rules:**
-- **Linter section**: `enabled` (boolean), `include/exclude` (glob arrays), `rules` (hash)
-- **Formatter section**: `enabled` (boolean), `indentWidth/maxLineLength` (positive integers), `include/exclude` (glob arrays), `rewriter` (hash with pre/post arrays)
-- **Rule configuration**: Rule names must be in known_rules list, severity must be valid
-- **Severity levels**: error, warn, warning, info, hint, off
+- **Structure validation**: Enforced by JSON Schema (Draft 6)
+- **Type validation**: boolean, integer, string, array, object
+- **Severity levels**: `error`, `warning`, `info`, `hint` (4 levels only)
+- **Rule format**: Object form only `{ severity: "error", enabled: true, ... }`
+- **Known rules**: Optional validation, warnings only (not errors)
 
-### Herb::Config::Schema
+### Herb::Config Schema (schema.json)
 
-Defines the structure and constraints of valid configuration.
+JSON Schema file defining the structure and constraints of valid configuration.
 
-**Key Responsibilities:**
-- Define configuration field types and defaults
-- Specify valid severity levels
-- Provide severity normalization (handle aliases)
+**Location:** `lib/herb/config/schema.json`
 
-**Data Structures:**
+**Key Features:**
+- JSON Schema Draft 6 format
+- Matches TypeScript original Zod schema exactly
+- Declarative validation (no Ruby code needed)
+- Used by `json-schema` gem for validation
 
-```rbs
-module Herb
-  module Config
-    module Schema
-      type schemaField = { type: Symbol, default: untyped }
-      type schemaDefinition = Hash[Symbol, schemaField]
+**Schema Sections:**
 
-      # Linter configuration schema
-      LINTER: schemaDefinition
-
-      # Formatter configuration schema
-      FORMATTER: schemaDefinition
-
-      SEVERITY_LEVELS: Array[Symbol]
-      SEVERITY_ALIASES: Hash[String, Symbol]
-
-      def self.normalize_severity: (String | Symbol severity) -> Symbol
-      def self.valid_severity?: (String | Symbol severity) -> bool
-    end
-  end
-end
+```json
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "type": "object",
+  "properties": {
+    "version": { "type": "string" },
+    "files": { /* File patterns configuration */ },
+    "linter": { /* Linter configuration */ },
+    "formatter": { /* Formatter configuration */ }
+  }
+}
 ```
+
+**Severity Enum:**
+- `error`, `warning`, `info`, `hint` (4 levels only)
+- No aliases, no "off" severity
+- To disable: use `enabled: false`
+
+**Rule Configuration:**
+- Object form only (no string shorthand)
+- Properties: `enabled`, `severity`, `include`, `only`, `exclude`
 
 ### Herb::Config::Defaults
 
@@ -266,10 +275,11 @@ module Herb
 end
 ```
 
-**Rule Configuration Formats:**
-- String/Symbol: `"html-img-require-alt": "error"` (severity only)
-- Hash: `"html-img-require-alt": { severity: "error", options: { ... } }` (severity + options)
-- Default: Rules not specified are enabled with `:warning` severity
+**Rule Configuration Format:**
+- Object form only: `"html-img-require-alt": { severity: "error", enabled: true }`
+- No string shorthand support in schema.json
+- LinterConfig class supports both for backwards compatibility
+- Default: Rules not specified use rule's default severity
 
 ### Herb::Config::FormatterConfig
 

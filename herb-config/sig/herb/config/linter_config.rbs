@@ -4,11 +4,8 @@ module Herb
   module Config
     # Provides access to linter-specific configuration.
     class LinterConfig
-      # Valid severity levels
+      # Valid severity levels (matches original TypeScript herb)
       SEVERITY_LEVELS: Array[String]
-
-      # Alias mapping for severity levels
-      SEVERITY_ALIASES: Hash[String, String]
 
       # @rbs config_hash: Hash[String, untyped] -- the full configuration hash
       def initialize: (Hash[String, untyped] config_hash) -> void
@@ -37,12 +34,6 @@ module Herb
       attr_reader config: Hash[String, untyped]
 
       def linter_config: () -> Hash[String, untyped]
-
-      # @rbs rule_config: String | Hash[String, untyped]
-      def extract_severity: (String | Hash[String, untyped] rule_config) -> String?
-
-      # @rbs severity: String?
-      def normalize_severity: (String? severity) -> String?
     end
   end
 end

@@ -1,0 +1,18 @@
+# Type definitions for json-schema gem
+
+module JSON
+  module Validator
+    def self.fully_validate: (
+      untyped schema,
+      untyped data,
+      ?errors_as_objects: bool
+    ) -> Array[untyped]
+
+    def self.validate!: (untyped schema, untyped data) -> bool
+  end
+
+  module Util
+    class URI
+    end
+  end
+end

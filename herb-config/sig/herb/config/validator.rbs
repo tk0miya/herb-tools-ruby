@@ -1,0 +1,54 @@
+# Generated from lib/herb/config/validator.rb with RBS::Inline
+
+module Herb
+  module Config
+    # Validates configuration hash against schema
+    class Validator
+      # Path to JSON Schema file
+      SCHEMA_PATH: String
+
+      # @rbs config: Hash[String, untyped] -- configuration hash to validate
+      # @rbs known_rules: Array[String] -- list of known rule names for validation
+      def initialize: (Hash[String, untyped] config, ?known_rules: Array[String]) -> void
+
+      # Check if configuration is valid
+      def valid?: () -> bool
+
+      # Validate configuration and raise error if invalid
+      # @rbs return: void
+      def validate!: () -> void
+
+      # Return list of validation errors
+      def errors: () -> Array[String]
+
+      private
+
+      attr_reader config: Hash[String, untyped]
+
+      attr_reader known_rules: Array[String]
+
+      @errors: Array[String]
+
+      def validate_config: () -> void
+
+      # Load JSON Schema from file
+      def load_schema: () -> Hash[String, untyped]
+
+      # Format JSON Schema error object to readable message
+      # @rbs error: Hash[Symbol, untyped]
+      def format_schema_error_object: (Hash[Symbol, untyped] error) -> String
+
+      # Validate rule names against known_rules list
+      def validate_known_rules: () -> void
+
+      # @rbs message: String
+      def add_error: (String message) -> void
+
+      # @rbs message: String
+      def add_warning: (String message) -> void
+
+      # Return only actual errors (excluding warnings)
+      def actual_errors: () -> Array[String]
+    end
+  end
+end

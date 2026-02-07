@@ -34,16 +34,10 @@ RSpec.describe Herb::Lint::Context do
 
     let(:rule_name) { "test-rule" }
 
-    context "when rule severity is configured as string" do
-      let(:config_hash) { { "linter" => { "rules" => { "test-rule" => "error" } } } }
+    context "when rule severity is configured" do
+      let(:config_hash) { { "linter" => { "rules" => { "test-rule" => { "severity" => "warning" } } } } }
 
-      it { is_expected.to eq("error") }
-    end
-
-    context "when rule severity is configured as hash" do
-      let(:config_hash) { { "linter" => { "rules" => { "test-rule" => { "severity" => "warn" } } } } }
-
-      it { is_expected.to eq("warn") }
+      it { is_expected.to eq("warning") }
     end
 
     context "when rule severity is not configured but rule_registry is provided" do
@@ -72,7 +66,7 @@ RSpec.describe Herb::Lint::Context do
 
     context "when configured severity overrides rule default" do
       let(:rule_registry) { Herb::Lint::RuleRegistry.new }
-      let(:config_hash) { { "linter" => { "rules" => { "test-rule" => "warn" } } } }
+      let(:config_hash) { { "linter" => { "rules" => { "test-rule" => { "severity" => "warning" } } } } }
       let(:test_rule_class) do
         Class.new(Herb::Lint::Rules::Base) do
           def self.rule_name = "test-rule"
@@ -82,7 +76,7 @@ RSpec.describe Herb::Lint::Context do
 
       before { rule_registry.register(test_rule_class) }
 
-      it { is_expected.to eq("warn") }
+      it { is_expected.to eq("warning") }
     end
   end
 end
