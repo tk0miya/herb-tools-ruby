@@ -12,14 +12,22 @@ module Herb
       # Loads configuration from .herb.yml in the specified directory.
       # Returns default configuration if file is not found.
       # @rbs dir: String -- directory to search for configuration file
-      def self.load(dir: Dir.pwd) #: Hash[String, untyped]
+      # @rbs validate: bool -- whether to validate configuration (default: true)
+      def self.load(dir: Dir.pwd, validate: true) #: Hash[String, untyped]
         config_path = File.join(dir, CONFIG_FILE_NAME)
 
-        if File.exist?(config_path)
-          load_file(config_path)
-        else
-          Defaults.config
+        config = if File.exist?(config_path)
+                   load_file(config_path)
+                 else
+                   Defaults.config
+                 end
+
+        if validate
+          validator = Validator.new(config)
+          validator.validate!
         end
+
+        config
       end
 
       # Loads configuration from a specific file path.
