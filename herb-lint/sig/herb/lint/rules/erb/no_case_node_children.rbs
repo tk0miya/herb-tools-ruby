@@ -4,23 +4,35 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that disallows direct children inside case ERB blocks.
+        # Description:
+        #   Disallow placing content or expressions directly between the opening
+        #   `<% case %>` and the first `<% when %>` or `<% in %>` clause in an
+        #   HTML+ERB template.
         #
-        # Content should be inside when/else branches, not directly in the case block.
+        #   In Ruby and ERB, `case` expressions are intended to branch execution.
+        #   Any content placed between the `case` and its `when`/`in` clauses is
+        #   not executed as part of the branching logic, and may lead to confusion,
+        #   orphaned output, or silent bugs.
         #
         # Good:
-        #   <% case value %>
-        #   <% when :a %>
-        #     <p>A</p>
+        #   <% case variable %>
+        #   <% when "a" %>
+        #     A
+        #   <% when "b" %>
+        #     B
         #   <% else %>
-        #     <p>Default</p>
+        #     C
         #   <% end %>
         #
         # Bad:
-        #   <% case value %>
-        #     <p>Direct content</p>
-        #   <% when :a %>
-        #     <p>A</p>
+        #   <% case variable %>
+        #     This content is outside of any when/in/else block!
+        #   <% when "a" %>
+        #     A
+        #   <% when "b" %>
+        #     B
+        #   <% else %>
+        #     C
         #   <% end %>
         class NoCaseNodeChildren < VisitorRule
           def self.rule_name: () -> String
@@ -32,10 +44,16 @@ module Herb
           # @rbs override
           def visit_erb_case_node: ...
 
+          # @rbs override
+          def visit_erb_case_match_node: ...
+
           private
 
-          # @rbs node: Herb::AST::ERBCaseNode
-          def non_whitespace_children?: (Herb::AST::ERBCaseNode node) -> bool
+          # @rbs node: (Herb::AST::ERBCaseNode | Herb::AST::ERBCaseMatchNode)
+          def check_case_node_children: (Herb::AST::ERBCaseNode | Herb::AST::ERBCaseMatchNode node) -> void
+
+          # @rbs node: Herb::AST::Node
+          def allowed_content?: (Herb::AST::Node node) -> bool
         end
       end
     end
