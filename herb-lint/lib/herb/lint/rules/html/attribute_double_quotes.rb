@@ -50,29 +50,14 @@ module Herb
           end
 
           # @rbs override
-          def autofix(node, parse_result) # rubocop:disable Metrics/MethodLength
+          def autofix(node, parse_result)
             value = node.value
             return false if value.nil? || value.quoted
 
-            # Create a simple range and location for the quote tokens
-            # The printer will use these tokens' values but doesn't strictly need accurate positions
-            start_pos = value.location.start
-            quote_range = Herb::Range.new(start_pos, start_pos)
-            quote_location = Herb::Location.new(start_pos, start_pos)
-
             # Create quote tokens for the attribute value
-            open_quote = Herb::Token.new(
-              '"',
-              quote_range,
-              quote_location,
-              "quote"
-            )
-            close_quote = Herb::Token.new(
-              '"',
-              quote_range,
-              quote_location,
-              "quote"
-            )
+            start_pos = value.location.start
+            open_quote = build_quote_token(start_pos)
+            close_quote = build_quote_token(start_pos)
 
             # Create new value node with quotes
             new_value = copy_html_attribute_value_node(
@@ -90,6 +75,22 @@ module Herb
           end
 
           private
+
+          # Build a quote token at the given position.
+          # The printer will use the token's value but doesn't strictly need accurate positions.
+          #
+          # @rbs position: Herb::Position
+          def build_quote_token(position) #: Herb::Token
+            quote_range = Herb::Range.new(position, position)
+            quote_location = Herb::Location.new(position, position)
+
+            Herb::Token.new(
+              '"',
+              quote_range,
+              quote_location,
+              "quote"
+            )
+          end
 
           # @rbs node: Herb::AST::HTMLAttributeNode
           def unquoted_value?(node) #: bool

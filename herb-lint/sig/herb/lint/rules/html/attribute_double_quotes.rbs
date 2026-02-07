@@ -34,6 +34,12 @@ module Herb
 
           private
 
+          # Build a quote token at the given position.
+          # The printer will use the token's value but doesn't strictly need accurate positions.
+          #
+          # @rbs position: Herb::Position
+          def build_quote_token: (Herb::Position position) -> Herb::Token
+
           # @rbs node: Herb::AST::HTMLAttributeNode
           def unquoted_value?: (Herb::AST::HTMLAttributeNode node) -> bool
         end
