@@ -32,7 +32,7 @@ module Herb
             "warning"
           end
 
-          def self.autocorrectable? #: bool
+          def self.safe_autocorrectable? #: bool
             true
           end
 

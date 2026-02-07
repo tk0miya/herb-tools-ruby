@@ -21,9 +21,9 @@ RSpec.describe Herb::Lint::Rules::Erb::RequireWhitespaceInsideTags do
     end
   end
 
-  describe ".autocorrectable?" do
+  describe ".safe_autocorrectable?" do
     it "returns true" do
-      expect(described_class.autocorrectable?).to be(true)
+      expect(described_class.safe_autocorrectable?).to be(true)
     end
   end
 

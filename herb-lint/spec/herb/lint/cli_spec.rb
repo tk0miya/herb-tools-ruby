@@ -232,6 +232,78 @@ RSpec.describe Herb::Lint::CLI do
           expect(output).to include("Invalid format")
         end
       end
+
+      context "with --fix option" do
+        let(:argv) { ["--fix"] }
+
+        before do
+          create_file("app/views/test.html.erb", "<% %>\n<p>Hello</p>")
+        end
+
+        it "applies safe automatic fixes" do
+          subject
+          content = File.read("app/views/test.html.erb")
+          expect(content).not_to include("<% %>")
+          expect(content).to include("<p>Hello</p>")
+        end
+
+        it "returns EXIT_SUCCESS when all offenses are fixed" do
+          expect(subject).to eq(described_class::EXIT_SUCCESS)
+        end
+
+        context "with non-fixable offenses" do
+          before do
+            create_file("app/views/mixed.html.erb", '<% %><img src="test.png">')
+          end
+
+          let(:argv) { ["--fix", "app/views/mixed.html.erb"] }
+
+          it "applies fixable offenses and reports remaining offenses" do
+            output = capture_stdout { subject }
+            expect(subject).to eq(described_class::EXIT_LINT_ERROR)
+            expect(output).to include("html-img-require-alt")
+            # Verify the empty tag was fixed
+            content = File.read("app/views/mixed.html.erb")
+            expect(content).not_to include("<% %>")
+          end
+        end
+      end
+
+      context "with --fix-unsafely option" do
+        let(:argv) { ["--fix-unsafely"] }
+
+        before do
+          create_file("app/views/test.html.erb", "<% %>\n<p>Hello</p>")
+        end
+
+        it "applies all automatic fixes including unsafe ones" do
+          subject
+          content = File.read("app/views/test.html.erb")
+          expect(content).not_to include("<% %>")
+        end
+
+        it "returns EXIT_SUCCESS when all offenses are fixed" do
+          expect(subject).to eq(described_class::EXIT_SUCCESS)
+        end
+      end
+
+      context "with --fix and files without fixable offenses" do
+        let(:argv) { ["--fix"] }
+
+        before do
+          create_file("app/views/valid.html.erb", "<p>Hello</p>")
+        end
+
+        it "does not modify files without offenses" do
+          original_content = File.read("app/views/valid.html.erb")
+          subject
+          expect(File.read("app/views/valid.html.erb")).to eq(original_content)
+        end
+
+        it "returns EXIT_SUCCESS" do
+          expect(subject).to eq(described_class::EXIT_SUCCESS)
+        end
+      end
     end
 
     describe "error handling" do
