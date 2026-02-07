@@ -89,7 +89,6 @@ end
 - [ ] Extract `position_from_offset` helper from `NoExtraNewline` into `SourceRule`
 - [ ] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
 - [ ] Add unit tests
-- [ ] Generate RBS types
 
 **Interface:**
 
@@ -200,7 +199,6 @@ end
   - [ ] If invalid: return `nil`
 - [ ] Update existing tests to use new base class
 - [ ] Add autofix-specific tests
-- [ ] Generate RBS types
 
 **Before (current):**
 
@@ -269,7 +267,6 @@ The TypeScript reference implementation (`erb-require-trailing-newline.ts`) uses
 - [ ] Replace AST-based autofix with `autofix_source(offense, source)` returning `source.rstrip + "\n"`
 - [ ] Remove AST node manipulation helpers (`copy_html_text_node`, `replace_node`, `append_trailing_newline_text_node`)
 - [ ] Update existing tests
-- [ ] Generate RBS types
 
 **Reference (TypeScript):**
 

@@ -38,7 +38,6 @@ This phase expands autofix support across all rule categories:
   - [x] `find_parent(parse_result, node)` — wrapper around `NodeLocator.find_parent`
 - [x] Include in `VisitorRule` base class
 - [x] Add unit tests
-- [x] Generate RBS types
 
 **Verification:**
 

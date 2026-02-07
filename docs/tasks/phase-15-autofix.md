@@ -50,7 +50,6 @@ This phase implements the `--fix` / `--fix-unsafely` feature for herb-lint: auto
 - [x] Update `Linter#lint` to include `parse_result` in `LintResult`
 - [x] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
 - [x] Add unit tests
-- [x] Generate RBS types
 
 **Data Structure:**
 
@@ -88,7 +87,6 @@ end
   - [x] Signature: `autofix(node, parse_result) -> bool`
   - [x] Override in fixable rules to perform AST mutation
 - [x] Add unit tests
-- [x] Generate RBS types
 
 **Interface:**
 
@@ -138,7 +136,6 @@ With the single-parse design, offenses carry direct node references. `NodeLocato
   - [x] Track `@parent_stack` during traversal
 - [x] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
 - [x] Add unit tests
-- [x] Generate RBS types
 
 **Matching Logic:**
 
@@ -167,7 +164,6 @@ A node matches when `node.equal?(target_node)` (object identity). Since the auto
   - [x] `unfixed_count` method
 - [x] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
 - [x] Add unit tests
-- [x] Generate RBS types
 
 **Data Structure:**
 
@@ -213,7 +209,6 @@ The AutoFixer receives the `ParseResult` from the lint phase (single-parse desig
   - [x] Private `safe_to_apply?(offense)` — check safety based on `fix_unsafely` flag
 - [x] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
 - [x] Add unit tests
-- [x] Generate RBS types
 
 **Safety Model:**
 
@@ -263,7 +258,6 @@ AutoFixer#apply
 - [ ] Add `--fix-unsafely` CLI option parsing (`--fix-unsafely` implies `--fix`)
 - [ ] Pass fix options from CLI to Runner
 - [ ] Add integration tests
-- [ ] Generate RBS types
 
 **CLI Changes:**
 
@@ -319,7 +313,6 @@ Note: `result.parse_result` is `nil` when parsing fails, so autofix is skipped f
     - [ ] Return `nil` if not found
   - [ ] `find_parent(parse_result, node)` — convenience wrapper around `NodeLocator.find_parent`
 - [ ] Add unit tests
-- [ ] Generate RBS types
 
 **Interface:**
 
