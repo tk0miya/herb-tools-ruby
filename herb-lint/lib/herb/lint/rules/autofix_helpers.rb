@@ -84,6 +84,16 @@ module Herb
         true
       end
 
+      # Build a double-quote token at the given position.
+      # This is useful for adding quotes to unquoted attribute values during autofix.
+      #
+      # @rbs position: Herb::Position -- the position for the new token
+      def build_quote_token(position) #: Herb::Token
+        location = Herb::Location.new(position, position)
+        range = Herb::Range.new(0, 0)
+        Herb::Token.new('"', range, location, "TOKEN_QUOTE")
+      end
+
       # Create a new token by copying an existing token with optional attribute overrides.
       # This is useful for creating modified tokens during autofix operations.
       #
@@ -116,6 +126,32 @@ module Herb
           name || node.name,
           equals || node.equals,
           value || node.value
+        )
+      end
+
+      # Create a new HTMLAttributeValueNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified attribute value nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::HTMLAttributeValueNode -- the node to copy
+      # @rbs open_quote: Herb::Token? -- override the opening quote token
+      # @rbs children: Array[Herb::AST::Node]? -- override the children array
+      # @rbs close_quote: Herb::Token? -- override the closing quote token
+      # @rbs quoted: bool? -- override the quoted flag
+      def copy_html_attribute_value_node(
+        node,
+        open_quote: nil,
+        children: nil,
+        close_quote: nil,
+        quoted: nil
+      ) #: Herb::AST::HTMLAttributeValueNode
+        Herb::AST::HTMLAttributeValueNode.new(
+          node.type,
+          node.location,
+          node.errors,
+          open_quote || node.open_quote,
+          children || node.children,
+          close_quote || node.close_quote,
+          quoted.nil? ? node.quoted : quoted
         )
       end
 
@@ -696,6 +732,7 @@ module Herb
       #: (Herb::AST::ERBWhenNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?then_keyword: Herb::Location?, ?statements: Array[Herb::AST::Node]?) -> Herb::AST::ERBWhenNode
       #: (Herb::AST::ERBWhileNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBWhileNode
       #: (Herb::AST::ERBYieldNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?) -> Herb::AST::ERBYieldNode
+      #: (Herb::AST::HTMLAttributeValueNode node, ?open_quote: Herb::Token?, ?children: Array[Herb::AST::Node]?, ?close_quote: Herb::Token?, ?quoted: bool?) -> Herb::AST::HTMLAttributeValueNode
       # rubocop:enable Layout/LineLength
       def copy_erb_node(node, **overrides) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
         case node
@@ -716,6 +753,7 @@ module Herb
         when Herb::AST::ERBWhenNode      then copy_erb_when_node(node, **overrides)
         when Herb::AST::ERBWhileNode     then copy_erb_while_node(node, **overrides)
         when Herb::AST::ERBYieldNode     then copy_erb_yield_node(node, **overrides)
+        when Herb::AST::HTMLAttributeValueNode then copy_html_attribute_value_node(node, **overrides)
         end
       end
     end

@@ -211,7 +211,7 @@ cd herb-lint && ./bin/steep check
 
 | Rule | Status | Fixable | Task |
 |------|--------|---------|------|
-| `html/attribute-double-quotes` | 🔨 | Yes | 16.8 |
+| `html/attribute-double-quotes` | ✅ | Yes | 16.8 |
 | `html/attribute-equals-spacing` | 🔨 | Yes | 16.9 |
 | `html/attribute-values-require-quotes` | 🔨 | Yes | 16.10 |
 | `html/boolean-attributes-no-value` | 🔨 | Yes | 16.11 |
@@ -250,13 +250,15 @@ cd herb-lint && ./bin/steep check
 
 ### Task 16.8: HtmlAttributeDoubleQuotes Autofix
 
-**Location:** `herb-lint/lib/herb/lint/rules/html_attribute_double_quotes.rb`
+**Status:** Complete
 
-- [ ] Add `def self.safe_autofixable? = true`
-- [ ] Change `add_offense` to `add_offense_with_autofix`
-- [ ] Implement `autofix(node, parse_result)` method
-  - [ ] Convert single quotes to double quotes
-- [ ] Add autofix tests
+**Location:** `herb-lint/lib/herb/lint/rules/html/attribute_double_quotes.rb`
+
+- [x] Add `def self.safe_autofixable? = true`
+- [x] Change `add_offense` to `add_offense_with_autofix`
+- [x] Implement `autofix(node, parse_result)` method
+  - [x] Add double quotes to unquoted attribute values
+- [x] Add autofix tests
 
 ### Task 16.9: HtmlAttributeEqualsSpacing Autofix
 
