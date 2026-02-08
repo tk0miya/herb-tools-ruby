@@ -53,9 +53,9 @@ module Herb
 
         ignore_disable_comments = options[:ignore_disable_comments] || false
         fix = options[:fix] || false
-        fix_unsafely = options[:fix_unsafely] || false
+        unsafe = options[:fix_unsafely] || false
 
-        runner = Runner.new(config, ignore_disable_comments:, fix:, fix_unsafely:)
+        runner = Runner.new(config, ignore_disable_comments:, fix:, unsafe:)
         result = runner.run(argv)
 
         reporter = create_reporter

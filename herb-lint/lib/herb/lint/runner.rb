@@ -10,18 +10,18 @@ module Herb
       attr_reader :config #: Herb::Config::LinterConfig
       attr_reader :ignore_disable_comments #: bool
       attr_reader :fix #: bool
-      attr_reader :fix_unsafely #: bool
+      attr_reader :unsafe #: bool
       attr_reader :linter #: Linter
 
       # @rbs config: Herb::Config::LinterConfig
       # @rbs ignore_disable_comments: bool -- when true, report offenses even when suppressed
       # @rbs fix: bool -- when true, apply safe automatic fixes
-      # @rbs fix_unsafely: bool -- when true, apply all fixes including unsafe ones
-      def initialize(config, ignore_disable_comments: false, fix: false, fix_unsafely: false) #: void
+      # @rbs unsafe: bool -- when true, apply all fixes including unsafe ones
+      def initialize(config, ignore_disable_comments: false, fix: false, unsafe: false) #: void
         @config = config
         @ignore_disable_comments = ignore_disable_comments
         @fix = fix
-        @fix_unsafely = fix_unsafely
+        @unsafe = unsafe
         @linter = build_linter
       end
 
@@ -82,7 +82,7 @@ module Herb
         AutoFixer.new(
           result.parse_result,
           result.offenses,
-          unsafe: fix_unsafely
+          unsafe:
         ).apply
       end
     end

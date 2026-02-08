@@ -11,15 +11,15 @@ module Herb
 
       attr_reader fix: bool
 
-      attr_reader fix_unsafely: bool
+      attr_reader unsafe: bool
 
       attr_reader linter: Linter
 
       # @rbs config: Herb::Config::LinterConfig
       # @rbs ignore_disable_comments: bool -- when true, report offenses even when suppressed
       # @rbs fix: bool -- when true, apply safe automatic fixes
-      # @rbs fix_unsafely: bool -- when true, apply all fixes including unsafe ones
-      def initialize: (Herb::Config::LinterConfig config, ?ignore_disable_comments: bool, ?fix: bool, ?fix_unsafely: bool) -> void
+      # @rbs unsafe: bool -- when true, apply all fixes including unsafe ones
+      def initialize: (Herb::Config::LinterConfig config, ?ignore_disable_comments: bool, ?fix: bool, ?unsafe: bool) -> void
 
       # Run linting on the given paths and return aggregated results.
       # @rbs paths: Array[String] -- explicit paths (files or directories) to lint

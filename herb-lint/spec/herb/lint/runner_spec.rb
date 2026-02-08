@@ -249,8 +249,8 @@ RSpec.describe Herb::Lint::Runner do
       end
     end
 
-    context "when fix_unsafely is enabled" do
-      let(:runner) { described_class.new(config, fix: true, fix_unsafely: true) }
+    context "when unsafe is enabled" do
+      let(:runner) { described_class.new(config, fix: true, unsafe: true) }
 
       context "with safe autocorrectable offenses" do
         before do
