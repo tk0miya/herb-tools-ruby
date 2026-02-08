@@ -147,7 +147,7 @@ Detailed design available: [herb-lint-autofix-design.md](../design/herb-lint-aut
 - [ ] AutofixContext and Offense changes
 - [ ] RuleMethods autofix extensions
 - [ ] NodeLocator implementation
-- [ ] AutoFixer implementation
+- [ ] Autofixer implementation
 - [ ] Runner and CLI integration (`--fix`, `--fix-unsafely`)
 - [ ] Autofix utility helpers
 - [ ] Add autofix to existing rules

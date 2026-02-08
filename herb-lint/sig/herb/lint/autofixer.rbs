@@ -1,11 +1,11 @@
-# Generated from lib/herb/lint/auto_fixer.rb with RBS::Inline
+# Generated from lib/herb/lint/autofixer.rb with RBS::Inline
 
 module Herb
   module Lint
     # Orchestrates autofix application for a single file.
     # Receives the ParseResult from the lint phase (single-parse design)
     # and applies fixes to the same AST.
-    class AutoFixer
+    class Autofixer
       attr_reader offenses: Array[Offense]
 
       attr_reader parse_result: Herb::ParseResult?

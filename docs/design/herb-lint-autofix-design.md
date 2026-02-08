@@ -4,7 +4,7 @@ Detailed design document for the herb-lint `--fix` / `--fix-unsafely` feature: a
 
 ## Overview
 
-The autofix feature applies automatic corrections to ERB templates by mutating the AST and re-serializing it via `IdentityPrinter`. When a fixable rule detects an offense, it also provides an `autofix` method that creates replacement AST nodes. The `AutoFixer` orchestrates autofix application: it receives the `ParseResult` from the lint phase, invokes each rule's `autofix` with the offending node (stored as a direct reference in the offense), and serializes the modified AST back to source code.
+The autofix feature applies automatic corrections to ERB templates by mutating the AST and re-serializing it via `IdentityPrinter`. When a fixable rule detects an offense, it also provides an `autofix` method that creates replacement AST nodes. The `Autofixer` orchestrates autofix application: it receives the `ParseResult` from the lint phase, invokes each rule's `autofix` with the offending node (stored as a direct reference in the offense), and serializes the modified AST back to source code.
 
 This design follows the TypeScript reference implementation in `@herb-tools/linter`, which uses the same AST mutation + IdentityPrinter approach.
 
@@ -39,7 +39,7 @@ The TypeScript reference defines a third rule type — `LexerRule` — that oper
 
 1. New `LexerRule` base class with `check_tokens(lex_result, context)` delegation
 2. Unified `AutofixContext` extended with token-level fields
-3. `AutoFixer` phase 3 for token-based fixes
+3. `Autofixer` phase 3 for token-based fixes
 
 ## Reference Implementation
 
@@ -47,7 +47,7 @@ The TypeScript reference is `@herb-tools/linter` in the [herb repository](https:
 
 | TypeScript | Ruby |
 |-----------|------|
-| `Linter.autofix()` | `Herb::Lint::AutoFixer` |
+| `Linter.autofix()` | `Herb::Lint::Autofixer` |
 | `IdentityPrinter` (in `@herb-tools/printer`) | `Herb::Printer::IdentityPrinter` (in herb-printer gem) |
 | `findNodeByLocation()` | `Herb::Lint::NodeLocator` (parent lookup only; node re-finding not needed) |
 | `Mutable<T>` (type-level readonly removal) | Not needed (node replacement via public constructors) |
@@ -105,8 +105,8 @@ CLI#run
           │   └── LintResult (offenses + parse_result)
           │
           ├── if fix enabled AND fixable offenses exist:
-          │   ├── AutoFixer.new(parse_result, offenses, fix_unsafely:)
-          │   ├── fix_result = auto_fixer.apply
+          │   ├── Autofixer.new(parse_result, offenses, fix_unsafely:)
+          │   ├── fix_result = autofixer.apply
           │   │   ├── Phase 1: AST autofixes (reuses parse_result from lint phase)
           │   │   │   ├── for each fixable offense:
           │   │   │   │   ├── offense.autofix_context.node → node (direct reference)
@@ -202,7 +202,7 @@ AutofixContext.new(rule_class: self.class, node: some_node)
 # Source Rule creates context with offsets:
 AutofixContext.new(rule_class: self.class, start_offset: 42, end_offset: 50)
 
-# AutoFixer checks which type:
+# Autofixer checks which type:
 if context.source_rule?   # start_offset present
   rule.autofix_source(offense, source)
 else                       # node present
@@ -323,12 +323,12 @@ end
 
 ### New Components
 
-#### Herb::Lint::AutoFixer
+#### Herb::Lint::Autofixer
 
 Orchestrates autofix application for a single file. This is the core new component. It receives the `ParseResult` from the lint phase (single-parse design) and applies fixes to the same AST.
 
 ```rbs
-class Herb::Lint::AutoFixer
+class Herb::Lint::Autofixer
   @parse_result: Herb::ParseResult
   @offenses: Array[Offense]
   @fix_unsafely: bool
@@ -583,7 +583,7 @@ def parent_array_for(parent, node)
 end
 ```
 
-This is provided by the `AutoFixer` or a shared module, accessible to rule `autofix` methods.
+This is provided by the `Autofixer` or a shared module, accessible to rule `autofix` methods.
 
 ## Safety Model
 
@@ -617,7 +617,7 @@ Following the TypeScript reference, there is no explicit conflict resolution mec
 
 ## Testing Strategy
 
-### Unit Tests -- AutoFixer
+### Unit Tests -- Autofixer
 
 - Verify autofix application produces correct source
 - Verify fixable offenses are applied, non-fixable are skipped
@@ -770,12 +770,12 @@ class NoExtraNewline < SourceRule
 end
 ```
 
-### AutoFixer: Two-Phase Processing
+### Autofixer: Two-Phase Processing
 
-The `AutoFixer` separates offenses by type using `AutofixContext#source_rule?` and processes them in two phases:
+The `Autofixer` separates offenses by type using `AutofixContext#source_rule?` and processes them in two phases:
 
 ```rbs
-class Herb::Lint::AutoFixer
+class Herb::Lint::Autofixer
   def apply: () -> AutoFixResult
 
   private
@@ -796,7 +796,7 @@ end
 **Processing flow:**
 
 ```
-AutoFixer#apply
+Autofixer#apply
   ├── partition fixable offenses by autofix_context.source_rule?
   │   ├── visitor_rule? offenses → ast_fixable
   │   └── source_rule? offenses → source_fixable
@@ -834,7 +834,7 @@ AutoFixer#apply
 - `autofixable?` delegates to `rule_class.safe_autofixable?` and `unsafe_autofixable?`
 - Backward compatibility: existing creation with `node:` still works
 
-#### Unit Tests -- AutoFixer (source phase)
+#### Unit Tests -- Autofixer (source phase)
 
 - Source offenses with valid offsets are fixed correctly
 - Source offenses with shifted offsets (content mismatch) are skipped

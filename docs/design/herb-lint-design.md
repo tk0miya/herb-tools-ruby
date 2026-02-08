@@ -24,7 +24,7 @@ herb-lint/
 │           ├── aggregated_result.rb
 │           ├── rule_registry.rb
 │           ├── custom_rule_loader.rb
-│           ├── auto_fixer.rb
+│           ├── autofixer.rb
 │           ├── errors.rb
 │           ├── directive_parser.rb
 │           ├── unnecessary_directive_detector.rb
@@ -81,7 +81,7 @@ Herb::Lint
 ├── AggregatedResult          # Aggregated result for multiple files
 ├── RuleRegistry              # Rule registration and lookup (Registry Pattern)
 ├── CustomRuleLoader          # Custom rule loading
-├── AutoFixer                 # Autofix application
+├── Autofixer                 # Autofix application
 ├── Errors                    # Custom exceptions
 ├── DirectiveParser           # Directive parsing (herb:disable, herb:linter ignore)
 ├── UnnecessaryDirectiveDetector  # Detect unused herb:disable directives
@@ -300,7 +300,7 @@ end
 - `CustomRuleLoader` - Custom rule loading
 - `LinterFactory` - Linter instantiation
 - `Herb::Core::FileDiscovery` - File discovery
-- `AutoFixer` - Autofix application
+- `Autofixer` - Autofix application
 
 ### Herb::Lint::Linter
 
@@ -623,14 +623,14 @@ end
 3. Auto-registers newly loaded rule classes with RuleRegistry
 4. Handles load errors gracefully
 
-### Herb::Lint::AutoFixer
+### Herb::Lint::Autofixer
 
 **Responsibility:** Applies autofixes to source code using AST node replacement and IdentityPrinter serialization.
 
 See [Autofix Design](./herb-lint-autofix-design.md) for the full detailed design, including node replacement patterns, autofix rule implementation, and the processing flow.
 
 ```rbs
-class Herb::Lint::AutoFixer
+class Herb::Lint::Autofixer
   @source: String
   @offenses: Array[Offense]
   @fix_unsafely: bool
