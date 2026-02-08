@@ -27,12 +27,13 @@ For each rule, complete the following 8 steps:
    - Use plain text format, not YARD format
 
 5. **Review and update test cases:**
+   - **PRIORITY**: Use Good/Bad examples from the original documentation as the source of truth
+   - **REMOVE DUPLICATES**: Delete any existing test cases that duplicate the documentation examples
    - Add comments `# Good examples from documentation` and `# Bad examples from documentation`
    - For each Good example: add test case with `it "does not report an offense"`
    - For each Bad example: add test case with `it "reports an offense"`
-   - Keep existing additional test cases that provide useful coverage
-   - DO NOT delete test cases that test edge cases or provide better coverage
-   - Add test cases only if documentation examples are missing
+   - Keep existing additional test cases ONLY if they test edge cases NOT covered by documentation
+   - Add test cases only if documentation examples are missing from tests
 
 6. **Check the original herb-lint rule implementation** (TypeScript/JavaScript)
 
