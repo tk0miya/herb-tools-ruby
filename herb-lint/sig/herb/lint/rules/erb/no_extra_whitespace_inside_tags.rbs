@@ -4,18 +4,26 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that disallows extra whitespace inside ERB tag delimiters.
-        #
-        # ERB tags should have exactly one space between the delimiter and content,
-        # not multiple spaces.
+        # Description:
+        #   This rule disallows **multiple consecutive spaces** immediately inside ERB tags (`<%`, `<%=`) or before the
+        #   closing delimiter (`%>`). It ensures that ERB code is consistently and cleanly formatted, with exactly one
+        #   space after the opening tag and one space before the closing tag (when appropriate).
         #
         # Good:
-        #   <% value %>
-        #   <%= value %>
+        #   <%= output %>
+        #
+        #   <% if condition %>
+        #     True
+        #   <% end %>
         #
         # Bad:
-        #   <%  value  %>
-        #   <%=  value  %>
+        #   <%=  output %>
+        #
+        #   <%= output  %>
+        #
+        #   <%  if condition  %>
+        #     True
+        #   <% end %>
         class NoExtraWhitespaceInsideTags < VisitorRule
           def self.rule_name: () -> String
 

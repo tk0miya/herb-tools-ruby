@@ -7,18 +7,27 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that disallows extra whitespace inside ERB tag delimiters.
-        #
-        # ERB tags should have exactly one space between the delimiter and content,
-        # not multiple spaces.
+        # Description:
+        #   This rule disallows **multiple consecutive spaces** immediately inside ERB tags (`<%`, `<%=`) or before the
+        #   closing delimiter (`%>`). It ensures that ERB code is consistently and cleanly formatted, with exactly one
+        #   space after the opening tag and one space before the closing tag (when appropriate).
         #
         # Good:
-        #   <% value %>
-        #   <%= value %>
+        #   <%= output %>
+        #
+        #   <% if condition %>
+        #     True
+        #   <% end %>
         #
         # Bad:
-        #   <%  value  %>
-        #   <%=  value  %>
+        #   <%=  output %>
+        #
+        #   <%= output  %>
+        #
+        #   <%  if condition  %>
+        #     True
+        #   <% end %>
+        #
         class NoExtraWhitespaceInsideTags < VisitorRule
           def self.rule_name #: String
             "erb-no-extra-whitespace-inside-tags"
@@ -50,7 +59,7 @@ module Herb
 
           # @rbs override
           def autofix(node, parse_result)
-            new_content_value = node.content.value.gsub(/\A[ \t]{2,}/, " ").gsub(/[ \t]{2,}\z/, " ")
+            new_content_value = node.content.value.gsub(/\A\s{2,}/, " ").gsub(/\s{2,}\z/, " ")
             content = copy_token(node.content, content: new_content_value)
             new_node = copy_erb_content_node(node, content:)
             replace_node(parse_result, node, new_node)
@@ -63,20 +72,22 @@ module Herb
             content_value = node.content&.value
             return false if content_value.nil? || content_value.strip.empty?
 
-            # Check for 2+ spaces/tabs at the beginning or end
+            # Check for 2+ spaces at the beginning or end
             leading_extra_whitespace?(content_value) || trailing_extra_whitespace?(content_value)
           end
 
           # @rbs content: String
           def leading_extra_whitespace?(content) #: bool
-            # Match 2 or more whitespace characters at the start
-            content.match?(/\A[ \t]{2,}/)
+            # Match 2 or more spaces at the start, but not if followed by newline
+            # Matches TypeScript: content.startsWith("  ") && !content.startsWith("  \n")
+            content.start_with?("  ") && !content.start_with?("  \n")
           end
 
           # @rbs content: String
           def trailing_extra_whitespace?(content) #: bool
-            # Match 2 or more whitespace characters at the end
-            content.match?(/[ \t]{2,}\z/)
+            # Match 2 or more whitespace characters at the end, but only if content has no newlines
+            # Matches TypeScript: !content.includes("\n") && /\s{2,}$/.test(content)
+            !content.include?("\n") && content.match?(/\s{2,}\z/)
           end
         end
       end
