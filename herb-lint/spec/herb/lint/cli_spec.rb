@@ -271,6 +271,75 @@ RSpec.describe Herb::Lint::CLI do
           expect { subject }.not_to raise_error
         end
       end
+
+      context "with --fail-level option" do
+        # Use a file that triggers only warning-level offenses (no errors)
+        # This allows us to properly test how failLevel affects exit codes
+        before do
+          # Triggers erb-prefer-image-tag-helper (warning) but not html-img-require-alt (error)
+          create_file("app/views/test.html.erb", '<img src="test.png" alt="Test">')
+        end
+
+        context "when --fail-level is 'error'" do
+          let(:argv) { ["--fail-level", "error"] }
+
+          it "returns EXIT_SUCCESS because warnings are below threshold" do
+            expect(subject).to eq(described_class::EXIT_SUCCESS)
+          end
+        end
+
+        context "when --fail-level is 'warning'" do
+          let(:argv) { ["--fail-level", "warning"] }
+
+          it "returns EXIT_LINT_ERROR because warnings meet threshold" do
+            expect(subject).to eq(described_class::EXIT_LINT_ERROR)
+          end
+        end
+
+        context "when failLevel is configured in .herb.yml" do
+          let(:argv) { [] }
+
+          before do
+            File.write(".herb.yml", <<~YAML)
+              linter:
+                failLevel: warning
+            YAML
+          end
+
+          it "uses the configured failLevel from config and returns EXIT_LINT_ERROR" do
+            expect(subject).to eq(described_class::EXIT_LINT_ERROR)
+          end
+        end
+
+        context "when --fail-level CLI option overrides config" do
+          before do
+            File.write(".herb.yml", <<~YAML)
+              linter:
+                failLevel: warning
+            YAML
+          end
+
+          context "when CLI sets error (higher threshold than config)" do
+            let(:argv) { ["--fail-level", "error"] }
+
+            it "CLI option takes precedence and returns EXIT_SUCCESS" do
+              expect(subject).to eq(described_class::EXIT_SUCCESS)
+            end
+          end
+        end
+
+        context "when no offenses exist" do
+          let(:argv) { [] }
+
+          before do
+            create_file("app/views/test.html.erb", '<%= image_tag "test.png", alt: "Test" %>')
+          end
+
+          it "returns EXIT_SUCCESS regardless of failLevel" do
+            expect(subject).to eq(described_class::EXIT_SUCCESS)
+          end
+        end
+      end
     end
 
     describe "error handling" do

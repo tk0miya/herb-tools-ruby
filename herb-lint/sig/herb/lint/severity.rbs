@@ -1,0 +1,27 @@
+# Generated from lib/herb/lint/severity.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # Severity levels and their numeric ranks for comparison.
+    # Higher rank means more severe.
+    module Severity
+      ERROR: ::String
+
+      WARNING: ::String
+
+      INFO: ::String
+
+      HINT: ::String
+
+      # Mapping of severity types to their numeric ranks.
+      # Used for comparing severity levels and determining exit codes.
+      RANKS: Hash[String, Integer]
+
+      # Returns the numeric rank for a given severity type.
+      # Raises an error for unknown severity types.
+      #
+      # @rbs severity_type: String -- severity type ("error", "warning", "info", "hint")
+      def self.rank: (String severity_type) -> Integer
+    end
+  end
+end

@@ -23,6 +23,9 @@ module Herb
 
       # Returns true if there are no offenses.
       def success?: () -> bool
+
+      # Returns all offenses across all files.
+      def offenses: () -> Array[Offense]
     end
   end
 end

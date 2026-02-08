@@ -29,11 +29,11 @@ The configuration schema (schema.json) already accepts these features for compat
 
 **Location:** `herb-lint/lib/herb/lint/cli.rb`
 
-- [ ] Read `linter.failLevel` from config
-- [ ] Implement exit code logic based on failLevel
-- [ ] Add `--fail-level` CLI option to override config
-- [ ] Add unit tests
-- [ ] Update integration tests
+- [x] Read `linter.failLevel` from config
+- [x] Implement exit code logic based on failLevel
+- [x] Add `--fail-level` CLI option to override config
+- [x] Add unit tests
+- [x] Update integration tests
 
 **Configuration:**
 
@@ -282,11 +282,137 @@ end
 
 ---
 
+### Task 17.5: Rule Severity Configuration from Config File
+
+**Location:** `herb-lint/lib/herb/lint/rules/rule_methods.rb`
+
+This task implements the ability to override rule severity levels through configuration files, which was identified during Phase 17.1 implementation but deferred to keep the scope focused.
+
+Currently, rule severity is determined solely by the rule's `default_severity` class method. This task adds the ability to override severity levels per-rule in the configuration file.
+
+**Current Behavior:**
+```ruby
+# Rule severity is always the default
+class ImgRequireAlt < VisitorRule
+  def self.default_severity
+    "error"  # Always "error", cannot be overridden
+  end
+end
+```
+
+**Desired Behavior:**
+```yaml
+# .herb.yml
+linter:
+  rules:
+    html-img-require-alt:
+      severity: warning  # Override from "error" to "warning"
+```
+
+#### Subtask 17.5.1: Rule Severity Resolution in RuleMethods
+
+**Location:** `herb-lint/lib/herb/lint/rules/rule_methods.rb`
+
+- [ ] Modify `create_offense` to check config for severity override
+- [ ] Implement fallback chain: config > default_severity
+- [ ] Handle cases where @context is unavailable (unit tests)
+- [ ] Add unit tests for severity resolution
+
+**Implementation:**
+```ruby
+def create_offense(message:, location:, autofix_context: nil)
+  # Priority: config > instance severity (from default_severity)
+  effective_severity = if @context.respond_to?(:config) && @context.config.respond_to?(:rule_severity)
+                         @context.config.rule_severity(self.class.rule_name) || severity
+                       else
+                         severity
+                       end
+  Offense.new(rule_name: self.class.rule_name, message:, severity: effective_severity,
+              location:, autofix_context:)
+end
+```
+
+#### Subtask 17.5.2: Update Context Factory for Tests
+
+**Location:** `herb-lint/spec/factories/context.rb`
+
+- [ ] Change `rule_registry` from `nil` to `Herb::Lint::RuleRegistry.new`
+- [ ] Ensures `Context#severity_for` can resolve rule default severities
+- [ ] Update tests that rely on the factory
+
+**Current:**
+```ruby
+rule_registry { nil }
+```
+
+**Updated:**
+```ruby
+rule_registry { Herb::Lint::RuleRegistry.new }
+```
+
+#### Subtask 17.5.3: Add Integration Tests
+
+**Location:** `herb-lint/spec/herb/lint/cli_spec.rb`
+
+- [ ] Test: Severity override from config is respected
+- [ ] Test: failLevel with overridden severity works correctly
+- [ ] Test: Multiple rules with different severity overrides
+
+**Test Example:**
+```ruby
+context "when offenses are below threshold due to severity override" do
+  let(:argv) { ["--fail-level", "error"] }
+
+  before do
+    File.write(".herb.yml", <<~YAML)
+      linter:
+        rules:
+          html-img-require-alt:
+            severity: warning  # Override from error to warning
+          erb-prefer-image-tag-helper:
+            enabled: false
+    YAML
+    create_file("app/views/test.html.erb", '<img src="test.png">')
+  end
+
+  it "returns EXIT_SUCCESS when only warnings exist and failLevel is error" do
+    expect(subject).to eq(described_class::EXIT_SUCCESS)
+  end
+end
+```
+
+**Benefits:**
+1. **Flexibility**: Projects can adjust rule severity without modifying code
+2. **Gradual Adoption**: Start with warnings, move to errors over time
+3. **Context-Specific**: Different severity levels for different environments
+4. **Compatibility**: Matches behavior of TypeScript herb implementation
+
+**Verification:**
+```bash
+# Unit tests
+cd herb-lint && ./bin/rspec spec/herb/lint/rules/rule_methods_spec.rb
+
+# Integration tests
+cd herb-lint && ./bin/rspec spec/herb/lint/cli_spec.rb
+
+# Manual test
+echo 'linter:
+  rules:
+    html-img-require-alt:
+      severity: warning' > .herb.yml
+
+echo '<img src="test.png">' > test.html.erb
+herb-lint test.html.erb
+# Should show "warning" not "error"
+```
+
+---
+
 ## Part D: Formatter Configuration (Deferred)
 
 These tasks depend on `herb-format` gem implementation.
 
-### Task 17.5: Formatter include/exclude Patterns
+### Task 17.6: Formatter include/exclude Patterns
 
 **Status:** ⏸️ Blocked by herb-format gem
 
@@ -314,7 +440,7 @@ formatter:
 
 ---
 
-### Task 17.6: Formatter Rewriter Hooks
+### Task 17.7: Formatter Rewriter Hooks
 
 **Status:** ⏸️ Blocked by herb-format gem
 
@@ -427,14 +553,17 @@ herb-lint lib/views/test.html.erb
 
 | Task | Component | Description | Status |
 |------|-----------|-------------|--------|
-| 17.1 | herb-lint | failLevel exit code control | Ready |
+| 17.1 | herb-lint | failLevel exit code control | ✅ Completed |
 | 17.2 | herb-config | Top-level files section | Ready |
 | 17.3 | herb-config + herb-lint | Per-rule enabled flag | Ready |
 | 17.4 | herb-config + herb-lint | Per-rule include/only/exclude | Ready |
-| 17.5 | herb-format | Formatter include/exclude | Blocked |
-| 17.6 | herb-format | Rewriter hooks | Blocked |
+| 17.5 | herb-lint | Rule severity config override | Ready |
+| 17.6 | herb-format | Formatter include/exclude | Blocked |
+| 17.7 | herb-format | Rewriter hooks | Blocked |
 
-**Total: 6 tasks (4 ready, 2 blocked)**
+**Total: 7 tasks (1 completed, 4 ready, 2 blocked)**
+
+**Note:** Task 17.5 addresses rule severity configuration from config files, which was identified during Phase 17.1 implementation and initially deferred. Tasks 17.6-17.7 are formatter-related features that are blocked pending herb-format gem implementation.
 
 ## Related Documents
 

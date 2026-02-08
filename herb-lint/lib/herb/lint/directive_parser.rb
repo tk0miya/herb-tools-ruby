@@ -121,8 +121,9 @@ module Herb
       # @rbs content: String -- full content value for offset calculation
       # @rbs rules_string: String -- the portion after "herb:disable "
       # @rbs content_location: Herb::Location
-      # @rbs return: DisableComment
-      private_class_method def self.build_matched_disable_comment(content, rules_string, content_location)
+      # rubocop:disable Layout/LineLength
+      private_class_method def self.build_matched_disable_comment(content, rules_string, content_location) #: DisableComment
+        # rubocop:enable Layout/LineLength
         rule_name_details = extract_rule_names(content, rules_string)
         rule_names = rule_name_details.map(&:name)
         DisableComment.new(match: true, rule_names:, rule_name_details:, rules_string:, content_location:)
