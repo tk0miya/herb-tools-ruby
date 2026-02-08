@@ -4,18 +4,24 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that disallows empty ERB tags.
-        #
-        # Empty ERB tags (`<% %>` with no content or only whitespace) should be removed.
+        # Description:
+        #   Disallow ERB tags (<% %> or <%= %>) that contain no meaningful content i.e., tags
+        #   that are completely empty or contain only whitespace.
         #
         # Good:
-        #   <% do_something %>
-        #   <%= value %>
+        #   <%= user.name %>
+        #
+        #   <% if user.admin? %>
+        #    Admin tools
+        #   <% end %>
         #
         # Bad:
         #   <% %>
-        #   <%  %>
+        #
         #   <%= %>
+        #
+        #   <%
+        #   %>
         class NoEmptyTags < VisitorRule
           def self.rule_name: () -> String
 
