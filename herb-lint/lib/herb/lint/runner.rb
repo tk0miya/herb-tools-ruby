@@ -11,6 +11,7 @@ module Herb
       attr_reader :ignore_disable_comments #: bool
       attr_reader :fix #: bool
       attr_reader :fix_unsafely #: bool
+      attr_reader :linter #: Linter
 
       # @rbs config: Herb::Config::LinterConfig
       # @rbs ignore_disable_comments: bool -- when true, report offenses even when suppressed
@@ -21,6 +22,7 @@ module Herb
         @ignore_disable_comments = ignore_disable_comments
         @fix = fix
         @fix_unsafely = fix_unsafely
+        @linter = build_linter
       end
 
       # Run linting on the given paths and return aggregated results.
@@ -67,8 +69,8 @@ module Herb
         discovery.discover(paths)
       end
 
-      def linter #: Linter
-        @linter ||= Linter.new(instantiate_rules, config, rule_registry:, ignore_disable_comments:)
+      def build_linter #: Linter
+        Linter.new(instantiate_rules, config, rule_registry:, ignore_disable_comments:)
       end
 
       # @rbs result: LintResult
