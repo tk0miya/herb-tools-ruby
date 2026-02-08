@@ -14,7 +14,7 @@ module Herb
       # @rbs message: String
       # @rbs severity: String
       # @rbs location: Herb::Location
-      # @rbs autofix_context: AutofixContext? -- optional autofix context for fixable offenses
+      # @rbs autofix_context: AutofixContext? -- optional autofix context for autofixable offenses
       def initialize(rule_name:, message:, severity:, location:, autofix_context: nil) #: void
         @rule_name = rule_name
         @message = message
@@ -27,7 +27,7 @@ module Herb
       # Delegates to AutofixContext#autofixable? for safety-level filtering.
       #
       # @rbs unsafe: bool -- when true, also consider unsafe autofixes
-      def fixable?(unsafe: false) #: boolish
+      def autofixable?(unsafe: false) #: boolish
         @autofix_context&.autofixable?(unsafe:)
       end
 

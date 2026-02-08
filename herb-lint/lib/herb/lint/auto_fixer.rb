@@ -9,10 +9,10 @@ module Herb
     # and applies fixes to the same AST.
     class AutoFixer
       attr_reader :offenses #: Array[Offense]
-      attr_reader :parse_result #: Herb::ParseResult
+      attr_reader :parse_result #: Herb::ParseResult?
       attr_reader :unsafe #: bool
 
-      # @rbs parse_result: Herb::ParseResult -- the parse result from the lint phase
+      # @rbs parse_result: Herb::ParseResult? -- the parse result from the lint phase (nil on parse error)
       # @rbs offenses: Array[Offense] -- offenses detected during linting
       # @rbs unsafe: bool -- when true, also apply unsafe autofixes
       def initialize(parse_result, offenses, unsafe: false) #: void
@@ -21,27 +21,37 @@ module Herb
         @unsafe = unsafe
       end
 
+      # Returns true when there are any autofixable offenses.
+      # Requires a valid parse_result and at least one offense that can be autocorrected.
+      #
+      # @rbs unsafe: bool -- when true, also consider unsafe autofixes
+      def autofixable?(unsafe:) #: boolish
+        return false unless parse_result
+
+        offenses.any? { _1.autofixable?(unsafe:) }
+      end
+
       # Apply autofixes and return the result.
       #
       # Processing:
-      # 1. Partition offenses into fixable and non-fixable
-      # 2. Apply AST-phase autofixes for fixable offenses
+      # 1. Partition offenses into autofixable and non-autofixable
+      # 2. Apply AST-phase autofixes for autofixable offenses
       # 3. Return AutoFixResult with corrected source and categorized offenses
       def apply #: AutoFixResult
-        fixable, non_fixable = offenses.partition { |offense| offense.fixable?(unsafe:) }
+        autofixable, non_autofixable = offenses.partition { _1.autofixable?(unsafe:) }
 
-        source, fixed, unfixed = apply_fixes(fixable)
+        source, fixed, unfixed = apply_fixes(autofixable)
 
-        AutoFixResult.new(source:, fixed:, unfixed: non_fixable + unfixed)
+        AutoFixResult.new(source:, fixed:, unfixed: non_autofixable + unfixed)
       end
 
       private
 
-      # Apply autofixes for fixable offenses.
+      # Apply autofixes for autofixable offenses.
       # For each offense, instantiate the rule and call its autofix method.
       # After all fixes, serialize the modified AST via IdentityPrinter.
       #
-      # @rbs offenses: Array[Offense] -- fixable offenses to apply
+      # @rbs offenses: Array[Offense] -- autofixable offenses to apply
       def apply_fixes(offenses) #: [String, Array[Offense], Array[Offense]]
         fixed = [] #: Array[Offense]
         unfixed = [] #: Array[Offense]

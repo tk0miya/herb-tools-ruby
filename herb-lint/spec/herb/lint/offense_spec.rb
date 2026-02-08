@@ -51,8 +51,8 @@ RSpec.describe Herb::Lint::Offense do
     end
   end
 
-  describe "#fixable?" do
-    subject { offense.fixable?(unsafe:) }
+  describe "#autofixable?" do
+    subject { offense.autofixable?(unsafe:) }
 
     let(:node) { Herb.parse('<img src="test.png">', track_whitespace: true).value.children.first }
     let(:safe_rule_class) do
@@ -132,7 +132,7 @@ RSpec.describe Herb::Lint::Offense do
     it "creates offense without autofix_context" do
       expect(subject.rule_name).to eq("test-rule")
       expect(subject.autofix_context).to be_nil
-      expect(subject).not_to be_fixable
+      expect(subject).not_to be_autofixable
     end
   end
 end
