@@ -13,15 +13,16 @@ For each rule, complete the following 8 steps:
 3. **Read the Description and Examples** (Good/Bad) from the documentation
 
 4. **Add the Description and Examples as comments** at the top of the rule class:
-   - Add "Description:" heading
+   - Add "Description:" heading (format: `# Description:` with 1 space)
    - Copy the Description text verbatim (word-for-word, including all paragraphs)
+   - Indent each line of Description content with `#   ` (hash + 3 spaces)
    - DO NOT paraphrase, rewrite, or add your own explanations
    - Add blank line after Description
-   - Add "Good:" heading with blank line before it
+   - Add "Good:" heading with blank line before it (format: `# Good:` with 1 space)
    - Copy all Good examples with `#   ` (hash + 3 spaces) before each line
    - Use existing Ruby codebase indentation within the examples
    - Add blank line after Good section
-   - Add "Bad:" heading with blank line before it
+   - Add "Bad:" heading with blank line before it (format: `# Bad:` with 1 space)
    - Copy all Bad examples with `#   ` (hash + 3 spaces) before each line
    - Add blank line after Bad section
    - Use plain text format, not YARD format
