@@ -33,19 +33,59 @@ RSpec.describe Herb::Lint::Rules::Erb::NoEmptyTags do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when ERB tag has content" do
-      let(:source) { "<% do_something %>" }
+    # Good examples from documentation
+    context "when using ERB output tag with content (documentation example)" do
+      let(:source) { "<%= user.name %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when ERB output tag has content" do
-      let(:source) { "<%= value %>" }
+    context "when using ERB control flow with content (documentation example)" do
+      let(:source) do
+        <<~ERB
+          <% if user.admin? %>
+           Admin tools
+          <% end %>
+        ERB
+      end
 
       it "does not report an offense" do
         expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "when ERB tag is empty with space" do
+      let(:source) { "<% %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("erb-no-empty-tags")
+      end
+    end
+
+    context "when ERB output tag is empty with space" do
+      let(:source) { "<%= %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("erb-no-empty-tags")
+      end
+    end
+
+    context "when ERB tag is empty with newline" do
+      let(:source) do
+        <<~ERB
+          <%
+          %>
+        ERB
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("erb-no-empty-tags")
       end
     end
 
@@ -60,27 +100,8 @@ RSpec.describe Herb::Lint::Rules::Erb::NoEmptyTags do
       end
     end
 
-    context "when ERB tag contains only one space" do
-      let(:source) { "<% %>" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("erb-no-empty-tags")
-        expect(subject.first.message).to eq("Remove empty ERB tag")
-      end
-    end
-
     context "when ERB tag contains only multiple spaces" do
       let(:source) { "<%  %>" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("erb-no-empty-tags")
-      end
-    end
-
-    context "when ERB output tag contains only whitespace" do
-      let(:source) { "<%= %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
