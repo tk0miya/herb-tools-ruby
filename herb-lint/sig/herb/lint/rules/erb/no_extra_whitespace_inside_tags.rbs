@@ -23,7 +23,7 @@ module Herb
 
           def self.default_severity: () -> String
 
-          def self.autocorrectable?: () -> bool
+          def self.safe_autofixable?: () -> bool
 
           # @rbs override
           def visit_erb_content_node: ...

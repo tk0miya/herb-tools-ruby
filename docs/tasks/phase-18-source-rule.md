@@ -60,9 +60,9 @@ AutofixContext = Data.define(:rule_class, :node, :start_offset, :end_offset) do
     !node.nil?
   end
 
-  def autocorrectable?(unsafe: false)
-    return true if rule_class.safe_autocorrectable?
-    return true if unsafe && rule_class.unsafe_autocorrectable?
+  def autofixable?(unsafe: false)
+    return true if rule_class.safe_autofixable?
+    return true if unsafe && rule_class.unsafe_autofixable?
     false
   end
 end
@@ -71,7 +71,7 @@ end
 **Test Cases:**
 - `AutofixContext.new(rule_class: R, node: n)` -- `visitor_rule?` is `true`, `source_rule?` is `false`
 - `AutofixContext.new(rule_class: R, start_offset: 10, end_offset: 20)` -- `source_rule?` is `true`, `visitor_rule?` is `false`
-- `autocorrectable?` delegates correctly for both variants
+- `autofixable?` delegates correctly for both variants
 - Backward compatibility: existing creation patterns work without changes
 
 ---
@@ -190,7 +190,7 @@ end
 - [ ] Remove `_document` parameter
 - [ ] Remove `@source = context.source` (now provided by base class as `source` param and `@source`)
 - [ ] Remove private `location_from_offsets` and `position_from_offset` methods (now in `SourceRule` base)
-- [ ] Add `self.safe_autocorrectable?` returning `true`
+- [ ] Add `self.safe_autofixable?` returning `true`
 - [ ] Replace `add_offense` with `add_offense_with_source_autofix` (include `start_offset:` and `end_offset:`)
 - [ ] Implement `autofix_source(offense, source)` with offset verification
   - [ ] Read `start_offset` and `end_offset` from `offense.autofix_context`
@@ -223,7 +223,7 @@ end
 
 ```ruby
 class NoExtraNewline < SourceRule
-  def self.safe_autocorrectable? = true
+  def self.safe_autofixable? = true
 
   def check_source(source, _context)
     source.scan(/\n{4,}/) do

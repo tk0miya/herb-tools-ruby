@@ -28,12 +28,12 @@ module Herb
           end
 
           # Whether the rule provides safe autofix.
-          def safe_autocorrectable? #: bool
+          def safe_autofixable? #: bool
             false
           end
 
           # Whether the rule provides unsafe autofix (requires --fix-unsafely).
-          def unsafe_autocorrectable? #: bool
+          def unsafe_autofixable? #: bool
             false
           end
         end

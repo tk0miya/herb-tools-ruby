@@ -116,9 +116,9 @@ RSpec.describe Herb::Lint::Rules::Erb::RightTrim do
     end
   end
 
-  describe ".safe_autocorrectable?" do
+  describe ".safe_autofixable?" do
     it "returns true" do
-      expect(described_class.safe_autocorrectable?).to be(true)
+      expect(described_class.safe_autofixable?).to be(true)
     end
   end
 

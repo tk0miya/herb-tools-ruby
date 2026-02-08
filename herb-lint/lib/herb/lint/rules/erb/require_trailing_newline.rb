@@ -34,7 +34,7 @@ module Herb
             "error"
           end
 
-          def self.safe_autocorrectable? #: bool
+          def self.safe_autofixable? #: bool
             true
           end
 

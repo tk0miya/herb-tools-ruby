@@ -73,7 +73,7 @@ cd herb-lint && ./bin/steep check
 
 **Location:** `herb-lint/lib/herb/lint/rules/erb_comment_syntax.rb`
 
-- [x] Add `def self.safe_autocorrectable? = true`
+- [x] Add `def self.safe_autofixable? = true`
 - [x] Change `add_offense` to `add_offense_with_autofix` (pass `node:` parameter)
 - [x] Implement `autofix(node, parse_result)` method
   - [x] Convert statement tag with Ruby comment to ERB comment tag
@@ -95,7 +95,7 @@ cd herb-lint && ./bin/steep check
 
 **Location:** `herb-lint/lib/herb/lint/rules/erb_no_empty_tags.rb`
 
-- [x] Add `def self.autocorrectable? = true`
+- [x] Add `def self.safe_autofixable? = true`
 - [x] Change `add_offense` to `add_offense_with_autofix`
 - [x] Implement `autofix(node, parse_result)` method
   - [x] Remove empty ERB tags
@@ -118,7 +118,7 @@ cd herb-lint && ./bin/steep check
 
 **Location:** `herb-lint/lib/herb/lint/rules/erb_no_extra_whitespace_inside_tags.rb`
 
-- [x] Add `def self.autocorrectable? = true`
+- [x] Add `def self.safe_autofixable? = true`
 - [x] Change `add_offense` to `add_offense_with_autofix`
 - [x] Implement `autofix(node, parse_result)` method
   - [x] Remove extra whitespace inside ERB tags
@@ -140,7 +140,7 @@ cd herb-lint && ./bin/steep check
 
 **Location:** `herb-lint/lib/herb/lint/rules/erb_require_whitespace_inside_tags.rb`
 
-- [x] Add `def self.autocorrectable? = true`
+- [x] Add `def self.safe_autofixable? = true`
 - [x] Change `add_offense` to `add_offense_with_autofix`
 - [x] Implement `autofix(node, parse_result)` method
   - [x] Add required whitespace inside ERB tags
@@ -160,7 +160,7 @@ cd herb-lint && ./bin/steep check
 
 **Location:** `herb-lint/lib/herb/lint/rules/erb_right_trim.rb`
 
-- [x] Add `def self.autocorrectable? = true`
+- [x] Add `def self.safe_autofixable? = true`
 - [x] Change `add_offense` to `add_offense_with_autofix`
 - [x] Implement `autofix(node, parse_result)` method
   - [x] Add right trim to ERB tags
@@ -182,7 +182,7 @@ cd herb-lint && ./bin/steep check
 
 **Location:** `herb-lint/lib/herb/lint/rules/erb/require_trailing_newline.rb`
 
-- [x] Add `def self.safe_autocorrectable? = true`
+- [x] Add `def self.safe_autofixable? = true`
 - [x] Change `add_offense` to `add_offense_with_autofix`
 - [x] Implement `autofix(node, parse_result)` method
   - [x] Add trailing newline at end of file
@@ -252,7 +252,7 @@ cd herb-lint && ./bin/steep check
 
 **Location:** `herb-lint/lib/herb/lint/rules/html_attribute_double_quotes.rb`
 
-- [ ] Add `def self.autocorrectable? = true`
+- [ ] Add `def self.safe_autofixable? = true`
 - [ ] Change `add_offense` to `add_offense_with_autofix`
 - [ ] Implement `autofix(node, parse_result)` method
   - [ ] Convert single quotes to double quotes
@@ -262,7 +262,7 @@ cd herb-lint && ./bin/steep check
 
 **Location:** `herb-lint/lib/herb/lint/rules/html_attribute_equals_spacing.rb`
 
-- [ ] Add `def self.autocorrectable? = true`
+- [ ] Add `def self.safe_autofixable? = true`
 - [ ] Change `add_offense` to `add_offense_with_autofix`
 - [ ] Implement `autofix(node, parse_result)` method
   - [ ] Remove spaces around `=` in attributes
@@ -272,7 +272,7 @@ cd herb-lint && ./bin/steep check
 
 **Location:** `herb-lint/lib/herb/lint/rules/html_attribute_values_require_quotes.rb`
 
-- [ ] Add `def self.autocorrectable? = true`
+- [ ] Add `def self.safe_autofixable? = true`
 - [ ] Change `add_offense` to `add_offense_with_autofix`
 - [ ] Implement `autofix(node, parse_result)` method
   - [ ] Add quotes around unquoted attribute values
@@ -282,7 +282,7 @@ cd herb-lint && ./bin/steep check
 
 **Location:** `herb-lint/lib/herb/lint/rules/html_boolean_attributes_no_value.rb`
 
-- [ ] Add `def self.autocorrectable? = true`
+- [ ] Add `def self.safe_autofixable? = true`
 - [ ] Change `add_offense` to `add_offense_with_autofix`
 - [ ] Implement `autofix(node, parse_result)` method
   - [ ] Remove value from boolean attributes
@@ -292,7 +292,7 @@ cd herb-lint && ./bin/steep check
 
 **Location:** `herb-lint/lib/herb/lint/rules/html_no_self_closing.rb`
 
-- [ ] Add `def self.autocorrectable? = true`
+- [ ] Add `def self.safe_autofixable? = true`
 - [ ] Change `add_offense` to `add_offense_with_autofix`
 - [ ] Implement `autofix(node, parse_result)` method
   - [ ] Convert self-closing tags to proper form
@@ -302,7 +302,7 @@ cd herb-lint && ./bin/steep check
 
 **Location:** `herb-lint/lib/herb/lint/rules/html_no_space_in_tag.rb`
 
-- [ ] Add `def self.autocorrectable? = true`
+- [ ] Add `def self.safe_autofixable? = true`
 - [ ] Change `add_offense` to `add_offense_with_autofix`
 - [ ] Implement `autofix(node, parse_result)` method
   - [ ] Remove space after `<` in tag names
@@ -312,7 +312,7 @@ cd herb-lint && ./bin/steep check
 
 **Location:** `herb-lint/lib/herb/lint/rules/html_tag_name_lowercase.rb`
 
-- [ ] Add `def self.autocorrectable? = true`
+- [ ] Add `def self.safe_autofixable? = true`
 - [ ] Change `add_offense` to `add_offense_with_autofix`
 - [ ] Implement `autofix(node, parse_result)` method
   - [ ] Convert tag name to lowercase
@@ -348,7 +348,7 @@ These rules validate herb directive comments and are not autofixable by design.
 
 **Location:** `herb-lint/lib/herb/lint/rules/svg/tag_name_capitalization.rb`
 
-- [ ] Add `def self.autocorrectable? = true`
+- [ ] Add `def self.safe_autofixable? = true`
 - [ ] Change `add_offense` to `add_offense_with_autofix`
 - [ ] Implement `autofix(node, parse_result)` method
   - [ ] Fix SVG tag name capitalization (e.g., `clippath` → `clipPath`)
