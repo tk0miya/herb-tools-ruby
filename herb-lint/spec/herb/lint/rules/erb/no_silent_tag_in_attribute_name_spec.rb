@@ -27,38 +27,7 @@ RSpec.describe Herb::Lint::Rules::Erb::NoSilentTagInAttributeName do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when attribute name contains standard silent tag" do
-      let(:source) { '<div data-<% key %>-target="value"></div>' }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("erb-no-silent-tag-in-attribute-name")
-        expect(subject.first.message).to include("Remove silent ERB tag from HTML attribute name")
-        expect(subject.first.message).to include("(<%)")
-        expect(subject.first.severity).to eq("error")
-      end
-    end
-
-    context "when attribute name contains silent tag with trim" do
-      let(:source) { '<div prefix-<%- variable -%>-suffix="test"></div>' }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("erb-no-silent-tag-in-attribute-name")
-        expect(subject.first.message).to include("(<%-)")
-      end
-    end
-
-    context "when attribute name contains comment tag" do
-      let(:source) { '<span id-<%# comment %>-name="test"></span>' }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("erb-no-silent-tag-in-attribute-name")
-        expect(subject.first.message).to include("(<%#)")
-      end
-    end
-
+    # Good examples from documentation
     context "when attribute name contains output tag" do
       let(:source) { '<div data-<%= key %>-target="value"></div>' }
 
@@ -72,6 +41,39 @@ RSpec.describe Herb::Lint::Rules::Erb::NoSilentTagInAttributeName do
 
       it "does not report an offense" do
         expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "when attribute name contains standard silent tag" do
+      let(:source) { '<div data-<% key %>-id="value"></div>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("erb-no-silent-tag-in-attribute-name")
+        expect(subject.first.message).to include("Remove silent ERB tag from HTML attribute name")
+        expect(subject.first.message).to include("(<%)")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when attribute name contains comment tag" do
+      let(:source) { '<div data-<%# key %>-id="thing"></div>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("erb-no-silent-tag-in-attribute-name")
+        expect(subject.first.message).to include("(<%#)")
+      end
+    end
+
+    context "when attribute name contains silent tag with trim" do
+      let(:source) { '<div data-<%- key -%>-id="thing"></div>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("erb-no-silent-tag-in-attribute-name")
+        expect(subject.first.message).to include("(<%-)")
       end
     end
 
