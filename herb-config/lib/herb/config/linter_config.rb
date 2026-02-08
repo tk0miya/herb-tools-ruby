@@ -23,7 +23,7 @@ module Herb
       end
 
       # Returns the rules configuration hash
-      def rules #: Hash[String, untyped]
+      def rules #: Hash[String, Hash[String, untyped]]
         linter_config["rules"] || {}
       end
 
@@ -39,6 +39,12 @@ module Herb
       # @rbs rule_name: String -- the name of the rule
       def rule_options(rule_name) #: Hash[String, untyped]
         rules.dig(rule_name, "options") || {}
+      end
+
+      # Returns the names of rules that are explicitly disabled in configuration.
+      # A rule is considered disabled if its "enabled" option is set to false.
+      def disabled_rule_names #: Array[String]
+        rules.select { |_name, opts| opts["enabled"] == false }.keys
       end
 
       private

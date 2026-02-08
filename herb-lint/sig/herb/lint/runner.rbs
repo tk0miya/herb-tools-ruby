@@ -24,8 +24,7 @@ module Herb
       # @rbs paths: Array[String]
       def discover_files: (Array[String] paths) -> Array[String]
 
-      # Build and configure a Linter instance with all rules loaded.
-      # This consolidates rule registry creation, rule instantiation, and linter setup.
+      # Build and configure a Linter instance with all built-in rules.
       def build_linter: () -> Linter
     end
   end

@@ -67,9 +67,11 @@ module Herb
       # rubocop:enable Metrics/MethodLength
 
       # @rbs builtins: bool -- when true, automatically load built-in rules
-      def initialize(builtins: true) #: void
+      # @rbs rules: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
+      def initialize(builtins: true, rules: []) #: void
         @rules = {}
         load_builtin_rules if builtins
+        rules.each { |rule_class| register(rule_class) }
       end
 
       # Register a rule class in the registry.
@@ -99,6 +101,14 @@ module Herb
       # Get all registered rule names.
       def rule_names #: Array[String]
         @rules.keys.sort
+      end
+
+      # Build instances of all registered rules, optionally excluding some by name.
+      # @rbs except: Array[String] -- rule names to exclude from instantiation
+      def build_all(except: []) #: Array[Rules::Base | Rules::VisitorRule]
+        @rules.except(*except)
+              .values
+              .map(&:new)
       end
 
       # Number of registered rules.

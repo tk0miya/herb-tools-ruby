@@ -44,14 +44,11 @@ module Herb
         discovery.discover(paths)
       end
 
-      # Build and configure a Linter instance with all rules loaded.
-      # This consolidates rule registry creation, rule instantiation, and linter setup.
+      # Build and configure a Linter instance with all built-in rules.
       def build_linter #: Linter
         registry = RuleRegistry.new
 
-        rules = registry.all.map(&:new)
-
-        Linter.new(rules, config, rule_registry: registry, ignore_disable_comments:)
+        Linter.new(config, rule_registry: registry, ignore_disable_comments:)
       end
     end
   end
