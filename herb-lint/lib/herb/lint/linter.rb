@@ -7,18 +7,17 @@ module Herb
     class Linter
       attr_reader :rules #: Array[Rules::Base | Rules::VisitorRule]
       attr_reader :config #: Herb::Config::LinterConfig
-      attr_reader :rule_registry #: RuleRegistry?
+      attr_reader :rule_registry #: RuleRegistry
       attr_reader :ignore_disable_comments #: bool
 
-      # @rbs rules: Array[Rules::Base | Rules::VisitorRule]
       # @rbs config: Herb::Config::LinterConfig
-      # @rbs rule_registry: RuleRegistry? -- optional registry for severity lookup
+      # @rbs rule_registry: RuleRegistry -- registry for rule lookup and instantiation
       # @rbs ignore_disable_comments: bool -- when true, report offenses even when suppressed
-      def initialize(rules, config, rule_registry: nil, ignore_disable_comments: false) #: void
-        @rules = rules
+      def initialize(config, rule_registry:, ignore_disable_comments: false) #: void
         @config = config
         @rule_registry = rule_registry
         @ignore_disable_comments = ignore_disable_comments
+        @rules = rule_registry.build_all(except: config.disabled_rule_names)
       end
 
       # Lint a single file and return the result.

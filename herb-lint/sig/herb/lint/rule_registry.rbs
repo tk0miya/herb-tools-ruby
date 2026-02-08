@@ -12,7 +12,8 @@ module Herb
       def self.builtin_rules: () -> Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
 
       # @rbs builtins: bool -- when true, automatically load built-in rules
-      def initialize: (?builtins: bool) -> void
+      # @rbs rules: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
+      def initialize: (?builtins: bool, ?rules: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]) -> void
 
       # Register a rule class in the registry.
       # @rbs rule_class: singleton(Rules::Base) | singleton(Rules::VisitorRule)
@@ -31,6 +32,10 @@ module Herb
 
       # Get all registered rule names.
       def rule_names: () -> Array[String]
+
+      # Build instances of all registered rules, optionally excluding some by name.
+      # @rbs except: Array[String] -- rule names to exclude from instantiation
+      def build_all: (?except: Array[String]) -> Array[Rules::Base | Rules::VisitorRule]
 
       # Number of registered rules.
       def size: () -> Integer

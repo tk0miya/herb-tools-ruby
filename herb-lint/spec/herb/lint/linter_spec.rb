@@ -3,10 +3,11 @@
 require "herb/config"
 
 RSpec.describe Herb::Lint::Linter do
-  let(:linter) { described_class.new(rules, config, rule_registry:) }
+  let(:linter) { described_class.new(config, rule_registry:) }
   let(:config) { Herb::Config::LinterConfig.new(config_hash) }
   let(:config_hash) { {} }
-  let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false) }
+  let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false, rules:) }
+  let(:rules) { [] }
 
   describe "#lint" do
     subject { linter.lint(file_path:, source:) }
@@ -14,7 +15,7 @@ RSpec.describe Herb::Lint::Linter do
     let(:file_path) { "app/views/users/index.html.erb" }
 
     context "with rules that detect offenses" do
-      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt.new] }
+      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt] }
       let(:source) { '<img src="test.png">' }
 
       it "returns a LintResult with offenses" do
@@ -27,7 +28,7 @@ RSpec.describe Herb::Lint::Linter do
     end
 
     context "with rules that find no offenses" do
-      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt.new] }
+      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt] }
       let(:source) { '<img src="test.png" alt="A test image">' }
 
       it "returns a LintResult with empty offenses" do
@@ -40,8 +41,8 @@ RSpec.describe Herb::Lint::Linter do
     context "with multiple rules" do
       let(:rules) do
         [
-          Herb::Lint::Rules::Html::ImgRequireAlt.new,
-          test_rule_class.new
+          Herb::Lint::Rules::Html::ImgRequireAlt,
+          test_rule_class
         ]
       end
       let(:test_rule_class) do
@@ -75,7 +76,7 @@ RSpec.describe Herb::Lint::Linter do
     end
 
     context "when source has parse errors" do
-      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt.new] }
+      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt] }
       let(:source) { "<%= unclosed" }
 
       it "returns a LintResult with parser-no-errors offenses" do
@@ -89,7 +90,7 @@ RSpec.describe Herb::Lint::Linter do
     end
 
     context "when file has herb:linter ignore directive" do
-      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt.new] }
+      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt] }
       let(:source) { "<%# herb:linter ignore %>\n<img src=\"test.png\">" }
 
       it "returns an empty result" do
@@ -99,7 +100,7 @@ RSpec.describe Herb::Lint::Linter do
     end
 
     context "when offense is disabled on the same line" do
-      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt.new] }
+      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt] }
       let(:source) { '<img src="test.png"> <%# herb:disable html-img-require-alt %>' }
 
       it "filters out the disabled offense" do
@@ -109,7 +110,7 @@ RSpec.describe Herb::Lint::Linter do
     end
 
     context "when offense is disabled with all" do
-      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt.new] }
+      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt] }
       let(:source) { '<img src="test.png"> <%# herb:disable all %>' }
 
       it "filters out all offenses on that line" do
@@ -119,7 +120,7 @@ RSpec.describe Herb::Lint::Linter do
     end
 
     context "when a different rule is disabled" do
-      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt.new] }
+      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt] }
       let(:source) { '<img src="test.png"> <%# herb:disable html-no-self-closing %>' }
 
       it "does not filter the offense and reports unnecessary directive" do
@@ -130,8 +131,8 @@ RSpec.describe Herb::Lint::Linter do
     end
 
     context "with ignore_disable_comments option" do
-      let(:linter) { described_class.new(rules, config, rule_registry:, ignore_disable_comments: true) }
-      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt.new] }
+      let(:linter) { described_class.new(config, rule_registry:, ignore_disable_comments: true) }
+      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt] }
       let(:source) { '<img src="test.png"> <%# herb:disable html-img-require-alt %>' }
 
       it "reports all offenses regardless of directives" do
@@ -142,7 +143,7 @@ RSpec.describe Herb::Lint::Linter do
     end
 
     context "with mixed disabled and enabled offenses" do
-      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt.new] }
+      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt] }
       let(:source) do
         <<~ERB.chomp
           <img src="a.png"> <%# herb:disable html-img-require-alt %>
@@ -158,7 +159,7 @@ RSpec.describe Herb::Lint::Linter do
     end
 
     describe "parse_result in LintResult" do
-      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt.new] }
+      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt] }
 
       context "when parsing succeeds" do
         let(:source) { '<img src="test.png">' }
@@ -189,10 +190,11 @@ RSpec.describe Herb::Lint::Linter do
   end
 
   describe "#rules" do
-    let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt.new] }
+    let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt] }
 
-    it "returns the rules passed to the initializer" do
-      expect(linter.rules).to eq(rules)
+    it "returns the rule instances built from the registry" do
+      expect(linter.rules.size).to eq(1)
+      expect(linter.rules.first).to be_a(Herb::Lint::Rules::Html::ImgRequireAlt)
     end
   end
 
@@ -205,8 +207,7 @@ RSpec.describe Herb::Lint::Linter do
   end
 
   describe "rule instance reuse" do
-    let(:stateful_rule) { Herb::Lint::Rules::Html::NoDuplicateIds.new }
-    let(:rules) { [stateful_rule] }
+    let(:rules) { [Herb::Lint::Rules::Html::NoDuplicateIds] }
 
     it "does not leak state between lint calls" do
       # First file: duplicate IDs

@@ -213,4 +213,60 @@ RSpec.describe Herb::Config::LinterConfig do
       end
     end
   end
+
+  describe "#disabled_rule_names" do
+    subject { described_class.new(config).disabled_rule_names }
+
+    context "when some rules are explicitly disabled" do
+      let(:config) do
+        {
+          "linter" => {
+            "rules" => {
+              "rule-a" => { "enabled" => false },
+              "rule-b" => { "severity" => "error" },
+              "rule-c" => { "enabled" => false, "severity" => "warning" },
+              "rule-d" => { "enabled" => true }
+            }
+          }
+        }
+      end
+
+      it "returns only the disabled rule names" do
+        expect(subject).to contain_exactly("rule-a", "rule-c")
+      end
+    end
+
+    context "when no rules are disabled" do
+      let(:config) do
+        {
+          "linter" => {
+            "rules" => {
+              "rule-a" => { "severity" => "error" },
+              "rule-b" => { "enabled" => true }
+            }
+          }
+        }
+      end
+
+      it "returns an empty array" do
+        expect(subject).to eq([])
+      end
+    end
+
+    context "when rules section is empty" do
+      let(:config) { { "linter" => { "rules" => {} } } }
+
+      it "returns an empty array" do
+        expect(subject).to eq([])
+      end
+    end
+
+    context "when linter section is missing" do
+      let(:config) { {} }
+
+      it "returns an empty array" do
+        expect(subject).to eq([])
+      end
+    end
+  end
 end

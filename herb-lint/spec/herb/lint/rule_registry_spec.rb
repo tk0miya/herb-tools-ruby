@@ -16,8 +16,8 @@ RSpec.describe Herb::Lint::RuleRegistry do
   end
 
   describe "#initialize" do
-    context "with builtins: true" do
-      subject { described_class.new(builtins: true) }
+    context "with builtins: true (default)" do
+      subject { described_class.new }
 
       it "automatically registers all built-in rules" do
         expect(subject.size).to eq(described_class.builtin_rules.size)
@@ -36,11 +36,20 @@ RSpec.describe Herb::Lint::RuleRegistry do
       end
     end
 
-    context "with default (builtins: true by default)" do
-      subject { described_class.new }
+    context "with rules argument" do
+      it "registers all provided rules" do
+        registry = described_class.new(builtins: false, rules: [test_rule_class, another_rule_class])
+        expect(registry.size).to eq(2)
+        expect(registry.get("test-rule")).to eq(test_rule_class)
+        expect(registry.get("another-rule")).to eq(another_rule_class)
+      end
+    end
 
-      it "automatically registers all built-in rules" do
-        expect(subject.size).to eq(described_class.builtin_rules.size)
+    context "with both builtins and rules" do
+      it "registers both built-in and provided rules" do
+        registry = described_class.new(builtins: true, rules: [test_rule_class])
+        expect(registry.size).to eq(described_class.builtin_rules.size + 1)
+        expect(registry.get("test-rule")).to eq(test_rule_class)
       end
     end
   end
@@ -137,6 +146,58 @@ RSpec.describe Herb::Lint::RuleRegistry do
 
       it "returns the count of registered rules" do
         expect(registry.size).to eq(2)
+      end
+    end
+  end
+
+  describe "#build_all" do
+    before do
+      registry.register(test_rule_class)
+      registry.register(another_rule_class)
+    end
+
+    context "with no exceptions" do
+      it "builds instances of all registered rules" do
+        rules = registry.build_all
+
+        expect(rules.size).to eq(2)
+        expect(rules[0]).to be_a(test_rule_class)
+        expect(rules[1]).to be_a(another_rule_class)
+      end
+    end
+
+    context "with exceptions" do
+      it "builds instances of all rules except excluded ones" do
+        rules = registry.build_all(except: ["test-rule"])
+
+        expect(rules.size).to eq(1)
+        expect(rules[0]).to be_a(another_rule_class)
+      end
+    end
+
+    context "with multiple exceptions" do
+      it "excludes all specified rules" do
+        rules = registry.build_all(except: %w[test-rule another-rule])
+
+        expect(rules).to be_empty
+      end
+    end
+
+    context "when exception does not match any rule" do
+      it "builds all rules" do
+        rules = registry.build_all(except: ["nonexistent-rule"])
+
+        expect(rules.size).to eq(2)
+      end
+    end
+
+    context "when no rules are registered" do
+      let(:empty_registry) { described_class.new(builtins: false) }
+
+      it "returns an empty array" do
+        rules = empty_registry.build_all
+
+        expect(rules).to eq([])
       end
     end
   end
