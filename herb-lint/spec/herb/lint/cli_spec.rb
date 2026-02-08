@@ -242,9 +242,7 @@ RSpec.describe Herb::Lint::CLI do
 
         it "applies safe automatic fixes" do
           subject
-          content = File.read("app/views/test.html.erb")
-          expect(content).not_to include("<% %>")
-          expect(content).to include("<p>Hello</p>")
+          expect(File.read("app/views/test.html.erb")).to eq("\n<p>Hello</p>\n")
         end
 
         it "returns EXIT_SUCCESS when all offenses are fixed" do
@@ -262,9 +260,8 @@ RSpec.describe Herb::Lint::CLI do
             output = capture_stdout { subject }
             expect(subject).to eq(described_class::EXIT_LINT_ERROR)
             expect(output).to include("html-img-require-alt")
-            # Verify the empty tag was fixed
-            content = File.read("app/views/mixed.html.erb")
-            expect(content).not_to include("<% %>")
+            # Verify the empty tag was fixed but img issue remains
+            expect(File.read("app/views/mixed.html.erb")).to eq("<img src=\"test.png\">\n")
           end
         end
       end
@@ -278,8 +275,7 @@ RSpec.describe Herb::Lint::CLI do
 
         it "applies all automatic fixes including unsafe ones" do
           subject
-          content = File.read("app/views/test.html.erb")
-          expect(content).not_to include("<% %>")
+          expect(File.read("app/views/test.html.erb")).to eq("\n<p>Hello</p>\n")
         end
 
         it "returns EXIT_SUCCESS when all offenses are fixed" do
