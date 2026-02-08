@@ -849,6 +849,184 @@ AutoFixer#apply
 - Autofix skips when content at offset has changed
 - Autofix handles multiple occurrences in same file
 
+## Autofix Result Reporting
+
+### Overview
+
+The TypeScript reference implementation displays autofix information to users via the `[Correctable]` label in formatted output. This label appears for offenses that have an autofix available, both before and after running with `--fix`.
+
+### Reporter Changes
+
+#### LintResult Extensions
+
+`LintResult` is extended to track autofixed offenses:
+
+```rbs
+class Herb::Lint::LintResult
+  attr_reader file_path: String
+  attr_reader offenses: Array[Offense]
+  attr_reader source: String
+  attr_reader ignored_count: Integer
+  attr_reader parse_result: Herb::ParseResult?
+  attr_reader autofixed_offenses: Array[Offense]    # NEW
+
+  def initialize: (
+    file_path: String,
+    offenses: Array[Offense],
+    source: String,
+    ?ignored_count: Integer,
+    ?parse_result: Herb::ParseResult?,
+    ?autofixed_offenses: Array[Offense]
+  ) -> void
+
+  def autofixed_count: () -> Integer    # NEW
+  def autofixable_count: () -> Integer      # NEW
+end
+```
+
+When `Runner` applies autofix, it stores the `fixed` offenses from `AutoFixResult` in `autofixed_offenses` and merges them with `unfixed` offenses for reporting. This allows reporters to show all offenses (both autofixed and unfixed) with appropriate labels.
+
+#### AggregatedResult Extensions
+
+```rbs
+class Herb::Lint::AggregatedResult
+  attr_reader results: Array[LintResult]
+
+  def autofixed_count: () -> Integer    # NEW - sum of all autofixed offenses
+  def autofixable_count: () -> Integer      # NEW - sum of all autofixable offenses
+end
+```
+
+#### SimpleReporter Changes
+
+The `SimpleReporter` displays the `[Correctable]` label for fixable offenses and updates the summary to show autofix statistics:
+
+```ruby
+def print_offense(offense)
+  correctable_label = offense.fixable? ? "  [Correctable]" : ""
+
+  io.puts format(
+    "  %<line>d:%<column>d  %-8<severity>s %<message>s  %<rule_name>s%<correctable>s",
+    line: offense.line,
+    column: offense.column,
+    severity: offense.severity,
+    message: offense.message,
+    rule_name: offense.rule_name,
+    correctable: correctable_label
+  )
+end
+
+def format_summary(aggregated_result)
+  total = aggregated_result.offense_count
+  autofixed = aggregated_result.autofixed_count
+  fixable = aggregated_result.autofixable_count
+
+  # When fixes were applied: "X problems (Y corrected, Z fixable)"
+  # When no fixes applied: "X problems (Z fixable)"
+  if autofixed > 0
+    "#{total} problems (#{autofixed} corrected, #{fixable} fixable) in #{files} files"
+  elsif fixable > 0
+    "#{total} problems (#{fixable} fixable) in #{files} files"
+  else
+    "#{total} problems in #{files} files"
+  end
+end
+```
+
+**Output Examples:**
+
+Without `--fix`:
+```
+app/views/users/show.html.erb
+  3:10  error    Missing alt attribute on img tag  html/img-require-alt  [Correctable]
+  5:15  warning  Prefer double quotes for attributes  html/attribute-double-quotes
+
+2 problems (2 fixable) in 1 file
+```
+
+With `--fix`:
+```
+app/views/users/show.html.erb
+  3:10  error    Missing alt attribute on img tag  html/img-require-alt  [Correctable]
+  5:15  warning  Prefer double quotes for attributes  html/attribute-double-quotes
+
+2 problems (1 corrected, 1 fixable) in 1 file
+```
+
+#### GithubReporter Changes
+
+The `GithubReporter` appends `[Correctable]` to correctable offense messages in GitHub Actions annotations:
+
+```ruby
+def print_offense(offense, file_path)
+  message = offense.message
+  message += " [Correctable]" if offense.fixable?
+
+  io.puts "::#{annotation_type(offense.severity)} file=#{file_path}," \
+          "line=#{offense.line},col=#{offense.column}::#{message} (#{offense.rule_name})"
+end
+```
+
+#### JsonReporter (No Changes)
+
+The TypeScript reference implementation does **not** include `correctable` or `corrected` fields in JSON output. The JSON schema remains unchanged:
+
+```json
+{
+  "offenses": [
+    {
+      "code": "html-tag-name-lowercase",
+      "filename": "app/views/users/show.html.erb",
+      "location": {
+        "start": { "column": 1, "line": 1 },
+        "end": { "column": 5, "line": 1 }
+      },
+      "message": "Tag name should be lowercase",
+      "severity": "error",
+      "source": "Herb Linter"
+    }
+  ],
+  "summary": {
+    "filesChecked": 1,
+    "filesWithOffenses": 1,
+    "totalOffenses": 2,
+    ...
+  }
+}
+```
+
+### Runner Integration
+
+When `--fix` is enabled, `Runner#process_file` applies fixes and preserves autofixed offenses:
+
+```ruby
+def process_file(file_path)
+  source = File.read(file_path)
+  result = linter.lint(file_path:, source:)
+
+  if fix && result.parse_result && result.offenses.any?(&:fixable?)
+    fix_result = apply_fixes(file_path, result)
+    File.write(file_path, fix_result.source) if fix_result.source != source
+
+    # Merge autofixed and unfixed for reporting
+    all_offenses = fix_result.fixed + fix_result.unfixed
+
+    result = LintResult.new(
+      file_path: result.file_path,
+      offenses: all_offenses,
+      source: fix_result.source,
+      ignored_count: result.ignored_count,
+      parse_result: result.parse_result,
+      autofixed_offenses: fix_result.fixed
+    )
+  end
+
+  result
+end
+```
+
+This ensures that both autofixed and unfixed offenses appear in the output, with autofixed offenses tracked separately for summary statistics.
+
 ## Related Documents
 
 - [herb-lint Design](./herb-lint-design.md) -- Overall linter architecture

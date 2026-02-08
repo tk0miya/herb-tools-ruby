@@ -300,46 +300,110 @@ Note: `result.parse_result` is `nil` when parsing fails, so autofix is skipped f
 
 ---
 
-## Part C: Rule Autofix Methods
+## Part C: Autofix Reporting
 
-### Task 15.7: Autofix Utility Helpers
+### Task 15.7: LintResult and AggregatedResult Extensions
 
-**Location:** `herb-lint/lib/herb/lint/autofix_helpers.rb`
+**Location:** `herb-lint/lib/herb/lint/lint_result.rb`, `herb-lint/lib/herb/lint/aggregated_result.rb`, `herb-lint/lib/herb/lint/runner.rb`
 
-- [ ] Implement `AutofixHelpers` module (included in fixable rules)
-  - [ ] `parent_array_for(parent, node)` — find the mutable array containing node in parent
-    - [ ] Check `parent.children` first
-    - [ ] Check `parent.body` as fallback
-    - [ ] Return `nil` if not found
-  - [ ] `find_parent(parse_result, node)` — convenience wrapper around `NodeLocator.find_parent`
+**Goal:** Extend result classes to track autofixed offenses and provide count methods for reporting.
+
+- [ ] Update `LintResult` to track autofixed offenses
+  - [ ] Add `autofixed_offenses` attribute (default: `[]`)
+  - [ ] Add `autofixed_count` method
+  - [ ] Add `autofixable_count` method (counts offenses with `fixable? == true`)
+- [ ] Update `AggregatedResult` to aggregate autofix statistics
+  - [ ] Add `autofixed_count` method (sum of all autofixed offenses)
+  - [ ] Add `autofixable_count` method (sum of all autofixable offenses)
+- [ ] Update `Runner#process_file` to preserve autofixed offenses
+  - [ ] When autofix is applied, store `fix_result.fixed` in `LintResult#autofixed_offenses`
+  - [ ] Merge `autofixed_offenses` with `unfixed` for reporting (show all offenses)
 - [ ] Add unit tests
 
-**Interface:**
-
-```ruby
-module Herb
-  module Lint
-    module AutofixHelpers
-      def parent_array_for(parent, node)
-        if parent.respond_to?(:children) && parent.children.include?(node)
-          parent.children
-        elsif parent.respond_to?(:body) && parent.body.is_a?(Array) && parent.body.include?(node)
-          parent.body
-        end
-      end
-    end
-  end
-end
-```
-
 **Test Cases:**
-- Returns `children` array when node is in parent's children
-- Returns `body` array when node is in parent's body
-- Returns `nil` when node is not in any parent array
+- `LintResult` with autofixed offenses exposes them via `autofixed_offenses`
+- `autofixable_count` counts only autofixable offenses
+- `autofixed_count` counts only autofixed offenses
+- `AggregatedResult` aggregates counts correctly
+- `Runner` preserves autofixed offenses when `--fix` is enabled
 
 ---
 
-**Note:** Task 15.7 (Autofix utility helpers) and individual rule autofix implementations have been moved to [Phase 16: Rule Autofix Expansion](./phase-16-rule-autofix-expansion.md).
+### Task 15.8: SimpleReporter Autofix Support
+
+**Location:** `herb-lint/lib/herb/lint/reporter/simple_reporter.rb`
+
+**Goal:** Display `[Correctable]` label and autofix statistics in SimpleReporter output.
+
+**Reference:** TypeScript `@herb-tools/linter` uses `[Correctable]` label (green) to indicate fixable offenses.
+
+- [ ] Update `print_offense` to show `[Correctable]` label
+  - [ ] Append `[Correctable]` for `offense.fixable?`
+  - [ ] Use green color if TTY supports it
+- [ ] Update `format_summary` to show autofix statistics
+  - [ ] When fixes applied: `"X problems (Y corrected, Z fixable) in N files"`
+  - [ ] When no fixes applied but fixable exist: `"X problems (Z fixable) in N files"`
+  - [ ] When no fixable: `"X problems in N files"`
+- [ ] Add unit tests
+
+**Output Examples:**
+
+**Without `--fix`:**
+```
+app/views/users/show.html.erb
+  3:10  error    Missing alt attribute on img tag  html/img-require-alt  [Correctable]
+  5:15  warning  Prefer double quotes for attributes  html/attribute-double-quotes
+
+2 problems (2 fixable) in 1 file
+```
+
+**With `--fix` (safe fixes applied):**
+```
+app/views/users/show.html.erb
+  3:10  error    Missing alt attribute on img tag  html/img-require-alt  [Correctable]
+  5:15  warning  Prefer double quotes for attributes  html/attribute-double-quotes
+
+2 problems (1 corrected, 1 fixable) in 1 file
+```
+
+**Test Cases:**
+- `print_offense` appends `[Correctable]` for fixable offenses
+- `print_offense` does not append label for non-fixable offenses
+- Summary shows "X fixable" when no fixes applied
+- Summary shows "Y corrected, Z fixable" when fixes applied
+- Summary shows plain format when no fixable offenses
+
+---
+
+### Task 15.9: GithubReporter Autofix Support
+
+**Location:** `herb-lint/lib/herb/lint/reporter/github_reporter.rb`
+
+**Goal:** Add `[Correctable]` suffix to GitHub Actions annotations for fixable offenses.
+
+- [ ] Update `print_offense` to show `[Correctable]` suffix
+  - [ ] Append `[Correctable]` to message for fixable offenses
+  - [ ] Maintain GitHub Actions annotation format
+- [ ] Consider whether to show autofixed offenses
+  - [ ] Decision: show all offenses (both autofixed and unfixed) or only unfixed
+- [ ] Add unit tests
+
+**Output Example:**
+```
+::error file=app/views/users/show.html.erb,line=3,col=10::Missing alt attribute on img tag [Correctable] (html/img-require-alt)
+::warning file=app/views/users/show.html.erb,line=5,col=15::Prefer double quotes for attributes (html/attribute-double-quotes)
+```
+
+**Test Cases:**
+- `print_offense` appends `[Correctable]` for fixable offenses
+- `print_offense` does not append suffix for non-fixable offenses
+- Annotation format remains valid for GitHub Actions
+
+---
+
+**Note:** JsonReporter does NOT include `correctable` or `corrected` fields in the TypeScript reference implementation. JSON output remains unchanged.
+
+**Note:** The original Task 15.7 (Autofix utility helpers) has been moved to [Phase 16: Rule Autofix Expansion](./phase-16-rule-autofix-expansion.md).
 
 ---
 
@@ -371,6 +435,39 @@ cd herb-lint && ./bin/rspec spec/herb/lint/cli_spec.rb
 cd herb-lint && ./bin/steep check
 ```
 
+### Part C: Autofix Reporting
+
+**Task 15.7:**
+```bash
+# Unit tests
+cd herb-lint && ./bin/rspec spec/herb/lint/lint_result_spec.rb
+cd herb-lint && ./bin/rspec spec/herb/lint/aggregated_result_spec.rb
+
+# Integration tests
+cd herb-lint && ./bin/rspec spec/herb/lint/runner_spec.rb
+
+# Type check
+cd herb-lint && ./bin/steep check
+```
+
+**Task 15.8:**
+```bash
+# Unit tests
+cd herb-lint && ./bin/rspec spec/herb/lint/reporter/simple_reporter_spec.rb
+
+# Type check
+cd herb-lint && ./bin/steep check
+```
+
+**Task 15.9:**
+```bash
+# Unit tests
+cd herb-lint && ./bin/rspec spec/herb/lint/reporter/github_reporter_spec.rb
+
+# Type check
+cd herb-lint && ./bin/steep check
+```
+
 ---
 
 ## Summary
@@ -383,10 +480,13 @@ cd herb-lint && ./bin/steep check
 | 15.4 | B | AutoFixResult Data class |
 | 15.5 | B | AutoFixer implementation |
 | 15.6 | B | Runner and CLI integration |
+| 15.7 | C | LintResult and AggregatedResult extensions |
+| 15.8 | C | SimpleReporter autofix support |
+| 15.9 | C | GithubReporter autofix support |
 
-**Total: 6 tasks**
+**Total: 9 tasks**
 
-**Note:** Task 15.7 (Autofix utility helpers) and rule-specific autofix implementations have been extracted to [Phase 16: Rule Autofix Expansion](./phase-16-rule-autofix-expansion.md) for better organization and incremental implementation.
+**Note:** The original Task 15.7 (Autofix utility helpers) and rule-specific autofix implementations have been extracted to [Phase 16: Rule Autofix Expansion](./phase-16-rule-autofix-expansion.md) for better organization and incremental implementation.
 
 ## Related Documents
 
