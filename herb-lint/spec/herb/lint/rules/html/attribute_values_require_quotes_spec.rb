@@ -21,6 +21,12 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeValuesRequireQuotes do
     end
   end
 
+  describe ".safe_autofixable?" do
+    it "returns true" do
+      expect(described_class.safe_autofixable?).to be(true)
+    end
+  end
+
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
@@ -116,6 +122,56 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeValuesRequireQuotes do
 
       it "does not report offenses" do
         expect(subject).to be_empty
+      end
+    end
+  end
+
+  describe "#autofix" do
+    subject { described_class.new.autofix(node, document) }
+
+    let(:document) { Herb.parse(source, track_whitespace: true) }
+
+    context "when fixing a single unquoted attribute" do
+      let(:source) { "<div class=foo>text</div>" }
+      let(:expected) { '<div class="foo">text</div>' }
+      let(:node) do
+        document.value.children.first.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+      end
+
+      it "adds double quotes around the value" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing multiple unquoted attributes" do
+      let(:source) { "<div class=foo id=bar>text</div>" }
+      let(:expected) { '<div class="foo" id="bar">text</div>' }
+
+      it "can fix each attribute independently" do
+        attrs = document.value.children.first.open_tag.children.select { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+
+        attrs.each do |attr|
+          expect(described_class.new.autofix(attr, document)).to be(true)
+        end
+
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing an unquoted attribute alongside a quoted one" do
+      let(:source) { '<div class="foo" id=bar>text</div>' }
+      let(:expected) { '<div class="foo" id="bar">text</div>' }
+      let(:node) do
+        document.value.children.first.open_tag.children.select { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }.last
+      end
+
+      it "adds double quotes only to the unquoted attribute" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
       end
     end
   end
