@@ -46,7 +46,7 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLOpenTagNode
           def check_single_line_open_tag(node) #: void
-            children = node.children.select { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+            children = node.children.select { _1.is_a?(Herb::AST::HTMLAttributeNode) }
 
             check_inter_element_gaps(node, children)
             check_trailing_gap(node, children.last || node.tag_name)
@@ -84,7 +84,7 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLOpenTagNode
           def check_multiline_open_tag(node) #: void
-            children = node.children.select { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+            children = node.children.select { _1.is_a?(Herb::AST::HTMLAttributeNode) }
             tag_col = node.location.start.column
 
             check_blank_lines(node, children)

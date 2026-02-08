@@ -9,6 +9,39 @@
 - Always pass `track_whitespace: true` when calling `Herb.parse`. This applies to production code, test code, and any ad-hoc scripts. Example: `Herb.parse(source, track_whitespace: true)`
 - When disabling warnings for classes or methods, place the disable comment on the definition line. Example: `def greet #: void # rubocop:disable Metrics/BlockLength`
 
+### Numbered Block Parameters
+
+Ruby 3.x introduces numbered block parameters (`_1`, `_2`, etc.) for concise block syntax. Use them when the block code is simple (typically one-line expressions).
+
+**When to use:**
+- Simple method calls: `.each { method(_1) }`
+- Type checks or predicates: `.select { _1.is_a?(Type) }`
+- Direct attribute access: `.map { _1.name }`
+
+**When NOT to use:**
+- Multiple block parameters with complex logic (prefer named parameters for clarity)
+- Blocks with multiple statements or conditionals
+- When the parameter is used multiple times in complex expressions
+- When readability would suffer (e.g., accessing outer scope variables alongside `_1`)
+
+```ruby
+# Good - simple method call
+offenses.each { print_offense(_1) }
+
+# Good - simple predicate
+children.select { _1.is_a?(HTMLAttributeNode) }
+
+# Bad - complex logic, multiple uses
+items.each { |item|
+  process(item)
+  validate(item)
+  store(item)
+}
+
+# Bad - reduces readability with outer scope access
+errors.map { |error| build_message(error, file_path) }  # Keep as-is
+```
+
 ## Naming Conventions
 
 | Type | Convention | Example |

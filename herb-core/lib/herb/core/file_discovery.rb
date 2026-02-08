@@ -37,7 +37,7 @@ module Herb
       # @rbs paths: Array[String] -- explicit paths (files or directories) to include
       def discover(paths = []) #: Array[String]
         discovered = paths.empty? ? discover_from_patterns : discover_from_paths(paths)
-        discovered.map { |file| relative_path(file) }.sort
+        discovered.map { relative_path(_1) }.sort
       end
 
       private

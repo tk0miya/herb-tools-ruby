@@ -78,7 +78,7 @@ module Herb
       # @rbs source: String
       # @rbs errors: Array[untyped]
       def parse_error_result(file_path, source, errors) #: LintResult
-        offenses = errors.map { |error| parse_error_offense(error) }
+        offenses = errors.map { parse_error_offense(_1) }
         LintResult.new(file_path:, offenses:, source:)
       end
 
