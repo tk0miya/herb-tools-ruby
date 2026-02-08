@@ -659,8 +659,8 @@ end
 5. Returns `AutoFixResult` with corrected source and categorized offenses
 
 **Safety:**
-- `autocorrectable?` rules are applied with `--fix`
-- `unsafe_autocorrectable?` rules require `--fix-unsafely`
+- `safe_autofixable?` rules are applied with `--fix`
+- `unsafe_autofixable?` rules require `--fix-unsafely`
 - Nodes not found after re-parse are skipped (added to unfixed list)
 
 **Dependencies:**

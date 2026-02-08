@@ -78,8 +78,8 @@ end
 
 **Location:** `herb-lint/lib/herb/lint/rules/rule_methods.rb`
 
-- [x] Add `autocorrectable?` class method (default: `false`)
-- [x] Add `unsafe_autocorrectable?` class method (default: `false`)
+- [x] Add `safe_autofixable?` class method (default: `false`)
+- [x] Add `unsafe_autofixable?` class method (default: `false`)
 - [x] Add `add_offense_with_autofix` instance method
   - [x] Creates `AutofixContext` from the given node and current rule class
   - [x] Delegates to `add_offense` with the context attached
@@ -96,8 +96,8 @@ module Herb
     module Rules
       module RuleMethods
         module ClassMethods
-          def autocorrectable? = false
-          def unsafe_autocorrectable? = false
+          def safe_autofixable? = false
+          def unsafe_autofixable? = false
         end
 
         def add_offense_with_autofix(message:, location:, node:)
@@ -116,11 +116,11 @@ end
 ```
 
 **Test Cases:**
-- Default `autocorrectable?` returns `false`
-- Default `unsafe_autocorrectable?` returns `false`
+- Default `safe_autofixable?` returns `false`
+- Default `unsafe_autofixable?` returns `false`
 - `add_offense_with_autofix` creates offense with `AutofixContext`
 - Default `autofix` returns `false`
-- Subclass can override `autocorrectable?` to return `true`
+- Subclass can override `safe_autofixable?` to return `true`
 
 ---
 
@@ -214,8 +214,8 @@ The AutoFixer receives the `ParseResult` from the lint phase (single-parse desig
 
 | Rule declares | `--fix` applies? | `--fix-unsafely` applies? |
 |---------------|-----------------|--------------------------|
-| `autocorrectable? = true` | Yes | Yes |
-| `unsafe_autocorrectable? = true` | No | Yes |
+| `safe_autofixable? = true` | Yes | Yes |
+| `unsafe_autofixable? = true` | No | Yes |
 | Neither (default) | No | No |
 
 **Processing Flow:**

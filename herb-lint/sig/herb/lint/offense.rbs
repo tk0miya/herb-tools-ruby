@@ -22,7 +22,7 @@ module Herb
       def initialize: (rule_name: String, message: String, severity: String, location: Herb::Location, ?autofix_context: AutofixContext?) -> void
 
       # Returns true when the offense can be automatically fixed.
-      # Delegates to AutofixContext#autocorrectable? for safety-level filtering.
+      # Delegates to AutofixContext#autofixable? for safety-level filtering.
       #
       # @rbs unsafe: bool -- when true, also consider unsafe autofixes
       def fixable?: (?unsafe: bool) -> boolish

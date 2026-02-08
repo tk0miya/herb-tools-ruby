@@ -23,30 +23,30 @@ RSpec.describe Herb::Lint::AutofixContext do
     end
   end
 
-  describe "#autocorrectable?" do
-    subject { autofix_context.autocorrectable?(unsafe:) }
+  describe "#autofixable?" do
+    subject { autofix_context.autofixable?(unsafe:) }
 
     context "with unsafe: false" do
       let(:unsafe) { false }
 
-      context "when rule declares safe_autocorrectable?" do
+      context "when rule declares safe_autofixable?" do
         let(:rule_class) do
           Class.new(Herb::Lint::Rules::VisitorRule) do
             def self.rule_name = "test/safe-rule"
             def self.description = "Safe test rule"
-            def self.safe_autocorrectable? = true
+            def self.safe_autofixable? = true
           end
         end
 
         it { is_expected.to be true }
       end
 
-      context "when rule declares unsafe_autocorrectable?" do
+      context "when rule declares unsafe_autofixable?" do
         let(:rule_class) do
           Class.new(Herb::Lint::Rules::VisitorRule) do
             def self.rule_name = "test/unsafe-rule"
             def self.description = "Unsafe test rule"
-            def self.unsafe_autocorrectable? = true
+            def self.unsafe_autofixable? = true
           end
         end
 
@@ -61,24 +61,24 @@ RSpec.describe Herb::Lint::AutofixContext do
     context "with unsafe: true" do
       let(:unsafe) { true }
 
-      context "when rule declares safe_autocorrectable?" do
+      context "when rule declares safe_autofixable?" do
         let(:rule_class) do
           Class.new(Herb::Lint::Rules::VisitorRule) do
             def self.rule_name = "test/safe-rule"
             def self.description = "Safe test rule"
-            def self.safe_autocorrectable? = true
+            def self.safe_autofixable? = true
           end
         end
 
         it { is_expected.to be true }
       end
 
-      context "when rule declares unsafe_autocorrectable?" do
+      context "when rule declares unsafe_autofixable?" do
         let(:rule_class) do
           Class.new(Herb::Lint::Rules::VisitorRule) do
             def self.rule_name = "test/unsafe-rule"
             def self.description = "Unsafe test rule"
-            def self.unsafe_autocorrectable? = true
+            def self.unsafe_autofixable? = true
           end
         end
 

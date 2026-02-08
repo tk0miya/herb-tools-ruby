@@ -52,8 +52,8 @@ The TypeScript reference is `@herb-tools/linter` in the [herb repository](https:
 | `findNodeByLocation()` | `Herb::Lint::NodeLocator` (parent lookup only; node re-finding not needed) |
 | `Mutable<T>` (type-level readonly removal) | Not needed (node replacement via public constructors) |
 | `autofixContext` on offense | `autofix_context` on `Offense` |
-| `static autocorrectable = true` on rule | `self.autocorrectable?` on rule class |
-| `static unsafeAutocorrectable = true` on rule | `self.unsafe_autocorrectable?` on rule class |
+| `static autofixable = true` on rule | `self.safe_autofixable?` on rule class |
+| `static unsafeAutocorrectable = true` on rule | `self.unsafe_autofixable?` on rule class |
 
 ## Design Principles
 
@@ -87,8 +87,8 @@ This two-phase ordering is important: AST fixes are applied first and serialized
 
 | Flag | Description |
 |------|-------------|
-| `--fix` | Apply safe autofixes (rules where `autocorrectable?` is true) |
-| `--fix-unsafely` | Also apply unsafe autofixes (rules where `unsafe_autocorrectable?` is true); implies `--fix` |
+| `--fix` | Apply safe autofixes (rules where `safe_autofixable?` is true) |
+| `--fix-unsafely` | Also apply unsafe autofixes (rules where `unsafe_autofixable?` is true); implies `--fix` |
 
 ## Processing Flow
 
@@ -189,7 +189,7 @@ class Herb::Lint::AutofixContext
   def visitor_rule?: () -> bool
 
   # Returns true when the rule can autocorrect this offense.
-  def autocorrectable?: (?unsafe: bool) -> bool
+  def autofixable?: (?unsafe: bool) -> bool
 end
 ```
 
@@ -223,10 +223,10 @@ module Herb::Lint::Rules::RuleMethods
     def default_severity: () -> String
 
     # NEW: whether the rule provides safe autofix
-    def autocorrectable?: () -> bool    # default: false
+    def safe_autofixable?: () -> bool    # default: false
 
     # NEW: whether the rule provides unsafe autofix
-    def unsafe_autocorrectable?: () -> bool    # default: false
+    def unsafe_autofixable?: () -> bool    # default: false
   end
 
   # Existing: add_offense without autofix
@@ -352,7 +352,7 @@ end
 **`apply` method processing:**
 
 1. Filter offenses to those that are fixable (`offense.fixable?`)
-2. Filter by safety level (`safe_to_apply?` checks `autocorrectable?` vs `unsafe_autocorrectable?` based on `fix_unsafely` flag)
+2. Filter by safety level (`safe_to_apply?` checks `safe_autofixable?` vs `unsafe_autofixable?` based on `fix_unsafely` flag)
 3. Call `apply_ast_fixes` for AST-phase autofixes
 4. Return `AutoFixResult` with corrected source and categorized offenses
 
@@ -503,14 +503,14 @@ open_tag.children << new_node             # add
 
 ### Rule Declaration
 
-Fixable rules declare `autocorrectable?` and implement `autofix`:
+Fixable rules declare `safe_autofixable?` and implement `autofix`:
 
 ```ruby
 class HtmlTagNameLowercase < VisitorRule
   def self.rule_name = "html-tag-name-lowercase"
   def self.description = "Enforce lowercase tag names"
   def self.default_severity = "warning"
-  def self.autocorrectable? = true          # NEW
+  def self.safe_autofixable? = true          # NEW
 
   # Detection (existing pattern)
   def visit_html_element_node(node)
@@ -553,12 +553,12 @@ end
 
 ### Unsafe Autofix
 
-Rules with potentially behavior-changing fixes use `unsafe_autocorrectable?`:
+Rules with potentially behavior-changing fixes use `unsafe_autofixable?`:
 
 ```ruby
 class ErbStrictLocalsRequired < VisitorRule
-  def self.autocorrectable? = false
-  def self.unsafe_autocorrectable? = true    # only applied with --fix-unsafely
+  def self.safe_autofixable? = false
+  def self.unsafe_autofixable? = true    # only applied with --fix-unsafely
 
   def autofix(node, parse_result)
     # ...
@@ -589,8 +589,8 @@ This is provided by the `AutoFixer` or a shared module, accessible to rule `auto
 
 | Rule declares | `--fix` applies? | `--fix-unsafely` applies? |
 |---------------|-----------------|--------------------------|
-| `autocorrectable? = true` | Yes | Yes |
-| `unsafe_autocorrectable? = true` | No | Yes |
+| `safe_autofixable? = true` | Yes | Yes |
+| `unsafe_autofixable? = true` | No | Yes |
 | Neither (default) | No | No |
 
 `--fix-unsafely` implies `--fix`. Both safe and unsafe autofixes are applied when `--fix-unsafely` is used.
@@ -736,7 +736,7 @@ end
 ```ruby
 class NoExtraNewline < SourceRule
   def self.rule_name = "erb-no-extra-newline"
-  def self.safe_autocorrectable? = true
+  def self.safe_autofixable? = true
 
   def check_source(source, _context)
     source.scan(/\n{4,}/) do
@@ -831,7 +831,7 @@ AutoFixer#apply
 - `source_rule?` returns `false` when `node` is present
 - `visitor_rule?` returns `true` when `node` is present
 - `visitor_rule?` returns `false` when `start_offset` is present
-- `autocorrectable?` delegates to `rule_class.safe_autocorrectable?` and `unsafe_autocorrectable?`
+- `autofixable?` delegates to `rule_class.safe_autofixable?` and `unsafe_autofixable?`
 - Backward compatibility: existing creation with `node:` still works
 
 #### Unit Tests -- AutoFixer (source phase)

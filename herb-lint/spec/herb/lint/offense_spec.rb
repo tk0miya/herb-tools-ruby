@@ -59,14 +59,14 @@ RSpec.describe Herb::Lint::Offense do
       Class.new(Herb::Lint::Rules::VisitorRule) do
         def self.rule_name = "test/safe-rule"
         def self.description = "Safe test rule"
-        def self.safe_autocorrectable? = true
+        def self.safe_autofixable? = true
       end
     end
     let(:unsafe_rule_class) do
       Class.new(Herb::Lint::Rules::VisitorRule) do
         def self.rule_name = "test/unsafe-rule"
         def self.description = "Unsafe test rule"
-        def self.unsafe_autocorrectable? = true
+        def self.unsafe_autofixable? = true
       end
     end
     let(:offense) do
@@ -83,13 +83,13 @@ RSpec.describe Herb::Lint::Offense do
     context "with unsafe: false" do
       let(:unsafe) { false }
 
-      context "when rule declares safe_autocorrectable?" do
+      context "when rule declares safe_autofixable?" do
         let(:autofix_context) { Herb::Lint::AutofixContext.new(node:, rule_class: safe_rule_class) }
 
         it { is_expected.to be true }
       end
 
-      context "when rule declares unsafe_autocorrectable?" do
+      context "when rule declares unsafe_autofixable?" do
         let(:autofix_context) { Herb::Lint::AutofixContext.new(node:, rule_class: unsafe_rule_class) }
 
         it { is_expected.to be false }
@@ -103,13 +103,13 @@ RSpec.describe Herb::Lint::Offense do
     context "with unsafe: true" do
       let(:unsafe) { true }
 
-      context "when rule declares safe_autocorrectable?" do
+      context "when rule declares safe_autofixable?" do
         let(:autofix_context) { Herb::Lint::AutofixContext.new(node:, rule_class: safe_rule_class) }
 
         it { is_expected.to be true }
       end
 
-      context "when rule declares unsafe_autocorrectable?" do
+      context "when rule declares unsafe_autofixable?" do
         let(:autofix_context) { Herb::Lint::AutofixContext.new(node:, rule_class: unsafe_rule_class) }
 
         it { is_expected.to be true }
