@@ -23,8 +23,13 @@ module Herb
 
           def self.default_severity: () -> String
 
+          def self.safe_autofixable?: () -> bool
+
           # @rbs override
           def visit_html_element_node: ...
+
+          # @rbs override
+          def autofix: ...
 
           private
 
@@ -33,6 +38,14 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLElementNode
           def check_close_tag: (Herb::AST::HTMLElementNode node) -> void
+
+          # @rbs node: Herb::AST::HTMLOpenTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def fix_open_tag: (Herb::AST::HTMLOpenTagNode node, Herb::ParseResult parse_result) -> bool
+
+          # @rbs node: Herb::AST::HTMLCloseTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def fix_close_tag: (Herb::AST::HTMLCloseTagNode node, Herb::ParseResult parse_result) -> bool
 
           # @rbs str: String
           def lowercase?: (String str) -> bool

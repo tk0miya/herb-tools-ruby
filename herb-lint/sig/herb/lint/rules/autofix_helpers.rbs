@@ -23,8 +23,8 @@ module Herb
       # @rbs node: Herb::AST::Node -- the node to find within the parent
       def parent_array_for: (Herb::AST::Node parent, Herb::AST::Node node) -> Array[Herb::AST::Node]?
 
-      # Structural attribute names used to link parent ERB nodes to child ERB nodes
-      # (e.g. ERBIfNode#end_node, ERBIfNode#subsequent).
+      # Structural attribute names used to link parent nodes to child nodes
+      # (e.g. ERBIfNode#end_node, ERBIfNode#subsequent, HTMLElementNode#open_tag).
       STRUCTURAL_ATTRIBUTES: Array[Symbol]
 
       # Replace a node in the AST with a new node.
@@ -65,6 +65,27 @@ module Herb
       # @rbs location: Herb::Location? -- override the token location
       # @rbs type: String? -- override the token type
       def copy_token: (Herb::Token token, ?content: String?, ?range: Herb::Range?, ?location: Herb::Location?, ?type: String?) -> Herb::Token
+
+      # Create a new HTMLOpenTagNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified open tag nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::HTMLOpenTagNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening token
+      # @rbs tag_name: Herb::Token? -- override the tag name token
+      # @rbs tag_closing: Herb::Token? -- override the closing token
+      # @rbs children: Array[Herb::AST::Node]? -- override the children array
+      # @rbs is_void: bool? -- override the is_void flag
+      def copy_html_open_tag_node: (Herb::AST::HTMLOpenTagNode node, ?tag_opening: Herb::Token?, ?tag_name: Herb::Token?, ?tag_closing: Herb::Token?, ?children: Array[Herb::AST::Node]?, ?is_void: bool?) -> Herb::AST::HTMLOpenTagNode
+
+      # Create a new HTMLCloseTagNode by copying an existing node with optional attribute overrides.
+      # This is useful for creating modified close tag nodes during autofix operations.
+      #
+      # @rbs node: Herb::AST::HTMLCloseTagNode -- the node to copy
+      # @rbs tag_opening: Herb::Token? -- override the opening token
+      # @rbs tag_name: Herb::Token? -- override the tag name token
+      # @rbs children: Array[Herb::AST::Node]? -- override the children array
+      # @rbs tag_closing: Herb::Token? -- override the closing token
+      def copy_html_close_tag_node: (Herb::AST::HTMLCloseTagNode node, ?tag_opening: Herb::Token?, ?tag_name: Herb::Token?, ?children: Array[Herb::AST::Node]?, ?tag_closing: Herb::Token?) -> Herb::AST::HTMLCloseTagNode
 
       # Create a new HTMLAttributeNode by copying an existing node with optional attribute overrides.
       # This is useful for creating modified attribute nodes during autofix operations.
@@ -334,6 +355,9 @@ module Herb
       # : (Herb::AST::ERBWhileNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBWhileNode
       # : (Herb::AST::ERBYieldNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?) -> Herb::AST::ERBYieldNode
       # : (Herb::AST::HTMLAttributeValueNode node, ?open_quote: Herb::Token?, ?children: Array[Herb::AST::Node]?, ?close_quote: Herb::Token?, ?quoted: bool?) -> Herb::AST::HTMLAttributeValueNode
+      # : (Herb::AST::HTMLElementNode node, ?open_tag: Herb::AST::HTMLOpenTagNode?, ?tag_name: Herb::Token?, ?body: Array[Herb::AST::Node]?, ?close_tag: Herb::AST::HTMLCloseTagNode?, ?is_void: bool?, ?source: Herb::Token?) -> Herb::AST::HTMLElementNode
+      # : (Herb::AST::HTMLOpenTagNode node, ?tag_opening: Herb::Token?, ?tag_name: Herb::Token?, ?tag_closing: Herb::Token?, ?children: Array[Herb::AST::Node]?, ?is_void: bool?) -> Herb::AST::HTMLOpenTagNode
+      # : (Herb::AST::HTMLCloseTagNode node, ?tag_opening: Herb::Token?, ?tag_name: Herb::Token?, ?children: Array[Herb::AST::Node]?, ?tag_closing: Herb::Token?) -> Herb::AST::HTMLCloseTagNode
       # rubocop:enable Layout/LineLength
       def copy_erb_node: (Herb::AST::ERBBeginNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?rescue_clause: Herb::AST::ERBRescueNode?, ?else_clause: Herb::AST::ERBElseNode?, ?ensure_clause: Herb::AST::ERBEnsureNode?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBBeginNode
                        | (Herb::AST::ERBBlockNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?body: Array[Herb::AST::Node]?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBBlockNode
@@ -353,6 +377,9 @@ module Herb
                        | (Herb::AST::ERBWhileNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?, ?statements: Array[Herb::AST::Node]?, ?end_node: Herb::AST::ERBEndNode?) -> Herb::AST::ERBWhileNode
                        | (Herb::AST::ERBYieldNode node, ?tag_opening: Herb::Token?, ?content: Herb::Token?, ?tag_closing: Herb::Token?) -> Herb::AST::ERBYieldNode
                        | (Herb::AST::HTMLAttributeValueNode node, ?open_quote: Herb::Token?, ?children: Array[Herb::AST::Node]?, ?close_quote: Herb::Token?, ?quoted: bool?) -> Herb::AST::HTMLAttributeValueNode
+                       | (Herb::AST::HTMLElementNode node, ?open_tag: Herb::AST::HTMLOpenTagNode?, ?tag_name: Herb::Token?, ?body: Array[Herb::AST::Node]?, ?close_tag: Herb::AST::HTMLCloseTagNode?, ?is_void: bool?, ?source: Herb::Token?) -> Herb::AST::HTMLElementNode
+                       | (Herb::AST::HTMLOpenTagNode node, ?tag_opening: Herb::Token?, ?tag_name: Herb::Token?, ?tag_closing: Herb::Token?, ?children: Array[Herb::AST::Node]?, ?is_void: bool?) -> Herb::AST::HTMLOpenTagNode
+                       | (Herb::AST::HTMLCloseTagNode node, ?tag_opening: Herb::Token?, ?tag_name: Herb::Token?, ?children: Array[Herb::AST::Node]?, ?tag_closing: Herb::Token?) -> Herb::AST::HTMLCloseTagNode
     end
   end
 end

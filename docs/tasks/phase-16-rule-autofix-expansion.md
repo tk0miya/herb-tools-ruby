@@ -217,7 +217,7 @@ cd herb-lint && ./bin/steep check
 | `html/boolean-attributes-no-value` | ✅ | Yes | 16.11 |
 | `html/no-self-closing` | 🔨 | Yes | 16.12 |
 | `html/no-space-in-tag` | 🔨 | Yes | 16.13 |
-| `html/tag-name-lowercase` | 🔨 | Yes | 16.14 |
+| `html/tag-name-lowercase` | ✅ | Yes | 16.14 |
 
 ### Implemented Rules (Not Fixable)
 
@@ -318,13 +318,16 @@ cd herb-lint && ./bin/steep check
 
 ### Task 16.14: HtmlTagNameLowercase Autofix
 
-**Location:** `herb-lint/lib/herb/lint/rules/html_tag_name_lowercase.rb`
+**Status:** Complete
 
-- [ ] Add `def self.safe_autofixable? = true`
-- [ ] Change `add_offense` to `add_offense_with_autofix`
-- [ ] Implement `autofix(node, parse_result)` method
-  - [ ] Convert tag name to lowercase
-- [ ] Add autofix tests
+**Location:** `herb-lint/lib/herb/lint/rules/html/tag_name_lowercase.rb`
+
+- [x] Add `def self.safe_autofixable? = true`
+- [x] Change `add_offense` to `add_offense_with_autofix`
+- [x] Implement `autofix(node, parse_result)` method
+  - [x] Convert tag name to lowercase
+- [x] Add autofix tests
+- [x] Add `copy_html_open_tag_node` and `copy_html_close_tag_node` helpers to AutofixHelpers
 
 ---
 
@@ -442,9 +445,9 @@ cat test.html.erb
 - 16.3: ErbNoEmptyTags ✅
 - 16.4: ErbNoExtraWhitespaceInsideTags ✅
 - 16.5: ErbRequireWhitespaceInsideTags ✅
-- 16.8: HtmlAttributeDoubleQuotes
-- 16.10: HtmlAttributeValuesRequireQuotes
-- 16.14: HtmlTagNameLowercase
+- 16.8: HtmlAttributeDoubleQuotes ✅
+- 16.10: HtmlAttributeValuesRequireQuotes ✅
+- 16.14: HtmlTagNameLowercase ✅
 
 ### Medium Priority (Style Rules)
 
