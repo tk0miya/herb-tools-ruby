@@ -9,30 +9,54 @@ module Herb
     class Runner
       attr_reader :config #: Herb::Config::LinterConfig
       attr_reader :ignore_disable_comments #: bool
+      attr_reader :autofix #: bool
+      attr_reader :unsafe #: bool
       attr_reader :linter #: Linter
 
       # @rbs config: Herb::Config::LinterConfig
       # @rbs ignore_disable_comments: bool -- when true, report offenses even when suppressed
-      def initialize(config, ignore_disable_comments: false) #: void
+      # @rbs autofix: bool -- when true, apply safe automatic fixes
+      # @rbs unsafe: bool -- when true, also apply unsafe fixes (requires autofix: true)
+      # @rbs rule_registry: RuleRegistry? -- optional custom rule registry (for testing)
+      def initialize(config, ignore_disable_comments: false, autofix: false, unsafe: false, rule_registry: nil) #: void
         @config = config
         @ignore_disable_comments = ignore_disable_comments
-        @linter = build_linter
+        @autofix = autofix
+        @unsafe = unsafe
+        @linter = build_linter(rule_registry)
       end
 
       # Run linting on the given paths and return aggregated results.
       # @rbs paths: Array[String] -- explicit paths (files or directories) to lint
       def run(paths = []) #: AggregatedResult
         files = discover_files(paths)
-
-        results = files.map do |file_path|
-          source = File.read(file_path)
-          linter.lint(file_path:, source:)
-        end
-
+        results = files.map { process_file(_1) }
         AggregatedResult.new(results)
       end
 
       private
+
+      # Process a single file: lint and optionally apply fixes.
+      # @rbs file_path: String
+      def process_file(file_path) #: LintResult
+        source = File.read(file_path)
+        result = linter.lint(file_path:, source:)
+        autofixer = build_autofixer(result)
+
+        if autofix && autofixer.autofixable?(unsafe:)
+          autofix_result = autofixer.apply
+          File.write(file_path, autofix_result.source) if autofix_result.source != source
+          # Return LintResult with only unfixed offenses
+          LintResult.new(
+            file_path: result.file_path,
+            offenses: autofix_result.unfixed,
+            source: autofix_result.source,
+            parse_result: result.parse_result
+          )
+        else
+          result
+        end
+      end
 
       # @rbs paths: Array[String]
       def discover_files(paths) #: Array[String]
@@ -44,11 +68,22 @@ module Herb
         discovery.discover(paths)
       end
 
-      # Build and configure a Linter instance with all built-in rules.
-      def build_linter #: Linter
-        registry = RuleRegistry.new
+      # Build and configure a Linter instance.
+      # @rbs registry: RuleRegistry? -- optional custom rule registry (defaults to all built-in rules)
+      def build_linter(registry = nil) #: Linter
+        registry ||= RuleRegistry.new
 
         Linter.new(config, rule_registry: registry, ignore_disable_comments:)
+      end
+
+      # Build an Autofixer for the given lint result.
+      # @rbs lint_result: LintResult
+      def build_autofixer(lint_result) #: Autofixer
+        Autofixer.new(
+          lint_result.parse_result,
+          lint_result.offenses,
+          unsafe:
+        )
       end
     end
   end

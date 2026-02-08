@@ -249,15 +249,15 @@ Autofixer#apply
 
 **Location:** `herb-lint/lib/herb/lint/runner.rb`, `herb-lint/lib/herb/lint/cli.rb`
 
-- [ ] Update `Runner` constructor to accept `fix` and `fix_unsafely` options
-- [ ] Update `Runner#process_file` to apply fixes after linting
-  - [ ] Create `Autofixer` when fix enabled and fixable offenses exist
-  - [ ] Write fixed content back to file
-  - [ ] Report only unfixed offenses
-- [ ] Add `--fix` CLI option parsing
-- [ ] Add `--fix-unsafely` CLI option parsing (`--fix-unsafely` implies `--fix`)
-- [ ] Pass fix options from CLI to Runner
-- [ ] Add integration tests
+- [x] Update `Runner` constructor to accept `autofix` and `unsafe` options
+- [x] Update `Runner#process_file` to apply fixes after linting
+  - [x] Create `Autofixer` when fix enabled and fixable offenses exist
+  - [x] Write fixed content back to file
+  - [x] Report only unfixed offenses
+- [x] Add `--fix` CLI option parsing
+- [x] Add `--fix-unsafely` CLI option parsing (`--fix-unsafely` implies `--fix`)
+- [x] Pass fix options from CLI to Runner
+- [x] Add integration tests
 
 **CLI Changes:**
 
