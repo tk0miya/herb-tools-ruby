@@ -17,6 +17,11 @@ module Herb
       # @rbs unsafe: bool -- when true, also apply unsafe autofixes
       def initialize: (Herb::ParseResult parse_result, Array[Offense] offenses, ?unsafe: bool) -> void
 
+      # Check if there are any fixable offenses.
+      #
+      # @rbs return: bool
+      def fixable?: () -> bool
+
       # Apply autofixes and return the result.
       #
       # Processing:

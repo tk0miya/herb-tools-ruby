@@ -39,22 +39,23 @@ module Herb
         source = File.read(file_path)
         result = linter.lint(file_path:, source:)
 
-        if fix && result.parse_result && result.offenses.any?(&:fixable?)
-          fix_result = apply_fixes(result)
+        return result unless fix
 
-          # Write fixed content back to file if it changed
-          File.write(file_path, fix_result.source) if fix_result.source != source
+        auto_fixer = build_auto_fixer(result)
+        return result unless auto_fixer.fixable?
 
-          # Return updated LintResult with only unfixed offenses
-          LintResult.new(
-            file_path: result.file_path,
-            offenses: fix_result.unfixed,
-            source: fix_result.source,
-            parse_result: result.parse_result
-          )
-        else
-          result
-        end
+        fix_result = auto_fixer.apply
+
+        # Write fixed content back to file if it changed
+        File.write(file_path, fix_result.source) if fix_result.source != source
+
+        # Return updated LintResult with only unfixed offenses
+        LintResult.new(
+          file_path: result.file_path,
+          offenses: fix_result.unfixed,
+          source: fix_result.source,
+          parse_result: result.parse_result
+        )
       end
 
       private
@@ -78,12 +79,12 @@ module Herb
       end
 
       # @rbs result: LintResult
-      def apply_fixes(result) #: AutoFixResult
+      def build_auto_fixer(result) #: AutoFixer
         AutoFixer.new(
           result.parse_result,
           result.offenses,
           unsafe:
-        ).apply
+        )
       end
     end
   end

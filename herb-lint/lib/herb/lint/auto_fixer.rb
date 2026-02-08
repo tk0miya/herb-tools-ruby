@@ -21,6 +21,13 @@ module Herb
         @unsafe = unsafe
       end
 
+      # Check if there are any fixable offenses.
+      #
+      # @rbs return: bool
+      def fixable? #: bool
+        !parse_result.nil? && offenses.any? { |offense| offense.fixable?(unsafe:) }
+      end
+
       # Apply autofixes and return the result.
       #
       # Processing:

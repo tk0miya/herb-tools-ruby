@@ -170,4 +170,68 @@ RSpec.describe Herb::Lint::AutoFixer do
       end
     end
   end
+
+  describe "#fixable?" do
+    context "when there are no offenses" do
+      subject { described_class.new(parse_result, []) }
+
+      it "returns false" do
+        expect(subject.fixable?).to be(false)
+      end
+    end
+
+    context "when offenses are not fixable (no autofix_context)" do
+      subject { described_class.new(parse_result, offenses) }
+
+      let(:offenses) { [build(:offense)] }
+
+      it "returns false" do
+        expect(subject.fixable?).to be(false)
+      end
+    end
+
+    context "when there is a safe fixable offense" do
+      subject { described_class.new(parse_result, offenses) }
+
+      let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule_class: safe_rule_class) }
+      let(:offenses) { [build(:offense, autofix_context:)] }
+
+      it "returns true" do
+        expect(subject.fixable?).to be(true)
+      end
+    end
+
+    context "when there is an unsafe offense and unsafe: false" do
+      subject { described_class.new(parse_result, offenses, unsafe: false) }
+
+      let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule_class: unsafe_rule_class) }
+      let(:offenses) { [build(:offense, autofix_context:)] }
+
+      it "returns false" do
+        expect(subject.fixable?).to be(false)
+      end
+    end
+
+    context "when there is an unsafe offense and unsafe: true" do
+      subject { described_class.new(parse_result, offenses, unsafe: true) }
+
+      let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule_class: unsafe_rule_class) }
+      let(:offenses) { [build(:offense, autofix_context:)] }
+
+      it "returns true" do
+        expect(subject.fixable?).to be(true)
+      end
+    end
+
+    context "when parse_result is nil" do
+      subject { described_class.new(nil, offenses) }
+
+      let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule_class: safe_rule_class) }
+      let(:offenses) { [build(:offense, autofix_context:)] }
+
+      it "returns false" do
+        expect(subject.fixable?).to be(false)
+      end
+    end
+  end
 end

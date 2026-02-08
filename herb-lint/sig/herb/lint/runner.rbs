@@ -37,7 +37,7 @@ module Herb
       def build_linter: () -> Linter
 
       # @rbs result: LintResult
-      def apply_fixes: (LintResult result) -> AutoFixResult
+      def build_auto_fixer: (LintResult result) -> AutoFixer
     end
   end
 end
