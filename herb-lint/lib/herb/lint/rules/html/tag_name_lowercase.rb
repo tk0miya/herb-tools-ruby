@@ -32,11 +32,27 @@ module Herb
             "warning"
           end
 
+          def self.safe_autofixable? #: bool
+            true
+          end
+
           # @rbs override
           def visit_html_element_node(node)
             check_open_tag(node)
             check_close_tag(node)
             super
+          end
+
+          # @rbs override
+          def autofix(node, parse_result)
+            case node
+            when Herb::AST::HTMLOpenTagNode
+              fix_open_tag(node, parse_result)
+            when Herb::AST::HTMLCloseTagNode
+              fix_close_tag(node, parse_result)
+            else
+              false
+            end
           end
 
           private
@@ -46,10 +62,12 @@ module Herb
             tag = raw_tag_name(node)
             return unless tag
             return if lowercase?(tag)
+            return unless node.open_tag
 
-            add_offense(
+            add_offense_with_autofix(
               message: "Tag name '#{tag}' should be lowercase",
-              location: node.tag_name.location
+              location: node.tag_name.location,
+              node: node.open_tag
             )
           end
 
@@ -62,10 +80,33 @@ module Herb
             return unless tag
             return if lowercase?(tag)
 
-            add_offense(
+            add_offense_with_autofix(
               message: "Tag name '#{tag}' should be lowercase",
-              location: close_tag.tag_name.location
+              location: close_tag.tag_name.location,
+              node: close_tag
             )
+          end
+
+          # @rbs node: Herb::AST::HTMLOpenTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def fix_open_tag(node, parse_result) #: bool
+            tag_name = node.tag_name.value
+            return false unless tag_name
+
+            new_tag_name_token = copy_token(node.tag_name, content: tag_name.downcase)
+            new_open_tag = copy_html_open_tag_node(node, tag_name: new_tag_name_token)
+            replace_node(parse_result, node, new_open_tag)
+          end
+
+          # @rbs node: Herb::AST::HTMLCloseTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def fix_close_tag(node, parse_result) #: bool
+            tag_name = node.tag_name.value
+            return false unless tag_name
+
+            new_tag_name_token = copy_token(node.tag_name, content: tag_name.downcase)
+            new_close_tag = copy_html_close_tag_node(node, tag_name: new_tag_name_token)
+            replace_node(parse_result, node, new_close_tag)
           end
 
           # @rbs str: String
