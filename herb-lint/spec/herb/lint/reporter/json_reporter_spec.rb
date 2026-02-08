@@ -14,18 +14,26 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
     context "when there are no files" do
       let(:results) { [] }
 
-      it "outputs valid JSON with empty files array and zero summary" do
+      it "outputs valid JSON with empty offenses array and zero summary" do
         subject
 
         expect(parsed_output).to eq(
-          "files" => [],
+          "offenses" => [],
           "summary" => {
-            "fileCount" => 0,
-            "offenseCount" => 0,
-            "errorCount" => 0,
-            "warningCount" => 0,
-            "fixableCount" => 0
-          }
+            "filesChecked" => 0,
+            "filesWithOffenses" => 0,
+            "totalErrors" => 0,
+            "totalWarnings" => 0,
+            "totalInfo" => 0,
+            "totalHints" => 0,
+            "totalIgnored" => 0,
+            "totalOffenses" => 0,
+            "ruleCount" => 0
+          },
+          "timing" => nil,
+          "completed" => true,
+          "clean" => true,
+          "message" => nil
         )
       end
     end
@@ -37,18 +45,14 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
         ]
       end
 
-      it "outputs files with empty offenses arrays" do
+      it "outputs empty offenses array and clean status" do
         subject
 
-        expect(parsed_output["files"]).to eq(
-          [
-            {
-              "path" => "app/views/users/index.html.erb",
-              "offenses" => []
-            }
-          ]
-        )
-        expect(parsed_output["summary"]["offenseCount"]).to eq(0)
+        expect(parsed_output["offenses"]).to eq([])
+        expect(parsed_output["summary"]["totalOffenses"]).to eq(0)
+        expect(parsed_output["summary"]["filesChecked"]).to eq(1)
+        expect(parsed_output["summary"]["filesWithOffenses"]).to eq(0)
+        expect(parsed_output["clean"]).to be(true)
       end
     end
 
@@ -77,27 +81,29 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
       it "formats offenses correctly with all fields" do
         subject
 
-        offenses = parsed_output["files"][0]["offenses"]
+        offenses = parsed_output["offenses"]
         expect(offenses.size).to eq(2)
         expect(offenses[0]).to eq(
-          "rule" => "html-img-require-alt",
-          "severity" => "error",
+          "filename" => "app/views/users/index.html.erb",
           "message" => "Missing alt attribute on img tag",
-          "line" => 12,
-          "column" => 5,
-          "endLine" => 12,
-          "endColumn" => 5,
-          "fixable" => false
+          "location" => {
+            "start" => { "line" => 12, "column" => 5 },
+            "end" => { "line" => 12, "column" => 5 }
+          },
+          "severity" => "error",
+          "code" => "html-img-require-alt",
+          "source" => "Herb Linter"
         )
         expect(offenses[1]).to eq(
-          "rule" => "html-attribute-double-quotes",
-          "severity" => "warning",
+          "filename" => "app/views/users/index.html.erb",
           "message" => "Prefer double quotes for attributes",
-          "line" => 24,
-          "column" => 3,
-          "endLine" => 24,
-          "endColumn" => 3,
-          "fixable" => false
+          "location" => {
+            "start" => { "line" => 24, "column" => 3 },
+            "end" => { "line" => 24, "column" => 3 }
+          },
+          "severity" => "warning",
+          "code" => "html-attribute-double-quotes",
+          "source" => "Herb Linter"
         )
       end
     end
@@ -134,22 +140,26 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
         ]
       end
 
-      it "aggregates files and computes summary counts correctly" do
+      it "aggregates offenses from multiple files and computes summary counts correctly" do
         subject
 
-        expect(parsed_output["files"].size).to eq(2)
-        expect(parsed_output["files"][0]["path"]).to eq("app/views/users/index.html.erb")
-        expect(parsed_output["files"][1]["path"]).to eq("app/views/posts/show.html.erb")
-        expect(parsed_output["files"][0]["offenses"].size).to eq(1)
-        expect(parsed_output["files"][1]["offenses"].size).to eq(2)
+        offenses = parsed_output["offenses"]
+        expect(offenses.size).to eq(3)
+        expect(offenses[0]["filename"]).to eq("app/views/users/index.html.erb")
+        expect(offenses[1]["filename"]).to eq("app/views/posts/show.html.erb")
+        expect(offenses[2]["filename"]).to eq("app/views/posts/show.html.erb")
 
         summary = parsed_output["summary"]
         expect(summary).to eq(
-          "fileCount" => 2,
-          "offenseCount" => 3,
-          "errorCount" => 2,
-          "warningCount" => 1,
-          "fixableCount" => 0
+          "filesChecked" => 2,
+          "filesWithOffenses" => 2,
+          "totalErrors" => 2,
+          "totalWarnings" => 1,
+          "totalInfo" => 0,
+          "totalHints" => 0,
+          "totalIgnored" => 0,
+          "totalOffenses" => 3,
+          "ruleCount" => 0
         )
       end
     end
@@ -170,18 +180,18 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
         ]
       end
 
-      it "includes correct endLine and endColumn" do
+      it "includes correct location start and end positions" do
         subject
 
-        offense = parsed_output["files"][0]["offenses"][0]
-        expect(offense["line"]).to eq(12)
-        expect(offense["column"]).to eq(5)
-        expect(offense["endLine"]).to eq(12)
-        expect(offense["endColumn"]).to eq(35)
+        offense = parsed_output["offenses"][0]
+        expect(offense["location"]["start"]["line"]).to eq(12)
+        expect(offense["location"]["start"]["column"]).to eq(5)
+        expect(offense["location"]["end"]["line"]).to eq(12)
+        expect(offense["location"]["end"]["column"]).to eq(35)
       end
     end
 
-    context "when fixable flag is included" do
+    context "when results include clean flag" do
       let(:results) do
         [
           build(:lint_result, offenses: [
@@ -190,11 +200,11 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
         ]
       end
 
-      it "sets fixable to false for all offenses" do
+      it "sets clean to false when offenses exist" do
         subject
 
-        offense = parsed_output["files"][0]["offenses"][0]
-        expect(offense["fixable"]).to be(false)
+        expect(parsed_output["clean"]).to be(false)
+        expect(parsed_output["completed"]).to be(true)
       end
     end
   end
