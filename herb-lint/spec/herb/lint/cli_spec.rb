@@ -184,8 +184,9 @@ RSpec.describe Herb::Lint::CLI do
 
         it "outputs JSON format" do
           output = capture_stdout { subject }
-          expect(output).to include('"files"')
+          expect(output).to include('"offenses"')
           expect(output).to include('"summary"')
+          expect(output).to include('"completed"')
           expect { JSON.parse(output) }.not_to raise_error
         end
       end

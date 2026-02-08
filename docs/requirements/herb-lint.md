@@ -171,34 +171,44 @@ app/views/posts/show.html.erb:8:10: error: Invalid tag nesting: <p> inside <span
 
 ### JSON
 
-Machine-readable format:
+Machine-readable format matching TypeScript herb linter:
 
 ```json
 {
-  "files": [
+  "offenses": [
     {
-      "path": "app/views/users/index.html.erb",
-      "offenses": [
-        {
-          "rule": "html-img-require-alt",
-          "severity": "error",
-          "message": "Missing alt attribute on img tag",
+      "filename": "app/views/users/index.html.erb",
+      "message": "Missing alt attribute on img tag",
+      "location": {
+        "start": {
           "line": 12,
-          "column": 5,
-          "endLine": 12,
-          "endColumn": 35,
-          "fixable": false
+          "column": 5
+        },
+        "end": {
+          "line": 12,
+          "column": 35
         }
-      ]
+      },
+      "severity": "error",
+      "code": "html-img-require-alt",
+      "source": "Herb Linter"
     }
   ],
   "summary": {
-    "files": 2,
-    "offenses": 3,
-    "errors": 2,
-    "warnings": 1,
-    "fixable": 1
-  }
+    "filesChecked": 2,
+    "filesWithOffenses": 1,
+    "totalErrors": 2,
+    "totalWarnings": 1,
+    "totalInfo": 0,
+    "totalHints": 0,
+    "totalIgnored": 0,
+    "totalOffenses": 3,
+    "ruleCount": 50
+  },
+  "timing": null,
+  "completed": true,
+  "clean": false,
+  "message": null
 }
 ```
 

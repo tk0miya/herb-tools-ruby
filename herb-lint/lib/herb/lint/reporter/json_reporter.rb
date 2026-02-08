@@ -23,47 +23,63 @@ module Herb
 
         private
 
-        # Builds the full output hash.
+        # Builds the full output hash to match TypeScript herb linter format.
         #
         # @rbs aggregated_result: AggregatedResult
         def build_output(aggregated_result) #: Hash[String, untyped]
           {
-            "files" => aggregated_result.results.map { |result| build_file(result) },
-            "summary" => build_summary(aggregated_result)
+            "offenses" => build_offenses(aggregated_result),
+            "summary" => build_summary(aggregated_result),
+            "timing" => nil,
+            "completed" => true,
+            "clean" => aggregated_result.offense_count.zero?,
+            "message" => nil
           }
         end
 
-        # Builds a single file entry with its offenses.
+        # Builds flat offenses array from all files.
         #
-        # @rbs result: LintResult
-        def build_file(result) #: Hash[String, untyped]
+        # @rbs aggregated_result: AggregatedResult
+        def build_offenses(aggregated_result) #: Array[Hash[String, untyped]]
+          aggregated_result.results.flat_map do |result|
+            result.offenses.map { |offense| build_offense(offense, result.file_path) }
+          end
+        end
+
+        # Builds a single offense hash.
+        #
+        # @rbs offense: Offense
+        # @rbs file_path: String
+        def build_offense(offense, file_path) #: Hash[String, untyped]
           {
-            "path" => result.file_path,
-            "offenses" => result.offenses.map do |offense|
-              {
-                "rule" => offense.rule_name,
-                "severity" => offense.severity,
-                "message" => offense.message,
-                "line" => offense.line,
-                "column" => offense.column,
-                "endLine" => offense.location.end.line,
-                "endColumn" => offense.location.end.column,
-                "fixable" => false
-              }
-            end
+            "filename" => file_path,
+            "message" => offense.message,
+            "location" => {
+              "start" => { "line" => offense.line, "column" => offense.column },
+              "end" => { "line" => offense.location.end.line, "column" => offense.location.end.column }
+            },
+            "severity" => offense.severity,
+            "code" => offense.rule_name,
+            "source" => "Herb Linter"
           }
         end
 
-        # Builds the summary hash.
+        # Builds the summary hash to match TypeScript format.
         #
         # @rbs aggregated_result: AggregatedResult
         def build_summary(aggregated_result) #: Hash[String, Integer]
+          files_with_offenses = aggregated_result.results.count { |result| result.offenses.any? }
+
           {
-            "fileCount" => aggregated_result.file_count,
-            "offenseCount" => aggregated_result.offense_count,
-            "errorCount" => aggregated_result.error_count,
-            "warningCount" => aggregated_result.warning_count,
-            "fixableCount" => 0
+            "filesChecked" => aggregated_result.file_count,
+            "filesWithOffenses" => files_with_offenses,
+            "totalErrors" => aggregated_result.error_count,
+            "totalWarnings" => aggregated_result.warning_count,
+            "totalInfo" => 0,
+            "totalHints" => 0,
+            "totalIgnored" => 0,
+            "totalOffenses" => aggregated_result.offense_count,
+            "ruleCount" => 0
           }
         end
       end

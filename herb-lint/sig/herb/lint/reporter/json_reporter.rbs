@@ -17,17 +17,23 @@ module Herb
 
         private
 
-        # Builds the full output hash.
+        # Builds the full output hash to match TypeScript herb linter format.
         #
         # @rbs aggregated_result: AggregatedResult
         def build_output: (AggregatedResult aggregated_result) -> Hash[String, untyped]
 
-        # Builds a single file entry with its offenses.
+        # Builds flat offenses array from all files.
         #
-        # @rbs result: LintResult
-        def build_file: (LintResult result) -> Hash[String, untyped]
+        # @rbs aggregated_result: AggregatedResult
+        def build_offenses: (AggregatedResult aggregated_result) -> Array[Hash[String, untyped]]
 
-        # Builds the summary hash.
+        # Builds a single offense hash.
+        #
+        # @rbs offense: Offense
+        # @rbs file_path: String
+        def build_offense: (Offense offense, String file_path) -> Hash[String, untyped]
+
+        # Builds the summary hash to match TypeScript format.
         #
         # @rbs aggregated_result: AggregatedResult
         def build_summary: (AggregatedResult aggregated_result) -> Hash[String, Integer]
