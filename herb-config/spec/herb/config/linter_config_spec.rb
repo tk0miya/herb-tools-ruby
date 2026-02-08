@@ -33,6 +33,52 @@ RSpec.describe Herb::Config::LinterConfig do
         expect(subject).to eq([])
       end
     end
+
+    context "when both files.include and linter.include are configured" do
+      let(:config) do
+        {
+          "files" => {
+            "include" => ["**/*.xml.erb", "custom/**/*.html"]
+          },
+          "linter" => {
+            "include" => ["**/*.html.erb"]
+          }
+        }
+      end
+
+      it "merges patterns from both sections" do
+        expect(subject).to eq(["**/*.xml.erb", "custom/**/*.html", "**/*.html.erb"])
+      end
+    end
+
+    context "when only files.include is configured" do
+      let(:config) do
+        {
+          "files" => {
+            "include" => ["**/*.xml.erb", "custom/**/*.html"]
+          }
+        }
+      end
+
+      it "returns patterns from files section" do
+        expect(subject).to eq(["**/*.xml.erb", "custom/**/*.html"])
+      end
+    end
+
+    context "when files section is empty" do
+      let(:config) do
+        {
+          "files" => {},
+          "linter" => {
+            "include" => ["**/*.html.erb"]
+          }
+        }
+      end
+
+      it "returns patterns from linter section only" do
+        expect(subject).to eq(["**/*.html.erb"])
+      end
+    end
   end
 
   describe "#exclude_patterns" do
@@ -65,6 +111,52 @@ RSpec.describe Herb::Config::LinterConfig do
 
       it "returns an empty array" do
         expect(subject).to eq([])
+      end
+    end
+
+    context "when both files.exclude and linter.exclude are configured" do
+      let(:config) do
+        {
+          "files" => {
+            "exclude" => ["vendor/**/*", "node_modules/**/*"]
+          },
+          "linter" => {
+            "exclude" => ["tmp/**/*"]
+          }
+        }
+      end
+
+      it "uses linter.exclude only (override behavior)" do
+        expect(subject).to eq(["tmp/**/*"])
+      end
+    end
+
+    context "when only files.exclude is configured" do
+      let(:config) do
+        {
+          "files" => {
+            "exclude" => ["vendor/**/*", "node_modules/**/*"]
+          }
+        }
+      end
+
+      it "returns patterns from files section" do
+        expect(subject).to eq(["vendor/**/*", "node_modules/**/*"])
+      end
+    end
+
+    context "when files section is empty" do
+      let(:config) do
+        {
+          "files" => {},
+          "linter" => {
+            "exclude" => ["tmp/**/*"]
+          }
+        }
+      end
+
+      it "returns patterns from linter section only" do
+        expect(subject).to eq(["tmp/**/*"])
       end
     end
   end

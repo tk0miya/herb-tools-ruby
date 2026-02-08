@@ -91,11 +91,11 @@ herb-lint --fail-level error app/views/
 
 **Location:** `herb-config/lib/herb/config/linter_config.rb`
 
-- [ ] Add `files_include_patterns` method
-- [ ] Add `files_exclude_patterns` method
-- [ ] Merge files patterns with linter patterns
-- [ ] Add unit tests
-- [ ] Update documentation
+- [x] Add `files_include_patterns` method
+- [x] Add `files_exclude_patterns` method
+- [x] Merge files patterns with linter patterns
+- [x] Add unit tests
+- [x] Update documentation
 
 **Configuration:**
 
@@ -111,10 +111,15 @@ files:
 
 linter:
   include:
-    - '**/*.html.erb'  # Added to files.include
+    - '**/*.html.erb'  # Merged with files.include (additive)
   exclude:
-    - 'tmp/**/*'       # Added to files.exclude
+    - 'tmp/**/*'       # Overrides files.exclude (precedence)
 ```
+
+**Pattern Merge Behavior:**
+
+- **`include` patterns**: ADDITIVE - Both `files.include` and `linter.include` are merged together
+- **`exclude` patterns**: OVERRIDE - `linter.exclude` takes precedence; `files.exclude` is used only as fallback
 
 **Implementation:**
 
@@ -128,6 +133,7 @@ class LinterConfig
 
   # @rbs return: Array[String]
   def include_patterns
+    # Additive: merge both arrays
     files_include = @config.dig("files", "include") || []
     linter_include = @config.dig("linter", "include") || []
     files_include + linter_include
@@ -135,16 +141,16 @@ class LinterConfig
 
   # @rbs return: Array[String]
   def exclude_patterns
-    files_exclude = @config.dig("files", "exclude") || []
-    linter_exclude = @config.dig("linter", "exclude") || []
-    files_exclude + linter_exclude
+    # Override: linter.exclude takes precedence
+    @config.dig("linter", "exclude") || @config.dig("files", "exclude") || []
   end
 end
 ```
 
 **Test Cases:**
-- files.include merges with linter.include
-- files.exclude merges with linter.exclude
+- files.include merges with linter.include (additive)
+- files.exclude is overridden by linter.exclude when present
+- linter.exclude takes precedence over files.exclude
 - Empty files section uses only linter patterns
 - Missing linter section uses only files patterns
 
@@ -554,14 +560,14 @@ herb-lint lib/views/test.html.erb
 | Task | Component | Description | Status |
 |------|-----------|-------------|--------|
 | 17.1 | herb-lint | failLevel exit code control | ✅ Completed |
-| 17.2 | herb-config | Top-level files section | Ready |
+| 17.2 | herb-config | Top-level files section | ✅ Completed |
 | 17.3 | herb-config + herb-lint | Per-rule enabled flag | Ready |
 | 17.4 | herb-config + herb-lint | Per-rule include/only/exclude | Ready |
 | 17.5 | herb-lint | Rule severity config override | Ready |
 | 17.6 | herb-format | Formatter include/exclude | Blocked |
 | 17.7 | herb-format | Rewriter hooks | Blocked |
 
-**Total: 7 tasks (1 completed, 4 ready, 2 blocked)**
+**Total: 7 tasks (2 completed, 3 ready, 2 blocked)**
 
 **Note:** Task 17.5 addresses rule severity configuration from config files, which was identified during Phase 17.1 implementation and initially deferred. Tasks 17.6-17.7 are formatter-related features that are blocked pending herb-format gem implementation.
 

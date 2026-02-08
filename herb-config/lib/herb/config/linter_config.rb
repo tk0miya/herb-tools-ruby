@@ -12,14 +12,17 @@ module Herb
         @config = config_hash
       end
 
-      # Returns the file patterns to include in linting
+      # Returns the file patterns to include in linting.
+      # Merges patterns from both the top-level 'files' section and 'linter' section.
       def include_patterns #: Array[String]
-        linter_config["include"] || []
+        files_config.fetch("include", []) + linter_config.fetch("include", [])
       end
 
-      # Returns the file patterns to exclude from linting
+      # Returns the file patterns to exclude from linting.
+      # If linter.exclude is specified, it takes precedence (override behavior).
+      # Otherwise, falls back to files.exclude.
       def exclude_patterns #: Array[String]
-        linter_config["exclude"] || []
+        linter_config["exclude"] || files_config["exclude"] || []
       end
 
       # Returns the rules configuration hash
@@ -61,6 +64,10 @@ module Herb
 
       def linter_config #: Hash[String, untyped]
         config["linter"] || {}
+      end
+
+      def files_config #: Hash[String, untyped]
+        config["files"] || {}
       end
     end
   end
