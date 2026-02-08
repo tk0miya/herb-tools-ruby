@@ -11,7 +11,8 @@ module Herb
       # rubocop:disable Metrics/MethodLength
       def self.builtin_rules: () -> Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
 
-      def initialize: () -> void
+      # @rbs builtins: bool -- when true, automatically load built-in rules
+      def initialize: (?builtins: bool) -> void
 
       # Register a rule class in the registry.
       # @rbs rule_class: singleton(Rules::Base) | singleton(Rules::VisitorRule)
@@ -34,14 +35,14 @@ module Herb
       # Number of registered rules.
       def size: () -> Integer
 
-      # Load all built-in rules into the registry.
-      def load_builtin_rules: () -> void
-
       # Load custom rules from a directory.
       # @rbs path: String -- path to directory containing rule files
       def load_custom_rules: (String path) -> void
 
       private
+
+      # Load all built-in rules into the registry.
+      def load_builtin_rules: () -> void
 
       # @rbs file: String
       def load_rule_file: (String file) -> void

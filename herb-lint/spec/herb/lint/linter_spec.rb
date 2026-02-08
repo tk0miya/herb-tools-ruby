@@ -6,7 +6,7 @@ RSpec.describe Herb::Lint::Linter do
   let(:linter) { described_class.new(rules, config, rule_registry:) }
   let(:config) { Herb::Config::LinterConfig.new(config_hash) }
   let(:config_hash) { {} }
-  let(:rule_registry) { Herb::Lint::RuleRegistry.new }
+  let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false) }
 
   describe "#lint" do
     subject { linter.lint(file_path:, source:) }

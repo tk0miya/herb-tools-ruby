@@ -48,7 +48,6 @@ module Herb
       # This consolidates rule registry creation, rule instantiation, and linter setup.
       def build_linter #: Linter
         registry = RuleRegistry.new
-        registry.load_builtin_rules
 
         rules = registry.all.map(&:new)
 
