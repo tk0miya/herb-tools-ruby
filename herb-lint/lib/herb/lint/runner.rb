@@ -28,8 +28,7 @@ module Herb
       # Run linting on the given paths and return aggregated results.
       # @rbs paths: Array[String] -- explicit paths (files or directories) to lint
       def run(paths = []) #: AggregatedResult
-        files = discover_files(paths)
-        results = files.map { |file_path| process_file(file_path) }
+        results = discover_files(paths).map { process_file(_1) }
         AggregatedResult.new(results)
       end
 
