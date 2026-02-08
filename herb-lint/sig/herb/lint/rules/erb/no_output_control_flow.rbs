@@ -4,20 +4,26 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that disallows control flow statements in ERB output tags.
-        #
-        # Control flow keywords (if, unless, case, while, for, until) should use
-        # silent tags (`<% %>`) instead of output tags (`<%= %>`).
+        # Description:
+        #   Disallow using output ERB tags (`<%=`) for control flow statements like `if`,
+        #   `unless`, `case`, `while`, etc. Control flow should be written with regular ERB
+        #   tags (`<% ... %>`), since these do not produce output directly.
         #
         # Good:
         #   <% if condition %>
-        #   <% case value %>
-        #   <% while loop %>
+        #    Content here
+        #   <% end %>
+        #
+        #   <%= user.name %>
         #
         # Bad:
         #   <%= if condition %>
-        #   <%= case value %>
-        #   <%= while loop %>
+        #    Content here
+        #   <% end %>
+        #
+        #   <%= unless user.nil? %>
+        #    Welcome!
+        #   <% end %>
         class NoOutputControlFlow < VisitorRule
           def self.rule_name: () -> String
 
@@ -45,6 +51,12 @@ module Herb
 
           # @rbs override
           def visit_erb_until_node: ...
+
+          # @rbs override
+          def visit_erb_else_node: ...
+
+          # @rbs override
+          def visit_erb_end_node: ...
 
           private
 

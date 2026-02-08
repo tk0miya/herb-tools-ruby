@@ -7,20 +7,27 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that disallows control flow statements in ERB output tags.
-        #
-        # Control flow keywords (if, unless, case, while, for, until) should use
-        # silent tags (`<% %>`) instead of output tags (`<%= %>`).
+        # Description:
+        #   Disallow using output ERB tags (`<%=`) for control flow statements like `if`,
+        #   `unless`, `case`, `while`, etc. Control flow should be written with regular ERB
+        #   tags (`<% ... %>`), since these do not produce output directly.
         #
         # Good:
         #   <% if condition %>
-        #   <% case value %>
-        #   <% while loop %>
+        #    Content here
+        #   <% end %>
+        #
+        #   <%= user.name %>
         #
         # Bad:
         #   <%= if condition %>
-        #   <%= case value %>
-        #   <%= while loop %>
+        #    Content here
+        #   <% end %>
+        #
+        #   <%= unless user.nil? %>
+        #    Welcome!
+        #   <% end %>
+        #
         class NoOutputControlFlow < VisitorRule
           def self.rule_name #: String
             "erb-no-output-control-flow"
@@ -76,6 +83,18 @@ module Herb
             super
           end
 
+          # @rbs override
+          def visit_erb_else_node(node)
+            check_output_tag(node, "else")
+            super
+          end
+
+          # @rbs override
+          def visit_erb_end_node(node)
+            check_output_tag(node, "end")
+            super
+          end
+
           private
 
           # @rbs node: untyped
@@ -84,7 +103,8 @@ module Herb
             return unless output_tag?(node)
 
             add_offense(
-              message: "Use '<% #{keyword} %>' instead of '<%= #{keyword} %>' for control flow",
+              message: "Control flow statements like `#{keyword}` should not be used with output tags. " \
+                       "Use `<% #{keyword} ... %>` instead.",
               location: node.location
             )
           end
