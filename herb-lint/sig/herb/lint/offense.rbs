@@ -18,14 +18,14 @@ module Herb
       # @rbs message: String
       # @rbs severity: String
       # @rbs location: Herb::Location
-      # @rbs autofix_context: AutofixContext? -- optional autofix context for fixable offenses
+      # @rbs autofix_context: AutofixContext? -- optional autofix context for autofixable offenses
       def initialize: (rule_name: String, message: String, severity: String, location: Herb::Location, ?autofix_context: AutofixContext?) -> void
 
       # Returns true when the offense can be automatically fixed.
       # Delegates to AutofixContext#autofixable? for safety-level filtering.
       #
       # @rbs unsafe: bool -- when true, also consider unsafe autofixes
-      def fixable?: (?unsafe: bool) -> boolish
+      def autofixable?: (?unsafe: bool) -> boolish
 
       # Returns the starting line number of the offense.
       def line: () -> Integer

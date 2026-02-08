@@ -78,7 +78,7 @@ module Herb
         end
 
         # Apply autofix to the given node in the AST.
-        # Override in fixable rules to perform AST mutation.
+        # Override in autofixable rules to perform AST mutation.
         # Returns true if the fix was applied, false otherwise.
         #
         # @rbs _node: Herb::AST::Node -- the offending AST node (direct reference from AutofixContext)
@@ -91,7 +91,7 @@ module Herb
         #
         # @rbs message: String -- description of the violation
         # @rbs location: Herb::Location -- location of the violation
-        # @rbs autofix_context: AutofixContext? -- optional autofix context for fixable offenses
+        # @rbs autofix_context: AutofixContext? -- optional autofix context for autofixable offenses
         def create_offense(message:, location:, autofix_context: nil) #: Offense
           Offense.new(rule_name: self.class.rule_name, message:, severity:, location:, autofix_context:)
         end
