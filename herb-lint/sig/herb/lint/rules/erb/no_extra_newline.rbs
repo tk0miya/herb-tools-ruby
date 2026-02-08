@@ -4,26 +4,54 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that disallows more than 2 consecutive blank lines in ERB files.
-        #
-        # This is a source-based rule that scans the entire file content
-        # (similar to TypeScript's SourceRule), rather than traversing AST nodes.
-        #
-        # Files should not have more than 2 consecutive blank lines
-        # (which equals 3 consecutive newline characters).
+        # Description:
+        #   Disallow more than two consecutive blank lines in ERB templates. This rule
+        #   enforces a maximum of two blank lines between content to maintain consistent
+        #   vertical spacing throughout your templates.
         #
         # Good:
-        #   <div>First</div>
+        #   line 1
+        #
+        #   line 3
+        #
+        #   <div>
+        #    <h1>Title</h1>
+        #   </div>
+        #
+        #   <div>
+        #    <h1>Section 1</h1>
+        #
+        #    <p>Content here</p>
+        #   </div>
+        #
+        #   <div>
+        #    <h1>Section 1</h1>
         #
         #
-        #   <div>Second</div>
+        #    <h1>Section 2</h1>
+        #   </div>
         #
         # Bad:
-        #   <div>First</div>
+        #   line 1
         #
         #
         #
-        #   <div>Second</div>
+        #   line 3
+        #
+        #   <div>
+        #    <h1>Title</h1>
+        #
+        #
+        #
+        #    <p>Content</p>
+        #   </div>
+        #
+        #   <%= user.name %>
+        #
+        #
+        #
+        #
+        #   <%= user.email %>
         class NoExtraNewline < Base
           def self.rule_name: () -> String
 

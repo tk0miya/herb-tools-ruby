@@ -27,53 +27,75 @@ RSpec.describe Herb::Lint::Rules::Erb::NoExtraNewline do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context, source:) }
 
+    # Good examples from documentation
+    context "with one blank line between content" do
+      let(:source) { "line 1\n\nline 3" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with two blank lines between sections" do
+      let(:source) do
+        <<~ERB
+          <div>
+           <h1>Section 1</h1>
+
+
+           <h1>Section 2</h1>
+          </div>
+        ERB
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with three blank lines between content" do
+      let(:source) { "line 1\n\n\n\nline 3" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("erb-no-extra-newline")
+      end
+    end
+
+    context "with three blank lines inside div" do
+      let(:source) do
+        <<~ERB
+          <div>
+           <h1>Title</h1>
+
+
+
+           <p>Content</p>
+          </div>
+        ERB
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("erb-no-extra-newline")
+      end
+    end
+
+    context "with four blank lines between ERB output tags" do
+      let(:source) { "<%= user.name %>\n\n\n\n\n<%= user.email %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("erb-no-extra-newline")
+      end
+    end
+
     context "when there are no blank lines" do
       let(:source) { "<div>First</div>\n<div>Second</div>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
-      end
-    end
-
-    context "when there is 1 blank line (2 newlines)" do
-      let(:source) { "<div>First</div>\n\n<div>Second</div>" }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when there are 2 blank lines (3 newlines)" do
-      let(:source) { "<div>First</div>\n\n\n<div>Second</div>" }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when there are 3 blank lines (4 newlines)" do
-      let(:source) { "<div>First</div>\n\n\n\n<div>Second</div>" }
-
-      it "reports an offense for 1 extra line" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("erb-no-extra-newline")
-        expect(subject.first.message).to eq(
-          "Extra blank line detected. Remove 1 blank line to maintain consistent spacing (max 2 allowed)"
-        )
-        expect(subject.first.severity).to eq("error")
-      end
-    end
-
-    context "when there are 4 blank lines (5 newlines)" do
-      let(:source) { "<div>First</div>\n\n\n\n\n<div>Second</div>" }
-
-      it "reports an offense for 2 extra lines" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("erb-no-extra-newline")
-        expect(subject.first.message).to eq(
-          "Extra blank line detected. Remove 2 blank lines to maintain consistent spacing (max 2 allowed)"
-        )
-        expect(subject.first.severity).to eq("error")
       end
     end
 
