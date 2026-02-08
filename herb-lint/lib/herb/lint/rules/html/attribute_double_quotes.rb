@@ -33,15 +33,35 @@ module Herb
             "warning"
           end
 
+          def self.safe_autofixable? #: bool
+            true
+          end
+
           # @rbs override
           def visit_html_attribute_node(node)
             if unquoted_value?(node)
-              add_offense(
+              add_offense_with_autofix(
                 message: "Attribute value should be quoted",
-                location: node.location
+                location: node.location,
+                node:
               )
             end
             super
+          end
+
+          # @rbs override
+          def autofix(node, parse_result)
+            value = node.value
+            return false if value.nil?
+
+            new_value = copy_html_attribute_value_node(
+              value,
+              open_quote: build_quote_token(value.location.start),
+              close_quote: build_quote_token(value.location.start),
+              quoted: true
+            )
+            new_node = copy_html_attribute_node(node, value: new_value)
+            replace_node(parse_result, node, new_node)
           end
 
           private
