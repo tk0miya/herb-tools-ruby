@@ -13,6 +13,8 @@ module Herb
 
       attr_reader fix_unsafely: bool
 
+      attr_reader linter: Linter
+
       # @rbs config: Herb::Config::LinterConfig
       # @rbs ignore_disable_comments: bool -- when true, report offenses even when suppressed
       # @rbs fix: bool -- when true, apply safe automatic fixes
@@ -32,16 +34,10 @@ module Herb
       # @rbs paths: Array[String]
       def discover_files: (Array[String] paths) -> Array[String]
 
-      def linter: () -> Linter
+      def build_linter: () -> Linter
 
       # @rbs result: LintResult
       def apply_fixes: (LintResult result) -> AutoFixResult
-
-      def rule_registry: () -> RuleRegistry
-
-      def build_rule_registry: () -> RuleRegistry
-
-      def instantiate_rules: () -> Array[Rules::Base | Rules::VisitorRule]
     end
   end
 end
