@@ -233,6 +233,44 @@ RSpec.describe Herb::Lint::CLI do
           expect(output).to include("Invalid format")
         end
       end
+
+      context "with --fix option" do
+        let(:argv) { ["--fix", "app/views/test.html.erb"] }
+
+        before do
+          # Create a file with fixable offense (unquoted attribute value)
+          create_file("app/views/test.html.erb", "<div class=test>content</div>")
+        end
+
+        it "applies safe autofixes to the file" do
+          result = subject
+
+          # File should be fixed (unquoted → quoted)
+          expect(File.read("app/views/test.html.erb")).to eq(%(<div class="test">content</div>\n))
+          # Exit code may be success or error depending on remaining unfixed offenses
+          expect([described_class::EXIT_SUCCESS, described_class::EXIT_LINT_ERROR]).to include(result)
+        end
+      end
+
+      context "with --fix-unsafely option" do
+        # NOTE: This test is skipped because no unsafe autofixable rules exist yet.
+        # Will be implemented when unsafe autofix rules are added.
+        let(:argv) { ["--fix-unsafely", "app/views/test.html.erb"] }
+
+        before do
+          create_file("app/views/test.html.erb", "<div class=test>content</div>")
+        end
+
+        it "applies both safe and unsafe fixes" do
+          skip "no unsafe autofixable rules exist yet"
+          subject
+          expect(File.read("app/views/test.html.erb")).to include('class="test"')
+        end
+
+        it "accepts the option without error" do
+          expect { subject }.not_to raise_error
+        end
+      end
     end
 
     describe "error handling" do

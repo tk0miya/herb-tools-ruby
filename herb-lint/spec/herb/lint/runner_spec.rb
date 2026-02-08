@@ -9,6 +9,56 @@ RSpec.describe Herb::Lint::Runner do
     subject { runner.run(paths) }
 
     let(:runner) { described_class.new(config) }
+    # Stub rule that clears the body of <span> elements (unsafe autofix)
+    let(:unsafe_fixable_rule) do
+      Class.new(Herb::Lint::Rules::VisitorRule) do
+        def self.rule_name = "test/unsafe-fixable"
+        def self.description = "Test unsafe fixable rule"
+        def self.default_severity = "warning"
+        def self.unsafe_autofixable? = true
+
+        def visit_html_element_node(node)
+          if tag_name(node) == "span"
+            add_offense_with_autofix(
+              message: "Span should be empty",
+              location: node.location,
+              node:
+            )
+          end
+          super
+        end
+
+        def autofix(node, _parse_result)
+          node.body.clear
+          true
+        end
+      end
+    end
+    # Stub rule that clears the body of <div> elements (safe autofix)
+    let(:safe_fixable_rule) do
+      Class.new(Herb::Lint::Rules::VisitorRule) do
+        def self.rule_name = "test/safe-fixable"
+        def self.description = "Test safe fixable rule"
+        def self.default_severity = "warning"
+        def self.safe_autofixable? = true
+
+        def visit_html_element_node(node)
+          if tag_name(node) == "div"
+            add_offense_with_autofix(
+              message: "Div should be empty",
+              location: node.location,
+              node:
+            )
+          end
+          super
+        end
+
+        def autofix(node, _parse_result)
+          node.body.clear
+          true
+        end
+      end
+    end
     let(:config) { Herb::Config::LinterConfig.new(config_hash) }
     let(:config_hash) { { "linter" => linter_config } }
     let(:linter_config) { { "include" => include_patterns, "exclude" => exclude_patterns } }
@@ -124,6 +174,76 @@ RSpec.describe Herb::Lint::Runner do
 
       it "excludes files matching exclude patterns" do
         expect(subject.file_count).to eq(1)
+      end
+    end
+
+    context "with autofix: true" do
+      let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false, rules: [safe_fixable_rule, unsafe_fixable_rule]) }
+      let(:runner) { described_class.new(config, autofix: true, rule_registry:) }
+
+      context "with autofixable files" do
+        it "applies safe fixes but not unsafe fixes, and preserves files without offenses" do
+          # File with safe fixable offense
+          create_file("app/views/safe.html.erb", "<div>content</div>")
+          # File with unsafe fixable offense
+          create_file("app/views/unsafe.html.erb", "<span>content</span>")
+          # File without offenses
+          create_file("app/views/clean.html.erb", "<p>content</p>")
+
+          result = subject
+
+          # Safe fix should be applied
+          expect(File.read("app/views/safe.html.erb")).to eq("<div></div>\n")
+          # Unsafe fix should NOT be applied
+          expect(File.read("app/views/unsafe.html.erb")).to eq("<span>content</span>\n")
+          # Clean file should not be modified
+          expect(File.read("app/views/clean.html.erb")).to eq("<p>content</p>\n")
+          # Only unfixed unsafe offense should remain
+          expect(result.offense_count).to eq(1)
+        end
+      end
+
+      context "with broken files" do
+        it "handles files with parse errors without crashing" do
+          create_file("app/views/test.html.erb", "<% invalid ruby code")
+
+          result = subject
+
+          # Should report parse error, but not crash
+          expect(result.offense_count).to be > 0
+        end
+      end
+    end
+
+    context "with autofix: true, unsafe: true" do
+      let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false, rules: [safe_fixable_rule, unsafe_fixable_rule]) }
+      let(:runner) { described_class.new(config, autofix: true, unsafe: true, rule_registry:) }
+
+      it "applies both safe and unsafe fixes" do
+        create_file("app/views/test.html.erb", "<div>content</div><span>content</span>")
+
+        result = subject
+
+        # Both fixes should be applied
+        expect(File.read("app/views/test.html.erb")).to eq("<div></div><span></span>\n")
+        expect(result.offense_count).to eq(0)
+      end
+    end
+
+    context "with autofix: false" do
+      let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false, rules: [safe_fixable_rule]) }
+      let(:runner) { described_class.new(config, autofix: false, rule_registry:) }
+
+      it "does not apply any fixes" do
+        create_file("app/views/test.html.erb", "<div>content</div>")
+        original_content = File.read("app/views/test.html.erb")
+
+        result = subject
+
+        # File should not be modified
+        expect(File.read("app/views/test.html.erb")).to eq(original_content)
+        # All offenses should be reported
+        expect(result.offense_count).to eq(1)
       end
     end
   end
