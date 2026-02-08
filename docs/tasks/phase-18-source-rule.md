@@ -12,13 +12,13 @@ This task introduces the `SourceRule` base class for rules that operate on raw s
 |---------|-------------|--------|
 | Unified AutofixContext | Extend with `start_offset` / `end_offset` for source rules | Enables offset-based autofix |
 | SourceRule base class | New base class for source-level rules | Clean abstraction for source rules |
-| AutoFixer source phase | Two-phase autofix: AST phase + source phase | Enables source rule autofix |
+| Autofixer source phase | Two-phase autofix: AST phase + source phase | Enables source rule autofix |
 | NoExtraNewline migration | Migrate from `Base` to `SourceRule`, add autofix | First source rule with autofix |
 
 ## Prerequisites
 
 - Phase 15 Part A complete (AutofixContext, RuleMethods, NodeLocator)
-- Phase 15 Part B: Task 15.5 complete (AutoFixer implementation)
+- Phase 15 Part B: Task 15.5 complete (Autofixer implementation)
 - herb-printer gem available (IdentityPrinter)
 
 ## Design Principles
@@ -138,9 +138,9 @@ end
 
 ---
 
-### Task S.3: Extend AutoFixer with Source Phase
+### Task S.3: Extend Autofixer with Source Phase
 
-**Location:** `herb-lint/lib/herb/lint/auto_fixer.rb`
+**Location:** `herb-lint/lib/herb/lint/autofixer.rb`
 
 - [ ] Refactor `apply_fixes` into `apply_ast_fixes` (existing logic)
 - [ ] Add `apply_source_fixes(offenses, source)` private method
@@ -340,7 +340,7 @@ def instantiate_rules #: Array[Rules::Base | Rules::VisitorRule | Rules::SourceR
 |------|------|-------------|
 | S.1 | A | Extend AutofixContext with source rule fields |
 | S.2 | A | Create SourceRule base class |
-| S.3 | A | Extend AutoFixer with source phase |
+| S.3 | A | Extend Autofixer with source phase |
 | S.4 | B | Migrate NoExtraNewline to SourceRule with autofix |
 | S.5 | B | Migrate RequireTrailingNewline from VisitorRule to SourceRule |
 | S.6 | C | Update type annotations and registry |
@@ -353,7 +353,7 @@ def instantiate_rules #: Array[Rules::Base | Rules::VisitorRule | Rules::SourceR
 After the Source Rule infrastructure is established:
 
 - **New source rules** can be added by extending `SourceRule` (e.g., file encoding checks, line length limits).
-- **LexerRule (token-based rules)** -- The TypeScript reference defines a third rule type `LexerRule` that operates on token streams (`LexResult`) from `Herb.lex()`. Its `check` receives `LexResult` (a token list) and `autofix` returns a corrected `LexResult`. However, **no built-in rules currently use LexerRule** in the TypeScript implementation — all rules are either `ParserRule` or `SourceRule`. LexerRule support can be added if a concrete use case arises, following the same pattern as SourceRule (new base class, unified AutofixContext with token-level fields, AutoFixer phase 3).
+- **LexerRule (token-based rules)** -- The TypeScript reference defines a third rule type `LexerRule` that operates on token streams (`LexResult`) from `Herb.lex()`. Its `check` receives `LexResult` (a token list) and `autofix` returns a corrected `LexResult`. However, **no built-in rules currently use LexerRule** in the TypeScript implementation — all rules are either `ParserRule` or `SourceRule`. LexerRule support can be added if a concrete use case arises, following the same pattern as SourceRule (new base class, unified AutofixContext with token-level fields, Autofixer phase 3).
 
 ## Related Documents
 

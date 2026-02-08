@@ -37,7 +37,7 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 | Part | Tasks | Description |
 |------|-------|-------------|
 | Part A | 3 | AutofixContext, RuleMethods extensions, NodeLocator |
-| Part B | 3 | AutoFixResult, AutoFixer, Runner/CLI integration |
+| Part B | 3 | AutoFixResult, Autofixer, Runner/CLI integration |
 | Part C | 3 | Autofix reporting |
 
 ### Phase 16: Rule Autofix Expansion (15 tasks)
@@ -62,7 +62,7 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
 | Part | Tasks | Description |
 |------|-------|-------------|
-| Part A | 3 | AutofixContext extension, SourceRule base class, AutoFixer source phase |
+| Part A | 3 | AutofixContext extension, SourceRule base class, Autofixer source phase |
 | Part B | 2 | NoExtraNewline and RequireTrailingNewline migration |
 | Part C | 2 | Type annotations, full verification |
 

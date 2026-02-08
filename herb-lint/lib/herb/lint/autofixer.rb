@@ -7,7 +7,7 @@ module Herb
     # Orchestrates autofix application for a single file.
     # Receives the ParseResult from the lint phase (single-parse design)
     # and applies fixes to the same AST.
-    class AutoFixer
+    class Autofixer
       attr_reader :offenses #: Array[Offense]
       attr_reader :parse_result #: Herb::ParseResult?
       attr_reader :unsafe #: bool

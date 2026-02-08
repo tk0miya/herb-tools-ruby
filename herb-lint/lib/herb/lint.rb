@@ -5,7 +5,7 @@ require "herb"
 # Require files in ASCII order
 require_relative "lint/aggregated_result"
 require_relative "lint/auto_fix_result"
-require_relative "lint/auto_fixer"
+require_relative "lint/autofixer"
 require_relative "lint/autofix_context"
 require_relative "lint/cli"
 require_relative "lint/context"

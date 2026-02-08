@@ -72,7 +72,7 @@ Detailed design for the herb-lint `--fix` / `--fix-unsafely` autofix feature.
 
 **Contents:**
 - AST node replacement strategy (public API constructors + Array mutation)
-- AutoFixer, AutoFixResult, AutofixContext, NodeLocator components
+- Autofixer, AutoFixResult, AutofixContext, NodeLocator components
 - Node replacement patterns (children array, reconstruct-to-boundary)
 - Autofix rule implementation guide with examples
 - Safe vs unsafe autocorrect model
@@ -80,7 +80,7 @@ Detailed design for the herb-lint `--fix` / `--fix-unsafely` autofix feature.
 - Whitespace preservation via `track_whitespace: true`
 - **Source Rule design**: SourceRule base class, offset-based autofix with verification, unified AutofixContext
 
-**Audience:** Developers implementing fixable rules, the AutoFixer infrastructure, or extending the autofix system (including source-level rules).
+**Audience:** Developers implementing fixable rules, the Autofixer infrastructure, or extending the autofix system (including source-level rules).
 
 ### [herb-format-design.md](./herb-format-design.md)
 Detailed design for the ERB template formatter.

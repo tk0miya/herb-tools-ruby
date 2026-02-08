@@ -12,7 +12,7 @@ This phase implements the `--fix` / `--fix-unsafely` feature for herb-lint: auto
 |---------|-------------|--------|
 | AutofixContext | Bridge between check phase and autofix phase (direct node reference) | Enables offense → fix mapping |
 | NodeLocator | Find parent nodes in AST by object identity | Required for parent lookup during AST mutation |
-| AutoFixer | Orchestrate autofix application per file (reuses lint-phase ParseResult) | Core autofix engine |
+| Autofixer | Orchestrate autofix application per file (reuses lint-phase ParseResult) | Core autofix engine |
 | CLI flags | `--fix` and `--fix-unsafely` options | User-facing autofix interface |
 | Rule autofix | `autofix` method on fixable rules | Per-rule fix implementation |
 
@@ -150,7 +150,7 @@ A node matches when `node.equal?(target_node)` (object identity). Since the auto
 
 ---
 
-## Part B: AutoFixer & Runner Integration
+## Part B: Autofixer & Runner Integration
 
 ### Task 15.4: AutoFixResult Data Class
 
@@ -189,13 +189,13 @@ end
 
 ---
 
-### Task 15.5: AutoFixer Implementation
+### Task 15.5: Autofixer Implementation
 
-**Location:** `herb-lint/lib/herb/lint/auto_fixer.rb`
+**Location:** `herb-lint/lib/herb/lint/autofixer.rb`
 
-The AutoFixer receives the `ParseResult` from the lint phase (single-parse design) rather than re-parsing the source. Offenses carry direct node references via `AutofixContext`.
+The Autofixer receives the `ParseResult` from the lint phase (single-parse design) rather than re-parsing the source. Offenses carry direct node references via `AutofixContext`.
 
-- [x] Implement `AutoFixer` class
+- [x] Implement `Autofixer` class
   - [x] `initialize(parse_result, offenses, fix_unsafely: false)`
   - [x] `apply` → `AutoFixResult`
     - [x] Filter to fixable offenses (`offense.fixable?`)
@@ -221,7 +221,7 @@ The AutoFixer receives the `ParseResult` from the lint phase (single-parse desig
 **Processing Flow:**
 
 ```
-AutoFixer#apply
+Autofixer#apply
   ├── filter fixable offenses
   ├── filter by safety level
   ├── apply_ast_fixes (operates on lint-phase parse_result)
@@ -251,7 +251,7 @@ AutoFixer#apply
 
 - [ ] Update `Runner` constructor to accept `fix` and `fix_unsafely` options
 - [ ] Update `Runner#process_file` to apply fixes after linting
-  - [ ] Create `AutoFixer` when fix enabled and fixable offenses exist
+  - [ ] Create `Autofixer` when fix enabled and fixable offenses exist
   - [ ] Write fixed content back to file
   - [ ] Report only unfixed offenses
 - [ ] Add `--fix` CLI option parsing
@@ -420,11 +420,11 @@ cd herb-lint && ./bin/rspec spec/herb/lint/node_locator_spec.rb
 cd herb-lint && ./bin/steep check
 ```
 
-### Part B: AutoFixer & Runner Integration
+### Part B: Autofixer & Runner Integration
 
 ```bash
 # Unit tests
-cd herb-lint && ./bin/rspec spec/herb/lint/auto_fixer_spec.rb
+cd herb-lint && ./bin/rspec spec/herb/lint/autofixer_spec.rb
 cd herb-lint && ./bin/rspec spec/herb/lint/auto_fix_result_spec.rb
 
 # Integration tests
@@ -478,7 +478,7 @@ cd herb-lint && ./bin/steep check
 | 15.2 | A | RuleMethods autofix extensions |
 | 15.3 | A | NodeLocator implementation |
 | 15.4 | B | AutoFixResult Data class |
-| 15.5 | B | AutoFixer implementation |
+| 15.5 | B | Autofixer implementation |
 | 15.6 | B | Runner and CLI integration |
 | 15.7 | C | LintResult and AggregatedResult extensions |
 | 15.8 | C | SimpleReporter autofix support |
