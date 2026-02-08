@@ -27,9 +27,10 @@ Phases 1-9 have been completed and their task files have been removed from this 
 | Phase 14 | [phase-14-herb-printer.md](./phase-14-herb-printer.md) | 12 | herb-printer gem (AST-to-source) | 🚧 |
 | Phase 15 | [phase-15-autofix.md](./phase-15-autofix.md) | 8 | Autofix (`--fix` / `--fix-unsafely`) | 📋 |
 | Phase 16 | [phase-16-rule-autofix-expansion.md](./phase-16-rule-autofix-expansion.md) | TBD | Rule autofix expansion | 📋 |
+| Phase 23 | [phase-23-json-reporter-completion.md](./phase-23-json-reporter-completion.md) | 6 | Complete JSON reporter summary fields | 📋 |
 | Source Rule | [source-rule.md](./source-rule.md) | 6 | SourceRule base class, autofix, NoExtraNewline migration | 📋 |
 
-**Remaining Total: ~69 tasks**
+**Remaining Total: ~75 tasks**
 
 Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
@@ -95,6 +96,17 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 ### Phase 16: Rule Autofix Expansion
 
 Expand autofix capabilities to additional rules. Details in [phase-16-rule-autofix-expansion.md](./phase-16-rule-autofix-expansion.md).
+
+### Phase 23: JSON Reporter Completion (6 tasks)
+
+| Task | Description |
+|------|-------------|
+| 23.1 | Add info/hint severity level support |
+| 23.2 | Track ignored offenses count |
+| 23.3 | Report active rule count |
+| 23.4 | Update RBS type signatures |
+| 23.5 | Integration testing |
+| 23.6 | Update documentation |
 
 ### Source Rule Introduction (6 tasks)
 
