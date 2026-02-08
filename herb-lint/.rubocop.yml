@@ -1,5 +1,8 @@
 inherit_from: ../.rubocop-common.yml
 
+plugins:
+  - rubocop-factory_bot
+
 RSpec/SpecFilePathFormat:
   Exclude:
     - "spec/herb/lint/rules/autofix_helpers_spec.rb"

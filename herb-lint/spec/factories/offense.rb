@@ -15,7 +15,7 @@ FactoryBot.define do
     end
 
     location do
-      build(:location, start_line:, start_column:, end_line:, end_column:)
+      association(:location, start_line:, start_column:, end_line:, end_column:)
     end
 
     initialize_with { new(rule_name:, message:, severity:, location:, autofix_context:) }
