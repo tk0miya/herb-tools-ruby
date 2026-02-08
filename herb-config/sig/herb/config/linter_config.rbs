@@ -10,10 +10,13 @@ module Herb
       # @rbs config_hash: Hash[String, untyped] -- the full configuration hash
       def initialize: (Hash[String, untyped] config_hash) -> void
 
-      # Returns the file patterns to include in linting
+      # Returns the file patterns to include in linting.
+      # Merges patterns from both the top-level 'files' section and 'linter' section.
       def include_patterns: () -> Array[String]
 
-      # Returns the file patterns to exclude from linting
+      # Returns the file patterns to exclude from linting.
+      # If linter.exclude is specified, it takes precedence (override behavior).
+      # Otherwise, falls back to files.exclude.
       def exclude_patterns: () -> Array[String]
 
       # Returns the rules configuration hash
@@ -44,6 +47,8 @@ module Herb
       attr_reader config: Hash[String, untyped]
 
       def linter_config: () -> Hash[String, untyped]
+
+      def files_config: () -> Hash[String, untyped]
     end
   end
 end
