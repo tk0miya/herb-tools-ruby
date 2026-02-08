@@ -35,6 +35,11 @@ module Herb
       def success? #: bool
         offense_count.zero?
       end
+
+      # Returns all offenses across all files.
+      def offenses #: Array[Offense]
+        results.flat_map(&:offenses)
+      end
     end
   end
 end

@@ -4,6 +4,7 @@ module Herb
   module Lint
     # Command-line interface for herb-lint.
     class CLI
+      # rubocop:disable Metrics/ClassLength
       EXIT_SUCCESS: Integer
 
       EXIT_LINT_ERROR: Integer
@@ -28,6 +29,10 @@ module Herb
       # @rbs message: String
       # @rbs backtrace: Array[String]?
       def handle_error: (String message, ?Array[String]? backtrace) -> Integer
+
+      # Calculate the exit code based on failLevel configuration.
+      # Returns EXIT_LINT_ERROR if any offense meets or exceeds the failLevel threshold.
+      def exit_code_for: (untyped result, config: untyped) -> Integer
 
       def execute_lint: () -> Integer
 

@@ -160,4 +160,40 @@ RSpec.describe Herb::Lint::AggregatedResult do
       end
     end
   end
+
+  describe "#offenses" do
+    subject { aggregated_result.offenses }
+
+    let(:aggregated_result) { described_class.new(results) }
+
+    context "when there are no results" do
+      let(:results) { [] }
+
+      it "returns an empty array" do
+        expect(subject).to eq([])
+      end
+    end
+
+    context "when there are multiple results with offenses" do
+      let(:error_offense) { build(:offense, severity: "error") }
+      let(:warning_offense) { build(:offense, severity: "warning") }
+      let(:info_offense) { build(:offense, severity: "info") }
+
+      let(:results) do
+        [
+          build(:lint_result, offenses: [error_offense, warning_offense]),
+          build(:lint_result, offenses: [info_offense]),
+          build(:lint_result, offenses: [])
+        ]
+      end
+
+      it "returns all offenses flattened" do
+        expect(subject).to eq([error_offense, warning_offense, info_offense])
+      end
+
+      it "returns the correct number of offenses" do
+        expect(subject.size).to eq(3)
+      end
+    end
+  end
 end

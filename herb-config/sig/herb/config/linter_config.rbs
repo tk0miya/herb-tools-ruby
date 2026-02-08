@@ -33,6 +33,12 @@ module Herb
       # A rule is considered disabled if its "enabled" option is set to false.
       def disabled_rule_names: () -> Array[String]
 
+      # Returns the fail level for the linter.
+      # This determines which severity levels should cause non-zero exit codes.
+      # Defaults to "error" if not configured.
+      # @rbs return: String
+      def fail_level: () -> String
+
       private
 
       attr_reader config: Hash[String, untyped]

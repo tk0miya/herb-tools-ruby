@@ -47,6 +47,14 @@ module Herb
         rules.select { |_name, opts| opts["enabled"] == false }.keys
       end
 
+      # Returns the fail level for the linter.
+      # This determines which severity levels should cause non-zero exit codes.
+      # Defaults to "error" if not configured.
+      # @rbs return: String
+      def fail_level #: String
+        linter_config["failLevel"] || "error"
+      end
+
       private
 
       attr_reader :config #: Hash[String, untyped]

@@ -269,4 +269,66 @@ RSpec.describe Herb::Config::LinterConfig do
       end
     end
   end
+
+  describe "#fail_level" do
+    subject { described_class.new(config).fail_level }
+
+    context "when failLevel is configured" do
+      let(:config) do
+        {
+          "linter" => {
+            "failLevel" => "warning"
+          }
+        }
+      end
+
+      it "returns the configured fail level" do
+        expect(subject).to eq("warning")
+      end
+    end
+
+    context "when failLevel is not configured" do
+      let(:config) { { "linter" => {} } }
+
+      it "defaults to 'error'" do
+        expect(subject).to eq("error")
+      end
+    end
+
+    context "when linter section is missing" do
+      let(:config) { {} }
+
+      it "defaults to 'error'" do
+        expect(subject).to eq("error")
+      end
+    end
+
+    context "when failLevel is 'info'" do
+      let(:config) do
+        {
+          "linter" => {
+            "failLevel" => "info"
+          }
+        }
+      end
+
+      it "returns 'info'" do
+        expect(subject).to eq("info")
+      end
+    end
+
+    context "when failLevel is 'hint'" do
+      let(:config) do
+        {
+          "linter" => {
+            "failLevel" => "hint"
+          }
+        }
+      end
+
+      it "returns 'hint'" do
+        expect(subject).to eq("hint")
+      end
+    end
+  end
 end

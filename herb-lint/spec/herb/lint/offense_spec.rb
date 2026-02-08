@@ -121,6 +121,72 @@ RSpec.describe Herb::Lint::Offense do
     end
   end
 
+  describe "#severity_rank" do
+    subject { offense.severity_rank }
+
+    let(:location) { build(:location) }
+
+    context "when severity is error" do
+      let(:offense) do
+        described_class.new(
+          rule_name: "test-rule",
+          message: "Test",
+          severity: "error",
+          location:
+        )
+      end
+
+      it "returns 4" do
+        expect(subject).to eq(4)
+      end
+    end
+
+    context "when severity is warning" do
+      let(:offense) do
+        described_class.new(
+          rule_name: "test-rule",
+          message: "Test",
+          severity: "warning",
+          location:
+        )
+      end
+
+      it "returns 3" do
+        expect(subject).to eq(3)
+      end
+    end
+
+    context "when severity is info" do
+      let(:offense) do
+        described_class.new(
+          rule_name: "test-rule",
+          message: "Test",
+          severity: "info",
+          location:
+        )
+      end
+
+      it "returns 2" do
+        expect(subject).to eq(2)
+      end
+    end
+
+    context "when severity is hint" do
+      let(:offense) do
+        described_class.new(
+          rule_name: "test-rule",
+          message: "Test",
+          severity: "hint",
+          location:
+        )
+      end
+
+      it "returns 1" do
+        expect(subject).to eq(1)
+      end
+    end
+  end
+
   describe "backward compatibility" do
     subject { described_class.new(rule_name:, message:, severity:, location:) }
 

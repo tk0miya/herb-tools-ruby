@@ -32,6 +32,10 @@ module Herb
 
       # Returns the starting column number of the offense.
       def column: () -> Integer
+
+      # Returns the numeric rank of this offense's severity.
+      # Higher rank means more severe.
+      def severity_rank: () -> Integer
     end
   end
 end

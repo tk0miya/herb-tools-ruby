@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "severity"
+
 module Herb
   module Lint
     # Represents a single linting violation.
@@ -39,6 +41,12 @@ module Herb
       # Returns the starting column number of the offense.
       def column #: Integer
         location.start.column
+      end
+
+      # Returns the numeric rank of this offense's severity.
+      # Higher rank means more severe.
+      def severity_rank #: Integer
+        Severity.rank(severity)
       end
     end
   end
