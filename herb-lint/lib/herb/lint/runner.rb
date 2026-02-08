@@ -70,7 +70,11 @@ module Herb
       end
 
       def build_linter #: Linter
-        Linter.new(instantiate_rules, config, rule_registry:, ignore_disable_comments:)
+        registry = RuleRegistry.new
+        registry.load_builtin_rules
+        rules = registry.all.map(&:new)
+
+        Linter.new(rules, config, rule_registry: registry, ignore_disable_comments:)
       end
 
       # @rbs result: LintResult
@@ -80,20 +84,6 @@ module Herb
           result.offenses,
           unsafe: fix_unsafely
         ).apply
-      end
-
-      def rule_registry #: RuleRegistry
-        @rule_registry ||= build_rule_registry
-      end
-
-      def build_rule_registry #: RuleRegistry
-        registry = RuleRegistry.new
-        registry.load_builtin_rules
-        registry
-      end
-
-      def instantiate_rules #: Array[Rules::Base | Rules::VisitorRule]
-        rule_registry.all.map(&:new)
       end
     end
   end
