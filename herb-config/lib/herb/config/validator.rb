@@ -44,7 +44,7 @@ module Herb
 
         # JSON Schema validation with detailed error objects
         schema_errors = JSON::Validator.fully_validate(load_schema, config, errors_as_objects: true)
-        @errors = schema_errors.map { |error| format_schema_error_object(error) }
+        @errors = schema_errors.map { format_schema_error_object(_1) }
       end
 
       # Load JSON Schema from file

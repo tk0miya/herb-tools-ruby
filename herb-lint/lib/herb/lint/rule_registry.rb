@@ -71,7 +71,7 @@ module Herb
       def initialize(builtins: true, rules: []) #: void
         @rules = {}
         load_builtin_rules if builtins
-        rules.each { |rule_class| register(rule_class) }
+        rules.each { register(_1) }
       end
 
       # Register a rule class in the registry.
@@ -130,7 +130,7 @@ module Herb
 
       # Load all built-in rules into the registry.
       def load_builtin_rules #: void
-        self.class.builtin_rules.each { |rule_class| register(rule_class) }
+        self.class.builtin_rules.each { register(_1) }
       end
 
       # @rbs file: String
