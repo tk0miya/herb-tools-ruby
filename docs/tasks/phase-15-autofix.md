@@ -300,46 +300,56 @@ Note: `result.parse_result` is `nil` when parsing fails, so autofix is skipped f
 
 ---
 
-## Part C: Rule Autofix Methods
+### Task 15.7: Fix Output Reporting
 
-### Task 15.7: Autofix Utility Helpers
+**Location:** `herb-lint/lib/herb/lint/reporter/*.rb`, `herb-lint/lib/herb/lint/runner.rb`
 
-**Location:** `herb-lint/lib/herb/lint/autofix_helpers.rb`
+When `--fix` is enabled, reporters should display information about which offenses were automatically corrected, similar to RuboCop's `[Corrected]` annotation.
 
-- [ ] Implement `AutofixHelpers` module (included in fixable rules)
-  - [ ] `parent_array_for(parent, node)` — find the mutable array containing node in parent
-    - [ ] Check `parent.children` first
-    - [ ] Check `parent.body` as fallback
-    - [ ] Return `nil` if not found
-  - [ ] `find_parent(parse_result, node)` — convenience wrapper around `NodeLocator.find_parent`
-- [ ] Add unit tests
+- [ ] Update `LintResult` to track corrected offenses
+  - [ ] Add `corrected` field (`Array[Offense]`)
+  - [ ] Update constructor to accept `corrected:` parameter
+- [ ] Update `Runner#process_file` to pass corrected offenses to `LintResult`
+  - [ ] Include `fix_result.fixed` as `corrected` offenses
+- [ ] Update `SimpleReporter` to display corrected offenses
+  - [ ] Show `[Corrected]` marker for corrected offenses
+  - [ ] Display corrected offenses before unfixed offenses in file output
+  - [ ] Update summary to include corrected count: "X problems (Y corrected, Z errors, W warnings)"
+- [ ] Update `JsonReporter` to include corrected offenses
+  - [ ] Add `"corrected": true` field to offense objects that were corrected
+  - [ ] Update summary to include `correctedCount`
+- [ ] Update `GithubReporter` behavior
+  - [ ] Skip GitHub annotations for corrected offenses (no need to annotate fixed issues)
+- [ ] Update `AggregatedResult` to track corrected offenses
+  - [ ] Add `corrected_count` method
+- [ ] Add integration tests
 
-**Interface:**
+**Output Example (SimpleReporter):**
 
-```ruby
-module Herb
-  module Lint
-    module AutofixHelpers
-      def parent_array_for(parent, node)
-        if parent.respond_to?(:children) && parent.children.include?(node)
-          parent.children
-        elsif parent.respond_to?(:body) && parent.body.is_a?(Array) && parent.body.include?(node)
-          parent.body
-        end
-      end
-    end
-  end
-end
+```
+app/views/users/show.html.erb
+  3:1  [Corrected]  erb-no-empty-tags      Remove empty ERB tag
+  5:12 error        html-img-require-alt   img element must have alt attribute
+
+1 problem (1 corrected, 1 error, 0 warnings) in 1 file
 ```
 
 **Test Cases:**
-- Returns `children` array when node is in parent's children
-- Returns `body` array when node is in parent's body
-- Returns `nil` when node is not in any parent array
+- `LintResult` correctly tracks corrected offenses
+- `SimpleReporter` displays `[Corrected]` for corrected offenses
+- `SimpleReporter` includes corrected count in summary
+- `JsonReporter` marks corrected offenses with `"corrected": true`
+- `JsonReporter` includes `correctedCount` in summary
+- `GithubReporter` does not output annotations for corrected offenses
+- `AggregatedResult#corrected_count` returns total across all files
+- Exit code remains `EXIT_SUCCESS` when all offenses are corrected
+- Exit code remains `EXIT_LINT_ERROR` when unfixed offenses remain after correction
 
 ---
 
-**Note:** Task 15.7 (Autofix utility helpers) and individual rule autofix implementations have been moved to [Phase 16: Rule Autofix Expansion](./phase-16-rule-autofix-expansion.md).
+## Part C: Rule Autofix Methods
+
+**Note:** Autofix utility helpers and individual rule autofix implementations have been moved to [Phase 16: Rule Autofix Expansion](./phase-16-rule-autofix-expansion.md).
 
 ---
 
@@ -383,10 +393,11 @@ cd herb-lint && ./bin/steep check
 | 15.4 | B | AutoFixResult Data class |
 | 15.5 | B | AutoFixer implementation |
 | 15.6 | B | Runner and CLI integration |
+| 15.7 | B | Fix output reporting |
 
-**Total: 6 tasks**
+**Total: 7 tasks**
 
-**Note:** Task 15.7 (Autofix utility helpers) and rule-specific autofix implementations have been extracted to [Phase 16: Rule Autofix Expansion](./phase-16-rule-autofix-expansion.md) for better organization and incremental implementation.
+**Note:** Autofix utility helpers and rule-specific autofix implementations have been extracted to [Phase 16: Rule Autofix Expansion](./phase-16-rule-autofix-expansion.md) for better organization and incremental implementation.
 
 ## Related Documents
 
