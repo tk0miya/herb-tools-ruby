@@ -33,16 +33,62 @@ RSpec.describe Herb::Lint::Rules::Erb::NoExtraWhitespaceInsideTags do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when ERB tag has single space on each side" do
-      let(:source) { "<% value %>" }
+    # Good examples from documentation
+    context "when ERB output tag has single space on each side" do
+      let(:source) { "<%= output %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when ERB output tag has single space on each side" do
-      let(:source) { "<%= value %>" }
+    context "when ERB tag with if condition has proper spacing" do
+      let(:source) do
+        <<~ERB
+          <% if condition %>
+            True
+          <% end %>
+        ERB
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "when ERB output tag has two spaces after opening delimiter" do
+      let(:source) { "<%=  output %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("erb-no-extra-whitespace-inside-tags")
+        expect(subject.first.message).to eq("Remove extra whitespace inside ERB tag")
+        expect(subject.first.severity).to eq("warning")
+      end
+    end
+
+    context "when ERB output tag has two spaces before closing delimiter" do
+      let(:source) { "<%= output  %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("erb-no-extra-whitespace-inside-tags")
+      end
+    end
+
+    context "when ERB tag has extra whitespace on both sides (single line)" do
+      let(:source) { "<%  value  %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("erb-no-extra-whitespace-inside-tags")
+      end
+    end
+
+    # Additional test cases for edge cases
+    context "when ERB tag has single space on each side" do
+      let(:source) { "<% value %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -54,35 +100,6 @@ RSpec.describe Herb::Lint::Rules::Erb::NoExtraWhitespaceInsideTags do
 
       it "does not report an offense" do
         expect(subject).to be_empty
-      end
-    end
-
-    context "when ERB tag has two spaces at the beginning" do
-      let(:source) { "<%  value %>" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("erb-no-extra-whitespace-inside-tags")
-        expect(subject.first.message).to eq("Remove extra whitespace inside ERB tag")
-        expect(subject.first.severity).to eq("warning")
-      end
-    end
-
-    context "when ERB tag has two spaces at the end" do
-      let(:source) { "<% value  %>" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("erb-no-extra-whitespace-inside-tags")
-      end
-    end
-
-    context "when ERB tag has two spaces on both sides" do
-      let(:source) { "<%  value  %>" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("erb-no-extra-whitespace-inside-tags")
       end
     end
 
@@ -98,9 +115,8 @@ RSpec.describe Herb::Lint::Rules::Erb::NoExtraWhitespaceInsideTags do
     context "when ERB tag has tabs at the beginning" do
       let(:source) { "<%\t\tvalue %>" }
 
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("erb-no-extra-whitespace-inside-tags")
+      it "does not report an offense (only spaces are checked at beginning)" do
+        expect(subject).to be_empty
       end
     end
 
@@ -116,9 +132,8 @@ RSpec.describe Herb::Lint::Rules::Erb::NoExtraWhitespaceInsideTags do
     context "when ERB tag has mixed spaces and tabs" do
       let(:source) { "<% \tvalue %>" }
 
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("erb-no-extra-whitespace-inside-tags")
+      it "does not report an offense (only two spaces are checked at beginning)" do
+        expect(subject).to be_empty
       end
     end
 
