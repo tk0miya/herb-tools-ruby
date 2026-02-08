@@ -21,6 +21,12 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeEqualsSpacing do
     end
   end
 
+  describe ".safe_autofixable?" do
+    it "returns true" do
+      expect(described_class.safe_autofixable?).to be(true)
+    end
+  end
+
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
@@ -118,6 +124,94 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeEqualsSpacing do
 
       it "does not report offenses" do
         expect(subject).to be_empty
+      end
+    end
+  end
+
+  describe "#autofix" do
+    subject { described_class.new.autofix(node, document) }
+
+    let(:document) { Herb.parse(source, track_whitespace: true) }
+
+    context "when fixing attribute with space before =" do
+      let(:source) { '<div class ="foo">text</div>' }
+      let(:expected) { '<div class="foo">text</div>' }
+      let(:node) do
+        div = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
+        div.open_tag.children.find { |n| n.is_a?(Herb::AST::HTMLAttributeNode) }
+      end
+
+      it "removes the space before =" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing attribute with space after =" do
+      let(:source) { '<div class= "foo">text</div>' }
+      let(:expected) { '<div class="foo">text</div>' }
+      let(:node) do
+        div = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
+        div.open_tag.children.find { |n| n.is_a?(Herb::AST::HTMLAttributeNode) }
+      end
+
+      it "removes the space after =" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing attribute with spaces on both sides of =" do
+      let(:source) { '<div class = "foo">text</div>' }
+      let(:expected) { '<div class="foo">text</div>' }
+      let(:node) do
+        div = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
+        div.open_tag.children.find { |n| n.is_a?(Herb::AST::HTMLAttributeNode) }
+      end
+
+      it "removes spaces on both sides of =" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing attribute with tabs around =" do
+      let(:source) { "<div class\t=\t\"foo\">text</div>" }
+      let(:expected) { '<div class="foo">text</div>' }
+      let(:node) do
+        div = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
+        div.open_tag.children.find { |n| n.is_a?(Herb::AST::HTMLAttributeNode) }
+      end
+
+      it "removes tabs around =" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing multiple attributes with spacing issues" do
+      let(:source) { '<div class ="foo" id = "bar">text</div>' }
+      let(:expected) { '<div class="foo" id="bar">text</div>' }
+
+      it "can fix each attribute independently" do
+        div = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
+        attrs = div.open_tag.children.select { |n| n.is_a?(Herb::AST::HTMLAttributeNode) }
+        expect(attrs.size).to eq(2)
+
+        # Fix first attribute
+        result1 = described_class.new.autofix(attrs[0], document)
+        expect(result1).to be(true)
+
+        # Fix second attribute
+        result2 = described_class.new.autofix(attrs[1], document)
+        expect(result2).to be(true)
+
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
       end
     end
   end

@@ -32,10 +32,22 @@ module Herb
             "warning"
           end
 
+          def self.safe_autofixable? #: bool
+            true
+          end
+
           # @rbs override
           def visit_html_attribute_node(node)
             check_spacing(node) if node.equals
             super
+          end
+
+          # @rbs override
+          def autofix(node, parse_result)
+            # Remove spaces from equals token value
+            equals = copy_token(node.equals, content: node.equals.value.gsub(/[\s\t]+/, ""))
+            new_node = copy_html_attribute_node(node, equals:)
+            replace_node(parse_result, node, new_node)
           end
 
           private
@@ -43,7 +55,7 @@ module Herb
           # @rbs node: Herb::AST::HTMLAttributeNode
           def check_spacing(node) #: void
             message = spacing_message(node)
-            add_offense(message:, location: node.location) if message
+            add_offense_with_autofix(message:, location: node.location, node:) if message
           end
 
           # @rbs node: Herb::AST::HTMLAttributeNode
