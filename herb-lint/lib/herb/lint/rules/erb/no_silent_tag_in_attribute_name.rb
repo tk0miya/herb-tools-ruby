@@ -7,21 +7,20 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that disallows silent ERB tags within HTML attribute names.
-        #
-        # Silent ERB tags (<%>, <%->, <%#>) do not output content and cannot
-        # form part of an attribute name. This rule does not prevent using
-        # silent tags for conditional attribute logic in the attribute list.
+        # Description:
+        #   Disallow the use of ERB silent tags (<% ... %>) inside HTML attribute names. These
+        #   tags introduce Ruby logic that does not output anything, and placing them in attribute
+        #   names leads to malformed HTML or completely unpredictable rendering.
         #
         # Good:
         #   <div data-<%= key %>-target="value"></div>
         #   <div <%= data_attributes_for(user) %>></div>
-        #   <div <% if valid? %>data-valid="true"<% end %>></div>
         #
         # Bad:
-        #   <div data-<% key %>-target="value"></div>
-        #   <div prefix-<%- variable -%>-suffix="test"></div>
-        #   <span id-<%# comment %>-name="test"></span>
+        #   <div data-<% key %>-id="value"></div>
+        #   <div data-<%# key %>-id="thing"></div>
+        #   <div data-<%- key -%>-id="thing"></div>
+        #
         class NoSilentTagInAttributeName < VisitorRule
           def self.rule_name #: String
             "erb-no-silent-tag-in-attribute-name"
