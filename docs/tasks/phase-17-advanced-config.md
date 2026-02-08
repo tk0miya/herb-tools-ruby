@@ -11,7 +11,6 @@ The configuration schema (schema.json) already accepts these features for compat
 | failLevel | CI/CD exit code control | Build pipeline integration |
 | files section | Top-level file patterns | Simplified configuration |
 | Per-rule patterns | Rule-specific include/only/exclude | Fine-grained control |
-| Per-rule enabled | Individual rule enable/disable | Flexibility |
 | Formatter patterns | Formatter-specific file patterns | Separation of concerns |
 | Rewriter hooks | Pre/post-format transformations | Extensibility |
 
@@ -157,59 +156,6 @@ end
 ---
 
 ## Part C: Per-Rule Configuration
-
-### Task 17.3: Rule-Specific enabled Flag
-
-**Location:** `herb-config/lib/herb/config/linter_config.rb`
-
-- [ ] Add `rule_enabled?(rule_name)` method
-- [ ] Update `rules` method to filter by enabled flag
-- [ ] Add unit tests
-
-**Location:** `herb-lint/lib/herb/lint/runner.rb`
-
-- [ ] Filter rules by `enabled` flag
-- [ ] Add integration tests
-
-**Configuration:**
-
-```yaml
-# .herb.yml
-linter:
-  rules:
-    html-alt-text: error
-    html-attribute-quotes:
-      enabled: false      # Disable this rule
-      severity: warning
-    html-deprecated-tags:
-      enabled: true
-      severity: error
-```
-
-**Implementation:**
-
-```ruby
-# herb-config/lib/herb/config/linter_config.rb
-# @rbs rule_name: String
-# @rbs return: bool
-def rule_enabled?(rule_name)
-  rule_config = @config.dig("linter", "rules", rule_name)
-  return true if rule_config.nil?  # Not configured = enabled by default
-  return true if rule_config.is_a?(String)  # String severity = enabled
-
-  # Hash configuration
-  rule_config.fetch("enabled", true)  # enabled defaults to true
-end
-```
-
-**Test Cases:**
-- Unconfigured rules are enabled by default
-- String severity means enabled
-- Hash with enabled: false disables rule
-- Hash without enabled key defaults to true
-- Disabled rules not run by Runner
-
----
 
 ### Task 17.4: Rule-Specific include/only/exclude Patterns
 
@@ -532,16 +478,6 @@ herb-lint --verbose .
 cd herb-config && ./bin/rspec spec/herb/config/linter_config_spec.rb
 cd herb-lint && ./bin/rspec spec/herb/lint/runner_spec.rb
 
-# Manual test - enabled flag
-echo 'linter:
-  rules:
-    html-alt-text:
-      enabled: false
-      severity: error' > .herb.yml
-
-herb-lint test.html.erb
-# Should not report alt-text violations
-
 # Manual test - only patterns
 echo 'linter:
   rules:
@@ -561,13 +497,12 @@ herb-lint lib/views/test.html.erb
 |------|-----------|-------------|--------|
 | 17.1 | herb-lint | failLevel exit code control | ✅ Completed |
 | 17.2 | herb-config | Top-level files section | ✅ Completed |
-| 17.3 | herb-config + herb-lint | Per-rule enabled flag | Ready |
 | 17.4 | herb-config + herb-lint | Per-rule include/only/exclude | Ready |
 | 17.5 | herb-lint | Rule severity config override | Ready |
 | 17.6 | herb-format | Formatter include/exclude | Blocked |
 | 17.7 | herb-format | Rewriter hooks | Blocked |
 
-**Total: 7 tasks (2 completed, 3 ready, 2 blocked)**
+**Total: 6 tasks (2 completed, 2 ready, 2 blocked)**
 
 **Note:** Task 17.5 addresses rule severity configuration from config files, which was identified during Phase 17.1 implementation and initially deferred. Tasks 17.6-17.7 are formatter-related features that are blocked pending herb-format gem implementation.
 
@@ -590,14 +525,12 @@ The JSON schema in `herb-config/lib/herb/config/schema.json` already validates t
 All new features are optional and backward compatible:
 - Missing `failLevel` defaults to "error" (current behavior)
 - Missing `files` section uses `linter`/`formatter` sections only
-- Missing `enabled` defaults to `true`
 - Missing per-rule patterns use global patterns
 
 ### Priority
 
 **High Priority:**
 - Task 17.1 (failLevel) - Important for CI/CD integration
-- Task 17.3 (enabled flag) - Common use case
 
 **Medium Priority:**
 - Task 17.2 (files section) - Nice to have, not critical
