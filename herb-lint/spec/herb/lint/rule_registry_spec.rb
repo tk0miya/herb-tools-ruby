@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Herb::Lint::RuleRegistry do
-  subject(:registry) { described_class.new }
+  subject(:registry) { described_class.new(builtins: false) }
 
   let(:test_rule_class) do
     Class.new(Herb::Lint::Rules::Base) do
@@ -12,6 +12,36 @@ RSpec.describe Herb::Lint::RuleRegistry do
   let(:another_rule_class) do
     Class.new(Herb::Lint::Rules::Base) do
       def self.rule_name = "another-rule"
+    end
+  end
+
+  describe "#initialize" do
+    context "with builtins: true" do
+      subject { described_class.new(builtins: true) }
+
+      it "automatically registers all built-in rules" do
+        expect(subject.size).to eq(described_class.builtin_rules.size)
+
+        described_class.builtin_rules.each do |rule_class|
+          expect(subject.get(rule_class.rule_name)).to eq(rule_class)
+        end
+      end
+    end
+
+    context "with builtins: false" do
+      subject { described_class.new(builtins: false) }
+
+      it "starts with an empty registry" do
+        expect(subject.size).to eq(0)
+      end
+    end
+
+    context "with default (builtins: true by default)" do
+      subject { described_class.new }
+
+      it "automatically registers all built-in rules" do
+        expect(subject.size).to eq(described_class.builtin_rules.size)
+      end
     end
   end
 
@@ -108,23 +138,6 @@ RSpec.describe Herb::Lint::RuleRegistry do
       it "returns the count of registered rules" do
         expect(registry.size).to eq(2)
       end
-    end
-  end
-
-  describe "#load_builtin_rules" do
-    it "registers all built-in rules" do
-      registry.load_builtin_rules
-
-      described_class.builtin_rules.each do |rule_class|
-        expect(registry.get(rule_class.rule_name)).to eq(rule_class)
-      end
-    end
-
-    it "allows loading built-in rules multiple times without duplicates" do
-      registry.load_builtin_rules
-      registry.load_builtin_rules
-
-      expect(registry.size).to eq(described_class.builtin_rules.size)
     end
   end
 

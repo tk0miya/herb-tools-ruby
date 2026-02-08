@@ -26,7 +26,7 @@ RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentValidRuleName do
 
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:rule_registry) do
-      registry = Herb::Lint::RuleRegistry.new
+      registry = Herb::Lint::RuleRegistry.new(builtins: false)
       [
         Herb::Lint::Rules::Erb::CommentSyntax,
         Herb::Lint::Rules::Html::AnchorRequireHref,

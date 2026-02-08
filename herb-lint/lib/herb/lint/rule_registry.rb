@@ -66,8 +66,10 @@ module Herb
       end
       # rubocop:enable Metrics/MethodLength
 
-      def initialize #: void
+      # @rbs builtins: bool -- when true, automatically load built-in rules
+      def initialize(builtins: true) #: void
         @rules = {}
+        load_builtin_rules if builtins
       end
 
       # Register a rule class in the registry.
@@ -104,11 +106,6 @@ module Herb
         @rules.size
       end
 
-      # Load all built-in rules into the registry.
-      def load_builtin_rules #: void
-        self.class.builtin_rules.each { |rule_class| register(rule_class) }
-      end
-
       # Load custom rules from a directory.
       # @rbs path: String -- path to directory containing rule files
       def load_custom_rules(path) #: void
@@ -120,6 +117,11 @@ module Herb
       end
 
       private
+
+      # Load all built-in rules into the registry.
+      def load_builtin_rules #: void
+        self.class.builtin_rules.each { |rule_class| register(rule_class) }
+      end
 
       # @rbs file: String
       def load_rule_file(file) #: void
