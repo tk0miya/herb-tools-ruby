@@ -214,7 +214,7 @@ cd herb-lint && ./bin/steep check
 | `html/attribute-double-quotes` | ✅ | Yes | 16.8 |
 | `html/attribute-equals-spacing` | ✅ | Yes | 16.9 |
 | `html/attribute-values-require-quotes` | ✅ | Yes | 16.10 |
-| `html/boolean-attributes-no-value` | 🔨 | Yes | 16.11 |
+| `html/boolean-attributes-no-value` | ✅ | Yes | 16.11 |
 | `html/no-self-closing` | 🔨 | Yes | 16.12 |
 | `html/no-space-in-tag` | 🔨 | Yes | 16.13 |
 | `html/tag-name-lowercase` | 🔨 | Yes | 16.14 |
@@ -286,13 +286,15 @@ cd herb-lint && ./bin/steep check
 
 ### Task 16.11: HtmlBooleanAttributesNoValue Autofix
 
-**Location:** `herb-lint/lib/herb/lint/rules/html_boolean_attributes_no_value.rb`
+**Status:** Complete
 
-- [ ] Add `def self.safe_autofixable? = true`
-- [ ] Change `add_offense` to `add_offense_with_autofix`
-- [ ] Implement `autofix(node, parse_result)` method
-  - [ ] Remove value from boolean attributes
-- [ ] Add autofix tests
+**Location:** `herb-lint/lib/herb/lint/rules/html/boolean_attributes_no_value.rb`
+
+- [x] Add `def self.safe_autofixable? = true`
+- [x] Change `add_offense` to `add_offense_with_autofix`
+- [x] Implement `autofix(node, parse_result)` method
+  - [x] Remove value from boolean attributes
+- [x] Add autofix tests
 
 ### Task 16.12: HtmlNoSelfClosing Autofix
 

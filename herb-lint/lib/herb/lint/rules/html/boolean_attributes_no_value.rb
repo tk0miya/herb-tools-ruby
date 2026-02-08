@@ -71,17 +71,38 @@ module Herb
             "warning"
           end
 
+          def self.safe_autofixable? #: bool
+            true
+          end
+
           # @rbs override
           def visit_html_attribute_node(node)
             name = attribute_name(node)
 
             if name && boolean_attribute?(name) && node.value
-              add_offense(
+              add_offense_with_autofix(
                 message: "Boolean attribute '#{name}' should not have a value",
-                location: node.location
+                location: node.location,
+                node:
               )
             end
             super
+          end
+
+          # @rbs override
+          def autofix(node, parse_result)
+            # Remove the value from the boolean attribute
+            # This creates a new HTMLAttributeNode with no equals sign and no value
+            # We create it directly because copy_html_attribute_node uses || which prevents setting to nil
+            new_node = Herb::AST::HTMLAttributeNode.new(
+              node.type,
+              node.location,
+              node.errors,
+              node.name,
+              nil, # equals - remove the = sign
+              nil  # value - remove the value
+            )
+            replace_node(parse_result, node, new_node)
           end
 
           private

@@ -135,4 +135,91 @@ RSpec.describe Herb::Lint::Rules::Html::BooleanAttributesNoValue do
       end
     end
   end
+
+  describe "#autofix" do
+    subject { described_class.new.autofix(node, document) }
+
+    let(:document) { Herb.parse(source, track_whitespace: true) }
+
+    context "when fixing a boolean attribute with self-referencing value" do
+      let(:source) { '<input disabled="disabled">' }
+      let(:expected) { "<input disabled>" }
+      let(:node) do
+        document.value.children.first.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+      end
+
+      it "removes the value" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing multiple boolean attributes with values" do
+      let(:source) { '<input checked="checked" disabled="disabled">' }
+      let(:expected) { "<input checked disabled>" }
+
+      it "can fix each attribute independently" do
+        attrs = document.value.children.first.open_tag.children.select do |c|
+          c.is_a?(Herb::AST::HTMLAttributeNode) && c.value
+        end
+
+        attrs.each do |attr|
+          expect(described_class.new.autofix(attr, document)).to be(true)
+        end
+
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing mixed boolean and non-boolean attributes" do
+      let(:source) { '<form novalidate="novalidate" action="/submit" method="post"></form>' }
+      let(:expected) { '<form novalidate action="/submit" method="post"></form>' }
+      let(:node) do
+        document.value.children.first.open_tag.children.find do |c|
+          next false unless c.is_a?(Herb::AST::HTMLAttributeNode)
+
+          attr_name = c.name.children.first&.content
+          attr_name&.downcase == "novalidate"
+        end
+      end
+
+      it "removes value only from the boolean attribute" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing nested elements with boolean attributes" do
+      let(:source) do
+        <<~HTML
+          <form>
+            <input disabled="disabled">
+            <button type="submit">Submit</button>
+          </form>
+        HTML
+      end
+      let(:expected) do
+        <<~HTML
+          <form>
+            <input disabled>
+            <button type="submit">Submit</button>
+          </form>
+        HTML
+      end
+      let(:node) do
+        form = document.value.children.first
+        input = form.body.find { |c| c.is_a?(Herb::AST::HTMLElementNode) && c.tag_name.value == "input" }
+        input.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+      end
+
+      it "removes value from the boolean attribute" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+  end
 end
