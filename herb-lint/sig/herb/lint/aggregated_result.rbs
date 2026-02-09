@@ -26,6 +26,15 @@ module Herb
 
       # Returns all offenses across all files.
       def offenses: () -> Array[Offense]
+
+      # Returns all unfixed offenses across all files.
+      def unfixed_offenses: () -> Array[Offense]
+
+      # Returns the total number of autofixed offenses across all files.
+      def autofixed_count: () -> Integer
+
+      # Returns the total number of autofixable offenses across all files.
+      def autofixable_count: () -> Integer
     end
   end
 end

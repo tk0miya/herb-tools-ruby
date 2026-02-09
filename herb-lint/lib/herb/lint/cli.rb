@@ -55,7 +55,7 @@ module Herb
         fail_level = options[:fail_level] || config.fail_level
         threshold = Severity.rank(fail_level)
 
-        result.offenses.any? { _1.severity_rank >= threshold } ? EXIT_LINT_ERROR : EXIT_SUCCESS
+        result.unfixed_offenses.any? { _1.severity_rank >= threshold } ? EXIT_LINT_ERROR : EXIT_SUCCESS
       end
 
       def execute_lint #: Integer

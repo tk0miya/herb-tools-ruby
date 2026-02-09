@@ -14,12 +14,15 @@ module Herb
 
       attr_reader parse_result: Herb::ParseResult?
 
+      attr_reader autofixed_offenses: Array[Offense]
+
       # @rbs file_path: String
-      # @rbs unfixed_offenses: Array[Offense]
+      # @rbs unfixed_offenses: Array[Offense] -- offenses that were not fixed
       # @rbs source: String
       # @rbs ignored_count: Integer -- number of offenses suppressed by directives
       # @rbs parse_result: Herb::ParseResult? -- parsed AST for autofix phase (nil on parse error)
-      def initialize: (file_path: String, unfixed_offenses: Array[Offense], source: String, ?ignored_count: Integer, ?parse_result: Herb::ParseResult?) -> void
+      # @rbs autofixed_offenses: Array[Offense] -- offenses that were automatically fixed
+      def initialize: (file_path: String, unfixed_offenses: Array[Offense], source: String, ?ignored_count: Integer, ?parse_result: Herb::ParseResult?, ?autofixed_offenses: Array[Offense]) -> void
 
       # Returns the count of errors.
       def error_count: () -> Integer
@@ -29,6 +32,13 @@ module Herb
 
       # Returns the total number of offenses.
       def offense_count: () -> Integer
+
+      # Returns the number of offenses that were automatically fixed.
+      def autofixed_count: () -> Integer
+
+      # Returns the number of autofixable offenses (offenses that can be fixed).
+      # Counts all offenses with autofix context, regardless of safety level.
+      def autofixable_count: () -> Integer
     end
   end
 end

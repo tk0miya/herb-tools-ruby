@@ -8,14 +8,22 @@ FactoryBot.define do
     transient do
       error_count { 0 }
       warning_count { 0 }
+      autofixed_count { 0 }
+      autofixable_count { 0 }
     end
 
     unfixed_offenses do
-      Array.new(error_count) { build(:offense, severity: "error") } +
-        Array.new(warning_count) { build(:offense, severity: "warning") }
+      error_offenses = Array.new(error_count) { build(:offense, severity: "error") }
+      warning_offenses = Array.new(warning_count) { build(:offense, severity: "warning") }
+      fixable_offenses = Array.new(autofixable_count) { build(:offense, :autofixable) }
+      error_offenses + warning_offenses + fixable_offenses
     end
 
-    initialize_with { new(file_path:, unfixed_offenses:, source:) }
+    autofixed_offenses do
+      Array.new(autofixed_count) { build(:offense) }
+    end
+
+    initialize_with { new(file_path:, unfixed_offenses:, source:, autofixed_offenses:) }
 
     trait :with_errors do
       error_count { 1 }
