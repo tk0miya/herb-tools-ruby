@@ -4,16 +4,27 @@ module Herb
   module Lint
     # Registry for managing lint rules.
     # Provides registration, lookup, and loading of built-in and custom rules.
+    # rubocop:disable Metrics/ClassLength
     class RuleRegistry
+      @base_dir: String?
+
+      @config: Herb::Config::LinterConfig?
+
       @rules: Hash[String, singleton(Rules::Base) | singleton(Rules::VisitorRule)]
+
+      attr_reader config: untyped
+
+      attr_reader base_dir: untyped
 
       # Built-in rule classes shipped with herb-lint.
       # rubocop:disable Metrics/MethodLength
       def self.builtin_rules: () -> Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
 
+      # @rbs config: Herb::Config::LinterConfig? -- configuration for rules (optional for backward compatibility)
+      # @rbs base_dir: String? -- base directory for pattern matching (optional for backward compatibility)
       # @rbs builtins: bool -- when true, automatically load built-in rules
       # @rbs rules: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
-      def initialize: (?builtins: bool, ?rules: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]) -> void
+      def initialize: (?config: Herb::Config::LinterConfig?, ?base_dir: String?, ?builtins: bool, ?rules: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]) -> void
 
       # Register a rule class in the registry.
       # @rbs rule_class: singleton(Rules::Base) | singleton(Rules::VisitorRule)
@@ -35,8 +46,10 @@ module Herb
 
       # Build instances of all registered rules.
       # Reads enabled status and severity from config for each rule.
-      # @rbs config: Herb::Config::LinterConfig -- configuration for rules
-      def build_all: (config: Herb::Config::LinterConfig) -> Array[Rules::Base | Rules::VisitorRule]
+      # If config and base_dir are set, creates pattern matchers for each rule.
+      # @rbs config: Herb::Config::LinterConfig? -- optional override for config (uses @config if not provided)
+      # @rbs base_dir: String? -- optional override for base_dir (uses @base_dir if not provided)
+      def build_all: (?config: Herb::Config::LinterConfig?, ?base_dir: String?) -> Array[Rules::Base | Rules::VisitorRule]
 
       # Number of registered rules.
       def size: () -> Integer

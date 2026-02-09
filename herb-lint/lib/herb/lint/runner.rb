@@ -8,23 +8,28 @@ module Herb
     # It handles file discovery, rule instantiation, and result aggregation.
     class Runner
       attr_reader :config #: Herb::Config::LinterConfig
+      attr_reader :base_dir #: String
       attr_reader :ignore_disable_comments #: bool
       attr_reader :autofix #: bool
       attr_reader :unsafe #: bool
       attr_reader :linter #: Linter
 
       # @rbs config: Herb::Config::LinterConfig
+      # @rbs base_dir: String -- base directory for file discovery and pattern matching
       # @rbs ignore_disable_comments: bool -- when true, report offenses even when suppressed
       # @rbs autofix: bool -- when true, apply safe automatic fixes
       # @rbs unsafe: bool -- when true, also apply unsafe fixes (requires autofix: true)
       # @rbs rule_registry: RuleRegistry? -- optional custom rule registry (for testing)
-      def initialize(config, ignore_disable_comments: false, autofix: false, unsafe: false, rule_registry: nil) #: void
+      # rubocop:disable Metrics/ParameterLists, Layout/LineLength
+      def initialize(config, base_dir: Dir.pwd, ignore_disable_comments: false, autofix: false, unsafe: false, rule_registry: nil) #: void
         @config = config
+        @base_dir = base_dir
         @ignore_disable_comments = ignore_disable_comments
         @autofix = autofix
         @unsafe = unsafe
         @linter = build_linter(rule_registry)
       end
+      # rubocop:enable Metrics/ParameterLists, Layout/LineLength
 
       # Run linting on the given paths and return aggregated results.
       # @rbs paths: Array[String] -- explicit paths (files or directories) to lint
@@ -61,7 +66,7 @@ module Herb
       # @rbs paths: Array[String]
       def discover_files(paths) #: Array[String]
         discovery = Herb::Core::FileDiscovery.new(
-          base_dir: Dir.pwd,
+          base_dir:,
           include_patterns: config.include_patterns,
           exclude_patterns: config.exclude_patterns
         )
@@ -71,7 +76,7 @@ module Herb
       # Build and configure a Linter instance.
       # @rbs registry: RuleRegistry? -- optional custom rule registry (defaults to all built-in rules)
       def build_linter(registry = nil) #: Linter
-        registry ||= RuleRegistry.new
+        registry ||= RuleRegistry.new(config:, base_dir:)
 
         Linter.new(config, rule_registry: registry, ignore_disable_comments:)
       end

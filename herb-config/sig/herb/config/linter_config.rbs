@@ -68,6 +68,12 @@ module Herb
       # @rbs return: Array[String]
       def rule_exclude_patterns: (String rule_name) -> Array[String]
 
+      # Build a pattern matcher for a specific rule.
+      # @rbs base_dir: String
+      # @rbs rule_name: String
+      # @rbs return: PatternMatcher
+      def build_pattern_matcher: (String base_dir, String rule_name) -> PatternMatcher
+
       private
 
       attr_reader config: Hash[String, untyped]

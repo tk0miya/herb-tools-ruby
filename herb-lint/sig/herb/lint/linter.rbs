@@ -37,38 +37,6 @@ module Herb
       # @rbs context: Context
       def collect_offenses: (Herb::ParseResult parse_result, Context context) -> Array[Offense]
 
-      # Determines if a rule should be applied to the given file path
-      # based on per-rule include/only/exclude patterns.
-      #
-      # Pattern Resolution Logic:
-      # 1. If rule has 'only': file must match one of 'only' patterns
-      # 2. Else: file must match (linter.include OR rule.include)
-      # 3. AND: file must NOT match (linter.exclude OR rule.exclude)
-      #
-      # @rbs rule_name: String
-      # @rbs file_path: String
-      def should_apply_rule?: (String rule_name, String file_path) -> bool
-
-      # Check if file passes 'only' pattern restrictions
-      # @rbs rule_name: String
-      # @rbs file_path: String
-      def passes_only_check?: (String rule_name, String file_path) -> bool
-
-      # Check if file passes include pattern requirements
-      # @rbs rule_name: String
-      # @rbs file_path: String
-      def passes_include_check?: (String rule_name, String file_path) -> bool
-
-      # Check if file matches any exclude patterns
-      # @rbs rule_name: String
-      # @rbs file_path: String
-      def matches_exclude_patterns?: (String rule_name, String file_path) -> bool
-
-      # Check if file matches any pattern in the list
-      # @rbs patterns: Array[String]
-      # @rbs file_path: String
-      def matches_pattern?: (Array[String] patterns, String file_path) -> bool
-
       # Build LintResult from offenses.
       # When ignore_disable_comments is false, filters offenses using directives
       # and detects unnecessary herb:disable directives.

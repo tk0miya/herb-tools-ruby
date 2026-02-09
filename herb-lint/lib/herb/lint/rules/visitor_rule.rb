@@ -43,6 +43,9 @@ module Herb
         # Check the document for rule violations by visiting AST nodes.
         # @rbs override
         def check(document, context)
+          # Skip if matcher is present and file doesn't match patterns
+          return [] if matcher && !matcher.match?(context.file_path)
+
           @offenses = []
           @context = context
           on_new_investigation

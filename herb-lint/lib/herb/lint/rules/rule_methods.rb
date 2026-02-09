@@ -10,6 +10,7 @@ module Herb
         def self.included(base) #: void
           base.extend(ClassMethods)
           base.attr_reader :severity #: String
+          base.attr_reader :matcher #: Herb::Config::PatternMatcher?
         end
 
         # Class methods for rule metadata.
@@ -38,8 +39,10 @@ module Herb
         end
 
         # @rbs severity: String?
-        def initialize(severity: nil) #: void
+        # @rbs matcher: Herb::Config::PatternMatcher?
+        def initialize(severity: nil, matcher: nil) #: void
           @severity = severity || self.class.default_severity
+          @matcher = matcher
           super() if defined?(super)
         end
 

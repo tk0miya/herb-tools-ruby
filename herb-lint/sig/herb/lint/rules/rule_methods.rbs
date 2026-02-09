@@ -25,7 +25,8 @@ module Herb
         end
 
         # @rbs severity: String?
-        def initialize: (?severity: String?) -> void
+        # @rbs matcher: Herb::Config::PatternMatcher?
+        def initialize: (?severity: String?, ?matcher: Herb::Config::PatternMatcher?) -> void
 
         @offenses: Array[Offense]
 

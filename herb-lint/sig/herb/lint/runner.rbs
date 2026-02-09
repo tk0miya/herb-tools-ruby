@@ -7,6 +7,8 @@ module Herb
     class Runner
       attr_reader config: Herb::Config::LinterConfig
 
+      attr_reader base_dir: String
+
       attr_reader ignore_disable_comments: bool
 
       attr_reader autofix: bool
@@ -16,11 +18,13 @@ module Herb
       attr_reader linter: Linter
 
       # @rbs config: Herb::Config::LinterConfig
+      # @rbs base_dir: String -- base directory for file discovery and pattern matching
       # @rbs ignore_disable_comments: bool -- when true, report offenses even when suppressed
       # @rbs autofix: bool -- when true, apply safe automatic fixes
       # @rbs unsafe: bool -- when true, also apply unsafe fixes (requires autofix: true)
       # @rbs rule_registry: RuleRegistry? -- optional custom rule registry (for testing)
-      def initialize: (Herb::Config::LinterConfig config, ?ignore_disable_comments: bool, ?autofix: bool, ?unsafe: bool, ?rule_registry: RuleRegistry?) -> void
+      # rubocop:disable Metrics/ParameterLists, Layout/LineLength
+      def initialize: (Herb::Config::LinterConfig config, ?base_dir: String, ?ignore_disable_comments: bool, ?autofix: bool, ?unsafe: bool, ?rule_registry: RuleRegistry?) -> void
 
       # Run linting on the given paths and return aggregated results.
       # @rbs paths: Array[String] -- explicit paths (files or directories) to lint

@@ -4,8 +4,13 @@ module Herb
   module Lint
     # Registry for managing lint rules.
     # Provides registration, lookup, and loading of built-in and custom rules.
+    # rubocop:disable Metrics/ClassLength
     class RuleRegistry
       # @rbs @rules: Hash[String, singleton(Rules::Base) | singleton(Rules::VisitorRule)]
+      # @rbs @config: Herb::Config::LinterConfig?
+      # @rbs @base_dir: String?
+
+      attr_reader :config, :base_dir
 
       # Built-in rule classes shipped with herb-lint.
       # rubocop:disable Metrics/MethodLength
@@ -66,9 +71,13 @@ module Herb
       end
       # rubocop:enable Metrics/MethodLength
 
+      # @rbs config: Herb::Config::LinterConfig? -- configuration for rules (optional for backward compatibility)
+      # @rbs base_dir: String? -- base directory for pattern matching (optional for backward compatibility)
       # @rbs builtins: bool -- when true, automatically load built-in rules
       # @rbs rules: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
-      def initialize(builtins: true, rules: []) #: void
+      def initialize(config: nil, base_dir: nil, builtins: true, rules: []) #: void
+        @config = config
+        @base_dir = base_dir
         @rules = {}
         load_builtin_rules if builtins
         rules.each { register(_1) }
@@ -105,12 +114,24 @@ module Herb
 
       # Build instances of all registered rules.
       # Reads enabled status and severity from config for each rule.
-      # @rbs config: Herb::Config::LinterConfig -- configuration for rules
-      def build_all(config:) #: Array[Rules::Base | Rules::VisitorRule]
-        @rules.filter_map do |rule_name, rule_class|
-          next unless config.enabled_rule?(rule_name)
+      # If config and base_dir are set, creates pattern matchers for each rule.
+      # @rbs config: Herb::Config::LinterConfig? -- optional override for config (uses @config if not provided)
+      # @rbs base_dir: String? -- optional override for base_dir (uses @base_dir if not provided)
+      def build_all(config: nil, base_dir: nil) #: Array[Rules::Base | Rules::VisitorRule]
+        effective_config = config || @config
+        effective_base_dir = base_dir || @base_dir
 
-          rule_class.new(severity: config.rule_severity(rule_name))
+        raise ArgumentError, "config is required (either in initialize or build_all)" unless effective_config
+
+        @rules.filter_map do |rule_name, rule_class|
+          next unless effective_config.enabled_rule?(rule_name)
+
+          severity = effective_config.rule_severity(rule_name)
+
+          # Create pattern matcher if base_dir is available
+          matcher = (effective_config.build_pattern_matcher(effective_base_dir, rule_name) if effective_base_dir)
+
+          rule_class.new(severity:, matcher:)
         end
       end
 
@@ -141,5 +162,6 @@ module Herb
         require file
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end
