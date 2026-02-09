@@ -85,15 +85,9 @@ module Herb
           # @rbs @inside_svg: bool
 
           # @rbs override
-          def initialize(severity: nil) #: void
+          def on_new_investigation #: void
             super
             @inside_svg = false
-          end
-
-          # @rbs override
-          def check(document, context) #: Array[Offense]
-            @inside_svg = false
-            super
           end
 
           # @rbs override
