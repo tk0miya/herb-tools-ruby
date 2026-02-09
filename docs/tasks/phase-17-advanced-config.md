@@ -497,12 +497,12 @@ herb-lint lib/views/test.html.erb
 |------|-----------|-------------|--------|
 | 17.1 | herb-lint | failLevel exit code control | ✅ Completed |
 | 17.2 | herb-config | Top-level files section | ✅ Completed |
-| 17.4 | herb-config + herb-lint | Per-rule include/only/exclude | Ready |
-| 17.5 | herb-lint | Rule severity config override | Ready |
+| 17.4 | herb-config + herb-lint | Per-rule include/only/exclude | ✅ Completed |
+| 17.5 | herb-lint | Rule severity config override | ✅ Completed |
 | 17.6 | herb-format | Formatter include/exclude | Blocked |
 | 17.7 | herb-format | Rewriter hooks | Blocked |
 
-**Total: 6 tasks (2 completed, 2 ready, 2 blocked)**
+**Total: 6 tasks (4 completed, 0 ready, 2 blocked)**
 
 **Note:** Task 17.5 addresses rule severity configuration from config files, which was identified during Phase 17.1 implementation and initially deferred. Tasks 17.6-17.7 are formatter-related features that are blocked pending herb-format gem implementation.
 
