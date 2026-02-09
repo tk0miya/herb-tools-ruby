@@ -38,7 +38,7 @@ module Herb
 
       # Returns all offenses across all files.
       def offenses #: Array[Offense]
-        results.flat_map(&:offenses)
+        results.flat_map(&:unfixed_offenses)
       end
     end
   end

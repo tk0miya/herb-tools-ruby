@@ -49,7 +49,7 @@ module Herb
           # Return LintResult with only unfixed offenses
           LintResult.new(
             file_path: result.file_path,
-            offenses: autofix_result.unfixed,
+            unfixed_offenses: autofix_result.unfixed,
             source: autofix_result.source,
             parse_result: result.parse_result
           )
@@ -81,7 +81,7 @@ module Herb
       def build_autofixer(lint_result) #: Autofixer
         Autofixer.new(
           lint_result.parse_result,
-          lint_result.offenses,
+          lint_result.unfixed_offenses,
           unsafe:
         )
       end

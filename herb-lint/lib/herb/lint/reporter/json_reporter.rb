@@ -42,7 +42,7 @@ module Herb
         # @rbs aggregated_result: AggregatedResult
         def build_offenses(aggregated_result) #: Array[Hash[String, untyped]]
           aggregated_result.results.flat_map do |result|
-            result.offenses.map { |offense| build_offense(offense, result.file_path) }
+            result.unfixed_offenses.map { |offense| build_offense(offense, result.file_path) }
           end
         end
 
@@ -68,7 +68,7 @@ module Herb
         #
         # @rbs aggregated_result: AggregatedResult
         def build_summary(aggregated_result) #: Hash[String, Integer]
-          files_with_offenses = aggregated_result.results.count { |result| result.offenses.any? }
+          files_with_offenses = aggregated_result.results.count { |result| result.unfixed_offenses.any? }
 
           {
             "filesChecked" => aggregated_result.file_count,

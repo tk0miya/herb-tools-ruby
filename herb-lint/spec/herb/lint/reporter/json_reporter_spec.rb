@@ -61,7 +61,7 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
         [
           build(:lint_result,
                 file_path: "app/views/users/index.html.erb",
-                offenses: [
+                unfixed_offenses: [
                   build(:offense,
                         severity: "error",
                         rule_name: "html-img-require-alt",
@@ -113,7 +113,7 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
         [
           build(:lint_result,
                 file_path: "app/views/users/index.html.erb",
-                offenses: [
+                unfixed_offenses: [
                   build(:offense,
                         severity: "error",
                         rule_name: "html-img-require-alt",
@@ -123,7 +123,7 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
                 ]),
           build(:lint_result,
                 file_path: "app/views/posts/show.html.erb",
-                offenses: [
+                unfixed_offenses: [
                   build(:offense,
                         severity: "warning",
                         rule_name: "html-attribute-double-quotes",
@@ -167,7 +167,7 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
     context "when offenses have distinct end positions" do
       let(:results) do
         [
-          build(:lint_result, offenses: [
+          build(:lint_result, unfixed_offenses: [
                   build(:offense,
                         rule_name: "html-img-require-alt",
                         message: "Missing alt attribute on img tag",
@@ -194,7 +194,7 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
     context "when results include clean flag" do
       let(:results) do
         [
-          build(:lint_result, offenses: [
+          build(:lint_result, unfixed_offenses: [
                   build(:offense, severity: "error", rule_name: "test-rule", message: "Test")
                 ])
         ]

@@ -22,8 +22,8 @@ RSpec.describe Herb::Lint::Linter do
         expect(subject).to be_a(Herb::Lint::LintResult)
         expect(subject.file_path).to eq(file_path)
         expect(subject.source).to eq(source)
-        expect(subject.offenses.size).to eq(1)
-        expect(subject.offenses.first.rule_name).to eq("html-img-require-alt")
+        expect(subject.unfixed_offenses.size).to eq(1)
+        expect(subject.unfixed_offenses.first.rule_name).to eq("html-img-require-alt")
       end
     end
 
@@ -34,7 +34,7 @@ RSpec.describe Herb::Lint::Linter do
       it "returns a LintResult with empty offenses" do
         expect(subject).to be_a(Herb::Lint::LintResult)
         expect(subject.file_path).to eq(file_path)
-        expect(subject.offenses).to be_empty
+        expect(subject.unfixed_offenses).to be_empty
       end
     end
 
@@ -59,9 +59,9 @@ RSpec.describe Herb::Lint::Linter do
       let(:source) { '<img src="test.png">' }
 
       it "collects offenses from all rules" do
-        expect(subject.offenses.size).to eq(2)
+        expect(subject.unfixed_offenses.size).to eq(2)
 
-        rule_names = subject.offenses.map(&:rule_name)
+        rule_names = subject.unfixed_offenses.map(&:rule_name)
         expect(rule_names).to contain_exactly("html-img-require-alt", "test-rule")
       end
     end
@@ -71,7 +71,7 @@ RSpec.describe Herb::Lint::Linter do
       let(:source) { '<img src="test.png">' }
 
       it "returns a LintResult with no offenses" do
-        expect(subject.offenses).to be_empty
+        expect(subject.unfixed_offenses).to be_empty
       end
     end
 
@@ -83,9 +83,9 @@ RSpec.describe Herb::Lint::Linter do
         expect(subject).to be_a(Herb::Lint::LintResult)
         expect(subject.file_path).to eq(file_path)
         expect(subject.source).to eq(source)
-        expect(subject.offenses).not_to be_empty
-        expect(subject.offenses.first.rule_name).to eq("parser-no-errors")
-        expect(subject.offenses.first.severity).to eq("error")
+        expect(subject.unfixed_offenses).not_to be_empty
+        expect(subject.unfixed_offenses.first.rule_name).to eq("parser-no-errors")
+        expect(subject.unfixed_offenses.first.severity).to eq("error")
       end
     end
 
@@ -94,7 +94,7 @@ RSpec.describe Herb::Lint::Linter do
       let(:source) { "<%# herb:linter ignore %>\n<img src=\"test.png\">" }
 
       it "returns an empty result" do
-        expect(subject.offenses).to be_empty
+        expect(subject.unfixed_offenses).to be_empty
         expect(subject.ignored_count).to eq(0)
       end
     end
@@ -104,7 +104,7 @@ RSpec.describe Herb::Lint::Linter do
       let(:source) { '<img src="test.png"> <%# herb:disable html-img-require-alt %>' }
 
       it "filters out the disabled offense" do
-        expect(subject.offenses).to be_empty
+        expect(subject.unfixed_offenses).to be_empty
         expect(subject.ignored_count).to eq(1)
       end
     end
@@ -114,7 +114,7 @@ RSpec.describe Herb::Lint::Linter do
       let(:source) { '<img src="test.png"> <%# herb:disable all %>' }
 
       it "filters out all offenses on that line" do
-        expect(subject.offenses).to be_empty
+        expect(subject.unfixed_offenses).to be_empty
         expect(subject.ignored_count).to eq(1)
       end
     end
@@ -124,7 +124,7 @@ RSpec.describe Herb::Lint::Linter do
       let(:source) { '<img src="test.png"> <%# herb:disable html-no-self-closing %>' }
 
       it "does not filter the offense and reports unnecessary directive" do
-        rule_names = subject.offenses.map(&:rule_name)
+        rule_names = subject.unfixed_offenses.map(&:rule_name)
         expect(rule_names).to include("html-img-require-alt", "herb-disable-comment-unnecessary")
         expect(subject.ignored_count).to eq(0)
       end
@@ -136,8 +136,8 @@ RSpec.describe Herb::Lint::Linter do
       let(:source) { '<img src="test.png"> <%# herb:disable html-img-require-alt %>' }
 
       it "reports all offenses regardless of directives" do
-        expect(subject.offenses.size).to eq(1)
-        expect(subject.offenses.first.rule_name).to eq("html-img-require-alt")
+        expect(subject.unfixed_offenses.size).to eq(1)
+        expect(subject.unfixed_offenses.first.rule_name).to eq("html-img-require-alt")
         expect(subject.ignored_count).to eq(0)
       end
     end
@@ -152,8 +152,8 @@ RSpec.describe Herb::Lint::Linter do
       end
 
       it "only reports the non-disabled offense" do
-        expect(subject.offenses.size).to eq(1)
-        expect(subject.offenses.first.line).to eq(2)
+        expect(subject.unfixed_offenses.size).to eq(1)
+        expect(subject.unfixed_offenses.first.line).to eq(2)
         expect(subject.ignored_count).to eq(1)
       end
     end
@@ -218,8 +218,8 @@ RSpec.describe Herb::Lint::Linter do
       result1 = linter.lint(file_path: "file1.html.erb", source: source1)
 
       # Should report offense for duplicate ID
-      expect(result1.offenses.size).to eq(1)
-      expect(result1.offenses.first.rule_name).to eq("html-no-duplicate-ids")
+      expect(result1.unfixed_offenses.size).to eq(1)
+      expect(result1.unfixed_offenses.first.rule_name).to eq("html-no-duplicate-ids")
 
       # Second file: unique IDs
       source2 = <<~ERB
@@ -228,7 +228,7 @@ RSpec.describe Herb::Lint::Linter do
       result2 = linter.lint(file_path: "file2.html.erb", source: source2)
 
       # Should not report offense (state from first file should not leak)
-      expect(result2.offenses).to be_empty
+      expect(result2.unfixed_offenses).to be_empty
     end
   end
 end

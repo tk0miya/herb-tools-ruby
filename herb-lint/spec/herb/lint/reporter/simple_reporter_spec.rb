@@ -13,7 +13,7 @@ RSpec.describe Herb::Lint::Reporter::SimpleReporter do
         [
           build(:lint_result,
                 file_path: "app/views/users/show.html.erb",
-                offenses: [
+                unfixed_offenses: [
                   build(:offense,
                         severity: "error",
                         rule_name: "html-img-require-alt",
@@ -29,7 +29,7 @@ RSpec.describe Herb::Lint::Reporter::SimpleReporter do
                 ]),
           build(:lint_result,
                 file_path: "app/views/posts/index.html.erb",
-                offenses: [
+                unfixed_offenses: [
                   build(:offense,
                         severity: "error",
                         rule_name: "html-img-require-alt",
@@ -88,7 +88,7 @@ RSpec.describe Herb::Lint::Reporter::SimpleReporter do
     context "when there are only errors" do
       let(:results) do
         [
-          build(:lint_result, offenses: [
+          build(:lint_result, unfixed_offenses: [
                   build(:offense,
                         severity: "error",
                         rule_name: "test-rule",
@@ -125,7 +125,7 @@ RSpec.describe Herb::Lint::Reporter::SimpleReporter do
     context "when there are only warnings" do
       let(:results) do
         [
-          build(:lint_result, offenses: [
+          build(:lint_result, unfixed_offenses: [
                   build(:offense,
                         severity: "warning",
                         rule_name: "test-rule",

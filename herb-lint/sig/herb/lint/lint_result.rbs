@@ -6,7 +6,7 @@ module Herb
     class LintResult
       attr_reader file_path: String
 
-      attr_reader offenses: Array[Offense]
+      attr_reader unfixed_offenses: Array[Offense]
 
       attr_reader source: String
 
@@ -15,11 +15,11 @@ module Herb
       attr_reader parse_result: Herb::ParseResult?
 
       # @rbs file_path: String
-      # @rbs offenses: Array[Offense]
+      # @rbs unfixed_offenses: Array[Offense]
       # @rbs source: String
       # @rbs ignored_count: Integer -- number of offenses suppressed by directives
       # @rbs parse_result: Herb::ParseResult? -- parsed AST for autofix phase (nil on parse error)
-      def initialize: (file_path: String, offenses: Array[Offense], source: String, ?ignored_count: Integer, ?parse_result: Herb::ParseResult?) -> void
+      def initialize: (file_path: String, unfixed_offenses: Array[Offense], source: String, ?ignored_count: Integer, ?parse_result: Herb::ParseResult?) -> void
 
       # Returns the count of errors.
       def error_count: () -> Integer
