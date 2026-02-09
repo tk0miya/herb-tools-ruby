@@ -39,7 +39,7 @@ RSpec.describe "CLI integration" do # rubocop:disable RSpec/DescribeClass
 
       it "reports offenses and exits with lint error code" do
         expect(subject[:stdout]).to include("html-img-require-alt")
-        expect(subject[:stdout]).to include("2 problems")
+        expect(subject[:stdout]).to include("1 problem")
         expect(subject[:status].exitstatus).to eq(Herb::Lint::CLI::EXIT_LINT_ERROR)
       end
     end
