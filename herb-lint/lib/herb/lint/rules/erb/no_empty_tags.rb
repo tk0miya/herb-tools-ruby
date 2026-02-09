@@ -55,8 +55,9 @@ module Herb
             super
           end
 
-          # @rbs override
-          def autofix(node, parse_result)
+          # @rbs node: Herb::AST::ERBContentNode
+          # @rbs parse_result: Herb::ParseResult
+          def autofix(node, parse_result) #: bool
             # Remove the empty ERB tag from the AST
             remove_node(parse_result, node)
           end

@@ -49,8 +49,9 @@ module Herb
             super
           end
 
-          # @rbs override
-          def autofix(node, parse_result)
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          # @rbs parse_result: Herb::ParseResult
+          def autofix(node, parse_result) #: bool
             value = node.value
             return false if value.nil?
 

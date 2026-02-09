@@ -28,8 +28,9 @@ module Herb
           # @rbs override
           def visit_erb_content_node: ...
 
-          # @rbs override
-          def autofix: ...
+          # @rbs node: Herb::AST::ERBContentNode
+          # @rbs parse_result: Herb::ParseResult
+          def autofix: (Herb::AST::ERBContentNode node, Herb::ParseResult parse_result) -> bool
 
           private
 

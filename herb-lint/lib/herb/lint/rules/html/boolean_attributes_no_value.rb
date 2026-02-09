@@ -89,8 +89,9 @@ module Herb
             super
           end
 
-          # @rbs override
-          def autofix(node, parse_result)
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          # @rbs parse_result: Herb::ParseResult
+          def autofix(node, parse_result) #: bool
             # Remove the value from the boolean attribute
             # This creates a new HTMLAttributeNode with no equals sign and no value
             # We create it directly because copy_html_attribute_node uses || which prevents setting to nil

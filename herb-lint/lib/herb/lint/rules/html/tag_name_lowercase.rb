@@ -43,8 +43,9 @@ module Herb
             super
           end
 
-          # @rbs override
-          def autofix(node, parse_result)
+          # @rbs node: Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def autofix(node, parse_result) #: bool
             case node
             when Herb::AST::HTMLOpenTagNode
               fix_open_tag(node, parse_result)

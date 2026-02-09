@@ -61,8 +61,9 @@ module Herb
             super
           end
 
-          # @rbs override
-          def autofix(node, parse_result)
+          # @rbs node: Herb::AST::DocumentNode | Herb::AST::HTMLTextNode
+          # @rbs parse_result: Herb::ParseResult
+          def autofix(node, parse_result) #: bool
             case node
             when Herb::AST::HTMLTextNode
               # Fix trailing newlines in the text node

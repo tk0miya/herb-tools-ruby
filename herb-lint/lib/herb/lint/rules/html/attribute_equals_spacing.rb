@@ -42,8 +42,9 @@ module Herb
             super
           end
 
-          # @rbs override
-          def autofix(node, parse_result)
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          # @rbs parse_result: Herb::ParseResult
+          def autofix(node, parse_result) #: bool
             # Remove spaces from equals token value
             equals = copy_token(node.equals, content: node.equals.value.gsub(/[\s\t]+/, ""))
             new_node = copy_html_attribute_node(node, equals:)

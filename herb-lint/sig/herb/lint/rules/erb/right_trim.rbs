@@ -31,8 +31,9 @@ module Herb
           # @rbs override
           def visit_child_nodes: ...
 
-          # @rbs override
-          def autofix: ...
+          # @rbs node: Herb::AST::Node
+          # @rbs parse_result: Herb::ParseResult
+          def autofix: (Herb::AST::Node node, Herb::ParseResult parse_result) -> bool
 
           private
 

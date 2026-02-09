@@ -57,8 +57,9 @@ module Herb
             super
           end
 
-          # @rbs override
-          def autofix(node, parse_result)
+          # @rbs node: Herb::AST::ERBContentNode
+          # @rbs parse_result: Herb::ParseResult
+          def autofix(node, parse_result) #: bool
             new_content_value = node.content.value.gsub(/\A\s{2,}/, " ").gsub(/\s{2,}\z/, " ")
             content = copy_token(node.content, content: new_content_value)
             new_node = copy_erb_content_node(node, content:)

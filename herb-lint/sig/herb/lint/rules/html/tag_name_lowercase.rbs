@@ -28,8 +28,9 @@ module Herb
           # @rbs override
           def visit_html_element_node: ...
 
-          # @rbs override
-          def autofix: ...
+          # @rbs node: Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def autofix: (Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode node, Herb::ParseResult parse_result) -> bool
 
           private
 

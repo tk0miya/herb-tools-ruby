@@ -68,8 +68,9 @@ module Herb
             super
           end
 
-          # @rbs override
-          def autofix(node, parse_result)
+          # @rbs node: Herb::AST::HTMLElementNode
+          # @rbs parse_result: Herb::ParseResult
+          def autofix(node, parse_result) #: bool
             open_tag = node.open_tag
             tag_closing = copy_token(open_tag.tag_closing, content: ">")
             children = open_tag.children.dup
