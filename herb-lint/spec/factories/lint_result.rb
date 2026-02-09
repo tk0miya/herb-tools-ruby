@@ -10,12 +10,12 @@ FactoryBot.define do
       warning_count { 0 }
     end
 
-    offenses do
+    unfixed_offenses do
       Array.new(error_count) { build(:offense, severity: "error") } +
         Array.new(warning_count) { build(:offense, severity: "warning") }
     end
 
-    initialize_with { new(file_path:, offenses:, source:) }
+    initialize_with { new(file_path:, unfixed_offenses:, source:) }
 
     trait :with_errors do
       error_count { 1 }

@@ -17,7 +17,7 @@ module Herb
         # @rbs aggregated_result: AggregatedResult
         def report(aggregated_result) #: void
           aggregated_result.results.each do |result|
-            result.offenses.each do |offense|
+            result.unfixed_offenses.each do |offense|
               io.puts format_annotation(result.file_path, offense)
             end
           end

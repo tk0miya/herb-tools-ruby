@@ -181,9 +181,9 @@ RSpec.describe Herb::Lint::AggregatedResult do
 
       let(:results) do
         [
-          build(:lint_result, offenses: [error_offense, warning_offense]),
-          build(:lint_result, offenses: [info_offense]),
-          build(:lint_result, offenses: [])
+          build(:lint_result, unfixed_offenses: [error_offense, warning_offense]),
+          build(:lint_result, unfixed_offenses: [info_offense]),
+          build(:lint_result, unfixed_offenses: [])
         ]
       end
 

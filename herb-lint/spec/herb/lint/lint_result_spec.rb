@@ -2,15 +2,15 @@
 
 RSpec.describe Herb::Lint::LintResult do
   describe "#initialize" do
-    subject { described_class.new(file_path:, offenses:, source:) }
+    subject { described_class.new(file_path:, unfixed_offenses:, source:) }
 
     let(:file_path) { "app/views/users/index.html.erb" }
-    let(:offenses) { [] }
+    let(:unfixed_offenses) { [] }
     let(:source) { "<div>Hello</div>" }
 
     it "sets all attributes correctly" do
       expect(subject.file_path).to eq("app/views/users/index.html.erb")
-      expect(subject.offenses).to eq([])
+      expect(subject.unfixed_offenses).to eq([])
       expect(subject.source).to eq("<div>Hello</div>")
     end
   end
@@ -18,10 +18,10 @@ RSpec.describe Herb::Lint::LintResult do
   describe "#error_count" do
     subject { lint_result.error_count }
 
-    let(:lint_result) { described_class.new(file_path: "test.html.erb", offenses:, source: "<div></div>") }
+    let(:lint_result) { described_class.new(file_path: "test.html.erb", unfixed_offenses:, source: "<div></div>") }
 
     context "when there are no offenses" do
-      let(:offenses) { [] }
+      let(:unfixed_offenses) { [] }
 
       it "returns 0" do
         expect(subject).to eq(0)
@@ -29,7 +29,7 @@ RSpec.describe Herb::Lint::LintResult do
     end
 
     context "when there are only errors" do
-      let(:offenses) do
+      let(:unfixed_offenses) do
         [
           build(:offense, severity: "error"),
           build(:offense, severity: "error")
@@ -42,7 +42,7 @@ RSpec.describe Herb::Lint::LintResult do
     end
 
     context "when there are mixed severities" do
-      let(:offenses) do
+      let(:unfixed_offenses) do
         [
           build(:offense, severity: "error"),
           build(:offense, severity: "warning"),
@@ -60,10 +60,10 @@ RSpec.describe Herb::Lint::LintResult do
   describe "#warning_count" do
     subject { lint_result.warning_count }
 
-    let(:lint_result) { described_class.new(file_path: "test.html.erb", offenses:, source: "<div></div>") }
+    let(:lint_result) { described_class.new(file_path: "test.html.erb", unfixed_offenses:, source: "<div></div>") }
 
     context "when there are no offenses" do
-      let(:offenses) { [] }
+      let(:unfixed_offenses) { [] }
 
       it "returns 0" do
         expect(subject).to eq(0)
@@ -71,7 +71,7 @@ RSpec.describe Herb::Lint::LintResult do
     end
 
     context "when there are only warnings" do
-      let(:offenses) do
+      let(:unfixed_offenses) do
         [
           build(:offense, severity: "warning"),
           build(:offense, severity: "warning"),
@@ -85,7 +85,7 @@ RSpec.describe Herb::Lint::LintResult do
     end
 
     context "when there are mixed severities" do
-      let(:offenses) do
+      let(:unfixed_offenses) do
         [
           build(:offense, severity: "error"),
           build(:offense, severity: "warning"),
@@ -103,10 +103,10 @@ RSpec.describe Herb::Lint::LintResult do
   describe "#offense_count" do
     subject { lint_result.offense_count }
 
-    let(:lint_result) { described_class.new(file_path: "test.html.erb", offenses:, source: "<div></div>") }
+    let(:lint_result) { described_class.new(file_path: "test.html.erb", unfixed_offenses:, source: "<div></div>") }
 
     context "when there are no offenses" do
-      let(:offenses) { [] }
+      let(:unfixed_offenses) { [] }
 
       it "returns 0" do
         expect(subject).to eq(0)
@@ -114,7 +114,7 @@ RSpec.describe Herb::Lint::LintResult do
     end
 
     context "when there are multiple offenses" do
-      let(:offenses) do
+      let(:unfixed_offenses) do
         [
           build(:offense, severity: "error"),
           build(:offense, severity: "warning"),
@@ -131,7 +131,7 @@ RSpec.describe Herb::Lint::LintResult do
   describe "#parse_result" do
     context "when parse_result is provided" do
       subject do
-        described_class.new(file_path: "test.html.erb", offenses: [], source:, parse_result:)
+        described_class.new(file_path: "test.html.erb", unfixed_offenses: [], source:, parse_result:)
       end
 
       let(:source) { "<div>Hello</div>" }
@@ -143,7 +143,7 @@ RSpec.describe Herb::Lint::LintResult do
     end
 
     context "when parse_result is not provided" do
-      subject { described_class.new(file_path: "test.html.erb", offenses: [], source: "<div></div>") }
+      subject { described_class.new(file_path: "test.html.erb", unfixed_offenses: [], source: "<div></div>") }
 
       it "defaults to nil" do
         expect(subject.parse_result).to be_nil

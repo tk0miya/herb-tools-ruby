@@ -30,7 +30,7 @@ module Herb
         # @rbs result: LintResult
         def print_offenses(result) #: void
           io.puts result.file_path
-          result.offenses.each { print_offense(_1) }
+          result.unfixed_offenses.each { print_offense(_1) }
           io.puts
         end
 

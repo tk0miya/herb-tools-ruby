@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::Reporter::GithubReporter do
         [
           build(:lint_result,
                 file_path: "app/views/users/index.html.erb",
-                offenses: [
+                unfixed_offenses: [
                   build(:offense,
                         severity: "error",
                         rule_name: "html-img-require-alt",
@@ -62,7 +62,7 @@ RSpec.describe Herb::Lint::Reporter::GithubReporter do
         [
           build(:lint_result,
                 file_path: "app/views/users/index.html.erb",
-                offenses: [
+                unfixed_offenses: [
                   build(:offense,
                         severity: "warning",
                         rule_name: "html-attribute-double-quotes",
@@ -88,7 +88,7 @@ RSpec.describe Herb::Lint::Reporter::GithubReporter do
         [
           build(:lint_result,
                 file_path: "app/views/users/index.html.erb",
-                offenses: [
+                unfixed_offenses: [
                   build(:offense,
                         severity: "info",
                         rule_name: "html-style-guide",
@@ -114,7 +114,7 @@ RSpec.describe Herb::Lint::Reporter::GithubReporter do
         [
           build(:lint_result,
                 file_path: "app/views/users/index.html.erb",
-                offenses: [
+                unfixed_offenses: [
                   build(:offense,
                         severity: "hint",
                         rule_name: "html-optimization",
@@ -140,7 +140,7 @@ RSpec.describe Herb::Lint::Reporter::GithubReporter do
         [
           build(:lint_result,
                 file_path: "app/views/users/index.html.erb",
-                offenses: [
+                unfixed_offenses: [
                   build(:offense,
                         severity: "error",
                         rule_name: "html-img-require-alt",
@@ -150,7 +150,7 @@ RSpec.describe Herb::Lint::Reporter::GithubReporter do
                 ]),
           build(:lint_result,
                 file_path: "app/views/posts/show.html.erb",
-                offenses: [
+                unfixed_offenses: [
                   build(:offense,
                         severity: "warning",
                         rule_name: "html-attribute-double-quotes",

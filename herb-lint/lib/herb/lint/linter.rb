@@ -36,7 +36,7 @@ module Herb
         return parse_error_result(file_path, source, parse_result.errors) if parse_result.failed?
 
         directives = DirectiveParser.parse(parse_result, source)
-        return LintResult.new(file_path:, offenses: [], source:, parse_result:) if directives.ignore_file?
+        return LintResult.new(file_path:, unfixed_offenses: [], source:, parse_result:) if directives.ignore_file?
 
         context = Context.new(file_path:, source:, config:, directives:, rule_registry:)
         offenses = collect_offenses(parse_result, context)
@@ -61,13 +61,13 @@ module Herb
       # @rbs directives: DirectiveParser::Directives
       # @rbs offenses: Array[Offense]
       def build_lint_result(file_path, source, parse_result, directives, offenses) #: LintResult
-        return LintResult.new(file_path:, offenses:, source:, parse_result:) if ignore_disable_comments
+        return LintResult.new(file_path:, unfixed_offenses: offenses, source:, parse_result:) if ignore_disable_comments
 
         kept_offenses, ignored_offenses = directives.filter_offenses(offenses)
         unnecessary = UnnecessaryDirectiveDetector.detect(directives, ignored_offenses)
         LintResult.new(
           file_path:,
-          offenses: kept_offenses + unnecessary,
+          unfixed_offenses: kept_offenses + unnecessary,
           source:,
           ignored_count: ignored_offenses.size,
           parse_result:
@@ -78,8 +78,8 @@ module Herb
       # @rbs source: String
       # @rbs errors: Array[untyped]
       def parse_error_result(file_path, source, errors) #: LintResult
-        offenses = errors.map { parse_error_offense(_1) }
-        LintResult.new(file_path:, offenses:, source:)
+        unfixed_offenses = errors.map { parse_error_offense(_1) }
+        LintResult.new(file_path:, unfixed_offenses:, source:)
       end
 
       # @rbs error: untyped
