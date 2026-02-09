@@ -7,20 +7,22 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that requires a trailing newline at the end of the file.
-        #
-        # Files should end with exactly one newline character.
+        # Description:
+        #   This rule enforces that all HTML+ERB template files end with exactly one trailing newline character.
+        #   This is a formatting convention widely adopted across many languages and tools.
         #
         # Good:
-        #   <div>content</div>
-        #   [newline here]
+        #   <%= render partial: "header" %>
+        #   <%= render partial: "footer" %>
+        #
+        #   (Note: File ends with a newline character)
         #
         # Bad:
-        #   <div>content</div>[no newline]
+        #   <%= render partial: "header" %>
+        #   <%= render partial: "footer" %>
         #
-        # Also Bad:
-        #   <div>content</div>
-        #   [multiple newlines]
+        #   (Note: File ends without a trailing newline)
+        #
         class RequireTrailingNewline < VisitorRule
           def self.rule_name #: String
             "erb-require-trailing-newline"
