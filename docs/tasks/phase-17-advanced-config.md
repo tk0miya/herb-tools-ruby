@@ -161,16 +161,16 @@ end
 
 **Location:** `herb-config/lib/herb/config/linter_config.rb`
 
-- [ ] Add `rule_include_patterns(rule_name)` method
-- [ ] Add `rule_only_patterns(rule_name)` method
-- [ ] Add `rule_exclude_patterns(rule_name)` method
-- [ ] Add unit tests
+- [x] Add `rule_include_patterns(rule_name)` method
+- [x] Add `rule_only_patterns(rule_name)` method
+- [x] Add `rule_exclude_patterns(rule_name)` method
+- [x] Add unit tests
 
-**Location:** `herb-lint/lib/herb/lint/runner.rb`
+**Location:** `herb-lint/lib/herb/lint/linter.rb`
 
-- [ ] Apply per-rule pattern filtering
-- [ ] Implement `only` pattern override logic
-- [ ] Add integration tests
+- [x] Apply per-rule pattern filtering
+- [x] Implement `only` pattern override logic
+- [x] Add integration tests
 
 **Configuration:**
 

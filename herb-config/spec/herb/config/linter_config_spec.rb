@@ -488,4 +488,181 @@ RSpec.describe Herb::Config::LinterConfig do
       end
     end
   end
+
+  describe "#rule_include_patterns" do
+    subject { described_class.new(config).rule_include_patterns(rule_name) }
+
+    let(:rule_name) { "html-alt-text" }
+
+    context "when rule has include patterns" do
+      let(:config) do
+        {
+          "linter" => {
+            "rules" => {
+              "html-alt-text" => {
+                "severity" => "error",
+                "include" => ["**/*.xml.erb", "custom/**/*.html"]
+              }
+            }
+          }
+        }
+      end
+
+      it "returns the rule's include patterns" do
+        expect(subject).to eq(["**/*.xml.erb", "custom/**/*.html"])
+      end
+    end
+
+    context "when rule has no include patterns" do
+      let(:config) do
+        {
+          "linter" => {
+            "rules" => {
+              "html-alt-text" => {
+                "severity" => "error"
+              }
+            }
+          }
+        }
+      end
+
+      it "returns an empty array" do
+        expect(subject).to eq([])
+      end
+    end
+
+    context "when rule is not configured" do
+      let(:config) { { "linter" => { "rules" => {} } } }
+
+      it "returns an empty array" do
+        expect(subject).to eq([])
+      end
+    end
+
+    context "when linter section is missing" do
+      let(:config) { {} }
+
+      it "returns an empty array" do
+        expect(subject).to eq([])
+      end
+    end
+  end
+
+  describe "#rule_only_patterns" do
+    subject { described_class.new(config).rule_only_patterns(rule_name) }
+
+    let(:rule_name) { "html-alt-text" }
+
+    context "when rule has only patterns" do
+      let(:config) do
+        {
+          "linter" => {
+            "rules" => {
+              "html-alt-text" => {
+                "severity" => "error",
+                "only" => ["app/views/**/*.html.erb"]
+              }
+            }
+          }
+        }
+      end
+
+      it "returns the rule's only patterns" do
+        expect(subject).to eq(["app/views/**/*.html.erb"])
+      end
+    end
+
+    context "when rule has no only patterns" do
+      let(:config) do
+        {
+          "linter" => {
+            "rules" => {
+              "html-alt-text" => {
+                "severity" => "error"
+              }
+            }
+          }
+        }
+      end
+
+      it "returns an empty array" do
+        expect(subject).to eq([])
+      end
+    end
+
+    context "when rule is not configured" do
+      let(:config) { { "linter" => { "rules" => {} } } }
+
+      it "returns an empty array" do
+        expect(subject).to eq([])
+      end
+    end
+
+    context "when linter section is missing" do
+      let(:config) { {} }
+
+      it "returns an empty array" do
+        expect(subject).to eq([])
+      end
+    end
+  end
+
+  describe "#rule_exclude_patterns" do
+    subject { described_class.new(config).rule_exclude_patterns(rule_name) }
+
+    let(:rule_name) { "html-alt-text" }
+
+    context "when rule has exclude patterns" do
+      let(:config) do
+        {
+          "linter" => {
+            "rules" => {
+              "html-alt-text" => {
+                "severity" => "error",
+                "exclude" => ["legacy/**/*", "vendor/**/*"]
+              }
+            }
+          }
+        }
+      end
+
+      it "returns the rule's exclude patterns" do
+        expect(subject).to eq(["legacy/**/*", "vendor/**/*"])
+      end
+    end
+
+    context "when rule has no exclude patterns" do
+      let(:config) do
+        {
+          "linter" => {
+            "rules" => {
+              "html-alt-text" => {
+                "severity" => "error"
+              }
+            }
+          }
+        }
+      end
+
+      it "returns an empty array" do
+        expect(subject).to eq([])
+      end
+    end
+
+    context "when rule is not configured" do
+      let(:config) { { "linter" => { "rules" => {} } } }
+
+      it "returns an empty array" do
+        expect(subject).to eq([])
+      end
+    end
+
+    context "when linter section is missing" do
+      let(:config) { {} }
+
+      it "returns an empty array" do
+        expect(subject).to eq([])
+      end
+    end
+  end
 end

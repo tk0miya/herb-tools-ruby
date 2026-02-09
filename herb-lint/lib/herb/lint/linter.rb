@@ -48,7 +48,65 @@ module Herb
       # @rbs parse_result: Herb::ParseResult
       # @rbs context: Context
       def collect_offenses(parse_result, context) #: Array[Offense]
-        rules.flat_map { |rule| rule.check(parse_result, context) }
+        rules.flat_map do |rule|
+          should_apply_rule?(rule.class.rule_name, context.file_path) ? rule.check(parse_result, context) : []
+        end
+      end
+
+      # Determines if a rule should be applied to the given file path
+      # based on per-rule include/only/exclude patterns.
+      #
+      # Pattern Resolution Logic:
+      # 1. If rule has 'only': file must match one of 'only' patterns
+      # 2. Else: file must match (linter.include OR rule.include)
+      # 3. AND: file must NOT match (linter.exclude OR rule.exclude)
+      #
+      # @rbs rule_name: String
+      # @rbs file_path: String
+      def should_apply_rule?(rule_name, file_path) #: bool
+        return false unless passes_only_check?(rule_name, file_path)
+        return false unless passes_include_check?(rule_name, file_path)
+        return false if matches_exclude_patterns?(rule_name, file_path)
+
+        true
+      end
+
+      # Check if file passes 'only' pattern restrictions
+      # @rbs rule_name: String
+      # @rbs file_path: String
+      def passes_only_check?(rule_name, file_path) #: bool
+        only_patterns = config.rule_only_patterns(rule_name)
+        return true if only_patterns.empty?
+
+        matches_pattern?(only_patterns, file_path)
+      end
+
+      # Check if file passes include pattern requirements
+      # @rbs rule_name: String
+      # @rbs file_path: String
+      def passes_include_check?(rule_name, file_path) #: bool
+        only_patterns = config.rule_only_patterns(rule_name)
+        return true if only_patterns.any? # Skip include check if 'only' is used
+
+        all_includes = config.include_patterns + config.rule_include_patterns(rule_name)
+        return true if all_includes.empty?
+
+        matches_pattern?(all_includes, file_path)
+      end
+
+      # Check if file matches any exclude patterns
+      # @rbs rule_name: String
+      # @rbs file_path: String
+      def matches_exclude_patterns?(rule_name, file_path) #: bool
+        all_excludes = config.exclude_patterns + config.rule_exclude_patterns(rule_name)
+        matches_pattern?(all_excludes, file_path)
+      end
+
+      # Check if file matches any pattern in the list
+      # @rbs patterns: Array[String]
+      # @rbs file_path: String
+      def matches_pattern?(patterns, file_path) #: bool
+        patterns.any? { |pattern| File.fnmatch?(pattern, file_path, File::FNM_PATHNAME | File::FNM_EXTGLOB) }
       end
 
       # Build LintResult from offenses.

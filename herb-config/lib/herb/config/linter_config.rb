@@ -69,6 +69,30 @@ module Herb
         linter_config["failLevel"] || "error"
       end
 
+      # Returns the include patterns for a specific rule.
+      # These patterns are additive to the global include patterns.
+      # @rbs rule_name: String -- the name of the rule
+      # @rbs return: Array[String]
+      def rule_include_patterns(rule_name) #: Array[String]
+        rules.dig(rule_name, "include") || []
+      end
+
+      # Returns the only patterns for a specific rule.
+      # When present, these patterns override all include patterns.
+      # @rbs rule_name: String -- the name of the rule
+      # @rbs return: Array[String]
+      def rule_only_patterns(rule_name) #: Array[String]
+        rules.dig(rule_name, "only") || []
+      end
+
+      # Returns the exclude patterns for a specific rule.
+      # These patterns are additive to the global exclude patterns.
+      # @rbs rule_name: String -- the name of the rule
+      # @rbs return: Array[String]
+      def rule_exclude_patterns(rule_name) #: Array[String]
+        rules.dig(rule_name, "exclude") || []
+      end
+
       private
 
       attr_reader :config #: Hash[String, untyped]
