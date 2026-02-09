@@ -276,8 +276,8 @@ RSpec.describe Herb::Lint::CLI do
         # Use a file that triggers only warning-level offenses (no errors)
         # This allows us to properly test how failLevel affects exit codes
         before do
-          # Triggers erb-prefer-image-tag-helper (warning) but not html-img-require-alt (error)
-          create_file("app/views/test.html.erb", '<img src="test.png" alt="Test">')
+          # Triggers html-attribute-double-quotes (warning) but not html-img-require-alt (error)
+          create_file("app/views/test.html.erb", "<div class=test></div>")
         end
 
         context "when --fail-level is 'error'" do

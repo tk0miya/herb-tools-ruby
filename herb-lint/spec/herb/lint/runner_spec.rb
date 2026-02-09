@@ -124,7 +124,7 @@ RSpec.describe Herb::Lint::Runner do
 
       it "processes all files and aggregates results" do
         expect(subject.file_count).to eq(3)
-        expect(subject.offense_count).to eq(6)
+        expect(subject.offense_count).to eq(3) # Only html-img-require-alt
       end
     end
 
@@ -136,7 +136,7 @@ RSpec.describe Herb::Lint::Runner do
 
       it "aggregates offense counts correctly" do
         expect(subject.file_count).to eq(2)
-        expect(subject.offense_count).to eq(3)
+        expect(subject.offense_count).to eq(1) # Only html-img-require-alt from invalid.html.erb
         expect(subject.error_count).to eq(1)
       end
 
