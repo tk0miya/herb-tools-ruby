@@ -94,8 +94,22 @@ module Herb
           # @rbs parse_result: Herb::ParseResult
           def fix_open_tag_spacing: (Herb::AST::HTMLOpenTagNode node, Herb::ParseResult parse_result) -> bool
 
+          # @rbs node: Herb::AST::HTMLOpenTagNode
+          def multiline?: (Herb::AST::HTMLOpenTagNode node) -> bool
+
           # @rbs attributes: Array[Herb::AST::HTMLAttributeNode]
-          def build_open_tag_children: (Array[Herb::AST::HTMLAttributeNode] attributes) -> Array[Herb::AST::Node]
+          def build_single_line_open_tag_children: (Array[Herb::AST::HTMLAttributeNode] attributes) -> Array[Herb::AST::Node]
+
+          # @rbs node: Herb::AST::HTMLOpenTagNode
+          # @rbs attributes: Array[Herb::AST::HTMLAttributeNode]
+          def build_multiline_open_tag_children: (Herb::AST::HTMLOpenTagNode node, Array[Herb::AST::HTMLAttributeNode] attributes) -> Array[Herb::AST::Node]
+
+          # @rbs attributes: Array[Herb::AST::HTMLAttributeNode]
+          # @rbs indent: String
+          def build_indented_attributes: (Array[Herb::AST::HTMLAttributeNode] attributes, String indent) -> Array[Herb::AST::Node]
+
+          # @rbs tag_col: Integer
+          def build_closing_whitespace: (Integer tag_col) -> Herb::AST::WhitespaceNode
 
           # @rbs node: Herb::AST::HTMLCloseTagNode
           # @rbs parse_result: Herb::ParseResult

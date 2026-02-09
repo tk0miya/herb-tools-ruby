@@ -190,15 +190,25 @@ module Herb
           # @rbs parse_result: Herb::ParseResult
           def fix_open_tag_spacing(node, parse_result) #: bool
             attributes = node.children.select { _1.is_a?(Herb::AST::HTMLAttributeNode) }
-            new_children = build_open_tag_children(attributes)
-            new_children << build_whitespace_node(" ") if self_closing?(node)
+
+            if multiline?(node)
+              new_children = build_multiline_open_tag_children(node, attributes)
+            else
+              new_children = build_single_line_open_tag_children(attributes)
+              new_children << build_whitespace_node(" ") if self_closing?(node)
+            end
 
             new_node = copy_html_open_tag_node(node, children: new_children)
             replace_node(parse_result, node, new_node)
           end
 
+          # @rbs node: Herb::AST::HTMLOpenTagNode
+          def multiline?(node) #: bool
+            node.location.start.line != node.location.end.line
+          end
+
           # @rbs attributes: Array[Herb::AST::HTMLAttributeNode]
-          def build_open_tag_children(attributes) #: Array[Herb::AST::Node]
+          def build_single_line_open_tag_children(attributes) #: Array[Herb::AST::Node]
             return [] if attributes.empty?
 
             new_children = []
@@ -211,6 +221,44 @@ module Herb
             end
 
             new_children
+          end
+
+          # @rbs node: Herb::AST::HTMLOpenTagNode
+          # @rbs attributes: Array[Herb::AST::HTMLAttributeNode]
+          def build_multiline_open_tag_children(node, attributes) #: Array[Herb::AST::Node]
+            return [] if attributes.empty?
+
+            tag_col = node.location.start.column
+            indent = " " * (tag_col + 2)
+
+            new_children = build_indented_attributes(attributes, indent)
+            new_children << build_closing_whitespace(tag_col)
+
+            new_children
+          end
+
+          # @rbs attributes: Array[Herb::AST::HTMLAttributeNode]
+          # @rbs indent: String
+          def build_indented_attributes(attributes, indent) #: Array[Herb::AST::Node]
+            new_children = []
+
+            # Add newline after tag name
+            new_children << build_whitespace_node("\n#{indent}")
+            new_children << attributes.first
+
+            # Add remaining attributes with newline and indent
+            attributes[1..].each do |attr|
+              new_children << build_whitespace_node("\n#{indent}")
+              new_children << attr
+            end
+
+            new_children
+          end
+
+          # @rbs tag_col: Integer
+          def build_closing_whitespace(tag_col) #: Herb::AST::WhitespaceNode
+            closing_indent = " " * tag_col
+            build_whitespace_node("\n#{closing_indent}")
           end
 
           # @rbs node: Herb::AST::HTMLCloseTagNode

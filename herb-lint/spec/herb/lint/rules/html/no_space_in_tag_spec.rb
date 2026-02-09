@@ -447,5 +447,49 @@ RSpec.describe Herb::Lint::Rules::Html::NoSpaceInTag do
         end
       end
     end
+
+    describe "fixing multiline tags" do
+      let(:node) { document.value.children.first.open_tag }
+
+      context "when multiline tag has correct spacing" do
+        let(:source) do
+          <<~HTML.chomp
+            <input
+              type="password"
+              class="foo"
+            >
+          HTML
+        end
+
+        it "preserves the multiline structure" do
+          expect(subject).to be(true)
+          result = Herb::Printer::IdentityPrinter.print(document)
+          expect(result).to eq(source)
+        end
+      end
+
+      context "when multiline tag has extra spacing" do
+        let(:source) do
+          <<~HTML.chomp
+            <input
+              type="password"
+                  class="foo"
+            >
+          HTML
+        end
+
+        it "fixes indentation while preserving multiline structure" do
+          expect(subject).to be(true)
+          result = Herb::Printer::IdentityPrinter.print(document)
+          expected = <<~HTML.chomp
+            <input
+              type="password"
+              class="foo"
+            >
+          HTML
+          expect(result).to eq(expected)
+        end
+      end
+    end
   end
 end
