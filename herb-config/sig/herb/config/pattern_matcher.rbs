@@ -5,13 +5,13 @@ module Herb
     # Handles file pattern matching for rules.
     # Evaluates paths relative to base_dir.
     class PatternMatcher
-      attr_reader base_dir: untyped
+      attr_reader base_dir: String
 
-      attr_reader include_patterns: untyped
+      attr_reader includes: Array[String]
 
-      attr_reader exclude_patterns: untyped
+      attr_reader excludes: Array[String]
 
-      attr_reader only_patterns: untyped
+      attr_reader only: Array[String]
 
       # @rbs base_dir: String
       # @rbs includes: Array[String]
