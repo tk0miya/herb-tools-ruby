@@ -58,15 +58,17 @@ module Herb
           # @rbs children: Array[Herb::AST::HTMLAttributeNode]
           def check_blank_lines: (Herb::AST::HTMLOpenTagNode node, Array[Herb::AST::HTMLAttributeNode] children) -> void
 
+          # @rbs node: Herb::AST::HTMLOpenTagNode
           # @rbs children: Array[Herb::AST::HTMLAttributeNode]
           # @rbs tag_closing: Herb::Token
           # @rbs tag_col: Integer
-          def check_multiline_indentation: (Array[Herb::AST::HTMLAttributeNode] children, Herb::Token tag_closing, Integer tag_col) -> void
+          def check_multiline_indentation: (Herb::AST::HTMLOpenTagNode node, Array[Herb::AST::HTMLAttributeNode] children, Herb::Token tag_closing, Integer tag_col) -> void
 
+          # @rbs node: Herb::AST::HTMLOpenTagNode
           # @rbs last_child: Herb::AST::HTMLAttributeNode?
           # @rbs tag_closing: Herb::Token
           # @rbs tag_col: Integer
-          def check_closing_indent: (Herb::AST::HTMLAttributeNode? last_child, Herb::Token tag_closing, Integer tag_col) -> void
+          def check_closing_indent: (Herb::AST::HTMLOpenTagNode node, Herb::AST::HTMLAttributeNode? last_child, Herb::Token tag_closing, Integer tag_col) -> void
 
           # @rbs node: Herb::AST::HTMLOpenTagNode
           # @rbs children: Array[Herb::AST::HTMLAttributeNode]
@@ -83,9 +85,10 @@ module Herb
           # @rbs right: Herb::Token | Herb::AST::HTMLAttributeNode
           def gap_loc: (Herb::Token | Herb::AST::HTMLAttributeNode left, Herb::Token | Herb::AST::HTMLAttributeNode right) -> Herb::Location
 
+          # @rbs node: Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode
           # @rbs message: String
           # @rbs location: Herb::Location
-          def report: (String message, Herb::Location location) -> void
+          def report: (Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode node, String message, Herb::Location location) -> void
 
           # @rbs node: Herb::AST::HTMLOpenTagNode
           # @rbs parse_result: Herb::ParseResult
@@ -97,9 +100,6 @@ module Herb
           # @rbs node: Herb::AST::HTMLCloseTagNode
           # @rbs parse_result: Herb::ParseResult
           def fix_close_tag_spacing: (Herb::AST::HTMLCloseTagNode node, Herb::ParseResult parse_result) -> bool
-
-          # @rbs content: String
-          def build_whitespace_node: (String content) -> Herb::AST::WhitespaceNode
         end
       end
     end

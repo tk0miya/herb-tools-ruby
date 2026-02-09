@@ -56,6 +56,12 @@ module Herb
       # @rbs position: Herb::Position -- the position for the new token
       def build_quote_token: (Herb::Position position) -> Herb::Token
 
+      # Build a whitespace node with the given content.
+      # This is useful for inserting whitespace between nodes during autofix operations.
+      #
+      # @rbs content: String -- the whitespace content (e.g., " ", "  ", "\n")
+      def build_whitespace_node: (String content) -> Herb::AST::WhitespaceNode
+
       # Create a new token by copying an existing token with optional attribute overrides.
       # This is useful for creating modified tokens during autofix operations.
       #
