@@ -40,6 +40,21 @@ module Herb
       def offenses #: Array[Offense]
         results.flat_map(&:unfixed_offenses)
       end
+
+      # Returns all unfixed offenses across all files.
+      def unfixed_offenses #: Array[Offense]
+        results.flat_map(&:unfixed_offenses)
+      end
+
+      # Returns the total number of autofixed offenses across all files.
+      def autofixed_count #: Integer
+        results.sum(&:autofixed_count)
+      end
+
+      # Returns the total number of autofixable offenses across all files.
+      def autofixable_count #: Integer
+        results.sum(&:autofixable_count)
+      end
     end
   end
 end

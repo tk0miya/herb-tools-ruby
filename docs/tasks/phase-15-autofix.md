@@ -308,17 +308,17 @@ Note: `result.parse_result` is `nil` when parsing fails, so autofix is skipped f
 
 **Goal:** Extend result classes to track autofixed offenses and provide count methods for reporting.
 
-- [ ] Update `LintResult` to track autofixed offenses
-  - [ ] Add `autofixed_offenses` attribute (default: `[]`)
-  - [ ] Add `autofixed_count` method
-  - [ ] Add `autofixable_count` method (counts offenses with `fixable? == true`)
-- [ ] Update `AggregatedResult` to aggregate autofix statistics
-  - [ ] Add `autofixed_count` method (sum of all autofixed offenses)
-  - [ ] Add `autofixable_count` method (sum of all autofixable offenses)
-- [ ] Update `Runner#process_file` to preserve autofixed offenses
-  - [ ] When autofix is applied, store `fix_result.fixed` in `LintResult#autofixed_offenses`
-  - [ ] Merge `autofixed_offenses` with `unfixed` for reporting (show all offenses)
-- [ ] Add unit tests
+- [x] Update `LintResult` to track autofixed offenses
+  - [x] Add `autofixed_offenses` attribute (default: `[]`)
+  - [x] Add `autofixed_count` method
+  - [x] Add `autofixable_count` method (counts offenses with `fixable? == true`)
+- [x] Update `AggregatedResult` to aggregate autofix statistics
+  - [x] Add `autofixed_count` method (sum of all autofixed offenses)
+  - [x] Add `autofixable_count` method (sum of all autofixable offenses)
+- [x] Update `Runner#process_file` to preserve autofixed offenses
+  - [x] When autofix is applied, store `fix_result.fixed` in `LintResult#autofixed_offenses`
+  - [x] Merge `autofixed_offenses` with `unfixed` for reporting (show all offenses)
+- [x] Add unit tests
 
 **Test Cases:**
 - `LintResult` with autofixed offenses exposes them via `autofixed_offenses`

@@ -46,12 +46,13 @@ module Herb
         if autofix && autofixer.autofixable?(unsafe:)
           autofix_result = autofixer.apply
           File.write(file_path, autofix_result.source) if autofix_result.source != source
-          # Return LintResult with only unfixed offenses
+          # Return LintResult with unfixed offenses and track autofixed offenses
           LintResult.new(
             file_path: result.file_path,
             unfixed_offenses: autofix_result.unfixed,
             source: autofix_result.source,
-            parse_result: result.parse_result
+            parse_result: result.parse_result,
+            autofixed_offenses: autofix_result.fixed
           )
         else
           result

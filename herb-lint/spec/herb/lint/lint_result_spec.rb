@@ -150,4 +150,126 @@ RSpec.describe Herb::Lint::LintResult do
       end
     end
   end
+
+  describe "#autofixed_offenses" do
+    context "when autofixed_offenses is provided" do
+      subject do
+        described_class.new(
+          file_path: "test.html.erb",
+          unfixed_offenses: [],
+          source: "<div></div>",
+          autofixed_offenses:
+        )
+      end
+
+      let(:autofixed_offenses) do
+        [
+          build(:offense, severity: "error"),
+          build(:offense, severity: "warning")
+        ]
+      end
+
+      it "returns the autofixed offenses" do
+        expect(subject.autofixed_offenses).to eq(autofixed_offenses)
+      end
+    end
+
+    context "when autofixed_offenses is not provided" do
+      subject { described_class.new(file_path: "test.html.erb", unfixed_offenses: [], source: "<div></div>") }
+
+      it "defaults to empty array" do
+        expect(subject.autofixed_offenses).to eq([])
+      end
+    end
+  end
+
+  describe "#autofixed_count" do
+    subject { lint_result.autofixed_count }
+
+    let(:lint_result) do
+      described_class.new(
+        file_path: "test.html.erb",
+        unfixed_offenses: [],
+        source: "<div></div>",
+        autofixed_offenses:
+      )
+    end
+
+    context "when there are no autofixed offenses" do
+      let(:autofixed_offenses) { [] }
+
+      it "returns 0" do
+        expect(subject).to eq(0)
+      end
+    end
+
+    context "when there are autofixed offenses" do
+      let(:autofixed_offenses) do
+        [
+          build(:offense, severity: "error"),
+          build(:offense, severity: "warning"),
+          build(:offense, severity: "error")
+        ]
+      end
+
+      it "returns the count of autofixed offenses" do
+        expect(subject).to eq(3)
+      end
+    end
+  end
+
+  describe "#autofixable_count" do
+    subject { lint_result.autofixable_count }
+
+    let(:lint_result) { described_class.new(file_path: "test.html.erb", unfixed_offenses:, source: "<div></div>") }
+
+    context "when there are no offenses" do
+      let(:unfixed_offenses) { [] }
+
+      it "returns 0" do
+        expect(subject).to eq(0)
+      end
+    end
+
+    context "when there are no fixable offenses" do
+      let(:unfixed_offenses) do
+        [
+          build(:offense),
+          build(:offense)
+        ]
+      end
+
+      it "returns 0" do
+        expect(subject).to eq(0)
+      end
+    end
+
+    context "when there are fixable offenses" do
+      let(:unfixed_offenses) do
+        [
+          build(:offense, :autofixable),
+          build(:offense),
+          build(:offense, :autofixable)
+        ]
+      end
+
+      it "returns the count of fixable offenses" do
+        expect(subject).to eq(2)
+      end
+    end
+
+    context "when all offenses are fixable" do
+      let(:unfixed_offenses) do
+        [
+          build(:offense, :autofixable),
+          build(:offense, :autofixable),
+          build(:offense, :autofixable)
+        ]
+      end
+
+      it "returns the total count" do
+        expect(subject).to eq(3)
+      end
+    end
+  end
 end

@@ -200,6 +200,10 @@ RSpec.describe Herb::Lint::Runner do
           expect(File.read("app/views/clean.html.erb")).to eq("<p>content</p>\n")
           # Only unfixed unsafe offense should remain
           expect(result.offense_count).to eq(1)
+          # One offense was autofixed (the safe one)
+          expect(result.autofixed_count).to eq(1)
+          # One offense is still autofixable (the unsafe one)
+          expect(result.autofixable_count).to eq(1)
         end
       end
 
