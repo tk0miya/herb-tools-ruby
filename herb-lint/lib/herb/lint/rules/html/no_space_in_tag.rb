@@ -24,21 +24,17 @@ module Herb
 
           # @rbs override
           def visit_html_open_tag_node(node)
-            @current_tag = node
             if node.location.start.line == node.location.end.line
               check_single_line_open_tag(node)
             else
               check_multiline_open_tag(node)
             end
-            @current_tag = nil
             super
           end
 
           # @rbs override
           def visit_html_close_tag_node(node)
-            @current_tag = node
             check_close_tag(node)
-            @current_tag = nil
             super
           end
 
@@ -76,11 +72,11 @@ module Herb
             return if children.empty?
 
             gap = gap_size(node.tag_name, children.first)
-            report(EXTRA_SPACE_SINGLE_SPACE, gap_loc(node.tag_name, children.first)) if gap > 1
+            report(node, EXTRA_SPACE_SINGLE_SPACE, gap_loc(node.tag_name, children.first)) if gap > 1
 
             children.each_cons(2) do |left, right|
               gap = gap_size(left, right)
-              report(EXTRA_SPACE_SINGLE_SPACE, gap_loc(left, right)) if gap > 1
+              report(node, EXTRA_SPACE_SINGLE_SPACE, gap_loc(left, right)) if gap > 1
             end
           end
 
@@ -91,12 +87,12 @@ module Herb
 
             if self_closing?(node)
               if gap.zero?
-                report(NO_SPACE_SINGLE_SPACE, node.tag_closing.location)
+                report(node, NO_SPACE_SINGLE_SPACE, node.tag_closing.location)
               elsif gap > 1
-                report(EXTRA_SPACE_NO_SPACE, gap_loc(last, node.tag_closing))
+                report(node, EXTRA_SPACE_NO_SPACE, gap_loc(last, node.tag_closing))
               end
             elsif gap.positive?
-              report(EXTRA_SPACE_NO_SPACE, gap_loc(last, node.tag_closing))
+              report(node, EXTRA_SPACE_NO_SPACE, gap_loc(last, node.tag_closing))
             end
           end
 
@@ -106,7 +102,7 @@ module Herb
             tag_col = node.location.start.column
 
             check_blank_lines(node, children)
-            check_multiline_indentation(children, node.tag_closing, tag_col)
+            check_multiline_indentation(node, children, node.tag_closing, tag_col)
             check_multiline_trailing(node, children)
           end
 
@@ -118,28 +114,30 @@ module Herb
             elements.each_cons(2) do |left, right|
               next unless right.location.start.line - left.location.end.line > 1
 
-              report(EXTRA_SPACE_SINGLE_BREAK, gap_loc(left, right))
+              report(node, EXTRA_SPACE_SINGLE_BREAK, gap_loc(left, right))
             end
           end
 
+          # @rbs node: Herb::AST::HTMLOpenTagNode
           # @rbs children: Array[Herb::AST::HTMLAttributeNode]
           # @rbs tag_closing: Herb::Token
           # @rbs tag_col: Integer
-          def check_multiline_indentation(children, tag_closing, tag_col) #: void
+          def check_multiline_indentation(node, children, tag_closing, tag_col) #: void
             children.each do |child|
-              report(EXTRA_SPACE_NO_SPACE, child.location) unless child.location.start.column == tag_col + 2
+              report(node, EXTRA_SPACE_NO_SPACE, child.location) unless child.location.start.column == tag_col + 2
             end
-            check_closing_indent(children.last, tag_closing, tag_col)
+            check_closing_indent(node, children.last, tag_closing, tag_col)
           end
 
+          # @rbs node: Herb::AST::HTMLOpenTagNode
           # @rbs last_child: Herb::AST::HTMLAttributeNode?
           # @rbs tag_closing: Herb::Token
           # @rbs tag_col: Integer
-          def check_closing_indent(last_child, tag_closing, tag_col) #: void
+          def check_closing_indent(node, last_child, tag_closing, tag_col) #: void
             return if last_child && tag_closing.location.start.line == last_child.location.end.line
             return if tag_closing.location.start.column == tag_col
 
-            report(EXTRA_SPACE_NO_SPACE, tag_closing.location)
+            report(node, EXTRA_SPACE_NO_SPACE, tag_closing.location)
           end
 
           # @rbs node: Herb::AST::HTMLOpenTagNode
@@ -152,7 +150,7 @@ module Herb
             gap = gap_size(last, node.tag_closing)
             return unless gap.positive?
 
-            report(EXTRA_SPACE_NO_SPACE, gap_loc(last, node.tag_closing))
+            report(node, EXTRA_SPACE_NO_SPACE, gap_loc(last, node.tag_closing))
           end
 
           # @rbs node: Herb::AST::HTMLCloseTagNode
@@ -162,8 +160,8 @@ module Herb
             before = gap_size(node.tag_opening, node.tag_name)
             after = gap_size(node.tag_name, node.tag_closing)
 
-            report(EXTRA_SPACE_NO_SPACE, gap_loc(node.tag_opening, node.tag_name)) if before.positive?
-            report(EXTRA_SPACE_NO_SPACE, gap_loc(node.tag_name, node.tag_closing)) if after.positive?
+            report(node, EXTRA_SPACE_NO_SPACE, gap_loc(node.tag_opening, node.tag_name)) if before.positive?
+            report(node, EXTRA_SPACE_NO_SPACE, gap_loc(node.tag_name, node.tag_closing)) if after.positive?
           end
 
           # @rbs left: Herb::Token | Herb::AST::HTMLAttributeNode
@@ -181,10 +179,11 @@ module Herb
             )
           end
 
+          # @rbs node: Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode
           # @rbs message: String
           # @rbs location: Herb::Location
-          def report(message, location) #: void
-            add_offense_with_autofix(message:, location:, node: @current_tag)
+          def report(node, message, location) #: void
+            add_offense_with_autofix(message:, location:, node:)
           end
 
           # @rbs node: Herb::AST::HTMLOpenTagNode
@@ -220,22 +219,6 @@ module Herb
             # Close tags should have no whitespace in children
             new_node = copy_html_close_tag_node(node, children: [])
             replace_node(parse_result, node, new_node)
-          end
-
-          # @rbs content: String
-          def build_whitespace_node(content) #: Herb::AST::WhitespaceNode
-            token = Herb::Token.new(
-              content,
-              Herb::Range.new(0, content.length),
-              Herb::Location.new(Herb::Position.new(0, 0), Herb::Position.new(0, content.length)),
-              "TOKEN_WHITESPACE"
-            )
-            Herb::AST::WhitespaceNode.new(
-              "WHITESPACE",
-              token.location,
-              [],
-              token
-            )
           end
         end
       end
