@@ -10,7 +10,7 @@ module Herb
       # Built-in rule classes shipped with herb-lint.
       # rubocop:disable Metrics/MethodLength
       def self.builtin_rules #: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
-        @builtin_rules ||= [
+        [
           Rules::Erb::CommentSyntax,
           Rules::Erb::NoCaseNodeChildren,
           Rules::Erb::NoEmptyTags,
@@ -87,17 +87,6 @@ module Herb
         @rules[name]
       end
 
-      # Check if a rule with the given name is registered.
-      # @rbs name: String
-      def registered?(name) #: bool
-        @rules.key?(name)
-      end
-
-      # Get all registered rule classes.
-      def all #: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
-        @rules.values
-      end
-
       # Get all registered rule names.
       def rule_names #: Array[String]
         @rules.keys.sort
@@ -109,11 +98,6 @@ module Herb
         @rules.except(*except)
               .values
               .map(&:new)
-      end
-
-      # Number of registered rules.
-      def size #: Integer
-        @rules.size
       end
 
       # Load custom rules from a directory.

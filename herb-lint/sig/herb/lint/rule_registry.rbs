@@ -23,22 +23,12 @@ module Herb
       # @rbs name: String
       def get: (String name) -> (singleton(Rules::Base) | singleton(Rules::VisitorRule))?
 
-      # Check if a rule with the given name is registered.
-      # @rbs name: String
-      def registered?: (String name) -> bool
-
-      # Get all registered rule classes.
-      def all: () -> Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
-
       # Get all registered rule names.
       def rule_names: () -> Array[String]
 
       # Build instances of all registered rules, optionally excluding some by name.
       # @rbs except: Array[String] -- rule names to exclude from instantiation
       def build_all: (?except: Array[String]) -> Array[Rules::Base | Rules::VisitorRule]
-
-      # Number of registered rules.
-      def size: () -> Integer
 
       # Load custom rules from a directory.
       # @rbs path: String -- path to directory containing rule files

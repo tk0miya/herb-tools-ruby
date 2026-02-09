@@ -20,7 +20,7 @@ RSpec.describe Herb::Lint::RuleRegistry do
       subject { described_class.new }
 
       it "automatically registers all built-in rules" do
-        expect(subject.size).to eq(described_class.builtin_rules.size)
+        expect(subject.rule_names.size).to eq(described_class.builtin_rules.size)
 
         described_class.builtin_rules.each do |rule_class|
           expect(subject.get(rule_class.rule_name)).to eq(rule_class)
@@ -32,14 +32,14 @@ RSpec.describe Herb::Lint::RuleRegistry do
       subject { described_class.new(builtins: false) }
 
       it "starts with an empty registry" do
-        expect(subject.size).to eq(0)
+        expect(subject.rule_names.size).to eq(0)
       end
     end
 
     context "with rules argument" do
       it "registers all provided rules" do
         registry = described_class.new(builtins: false, rules: [test_rule_class, another_rule_class])
-        expect(registry.size).to eq(2)
+        expect(registry.rule_names.size).to eq(2)
         expect(registry.get("test-rule")).to eq(test_rule_class)
         expect(registry.get("another-rule")).to eq(another_rule_class)
       end
@@ -48,7 +48,7 @@ RSpec.describe Herb::Lint::RuleRegistry do
     context "with both builtins and rules" do
       it "registers both built-in and provided rules" do
         registry = described_class.new(builtins: true, rules: [test_rule_class])
-        expect(registry.size).to eq(described_class.builtin_rules.size + 1)
+        expect(registry.rule_names.size).to eq(described_class.builtin_rules.size + 1)
         expect(registry.get("test-rule")).to eq(test_rule_class)
       end
     end
@@ -77,41 +77,6 @@ RSpec.describe Herb::Lint::RuleRegistry do
     end
   end
 
-  describe "#registered?" do
-    context "when the rule is registered" do
-      before { registry.register(test_rule_class) }
-
-      it "returns true" do
-        expect(registry.registered?("test-rule")).to be true
-      end
-    end
-
-    context "when the rule is not registered" do
-      it "returns false" do
-        expect(registry.registered?("nonexistent-rule")).to be false
-      end
-    end
-  end
-
-  describe "#all" do
-    context "when no rules are registered" do
-      it "returns an empty array" do
-        expect(registry.all).to eq([])
-      end
-    end
-
-    context "when rules are registered" do
-      before do
-        registry.register(test_rule_class)
-        registry.register(another_rule_class)
-      end
-
-      it "returns all registered rule classes" do
-        expect(registry.all).to contain_exactly(test_rule_class, another_rule_class)
-      end
-    end
-  end
-
   describe "#rule_names" do
     context "when no rules are registered" do
       it "returns an empty array" do
@@ -127,25 +92,6 @@ RSpec.describe Herb::Lint::RuleRegistry do
 
       it "returns sorted rule names" do
         expect(registry.rule_names).to eq(%w[another-rule test-rule])
-      end
-    end
-  end
-
-  describe "#size" do
-    context "when no rules are registered" do
-      it "returns 0" do
-        expect(registry.size).to eq(0)
-      end
-    end
-
-    context "when rules are registered" do
-      before do
-        registry.register(test_rule_class)
-        registry.register(another_rule_class)
-      end
-
-      it "returns the count of registered rules" do
-        expect(registry.size).to eq(2)
       end
     end
   end
@@ -222,7 +168,7 @@ RSpec.describe Herb::Lint::RuleRegistry do
     context "when directory is empty" do
       it "does not load any rules" do
         registry.load_custom_rules(custom_rules_dir)
-        expect(registry.size).to eq(0)
+        expect(registry.rule_names.size).to eq(0)
       end
     end
 
