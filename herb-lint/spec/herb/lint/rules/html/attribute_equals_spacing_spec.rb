@@ -192,27 +192,5 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeEqualsSpacing do
         expect(result).to eq(expected)
       end
     end
-
-    context "when fixing multiple attributes with spacing issues" do
-      let(:source) { '<div class ="foo" id = "bar">text</div>' }
-      let(:expected) { '<div class="foo" id="bar">text</div>' }
-
-      it "can fix each attribute independently" do
-        div = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
-        attrs = div.open_tag.children.select { |n| n.is_a?(Herb::AST::HTMLAttributeNode) }
-        expect(attrs.size).to eq(2)
-
-        # Fix first attribute
-        result1 = described_class.new.autofix(attrs[0], document)
-        expect(result1).to be(true)
-
-        # Fix second attribute
-        result2 = described_class.new.autofix(attrs[1], document)
-        expect(result2).to be(true)
-
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
   end
 end

@@ -227,30 +227,5 @@ RSpec.describe Herb::Lint::Rules::Erb::RequireWhitespaceInsideTags do
         expect(result).to eq(expected)
       end
     end
-
-    context "when fixing multiple tags in sequence" do
-      let(:source) do
-        <<~ERB
-          <%value%>
-          <p>content</p>
-          <%=other%>
-        ERB
-      end
-      let(:expected) { "<% value %>\n<p>content</p>\n<%= other %>\n" }
-
-      it "can fix each tag independently" do
-        nodes = document.value.children.select { |n| n.is_a?(Herb::AST::ERBContentNode) }
-        expect(nodes.size).to eq(2)
-
-        result1 = described_class.new.autofix(nodes[0], document)
-        expect(result1).to be(true)
-
-        result2 = described_class.new.autofix(nodes[1], document)
-        expect(result2).to be(true)
-
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
   end
 end

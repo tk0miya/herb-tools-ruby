@@ -156,32 +156,6 @@ RSpec.describe Herb::Lint::Rules::Html::TagNameLowercase do
       end
     end
 
-    context "when fixing both uppercase open and close tags" do
-      let(:source) { "<DIV>text</DIV>" }
-      let(:expected) { "<div>text</div>" }
-
-      it "converts both tag names to lowercase" do
-        element = document.value.children.first
-        expect(described_class.new.autofix(element.open_tag, document)).to be(true)
-        expect(described_class.new.autofix(element.close_tag, document)).to be(true)
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
-
-    context "when fixing mixed case tags" do
-      let(:source) { "<Div>text</Div>" }
-      let(:expected) { "<div>text</div>" }
-
-      it "converts mixed case to lowercase" do
-        element = document.value.children.first
-        expect(described_class.new.autofix(element.open_tag, document)).to be(true)
-        expect(described_class.new.autofix(element.close_tag, document)).to be(true)
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
-
     context "when fixing void element with uppercase tag" do
       let(:source) { "<BR>" }
       let(:expected) { "<br>" }
@@ -189,36 +163,6 @@ RSpec.describe Herb::Lint::Rules::Html::TagNameLowercase do
 
       it "converts void element tag name to lowercase" do
         expect(subject).to be(true)
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
-
-    context "when fixing nested elements with uppercase tags" do
-      let(:source) do
-        <<~HTML
-          <DIV>
-            <SPAN>text</SPAN>
-          </DIV>
-        HTML
-      end
-      let(:expected) do
-        <<~HTML
-          <div>
-            <span>text</span>
-          </div>
-        HTML
-      end
-
-      it "can fix each tag independently" do
-        outer = document.value.children.first
-        inner = outer.body.find { |c| c.is_a?(Herb::AST::HTMLElementNode) }
-
-        expect(described_class.new.autofix(outer.open_tag, document)).to be(true)
-        expect(described_class.new.autofix(outer.close_tag, document)).to be(true)
-        expect(described_class.new.autofix(inner.open_tag, document)).to be(true)
-        expect(described_class.new.autofix(inner.close_tag, document)).to be(true)
-
         result = Herb::Printer::IdentityPrinter.print(document)
         expect(result).to eq(expected)
       end

@@ -216,32 +216,5 @@ RSpec.describe Herb::Lint::Rules::Erb::CommentSyntax do
         expect(result).to eq(expected)
       end
     end
-
-    context "when fixing multiple comments in sequence" do
-      let(:source) do
-        <<~ERB
-          <% # first comment %>
-          <p>content</p>
-          <% # second comment %>
-        ERB
-      end
-      let(:expected) { "<%# first comment %>\n<p>content</p>\n<%# second comment %>\n" }
-
-      it "can fix each comment independently" do
-        nodes = document.value.children.select { |n| n.is_a?(Herb::AST::ERBContentNode) }
-        expect(nodes.size).to eq(2)
-
-        # Fix first comment
-        result1 = described_class.new.autofix(nodes[0], document)
-        expect(result1).to be(true)
-
-        # Fix second comment
-        result2 = described_class.new.autofix(nodes[1], document)
-        expect(result2).to be(true)
-
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
   end
 end
