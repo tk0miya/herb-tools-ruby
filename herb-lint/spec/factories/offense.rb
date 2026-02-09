@@ -18,6 +18,10 @@ FactoryBot.define do
       association(:location, start_line:, start_column:, end_line:, end_column:)
     end
 
+    trait :autofixable do
+      autofix_context { association(:autofix_context) }
+    end
+
     initialize_with { new(rule_name:, message:, severity:, location:, autofix_context:) }
   end
 end
