@@ -215,7 +215,7 @@ cd herb-lint && ./bin/steep check
 | `html/attribute-equals-spacing` | ✅ | Yes | 16.9 |
 | `html/attribute-values-require-quotes` | ✅ | Yes | 16.10 |
 | `html/boolean-attributes-no-value` | ✅ | Yes | 16.11 |
-| `html/no-self-closing` | 🔨 | Yes | 16.12 |
+| `html/no-self-closing` | ✅ | Yes | 16.12 |
 | `html/no-space-in-tag` | 🔨 | Yes | 16.13 |
 | `html/tag-name-lowercase` | ✅ | Yes | 16.14 |
 
@@ -298,13 +298,15 @@ cd herb-lint && ./bin/steep check
 
 ### Task 16.12: HtmlNoSelfClosing Autofix
 
-**Location:** `herb-lint/lib/herb/lint/rules/html_no_self_closing.rb`
+**Status:** Complete
 
-- [ ] Add `def self.safe_autofixable? = true`
-- [ ] Change `add_offense` to `add_offense_with_autofix`
-- [ ] Implement `autofix(node, parse_result)` method
-  - [ ] Convert self-closing tags to proper form
-- [ ] Add autofix tests
+**Location:** `herb-lint/lib/herb/lint/rules/html/no_self_closing.rb`
+
+- [x] Add `def self.safe_autofixable? = true`
+- [x] Change `add_offense` to `add_offense_with_autofix`
+- [x] Implement `autofix(node, parse_result)` method
+  - [x] Convert self-closing tags to proper form
+- [x] Add autofix tests
 
 ### Task 16.13: HtmlNoSpaceInTag Autofix
 

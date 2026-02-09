@@ -52,15 +52,30 @@ module Herb
             "warning"
           end
 
+          def self.safe_autofixable? #: bool
+            true
+          end
+
           # @rbs override
           def visit_html_element_node(node)
             if void_element?(node) && self_closing?(node)
-              add_offense(
+              add_offense_with_autofix(
                 message: "Void element '#{tag_name(node)}' should not have a self-closing slash",
-                location: node.open_tag.tag_closing.location
+                location: node.open_tag.tag_closing.location,
+                node:
               )
             end
             super
+          end
+
+          # @rbs override
+          def autofix(node, parse_result)
+            open_tag = node.open_tag
+            tag_closing = copy_token(open_tag.tag_closing, content: ">")
+            children = open_tag.children.dup
+            children.pop if children.last.is_a?(Herb::AST::WhitespaceNode)
+            new_open_tag = copy_html_open_tag_node(open_tag, tag_closing:, children:)
+            replace_node(parse_result, open_tag, new_open_tag)
           end
 
           private
