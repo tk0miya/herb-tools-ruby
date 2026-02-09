@@ -32,8 +32,9 @@ module Herb
           # @rbs override
           def visit_html_attribute_node: ...
 
-          # @rbs override
-          def autofix: ...
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          # @rbs parse_result: Herb::ParseResult
+          def autofix: (Herb::AST::HTMLAttributeNode node, Herb::ParseResult parse_result) -> bool
 
           private
 

@@ -1,0 +1,29 @@
+# Generated from lib/herb/lint/rules/node_locator.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # Utility for finding parent nodes in an AST by object identity.
+    # Used by autofix methods to locate the parent of an offending node
+    # for array-based replacement.
+    class NodeLocator < Herb::Visitor
+      # Find the parent of a given node in the AST.
+      # Uses object identity (equal?) to match the target node.
+      #
+      # @rbs parse_result: Herb::ParseResult -- the parse result to search
+      # @rbs target_node: Herb::AST::Node -- the node to find the parent of
+      def self.find_parent: (Herb::ParseResult parse_result, Herb::AST::Node target_node) -> Herb::AST::Node?
+
+      attr_reader found: Herb::AST::Node?
+
+      attr_reader parent_stack: Array[Herb::AST::Node]
+
+      # @rbs target_node: Herb::AST::Node
+      def initialize: (Herb::AST::Node target_node) -> void
+
+      @target_node: Herb::AST::Node
+
+      # @rbs override
+      def visit_child_nodes: ...
+    end
+  end
+end

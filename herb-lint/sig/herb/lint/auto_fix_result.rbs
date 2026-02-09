@@ -19,10 +19,6 @@ module Herb
       def self.members: () -> [ :source, :fixed, :unfixed ]
 
       def members: () -> [ :source, :fixed, :unfixed ]
-
-      def fixed_count: () -> Integer
-
-      def unfixed_count: () -> Integer
     end
   end
 end

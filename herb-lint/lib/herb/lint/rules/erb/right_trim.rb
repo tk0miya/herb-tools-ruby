@@ -45,8 +45,9 @@ module Herb
             super
           end
 
-          # @rbs override
-          def autofix(node, parse_result)
+          # @rbs node: Herb::AST::Node
+          # @rbs parse_result: Herb::ParseResult
+          def autofix(node, parse_result) #: bool
             tag_closing = copy_token(node.tag_closing, content: "-%>")
             new_node = copy_erb_node(node, tag_closing:)
             replace_node(parse_result, node, new_node)

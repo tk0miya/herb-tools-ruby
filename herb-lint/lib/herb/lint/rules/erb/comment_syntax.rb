@@ -60,8 +60,9 @@ module Herb
             super
           end
 
-          # @rbs override
-          def autofix(node, parse_result)
+          # @rbs node: Herb::AST::ERBContentNode
+          # @rbs parse_result: Herb::ParseResult
+          def autofix(node, parse_result) #: bool
             tag_opening = copy_token(node.tag_opening, content: "<%#")
 
             new_content_value = node.content.value.sub(/\A +#/, "")
