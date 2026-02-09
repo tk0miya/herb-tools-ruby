@@ -61,10 +61,12 @@ RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
       end
 
       it "reports offenses for all incorrect elements" do
-        expect(subject.size).to eq(2)
+        expect(subject.size).to eq(4)
         expect(subject.map(&:message)).to contain_exactly(
-          "SVG element 'clippath' should be 'clipPath'",
-          "SVG element 'lineargradient' should be 'linearGradient'"
+          "Opening SVG element 'clippath' should be 'clipPath'",
+          "Closing SVG element 'clippath' should be 'clipPath'",
+          "Opening SVG element 'lineargradient' should be 'linearGradient'",
+          "Closing SVG element 'lineargradient' should be 'linearGradient'"
         )
       end
     end
@@ -85,12 +87,13 @@ RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
       end
 
       it "reports offenses for all incorrect filter elements" do
-        expect(subject.size).to eq(4)
+        expect(subject.size).to eq(5)
         expect(subject.map(&:message)).to contain_exactly(
-          "SVG element 'feblend' should be 'feBlend'",
-          "SVG element 'fegaussianblur' should be 'feGaussianBlur'",
-          "SVG element 'femerge' should be 'feMerge'",
-          "SVG element 'femergenode' should be 'feMergeNode'"
+          "Opening SVG element 'feblend' should be 'feBlend'",
+          "Opening SVG element 'fegaussianblur' should be 'feGaussianBlur'",
+          "Opening SVG element 'femerge' should be 'feMerge'",
+          "Closing SVG element 'femerge' should be 'feMerge'",
+          "Opening SVG element 'femergenode' should be 'feMergeNode'"
         )
       end
     end
@@ -138,8 +141,11 @@ RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
       end
 
       it "reports offense only for incorrect element" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("SVG element 'lineargradient' should be 'linearGradient'")
+        expect(subject.size).to eq(2)
+        expect(subject.map(&:message)).to contain_exactly(
+          "Opening SVG element 'lineargradient' should be 'linearGradient'",
+          "Closing SVG element 'lineargradient' should be 'linearGradient'"
+        )
       end
     end
 
@@ -157,8 +163,11 @@ RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
       end
 
       it "reports offense for nested elements" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("SVG element 'clippath' should be 'clipPath'")
+        expect(subject.size).to eq(2)
+        expect(subject.map(&:message)).to contain_exactly(
+          "Opening SVG element 'clippath' should be 'clipPath'",
+          "Closing SVG element 'clippath' should be 'clipPath'"
+        )
       end
     end
 
@@ -173,7 +182,116 @@ RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("SVG element 'animatemotion' should be 'animateMotion'")
+        expect(subject.first.message).to eq("Opening SVG element 'animatemotion' should be 'animateMotion'")
+      end
+    end
+  end
+
+  describe "#autofix" do
+    subject { described_class.new }
+
+    let(:document) { Herb.parse(source, track_whitespace: true) }
+
+    describe "when fixing incorrect capitalization" do
+      let(:source) do
+        <<~HTML
+          <svg>
+            <clippath id="clip">
+              <rect width="100" height="100"/>
+            </clippath>
+          </svg>
+        HTML
+      end
+
+      let(:expected) do
+        <<~HTML
+          <svg>
+            <clipPath id="clip">
+              <rect width="100" height="100"/>
+            </clipPath>
+          </svg>
+        HTML
+      end
+
+      it "fixes the tag name capitalization" do
+        svg = document.value.children.first
+        clippath = svg.body.find { |c| c.is_a?(Herb::AST::HTMLElementNode) && c.tag_name.value == "clippath" }
+
+        expect(subject.autofix(clippath.open_tag, document)).to be(true)
+        expect(subject.autofix(clippath.close_tag, document)).to be(true)
+
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    describe "when fixing multiple elements" do
+      let(:source) do
+        <<~HTML
+          <svg>
+            <clippath id="clip">
+              <rect width="100" height="100"/>
+            </clippath>
+            <lineargradient id="grad">
+              <stop offset="0%" stop-color="red"/>
+            </lineargradient>
+          </svg>
+        HTML
+      end
+
+      let(:expected) do
+        <<~HTML
+          <svg>
+            <clipPath id="clip">
+              <rect width="100" height="100"/>
+            </clipPath>
+            <linearGradient id="grad">
+              <stop offset="0%" stop-color="red"/>
+            </linearGradient>
+          </svg>
+        HTML
+      end
+
+      it "fixes all incorrect tag names" do
+        svg = document.value.children.first
+        clippath = svg.body.find { |c| c.is_a?(Herb::AST::HTMLElementNode) && c.tag_name.value == "clippath" }
+        lineargradient = svg.body.find { |c| c.is_a?(Herb::AST::HTMLElementNode) && c.tag_name.value == "lineargradient" }
+
+        expect(subject.autofix(clippath.open_tag, document)).to be(true)
+        expect(subject.autofix(clippath.close_tag, document)).to be(true)
+        expect(subject.autofix(lineargradient.open_tag, document)).to be(true)
+        expect(subject.autofix(lineargradient.close_tag, document)).to be(true)
+
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    describe "when fixing self-closing elements" do
+      let(:source) do
+        <<~HTML
+          <svg>
+            <animatemotion/>
+          </svg>
+        HTML
+      end
+
+      let(:expected) do
+        <<~HTML
+          <svg>
+            <animateMotion/>
+          </svg>
+        HTML
+      end
+
+      it "fixes self-closing tag capitalization" do
+        svg = document.value.children.first
+        animatemotion = svg.body.find { |c| c.is_a?(Herb::AST::HTMLElementNode) && c.tag_name.value == "animatemotion" }
+
+        expect(subject.autofix(animatemotion.open_tag, document)).to be(true)
+
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
       end
     end
   end

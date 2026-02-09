@@ -45,6 +45,10 @@ module Herb
             "warning"
           end
 
+          def self.safe_autofixable? #: bool
+            true
+          end
+
           # SVG elements that require specific capitalization (camelCase).
           # Maps lowercase version to correct capitalization.
           SVG_ELEMENTS = {
@@ -100,28 +104,44 @@ module Herb
               super
               @inside_svg = previous_inside_svg
             elsif @inside_svg && tag
-              check_tag_capitalization(node, tag)
+              check_tag(node.open_tag, tag, "Opening") if node.open_tag
+              check_tag(node.close_tag, tag, "Closing") if node.close_tag
               super
             else
               super
             end
           end
 
+          # @rbs node: Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode
+          # @rbs parse_result: Herb::ParseResult -- the parse result from the lint phase
+          def autofix(node, parse_result) #: bool
+            tag_name = node.tag_name.value
+            return false unless tag_name
+
+            correct_name = SVG_ELEMENTS[tag_name.downcase]
+            return false unless correct_name
+
+            new_tag_name_token = copy_token(node.tag_name, content: correct_name)
+            new_node = copy_erb_node(node, tag_name: new_tag_name_token)
+            replace_node(parse_result, node, new_node)
+          end
+
           private
 
-          # @rbs node: Herb::AST::HTMLElementNode
+          # @rbs node: Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode
           # @rbs tag: String -- normalized lowercase tag name
-          def check_tag_capitalization(node, tag) #: void
+          # @rbs prefix: String -- "Opening" or "Closing"
+          def check_tag(node, tag, prefix) #: void
             correct_name = SVG_ELEMENTS[tag]
             return unless correct_name
 
-            raw_tag = raw_tag_name(node)
+            raw_tag = node.tag_name&.value
             return unless raw_tag && raw_tag != correct_name
 
-            # This is a known SVG element with incorrect capitalization
-            add_offense(
-              message: "SVG element '#{raw_tag}' should be '#{correct_name}'",
-              location: node.tag_name.location
+            add_offense_with_autofix(
+              message: "#{prefix} SVG element '#{raw_tag}' should be '#{correct_name}'",
+              location: node.tag_name.location,
+              node:
             )
           end
         end

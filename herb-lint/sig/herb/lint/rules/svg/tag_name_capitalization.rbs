@@ -36,6 +36,8 @@ module Herb
 
           def self.default_severity: () -> String
 
+          def self.safe_autofixable?: () -> bool
+
           # SVG elements that require specific capitalization (camelCase).
           # Maps lowercase version to correct capitalization.
           SVG_ELEMENTS: untyped
@@ -48,11 +50,16 @@ module Herb
           # @rbs override
           def visit_html_element_node: ...
 
+          # @rbs node: Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode
+          # @rbs parse_result: Herb::ParseResult -- the parse result from the lint phase
+          def autofix: (Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode node, Herb::ParseResult parse_result) -> bool
+
           private
 
-          # @rbs node: Herb::AST::HTMLElementNode
+          # @rbs node: Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode
           # @rbs tag: String -- normalized lowercase tag name
-          def check_tag_capitalization: (Herb::AST::HTMLElementNode node, String tag) -> void
+          # @rbs prefix: String -- "Opening" or "Closing"
+          def check_tag: (Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode node, String tag, String prefix) -> void
         end
       end
     end
