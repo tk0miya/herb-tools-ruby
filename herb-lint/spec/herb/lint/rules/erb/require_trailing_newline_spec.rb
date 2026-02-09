@@ -33,16 +33,18 @@ RSpec.describe Herb::Lint::Rules::Erb::RequireTrailingNewline do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context, source:) }
 
-    context "when file ends with a single newline" do
-      let(:source) { "<div>content</div>\n" }
+    # Good examples from documentation
+    context "when file ends with a single newline (documentation example)" do
+      let(:source) { "<%= render partial: \"header\" %>\n<%= render partial: \"footer\" %>\n" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when file ends with no newline" do
-      let(:source) { "<div>content</div>" }
+    # Bad examples from documentation
+    context "when file ends with no newline (documentation example)" do
+      let(:source) { "<%= render partial: \"header\" %>\n<%= render partial: \"footer\" %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -52,6 +54,7 @@ RSpec.describe Herb::Lint::Rules::Erb::RequireTrailingNewline do
       end
     end
 
+    # Additional edge case tests
     context "when file ends with multiple newlines" do
       let(:source) { "<div>content</div>\n\n" }
 
