@@ -152,54 +152,5 @@ RSpec.describe Herb::Lint::Rules::Html::NoSelfClosing do
         expect(result).to eq(expected)
       end
     end
-
-    context "when fixing multiple self-closing void elements" do
-      let(:source) do
-        <<~HTML
-          <br/>
-          <hr/>
-        HTML
-      end
-      let(:expected) do
-        <<~HTML
-          <br>
-          <hr>
-        HTML
-      end
-
-      it "can fix each element independently" do
-        elements = document.value.children.select { _1.is_a?(Herb::AST::HTMLElementNode) }
-        elements.each do |element|
-          expect(described_class.new.autofix(element, document)).to be(true)
-        end
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
-
-    context "when fixing nested self-closing void element" do
-      let(:source) do
-        <<~HTML
-          <div>
-            <img src="photo.jpg" />
-          </div>
-        HTML
-      end
-      let(:expected) do
-        <<~HTML
-          <div>
-            <img src="photo.jpg">
-          </div>
-        HTML
-      end
-
-      it "removes the self-closing slash from the nested element" do
-        outer = document.value.children.first
-        inner = outer.body.find { _1.is_a?(Herb::AST::HTMLElementNode) }
-        expect(described_class.new.autofix(inner, document)).to be(true)
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
   end
 end

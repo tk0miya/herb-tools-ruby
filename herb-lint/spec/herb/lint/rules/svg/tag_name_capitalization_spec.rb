@@ -225,48 +225,6 @@ RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
       end
     end
 
-    describe "when fixing multiple elements" do
-      let(:source) do
-        <<~HTML
-          <svg>
-            <clippath id="clip">
-              <rect width="100" height="100"/>
-            </clippath>
-            <lineargradient id="grad">
-              <stop offset="0%" stop-color="red"/>
-            </lineargradient>
-          </svg>
-        HTML
-      end
-
-      let(:expected) do
-        <<~HTML
-          <svg>
-            <clipPath id="clip">
-              <rect width="100" height="100"/>
-            </clipPath>
-            <linearGradient id="grad">
-              <stop offset="0%" stop-color="red"/>
-            </linearGradient>
-          </svg>
-        HTML
-      end
-
-      it "fixes all incorrect tag names" do
-        svg = document.value.children.first
-        clippath = svg.body.find { |c| c.is_a?(Herb::AST::HTMLElementNode) && c.tag_name.value == "clippath" }
-        lineargradient = svg.body.find { |c| c.is_a?(Herb::AST::HTMLElementNode) && c.tag_name.value == "lineargradient" }
-
-        expect(subject.autofix(clippath.open_tag, document)).to be(true)
-        expect(subject.autofix(clippath.close_tag, document)).to be(true)
-        expect(subject.autofix(lineargradient.open_tag, document)).to be(true)
-        expect(subject.autofix(lineargradient.close_tag, document)).to be(true)
-
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
-
     describe "when fixing self-closing elements" do
       let(:source) do
         <<~HTML

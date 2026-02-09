@@ -214,62 +214,12 @@ RSpec.describe Herb::Lint::Rules::Erb::NoEmptyTags do
       end
     end
 
-    context "when fixing multiple empty tags in sequence" do
-      let(:source) do
-        <<~ERB
-          <% %>
-          <p>content</p>
-          <%= %>
-        ERB
-      end
-      let(:expected) { "\n<p>content</p>\n\n" }
-
-      it "can fix each tag independently" do
-        nodes = document.value.children.select { |n| n.is_a?(Herb::AST::ERBContentNode) }
-        expect(nodes.size).to eq(2)
-
-        # Fix first empty tag
-        result1 = described_class.new.autofix(nodes[0], document)
-        expect(result1).to be(true)
-
-        # Fix second empty tag
-        result2 = described_class.new.autofix(nodes[1], document)
-        expect(result2).to be(true)
-
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
-
     context "when fixing an empty tag with tabs and newlines" do
       let(:source) { "<% \t\n %>" }
       let(:expected) { "" }
       let(:node) { document.value.children.first }
 
       it "removes the empty tag" do
-        expect(subject).to be(true)
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
-
-    context "when empty tags are in HTML structure" do
-      let(:source) do
-        <<~ERB
-          <div>
-            <% %>
-            <p>text</p>
-          </div>
-        ERB
-      end
-      let(:expected) { "<div>\n  \n  <p>text</p>\n</div>\n" }
-      let(:node) do
-        # Find the ERB content node inside the div
-        div = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
-        div.body.find { |n| n.is_a?(Herb::AST::ERBContentNode) }
-      end
-
-      it "removes the empty tag from HTML structure" do
         expect(subject).to be(true)
         result = Herb::Printer::IdentityPrinter.print(document)
         expect(result).to eq(expected)

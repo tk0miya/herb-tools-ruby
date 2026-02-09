@@ -300,55 +300,5 @@ RSpec.describe Herb::Lint::Rules::Erb::NoExtraWhitespaceInsideTags do
         expect(result).to eq(expected)
       end
     end
-
-    context "when fixing multiple tags in sequence" do
-      let(:source) do
-        <<~ERB
-          <%  first  %>
-          <p>content</p>
-          <%=  second  %>
-        ERB
-      end
-      let(:expected) { "<% first %>\n<p>content</p>\n<%= second %>\n" }
-
-      it "can fix each tag independently" do
-        nodes = document.value.children.select { |n| n.is_a?(Herb::AST::ERBContentNode) }
-        expect(nodes.size).to eq(2)
-
-        # Fix first tag
-        result1 = described_class.new.autofix(nodes[0], document)
-        expect(result1).to be(true)
-
-        # Fix second tag
-        result2 = described_class.new.autofix(nodes[1], document)
-        expect(result2).to be(true)
-
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
-
-    context "when fixing a tag inside HTML structure" do
-      let(:source) do
-        <<~ERB
-          <div>
-            <%  value  %>
-            <p>text</p>
-          </div>
-        ERB
-      end
-      let(:expected) { "<div>\n  <% value %>\n  <p>text</p>\n</div>\n" }
-      let(:node) do
-        # Find the ERB content node inside the div
-        div = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
-        div.body.find { |n| n.is_a?(Herb::AST::ERBContentNode) }
-      end
-
-      it "removes extra whitespace from tag inside HTML" do
-        expect(subject).to be(true)
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
   end
 end

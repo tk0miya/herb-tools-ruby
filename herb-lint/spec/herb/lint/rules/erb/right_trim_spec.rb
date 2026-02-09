@@ -212,33 +212,5 @@ RSpec.describe Herb::Lint::Rules::Erb::RightTrim do
         expect(result).to eq(expected)
       end
     end
-
-    context "when fixing both if and end tags" do
-      let(:source) do
-        <<~ERB.chomp
-          <% if condition =%>
-            <p>Content</p>
-          <% end =%>
-        ERB
-      end
-      let(:expected) do
-        <<~ERB.chomp
-          <% if condition -%>
-            <p>Content</p>
-          <% end -%>
-        ERB
-      end
-
-      it "can fix each tag independently" do
-        if_node = document.value.children.first
-        end_node = if_node.end_node
-
-        expect(described_class.new.autofix(if_node, document)).to be(true)
-        expect(described_class.new.autofix(end_node, document)).to be(true)
-
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
   end
 end

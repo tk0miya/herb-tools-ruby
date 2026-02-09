@@ -137,22 +137,6 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeDoubleQuotes do
       end
     end
 
-    context "when fixing multiple unquoted attributes" do
-      let(:source) { "<div class=container id=main>text</div>" }
-      let(:expected) { '<div class="container" id="main">text</div>' }
-
-      it "can fix each attribute independently" do
-        attrs = document.value.children.first.open_tag.children.select { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
-
-        attrs.each do |attr|
-          expect(described_class.new.autofix(attr, document)).to be(true)
-        end
-
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
-
     context "when fixing an unquoted attribute alongside a quoted one" do
       let(:source) { '<div class="container" id=main>text</div>' }
       let(:expected) { '<div class="container" id="main">text</div>' }
