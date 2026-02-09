@@ -265,10 +265,10 @@ linter:
 
 **Location:** `herb-lint/lib/herb/lint/rules/rule_methods.rb`
 
-- [ ] Modify `create_offense` to check config for severity override
-- [ ] Implement fallback chain: config > default_severity
-- [ ] Handle cases where @context is unavailable (unit tests)
-- [ ] Add unit tests for severity resolution
+- [x] Modify `create_offense` to check config for severity override
+- [x] Implement fallback chain: config > default_severity
+- [x] Handle cases where @context is unavailable (unit tests)
+- [x] Add unit tests for severity resolution
 
 **Implementation:**
 ```ruby
@@ -288,9 +288,9 @@ end
 
 **Location:** `herb-lint/spec/factories/context.rb`
 
-- [ ] Change `rule_registry` from `nil` to `Herb::Lint::RuleRegistry.new`
-- [ ] Ensures `Context#severity_for` can resolve rule default severities
-- [ ] Update tests that rely on the factory
+- [x] Change `rule_registry` from `nil` to `Herb::Lint::RuleRegistry.new`
+- [x] Ensures `Context#severity_for` can resolve rule default severities
+- [x] Update tests that rely on the factory
 
 **Current:**
 ```ruby
@@ -306,9 +306,9 @@ rule_registry { Herb::Lint::RuleRegistry.new }
 
 **Location:** `herb-lint/spec/herb/lint/cli_spec.rb`
 
-- [ ] Test: Severity override from config is respected
-- [ ] Test: failLevel with overridden severity works correctly
-- [ ] Test: Multiple rules with different severity overrides
+- [x] Test: Severity override from config is respected
+- [x] Test: failLevel with overridden severity works correctly
+- [x] Test: Multiple rules with different severity overrides
 
 **Test Example:**
 ```ruby

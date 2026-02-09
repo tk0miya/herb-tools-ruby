@@ -28,6 +28,7 @@ RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentValidRuleName do
     let(:rule_registry) do
       registry = Herb::Lint::RuleRegistry.new(builtins: false)
       [
+        described_class, # Register the rule being tested so severity_for can find its default_severity
         Herb::Lint::Rules::Erb::CommentSyntax,
         Herb::Lint::Rules::Html::AnchorRequireHref,
         Herb::Lint::Rules::Html::AttributeDoubleQuotes,

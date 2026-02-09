@@ -43,6 +43,24 @@ module Herb
         rules.select { |_name, opts| opts["enabled"] == false }.keys
       end
 
+      # Returns the options for a specific rule.
+      # Returns an empty hash if no options are configured.
+      # @rbs rule_name: String -- the name of the rule
+      def rule_options(rule_name) #: Hash[String, untyped]
+        rules.dig(rule_name, "options") || {}
+      end
+
+      # Checks if a rule is enabled.
+      # Rules are enabled by default unless explicitly disabled in config.
+      # The default parameter allows specifying a different default for rules
+      # that should be disabled by default.
+      # @rbs rule_name: String -- the name of the rule
+      # @rbs default: bool -- the default enabled state if not configured (default: true)
+      def enabled_rule?(rule_name, default: true) #: bool
+        value = rules.dig(rule_name, "enabled")
+        value.nil? ? default : value
+      end
+
       # Returns the fail level for the linter.
       # This determines which severity levels should cause non-zero exit codes.
       # Defaults to "error" if not configured.

@@ -103,12 +103,15 @@ module Herb
         @rules.keys.sort
       end
 
-      # Build instances of all registered rules, optionally excluding some by name.
-      # @rbs except: Array[String] -- rule names to exclude from instantiation
-      def build_all(except: []) #: Array[Rules::Base | Rules::VisitorRule]
-        @rules.except(*except)
-              .values
-              .map(&:new)
+      # Build instances of all registered rules.
+      # Reads enabled status and severity from config for each rule.
+      # @rbs config: Herb::Config::LinterConfig -- configuration for rules
+      def build_all(config:) #: Array[Rules::Base | Rules::VisitorRule]
+        @rules.filter_map do |rule_name, rule_class|
+          next unless config.enabled_rule?(rule_name)
+
+          rule_class.new(severity: config.rule_severity(rule_name))
+        end
       end
 
       # Number of registered rules.

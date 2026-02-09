@@ -339,6 +339,46 @@ RSpec.describe Herb::Lint::CLI do
             expect(subject).to eq(described_class::EXIT_SUCCESS)
           end
         end
+
+        context "when offenses are below threshold due to severity override" do
+          let(:argv) { ["--fail-level", "error"] }
+
+          before do
+            File.write(".herb.yml", <<~YAML)
+              linter:
+                rules:
+                  html-img-require-alt:
+                    severity: warning
+                  erb-prefer-image-tag-helper:
+                    enabled: false
+            YAML
+            create_file("app/views/test.html.erb", '<img src="test.png">')
+          end
+
+          it "returns EXIT_SUCCESS when only warnings exist and failLevel is error" do
+            expect(subject).to eq(described_class::EXIT_SUCCESS)
+          end
+        end
+
+        context "when multiple rules have severity overrides" do
+          let(:argv) { ["--fail-level", "warning"] }
+
+          before do
+            File.write(".herb.yml", <<~YAML)
+              linter:
+                rules:
+                  html-img-require-alt:
+                    severity: info
+                  erb-prefer-image-tag-helper:
+                    enabled: false
+            YAML
+            create_file("app/views/test.html.erb", '<img src="test.png">')
+          end
+
+          it "returns EXIT_SUCCESS when offenses are below threshold" do
+            expect(subject).to eq(described_class::EXIT_SUCCESS)
+          end
+        end
       end
     end
 
