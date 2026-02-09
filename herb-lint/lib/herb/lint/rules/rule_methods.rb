@@ -10,7 +10,6 @@ module Herb
         def self.included(base) #: void
           base.extend(ClassMethods)
           base.attr_reader :severity #: String
-          base.attr_reader :options #: Hash[Symbol, untyped]?
         end
 
         # Class methods for rule metadata.
@@ -39,10 +38,8 @@ module Herb
         end
 
         # @rbs severity: String?
-        # @rbs options: Hash[Symbol, untyped]?
-        def initialize(severity: nil, options: nil) #: void
+        def initialize(severity: nil) #: void
           @severity = severity || self.class.default_severity
-          @options = options
           super() if defined?(super)
         end
 

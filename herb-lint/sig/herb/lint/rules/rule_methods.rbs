@@ -25,8 +25,7 @@ module Herb
         end
 
         # @rbs severity: String?
-        # @rbs options: Hash[Symbol, untyped]?
-        def initialize: (?severity: String?, ?options: Hash[Symbol, untyped]?) -> void
+        def initialize: (?severity: String?) -> void
 
         @offenses: Array[Offense]
 

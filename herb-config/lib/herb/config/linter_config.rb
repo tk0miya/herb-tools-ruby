@@ -37,13 +37,6 @@ module Herb
         rules.dig(rule_name, "severity")
       end
 
-      # Returns the options for a specific rule.
-      # Returns an empty hash if no options are configured.
-      # @rbs rule_name: String -- the name of the rule
-      def rule_options(rule_name) #: Hash[String, untyped]
-        rules.dig(rule_name, "options") || {}
-      end
-
       # Returns the names of rules that are explicitly disabled in configuration.
       # A rule is considered disabled if its "enabled" option is set to false.
       def disabled_rule_names #: Array[String]

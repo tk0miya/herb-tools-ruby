@@ -267,45 +267,6 @@ RSpec.describe Herb::Config::LinterConfig do
     end
   end
 
-  describe "#rule_options" do
-    subject { described_class.new(config).rule_options(rule_name) }
-
-    let(:config) do
-      {
-        "linter" => {
-          "rules" => {
-            "hash-rule" => { "severity" => "error", "options" => { "style" => "double" } },
-            "hash-no-options" => { "severity" => "warning" }
-          }
-        }
-      }
-    end
-
-    context "when rule has options in hash configuration" do
-      let(:rule_name) { "hash-rule" }
-
-      it "returns the options" do
-        expect(subject).to eq({ "style" => "double" })
-      end
-    end
-
-    context "when rule has hash configuration without options" do
-      let(:rule_name) { "hash-no-options" }
-
-      it "returns an empty hash" do
-        expect(subject).to eq({})
-      end
-    end
-
-    context "when rule is not configured" do
-      let(:rule_name) { "unconfigured-rule" }
-
-      it "returns an empty hash" do
-        expect(subject).to eq({})
-      end
-    end
-  end
-
   describe "#disabled_rule_names" do
     subject { described_class.new(config).disabled_rule_names }
 

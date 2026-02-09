@@ -427,7 +427,6 @@ class Herb::Lint::Context
   ) -> void
 
   def severity_for: (String rule_name) -> Symbol
-  def options_for: (String rule_name) -> Hash[Symbol, untyped]
   def source_line: (Integer line) -> String
   def line_count: () -> Integer
 
@@ -684,7 +683,7 @@ interface _Rule
   def self.category: () -> Symbol
 
   # Instance interface
-  def initialize: (?severity: Symbol?, ?options: Hash[Symbol, untyped]) -> void
+  def initialize: (?severity: Symbol?) -> void
   def check: (Herb::AST::Document document, Context context) -> Array[Offense]
   def fix: (Offense offense, String source) -> String
 end
@@ -694,7 +693,6 @@ class Herb::Lint::Rules::Base
   include _Rule
 
   attr_reader severity: Symbol
-  attr_reader options: Hash[Symbol, untyped]
 
   def self.rule_name: () -> String
   def self.description: () -> String
@@ -702,7 +700,7 @@ class Herb::Lint::Rules::Base
   def self.fixable?: () -> bool
   def self.category: () -> Symbol
 
-  def initialize: (?severity: Symbol?, ?options: Hash[Symbol, untyped]) -> void
+  def initialize: (?severity: Symbol?) -> void
   def check: (Herb::AST::Document document, Context context) -> Array[Offense]
   def fix: (Offense offense, String source) -> String
 
@@ -776,7 +774,7 @@ class Herb::Lint::Rules::VisitorRule < Base
   @offenses: Array[Offense]
   @context: Context
 
-  def initialize: (?severity: Symbol?, ?options: Hash[Symbol, untyped]) -> void
+  def initialize: (?severity: Symbol?) -> void
 
   # Main check method - initializes traversal
   def check: (Herb::AST::Document document, Context context) -> Array[Offense]
