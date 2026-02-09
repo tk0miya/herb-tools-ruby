@@ -20,7 +20,7 @@ module Herb
       end
 
       # Validate configuration and raise error if invalid
-      # @rbs return: void
+
       def validate! #: void
         return if valid?
 

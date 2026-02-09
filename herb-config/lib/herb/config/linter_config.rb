@@ -66,7 +66,7 @@ module Herb
       # Returns the fail level for the linter.
       # This determines which severity levels should cause non-zero exit codes.
       # Defaults to "error" if not configured.
-      # @rbs return: String
+
       def fail_level #: String
         linter_config["failLevel"] || "error"
       end
@@ -75,19 +75,13 @@ module Herb
       # Rule patterns are independent from global linter patterns (not additive).
       # @rbs base_dir: String
       # @rbs rule_name: String
-      # @rbs return: PatternMatcher
       def build_pattern_matcher(base_dir, rule_name) #: PatternMatcher
         rule_config = rules[rule_name] || {}
         includes = rule_config["include"] || []
         excludes = rule_config["exclude"] || []
         only = rule_config["only"] || []
 
-        PatternMatcher.new(
-          base_dir:,
-          includes:,
-          excludes:,
-          only:
-        )
+        PatternMatcher.new(base_dir:, includes:, excludes:, only:)
       end
 
       private

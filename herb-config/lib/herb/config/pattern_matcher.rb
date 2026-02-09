@@ -20,7 +20,6 @@ module Herb
 
       # Check if the given file path matches the patterns.
       # @rbs file_path: String -- relative path from base_dir
-      # @rbs return: bool
       def match?(file_path) #: bool
         return false unless passes_only_check?(file_path)
         return false unless passes_include_check?(file_path)

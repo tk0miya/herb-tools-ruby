@@ -21,7 +21,6 @@ module Herb
 
       # Check if the given file path matches the patterns.
       # @rbs file_path: String -- relative path from base_dir
-      # @rbs return: bool
       def match?: (String file_path) -> bool
 
       private
