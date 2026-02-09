@@ -21,6 +21,12 @@ RSpec.describe Herb::Lint::Rules::Html::NoSelfClosing do
     end
   end
 
+  describe ".safe_autofixable?" do
+    it "returns true" do
+      expect(described_class.safe_autofixable?).to be(true)
+    end
+  end
+
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
@@ -104,6 +110,95 @@ RSpec.describe Herb::Lint::Rules::Html::NoSelfClosing do
         expect(subject.size).to eq(1)
         expect(subject.first.message).to eq("Void element 'img' should not have a self-closing slash")
         expect(subject.first.line).to eq(2)
+      end
+    end
+  end
+
+  describe "#autofix" do
+    subject { described_class.new.autofix(node, document) }
+
+    let(:document) { Herb.parse(source, track_whitespace: true) }
+    let(:node) { document.value.children.first }
+
+    context "when fixing self-closing br tag" do
+      let(:source) { "<br/>" }
+      let(:expected) { "<br>" }
+
+      it "removes the self-closing slash" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing self-closing br tag with space" do
+      let(:source) { "<br />" }
+      let(:expected) { "<br>" }
+
+      it "removes the self-closing slash and trailing whitespace" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing self-closing img tag with attributes" do
+      let(:source) { '<img src="photo.jpg" />' }
+      let(:expected) { '<img src="photo.jpg">' }
+
+      it "removes the self-closing slash while preserving attributes" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing multiple self-closing void elements" do
+      let(:source) do
+        <<~HTML
+          <br/>
+          <hr/>
+        HTML
+      end
+      let(:expected) do
+        <<~HTML
+          <br>
+          <hr>
+        HTML
+      end
+
+      it "can fix each element independently" do
+        elements = document.value.children.select { _1.is_a?(Herb::AST::HTMLElementNode) }
+        elements.each do |element|
+          expect(described_class.new.autofix(element, document)).to be(true)
+        end
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing nested self-closing void element" do
+      let(:source) do
+        <<~HTML
+          <div>
+            <img src="photo.jpg" />
+          </div>
+        HTML
+      end
+      let(:expected) do
+        <<~HTML
+          <div>
+            <img src="photo.jpg">
+          </div>
+        HTML
+      end
+
+      it "removes the self-closing slash from the nested element" do
+        outer = document.value.children.first
+        inner = outer.body.find { _1.is_a?(Herb::AST::HTMLElementNode) }
+        expect(described_class.new.autofix(inner, document)).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
       end
     end
   end
