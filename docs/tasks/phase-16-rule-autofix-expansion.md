@@ -359,13 +359,15 @@ These rules validate herb directive comments and are not autofixable by design.
 
 ### Task 16.15: SvgTagNameCapitalization Autofix
 
+**Status:** Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/svg/tag_name_capitalization.rb`
 
-- [ ] Add `def self.safe_autofixable? = true`
-- [ ] Change `add_offense` to `add_offense_with_autofix`
-- [ ] Implement `autofix(node, parse_result)` method
-  - [ ] Fix SVG tag name capitalization (e.g., `clippath` → `clipPath`)
-- [ ] Add autofix tests
+- [x] Add `def self.safe_autofixable? = true`
+- [x] Change `add_offense` to `add_offense_with_autofix`
+- [x] Implement `autofix(node, parse_result)` method
+  - [x] Fix SVG tag name capitalization (e.g., `clippath` → `clipPath`)
+- [x] Add autofix tests
 
 ---
 
