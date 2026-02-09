@@ -156,9 +156,11 @@ RSpec.describe Herb::Lint::RuleRegistry do
       registry.register(another_rule_class)
     end
 
-    context "with no exceptions" do
+    context "with empty config" do
+      let(:config) { Herb::Config::LinterConfig.new({}) }
+
       it "builds instances of all registered rules" do
-        rules = registry.build_all
+        rules = registry.build_all(config:)
 
         expect(rules.size).to eq(2)
         expect(rules[0]).to be_a(test_rule_class)
@@ -166,26 +168,57 @@ RSpec.describe Herb::Lint::RuleRegistry do
       end
     end
 
-    context "with exceptions" do
-      it "builds instances of all rules except excluded ones" do
-        rules = registry.build_all(except: ["test-rule"])
+    context "with config that disables a rule" do
+      let(:config_hash) do
+        {
+          "linter" => {
+            "rules" => {
+              "test-rule" => {
+                "enabled" => false
+              }
+            }
+          }
+        }
+      end
+      let(:config) { Herb::Config::LinterConfig.new(config_hash) }
+
+      it "builds instances of all rules except disabled ones" do
+        rules = registry.build_all(config:)
 
         expect(rules.size).to eq(1)
         expect(rules[0]).to be_a(another_rule_class)
       end
     end
 
-    context "with multiple exceptions" do
-      it "excludes all specified rules" do
-        rules = registry.build_all(except: %w[test-rule another-rule])
+    context "with config that disables multiple rules" do
+      let(:config_hash) do
+        {
+          "linter" => {
+            "rules" => {
+              "test-rule" => {
+                "enabled" => false
+              },
+              "another-rule" => {
+                "enabled" => false
+              }
+            }
+          }
+        }
+      end
+      let(:config) { Herb::Config::LinterConfig.new(config_hash) }
+
+      it "excludes all disabled rules" do
+        rules = registry.build_all(config:)
 
         expect(rules).to be_empty
       end
     end
 
-    context "when exception does not match any rule" do
+    context "with config that has no disabled rules" do
+      let(:config) { Herb::Config::LinterConfig.new({}) }
+
       it "builds all rules" do
-        rules = registry.build_all(except: ["nonexistent-rule"])
+        rules = registry.build_all(config:)
 
         expect(rules.size).to eq(2)
       end
@@ -193,11 +226,61 @@ RSpec.describe Herb::Lint::RuleRegistry do
 
     context "when no rules are registered" do
       let(:empty_registry) { described_class.new(builtins: false) }
+      let(:config) { Herb::Config::LinterConfig.new({}) }
 
       it "returns an empty array" do
-        rules = empty_registry.build_all
+        rules = empty_registry.build_all(config:)
 
         expect(rules).to eq([])
+      end
+    end
+
+    context "with config parameter" do
+      let(:config_hash) do
+        {
+          "linter" => {
+            "rules" => {
+              "test-rule" => {
+                "severity" => "warning"
+              }
+            }
+          }
+        }
+      end
+      let(:config) { Herb::Config::LinterConfig.new(config_hash) }
+
+      it "passes severity from config to rules" do
+        rules = registry.build_all(config:)
+
+        expect(rules.size).to eq(2)
+        expect(rules[0].severity).to eq("warning")
+        expect(rules[1].severity).to eq("warning") # default_severity from rule class
+      end
+    end
+
+    context "with config that disables and configures rules" do
+      let(:config_hash) do
+        {
+          "linter" => {
+            "rules" => {
+              "test-rule" => {
+                "enabled" => false
+              },
+              "another-rule" => {
+                "severity" => "error"
+              }
+            }
+          }
+        }
+      end
+      let(:config) { Herb::Config::LinterConfig.new(config_hash) }
+
+      it "applies config only to enabled rules" do
+        rules = registry.build_all(config:)
+
+        expect(rules.size).to eq(1)
+        expect(rules[0]).to be_a(another_rule_class)
+        expect(rules[0].severity).to eq("error")
       end
     end
   end

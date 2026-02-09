@@ -323,6 +323,110 @@ RSpec.describe Herb::Config::LinterConfig do
     end
   end
 
+  describe "#rule_options" do
+    subject { described_class.new(config).rule_options(rule_name) }
+
+    let(:config) do
+      {
+        "linter" => {
+          "rules" => {
+            "hash-rule" => { "severity" => "error", "options" => { "style" => "double" } },
+            "hash-no-options" => { "severity" => "warning" }
+          }
+        }
+      }
+    end
+
+    context "when rule has options in hash configuration" do
+      let(:rule_name) { "hash-rule" }
+
+      it "returns the options" do
+        expect(subject).to eq({ "style" => "double" })
+      end
+    end
+
+    context "when rule has hash configuration without options" do
+      let(:rule_name) { "hash-no-options" }
+
+      it "returns an empty hash" do
+        expect(subject).to eq({})
+      end
+    end
+
+    context "when rule is not configured" do
+      let(:rule_name) { "unconfigured-rule" }
+
+      it "returns an empty hash" do
+        expect(subject).to eq({})
+      end
+    end
+  end
+
+  describe "#enabled_rule?" do
+    subject { described_class.new(config).enabled_rule?(rule_name, **options) }
+
+    let(:config) do
+      {
+        "linter" => {
+          "rules" => {
+            "enabled-rule" => { "enabled" => true },
+            "disabled-rule" => { "enabled" => false },
+            "unconfigured-rule" => { "severity" => "error" }
+          }
+        }
+      }
+    end
+    let(:options) { {} }
+
+    context "when rule is explicitly enabled" do
+      let(:rule_name) { "enabled-rule" }
+
+      it "returns true" do
+        expect(subject).to be true
+      end
+    end
+
+    context "when rule is explicitly disabled" do
+      let(:rule_name) { "disabled-rule" }
+
+      it "returns false" do
+        expect(subject).to be false
+      end
+    end
+
+    context "when rule has no enabled configuration" do
+      let(:rule_name) { "unconfigured-rule" }
+
+      it "returns true by default" do
+        expect(subject).to be true
+      end
+
+      context "when default is false" do
+        let(:options) { { default: false } }
+
+        it "returns the specified default" do
+          expect(subject).to be false
+        end
+      end
+    end
+
+    context "when rule is not configured at all" do
+      let(:rule_name) { "totally-missing-rule" }
+
+      it "returns true by default" do
+        expect(subject).to be true
+      end
+
+      context "when default is false" do
+        let(:options) { { default: false } }
+
+        it "returns the specified default" do
+          expect(subject).to be false
+        end
+      end
+    end
+  end
+
   describe "#fail_level" do
     subject { described_class.new(config).fail_level }
 

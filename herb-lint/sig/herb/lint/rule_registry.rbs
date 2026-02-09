@@ -33,9 +33,10 @@ module Herb
       # Get all registered rule names.
       def rule_names: () -> Array[String]
 
-      # Build instances of all registered rules, optionally excluding some by name.
-      # @rbs except: Array[String] -- rule names to exclude from instantiation
-      def build_all: (?except: Array[String]) -> Array[Rules::Base | Rules::VisitorRule]
+      # Build instances of all registered rules.
+      # Reads enabled status and severity from config for each rule.
+      # @rbs config: Herb::Config::LinterConfig -- configuration for rules
+      def build_all: (config: Herb::Config::LinterConfig) -> Array[Rules::Base | Rules::VisitorRule]
 
       # Number of registered rules.
       def size: () -> Integer

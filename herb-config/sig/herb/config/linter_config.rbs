@@ -31,6 +31,19 @@ module Herb
       # A rule is considered disabled if its "enabled" option is set to false.
       def disabled_rule_names: () -> Array[String]
 
+      # Returns the options for a specific rule.
+      # Returns an empty hash if no options are configured.
+      # @rbs rule_name: String -- the name of the rule
+      def rule_options: (String rule_name) -> Hash[String, untyped]
+
+      # Checks if a rule is enabled.
+      # Rules are enabled by default unless explicitly disabled in config.
+      # The default parameter allows specifying a different default for rules
+      # that should be disabled by default.
+      # @rbs rule_name: String -- the name of the rule
+      # @rbs default: bool -- the default enabled state if not configured (default: true)
+      def enabled_rule?: (String rule_name, ?default: bool) -> bool
+
       # Returns the fail level for the linter.
       # This determines which severity levels should cause non-zero exit codes.
       # Defaults to "error" if not configured.
