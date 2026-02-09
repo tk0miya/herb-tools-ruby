@@ -33,16 +33,14 @@ RSpec.describe Herb::Lint::Rules::Base do
 
       it "uses default severity from class" do
         expect(subject.severity).to eq("warning")
-        expect(subject.options).to be_nil
       end
     end
 
     context "with custom values" do
-      subject { described_class.new(severity: "error", options: { foo: "bar" }) }
+      subject { described_class.new(severity: "error") }
 
       it "uses provided values" do
         expect(subject.severity).to eq("error")
-        expect(subject.options).to eq({ foo: "bar" })
       end
     end
   end

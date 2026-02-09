@@ -259,13 +259,10 @@ module Herb
 
       def rule_severity: (String rule_name, ?default: Symbol) -> Symbol
 
-      def rule_options: (String rule_name) -> Hash[String, untyped]
-
       private
 
       def normalize_rule_name: (String | Symbol rule_name) -> String
       def extract_severity: (String | Symbol | Hash[String, untyped] rule_config) -> Symbol
-      def extract_options: (String | Symbol | Hash[String, untyped] rule_config) -> Hash[String, untyped]
     end
   end
 end
@@ -384,7 +381,6 @@ linter.enabled?                    # => true
 linter.include_patterns            # => ["**/*.html.erb", ...]
 linter.rule_enabled?("html-img-require-alt")   # => true
 linter.rule_severity("html-img-require-alt")   # => :error
-linter.rule_options("html-img-require-alt")    # => { ... }
 ```
 
 **Access formatter configuration:**

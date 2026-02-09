@@ -85,7 +85,7 @@ module Herb
           # @rbs @inside_svg: bool
 
           # @rbs override
-          def initialize(severity: nil, options: nil) #: void
+          def initialize(severity: nil) #: void
             super
             @inside_svg = false
           end
