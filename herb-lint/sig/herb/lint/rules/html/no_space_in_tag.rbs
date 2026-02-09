@@ -23,11 +23,17 @@ module Herb
 
           def self.default_severity: () -> String
 
+          def self.safe_autofixable?: () -> bool
+
           # @rbs override
           def visit_html_open_tag_node: ...
 
           # @rbs override
           def visit_html_close_tag_node: ...
+
+          # @rbs node: Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def autofix: (Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode node, Herb::ParseResult parse_result) -> bool
 
           private
 
@@ -80,6 +86,20 @@ module Herb
           # @rbs message: String
           # @rbs location: Herb::Location
           def report: (String message, Herb::Location location) -> void
+
+          # @rbs node: Herb::AST::HTMLOpenTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def fix_open_tag_spacing: (Herb::AST::HTMLOpenTagNode node, Herb::ParseResult parse_result) -> bool
+
+          # @rbs attributes: Array[Herb::AST::HTMLAttributeNode]
+          def build_open_tag_children: (Array[Herb::AST::HTMLAttributeNode] attributes) -> Array[Herb::AST::Node]
+
+          # @rbs node: Herb::AST::HTMLCloseTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def fix_close_tag_spacing: (Herb::AST::HTMLCloseTagNode node, Herb::ParseResult parse_result) -> bool
+
+          # @rbs content: String
+          def build_whitespace_node: (String content) -> Herb::AST::WhitespaceNode
         end
       end
     end

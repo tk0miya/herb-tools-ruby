@@ -216,7 +216,7 @@ cd herb-lint && ./bin/steep check
 | `html/attribute-values-require-quotes` | ✅ | Yes | 16.10 |
 | `html/boolean-attributes-no-value` | ✅ | Yes | 16.11 |
 | `html/no-self-closing` | ✅ | Yes | 16.12 |
-| `html/no-space-in-tag` | 🔨 | Yes | 16.13 |
+| `html/no-space-in-tag` | ✅ | Yes | 16.13 |
 | `html/tag-name-lowercase` | ✅ | Yes | 16.14 |
 
 ### Implemented Rules (Not Fixable)
@@ -310,13 +310,15 @@ cd herb-lint && ./bin/steep check
 
 ### Task 16.13: HtmlNoSpaceInTag Autofix
 
-**Location:** `herb-lint/lib/herb/lint/rules/html_no_space_in_tag.rb`
+**Status:** Complete
 
-- [ ] Add `def self.safe_autofixable? = true`
-- [ ] Change `add_offense` to `add_offense_with_autofix`
-- [ ] Implement `autofix(node, parse_result)` method
-  - [ ] Remove space after `<` in tag names
-- [ ] Add autofix tests
+**Location:** `herb-lint/lib/herb/lint/rules/html/no_space_in_tag.rb`
+
+- [x] Add `def self.safe_autofixable? = true`
+- [x] Change `add_offense` to `add_offense_with_autofix`
+- [x] Implement `autofix(node, parse_result)` method
+  - [x] Remove space after `<` in tag names
+- [x] Add autofix tests
 
 ### Task 16.14: HtmlTagNameLowercase Autofix
 

@@ -11,7 +11,7 @@ module Herb
         # including spaces between the tag name and attributes,
         # between consecutive attributes, trailing spaces before `>`,
         # incorrect spacing around `/>`, and multiline indentation.
-        class NoSpaceInTag < VisitorRule
+        class NoSpaceInTag < VisitorRule # rubocop:disable Metrics/ClassLength
           EXTRA_SPACE_NO_SPACE = "Extra space detected where there should be no space."
           EXTRA_SPACE_SINGLE_SPACE = "Extra space detected where there should be a single space."
           EXTRA_SPACE_SINGLE_BREAK = "Extra space detected where there should be a single space or a single line break."
@@ -20,21 +20,39 @@ module Herb
           def self.rule_name = "html-no-space-in-tag" #: String
           def self.description = "Disallow extra whitespace inside HTML tags" #: String
           def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = true #: bool
 
           # @rbs override
           def visit_html_open_tag_node(node)
+            @current_tag = node
             if node.location.start.line == node.location.end.line
               check_single_line_open_tag(node)
             else
               check_multiline_open_tag(node)
             end
+            @current_tag = nil
             super
           end
 
           # @rbs override
           def visit_html_close_tag_node(node)
+            @current_tag = node
             check_close_tag(node)
+            @current_tag = nil
             super
+          end
+
+          # @rbs node: Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def autofix(node, parse_result) #: bool
+            case node
+            when Herb::AST::HTMLOpenTagNode
+              fix_open_tag_spacing(node, parse_result)
+            when Herb::AST::HTMLCloseTagNode
+              fix_close_tag_spacing(node, parse_result)
+            else
+              false
+            end
           end
 
           private
@@ -166,7 +184,58 @@ module Herb
           # @rbs message: String
           # @rbs location: Herb::Location
           def report(message, location) #: void
-            add_offense(message:, location:)
+            add_offense_with_autofix(message:, location:, node: @current_tag)
+          end
+
+          # @rbs node: Herb::AST::HTMLOpenTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def fix_open_tag_spacing(node, parse_result) #: bool
+            attributes = node.children.select { _1.is_a?(Herb::AST::HTMLAttributeNode) }
+            new_children = build_open_tag_children(attributes)
+            new_children << build_whitespace_node(" ") if self_closing?(node)
+
+            new_node = copy_html_open_tag_node(node, children: new_children)
+            replace_node(parse_result, node, new_node)
+          end
+
+          # @rbs attributes: Array[Herb::AST::HTMLAttributeNode]
+          def build_open_tag_children(attributes) #: Array[Herb::AST::Node]
+            return [] if attributes.empty?
+
+            new_children = []
+            new_children << build_whitespace_node(" ")
+            new_children << attributes.first
+
+            attributes[1..].each do |attr|
+              new_children << build_whitespace_node(" ")
+              new_children << attr
+            end
+
+            new_children
+          end
+
+          # @rbs node: Herb::AST::HTMLCloseTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def fix_close_tag_spacing(node, parse_result) #: bool
+            # Close tags should have no whitespace in children
+            new_node = copy_html_close_tag_node(node, children: [])
+            replace_node(parse_result, node, new_node)
+          end
+
+          # @rbs content: String
+          def build_whitespace_node(content) #: Herb::AST::WhitespaceNode
+            token = Herb::Token.new(
+              content,
+              Herb::Range.new(0, content.length),
+              Herb::Location.new(Herb::Position.new(0, 0), Herb::Position.new(0, content.length)),
+              "TOKEN_WHITESPACE"
+            )
+            Herb::AST::WhitespaceNode.new(
+              "WHITESPACE",
+              token.location,
+              [],
+              token
+            )
           end
         end
       end

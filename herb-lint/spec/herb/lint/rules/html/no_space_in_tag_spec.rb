@@ -308,4 +308,144 @@ RSpec.describe Herb::Lint::Rules::Html::NoSpaceInTag do
       end
     end
   end
+
+  describe "#autofix" do
+    subject { described_class.new.autofix(node, document) }
+
+    let(:document) { Herb.parse(source, track_whitespace: true) }
+
+    describe "fixing extra spaces in open tags" do
+      let(:node) { document.value.children.first.open_tag }
+
+      context "when open tag has extra space before >" do
+        let(:source) { "<div  >content</div>" }
+
+        it "removes the extra space" do
+          expect(subject).to be(true)
+          result = Herb::Printer::IdentityPrinter.print(document)
+          expect(result).to eq("<div>content</div>")
+        end
+      end
+
+      context "when extra space between tag name and first attribute" do
+        let(:source) { '<img   class="hide">' }
+
+        it "reduces to single space" do
+          expect(subject).to be(true)
+          result = Herb::Printer::IdentityPrinter.print(document)
+          expect(result).to eq('<img class="hide">')
+        end
+      end
+
+      context "when extra space between attributes" do
+        let(:source) { '<div class="a"      id="b">content</div>' }
+
+        it "reduces to single space" do
+          expect(subject).to be(true)
+          result = Herb::Printer::IdentityPrinter.print(document)
+          expect(result).to eq('<div class="a" id="b">content</div>')
+        end
+      end
+
+      context "when extra space between tag name and end solidus" do
+        let(:source) { "<br   />" }
+
+        it "reduces to single space" do
+          expect(subject).to be(true)
+          result = Herb::Printer::IdentityPrinter.print(document)
+          expect(result).to eq("<br />")
+        end
+      end
+
+      context "when extra space between last attribute and solidus" do
+        let(:source) { '<br class="hide"   />' }
+
+        it "reduces to single space" do
+          expect(subject).to be(true)
+          result = Herb::Printer::IdentityPrinter.print(document)
+          expect(result).to eq('<br class="hide" />')
+        end
+      end
+
+      context "when extra space between last attribute and end of tag" do
+        let(:source) { '<img class="hide"    >' }
+
+        it "removes the space" do
+          expect(subject).to be(true)
+          result = Herb::Printer::IdentityPrinter.print(document)
+          expect(result).to eq('<img class="hide">')
+        end
+      end
+
+      context "when multiple spacing issues in one tag" do
+        let(:source) { '<img   class="hide"    >' }
+
+        it "fixes all issues" do
+          expect(subject).to be(true)
+          result = Herb::Printer::IdentityPrinter.print(document)
+          expect(result).to eq('<img class="hide">')
+        end
+      end
+    end
+
+    describe "fixing missing space before self-closing slash" do
+      let(:node) { document.value.children.first }
+
+      context "when self-closing tag has no space before />" do
+        let(:source) { "<br/>" }
+        let(:node) { document.value.children.first.open_tag }
+
+        it "adds a space" do
+          expect(subject).to be(true)
+          result = Herb::Printer::IdentityPrinter.print(document)
+          expect(result).to eq("<br />")
+        end
+      end
+
+      context "when self-closing tag with attribute has no space before />" do
+        let(:source) { '<div class="foo"/>' }
+        let(:node) { document.value.children.first.open_tag }
+
+        it "adds a space" do
+          expect(subject).to be(true)
+          result = Herb::Printer::IdentityPrinter.print(document)
+          expect(result).to eq('<div class="foo" />')
+        end
+      end
+    end
+
+    describe "fixing close tags" do
+      let(:node) { document.value.children.first.close_tag }
+
+      context "when close tag has space after </" do
+        let(:source) { "<div>content</  div>" }
+
+        it "removes the space" do
+          expect(subject).to be(true)
+          result = Herb::Printer::IdentityPrinter.print(document)
+          expect(result).to eq("<div>content</div>")
+        end
+      end
+
+      context "when close tag has space after tag name" do
+        let(:source) { "<div>content</div >" }
+
+        it "removes the space" do
+          expect(subject).to be(true)
+          result = Herb::Printer::IdentityPrinter.print(document)
+          expect(result).to eq("<div>content</div>")
+        end
+      end
+
+      context "when close tag has spaces both before and after tag name" do
+        let(:source) { "<div>content</  div  >" }
+
+        it "removes all spaces" do
+          expect(subject).to be(true)
+          result = Herb::Printer::IdentityPrinter.print(document)
+          expect(result).to eq("<div>content</div>")
+        end
+      end
+    end
+  end
 end
