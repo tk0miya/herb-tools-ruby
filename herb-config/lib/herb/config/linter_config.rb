@@ -71,43 +71,21 @@ module Herb
         linter_config["failLevel"] || "error"
       end
 
-      # Returns the include patterns for a specific rule.
-      # These patterns are additive to the global include patterns.
-      # @rbs rule_name: String -- the name of the rule
-      # @rbs return: Array[String]
-      def rule_include_patterns(rule_name) #: Array[String]
-        rules.dig(rule_name, "include") || []
-      end
-
-      # Returns the only patterns for a specific rule.
-      # When present, these patterns override all include patterns.
-      # @rbs rule_name: String -- the name of the rule
-      # @rbs return: Array[String]
-      def rule_only_patterns(rule_name) #: Array[String]
-        rules.dig(rule_name, "only") || []
-      end
-
-      # Returns the exclude patterns for a specific rule.
-      # These patterns are additive to the global exclude patterns.
-      # @rbs rule_name: String -- the name of the rule
-      # @rbs return: Array[String]
-      def rule_exclude_patterns(rule_name) #: Array[String]
-        rules.dig(rule_name, "exclude") || []
-      end
-
       # Build a pattern matcher for a specific rule.
+      # Rule patterns are independent from global linter patterns (not additive).
       # @rbs base_dir: String
       # @rbs rule_name: String
       # @rbs return: PatternMatcher
       def build_pattern_matcher(base_dir, rule_name) #: PatternMatcher
-        all_includes = include_patterns + rule_include_patterns(rule_name)
-        all_excludes = exclude_patterns + rule_exclude_patterns(rule_name)
-        only = rule_only_patterns(rule_name)
+        rule_config = rules[rule_name] || {}
+        includes = rule_config["include"] || []
+        excludes = rule_config["exclude"] || []
+        only = rule_config["only"] || []
 
         PatternMatcher.new(
           base_dir:,
-          include: all_includes,
-          exclude: all_excludes,
+          includes:,
+          excludes:,
           only:
         )
       end

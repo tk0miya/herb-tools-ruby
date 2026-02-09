@@ -50,25 +50,8 @@ module Herb
       # @rbs return: String
       def fail_level: () -> String
 
-      # Returns the include patterns for a specific rule.
-      # These patterns are additive to the global include patterns.
-      # @rbs rule_name: String -- the name of the rule
-      # @rbs return: Array[String]
-      def rule_include_patterns: (String rule_name) -> Array[String]
-
-      # Returns the only patterns for a specific rule.
-      # When present, these patterns override all include patterns.
-      # @rbs rule_name: String -- the name of the rule
-      # @rbs return: Array[String]
-      def rule_only_patterns: (String rule_name) -> Array[String]
-
-      # Returns the exclude patterns for a specific rule.
-      # These patterns are additive to the global exclude patterns.
-      # @rbs rule_name: String -- the name of the rule
-      # @rbs return: Array[String]
-      def rule_exclude_patterns: (String rule_name) -> Array[String]
-
       # Build a pattern matcher for a specific rule.
+      # Rule patterns are independent from global linter patterns (not additive).
       # @rbs base_dir: String
       # @rbs rule_name: String
       # @rbs return: PatternMatcher

@@ -338,19 +338,25 @@ RSpec.describe Herb::Lint::Runner do
       end
 
       before do
-        # HTML file (matched by linter.include)
+        # HTML file (matched by linter.include but NOT rule.include)
         create_file("app/views/index.html.erb", '<img src="test.png">')
         # XML file (matched by linter.include AND rule.include)
         create_file("app/views/feed.xml.erb", '<img src="test.png">')
       end
 
-      it "applies rule to files matching both global and rule include patterns" do
+      it "applies rule only to files matching rule include patterns (not additive)" do
         result = runner.run([])
 
-        # Should process both files
+        # Should process both files (both match linter.include)
         expect(result.file_count).to eq(2)
-        # Both should have offenses (rule.include is additive)
-        expect(result.offense_count).to eq(2)
+        # Only XML file should have offense (rule.include is NOT additive)
+        expect(result.offense_count).to eq(1)
+
+        html_result = result.results.find { |r| r.file_path.end_with?("index.html.erb") }
+        xml_result = result.results.find { |r| r.file_path.end_with?("feed.xml.erb") }
+
+        expect(html_result.unfixed_offenses.size).to eq(0)
+        expect(xml_result.unfixed_offenses.size).to eq(1)
       end
     end
 

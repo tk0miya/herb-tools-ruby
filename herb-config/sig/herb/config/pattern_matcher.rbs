@@ -14,10 +14,10 @@ module Herb
       attr_reader only_patterns: untyped
 
       # @rbs base_dir: String
-      # @rbs include: Array[String]
-      # @rbs exclude: Array[String]
+      # @rbs includes: Array[String]
+      # @rbs excludes: Array[String]
       # @rbs only: Array[String]
-      def initialize: (base_dir: String, ?include: Array[String], ?exclude: Array[String], ?only: Array[String]) -> void
+      def initialize: (base_dir: String, ?includes: Array[String], ?excludes: Array[String], ?only: Array[String]) -> void
 
       # Check if the given file path matches the patterns.
       # @rbs file_path: String -- relative path from base_dir

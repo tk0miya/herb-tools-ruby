@@ -8,13 +8,13 @@ module Herb
       attr_reader :base_dir, :include_patterns, :exclude_patterns, :only_patterns
 
       # @rbs base_dir: String
-      # @rbs include: Array[String]
-      # @rbs exclude: Array[String]
+      # @rbs includes: Array[String]
+      # @rbs excludes: Array[String]
       # @rbs only: Array[String]
-      def initialize(base_dir:, include: [], exclude: [], only: []) #: void
+      def initialize(base_dir:, includes: [], excludes: [], only: []) #: void
         @base_dir = base_dir
-        @include_patterns = include
-        @exclude_patterns = exclude
+        @include_patterns = includes
+        @exclude_patterns = excludes
         @only_patterns = only
       end
 
