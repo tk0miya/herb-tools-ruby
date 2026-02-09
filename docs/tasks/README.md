@@ -25,8 +25,9 @@ Phases 1-14, 19, and 20 have been completed and their task files have been remov
 | Phase 18 | [phase-18-source-rule.md](./phase-18-source-rule.md) | 7 | SourceRule base class, autofix, NoExtraNewline migration | 📋 |
 | Phase 21 | [phase-21-review-linter-rules.md](./phase-21-review-linter-rules.md) | 408 | Review and update all linter rules | 🚧 |
 | Phase 23 | [phase-23-json-reporter-completion.md](./phase-23-json-reporter-completion.md) | 6 | Complete JSON reporter summary fields | 📋 |
+| Phase 24 | [phase-24-typescript-alignment.md](./phase-24-typescript-alignment.md) | 24 | TypeScript implementation alignment | 📋 |
 
-**Remaining Total: ~450 tasks**
+**Remaining Total: ~475 tasks**
 
 Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
@@ -86,6 +87,22 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 | 23.4 | Update RBS type signatures |
 | 23.5 | Integration testing |
 | 23.6 | Update documentation |
+
+### Phase 24: TypeScript Alignment (24 tasks)
+
+| Part | Tasks | Description |
+|------|-------|-------------|
+| Part A | 2 | Missing rules (herb-disable-comment-unnecessary, html-no-space-in-tag) |
+| Part B | 2 | Autofix alignment (erb-no-extra-newline) |
+| Part C | 17 | Severity alignment (16 rules + policy decision) |
+| Part D | 3 | Documentation + enabled-by-default alignment (5 rules) |
+
+**Key Discovery:** 5 rules are disabled by default in TypeScript:
+- `erb-strict-locals-required`
+- `html-navigation-has-label`
+- `html-no-block-inside-inline`
+- `html-no-space-in-tag`
+- `html-no-title-attribute`
 
 ## How to Proceed
 
