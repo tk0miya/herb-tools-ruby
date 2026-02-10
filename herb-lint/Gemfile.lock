@@ -2,6 +2,7 @@ PATH
   remote: ../herb-config
   specs:
     herb-config (0.1.0)
+      herb-core
       json-schema (~> 6.0)
 
 PATH

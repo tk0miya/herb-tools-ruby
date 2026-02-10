@@ -4,6 +4,7 @@ D = Steep::Diagnostic
 
 target :lib do
   signature "sig"
+  signature "../herb-core/sig"
 
   check "lib"
 

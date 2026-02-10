@@ -5,6 +5,8 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in herb-config.gemspec
 gemspec
 
+gem "herb-core", path: "../herb-core"
+
 gem "irb"
 gem "rake"
 gem "rbs"

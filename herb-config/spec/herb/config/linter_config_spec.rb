@@ -488,4 +488,58 @@ RSpec.describe Herb::Config::LinterConfig do
       end
     end
   end
+
+  describe "#build_pattern_matcher" do
+    subject { described_class.new(config).build_pattern_matcher(rule_name) }
+
+    let(:rule_name) { "test-rule" }
+
+    context "when rule has pattern configuration" do
+      let(:config) do
+        {
+          "linter" => {
+            "rules" => {
+              "test-rule" => {
+                "include" => ["**/*.erb"],
+                "exclude" => ["vendor/**"],
+                "only" => ["app/views/**"]
+              }
+            }
+          }
+        }
+      end
+
+      it "returns a PatternMatcher instance" do
+        expect(subject).to be_a(Herb::Core::PatternMatcher)
+      end
+
+      it "configures the matcher with rule patterns" do
+        expect(subject.match?("app/views/test.erb")).to be true
+      end
+    end
+
+    context "when rule has no pattern configuration" do
+      let(:config) do
+        {
+          "linter" => {
+            "rules" => {
+              "test-rule" => { "severity" => "error" }
+            }
+          }
+        }
+      end
+
+      it "creates matcher with empty patterns" do
+        expect(subject).to be_a(Herb::Core::PatternMatcher)
+      end
+    end
+
+    context "when rule is not configured" do
+      let(:config) { { "linter" => { "rules" => {} } } }
+
+      it "creates matcher with empty patterns" do
+        expect(subject).to be_a(Herb::Core::PatternMatcher)
+      end
+    end
+  end
 end
