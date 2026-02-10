@@ -48,7 +48,7 @@ module Herb
       private
 
       # Apply autofixes for autofixable offenses.
-      # For each offense, instantiate the rule and call its autofix method.
+      # For each offense, use the cached rule instance to call its autofix method.
       # After all fixes, serialize the modified AST via IdentityPrinter.
       #
       # @rbs offenses: Array[Offense] -- autofixable offenses to apply
@@ -63,8 +63,7 @@ module Herb
             next
           end
 
-          rule = context.rule_class.new
-          success = rule.autofix(context.node, parse_result)
+          success = context.rule.autofix(context.node, parse_result)
 
           if success
             fixed << offense

@@ -3,18 +3,18 @@
 module Herb
   module Lint
     # Bridges the check phase and autofix phase.
-    # Carries a direct reference to the offending AST node and the rule class that can fix it.
+    # Carries a direct reference to the offending AST node and the rule instance that can fix it.
     class AutofixContext < Data
       attr_reader node(): Herb::AST::Node
 
-      attr_reader rule_class(): singleton(Herb::Lint::Rules::VisitorRule)
+      attr_reader rule(): Herb::Lint::Rules::VisitorRule
 
-      def self.new: (Herb::AST::Node node, singleton(Herb::Lint::Rules::VisitorRule) rule_class) -> instance
-                  | (node: Herb::AST::Node, rule_class: singleton(Herb::Lint::Rules::VisitorRule)) -> instance
+      def self.new: (Herb::AST::Node node, Herb::Lint::Rules::VisitorRule rule) -> instance
+                  | (node: Herb::AST::Node, rule: Herb::Lint::Rules::VisitorRule) -> instance
 
-      def self.members: () -> [ :node, :rule_class ]
+      def self.members: () -> [ :node, :rule ]
 
-      def members: () -> [ :node, :rule_class ]
+      def members: () -> [ :node, :rule ]
     end
   end
 end

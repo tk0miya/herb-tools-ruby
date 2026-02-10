@@ -2,7 +2,7 @@
 
 RSpec.describe Herb::Lint::Autofixer do
   # Stub rule: clears the element body (safe autofix)
-  let(:safe_rule_class) do
+  let(:safe_rule) do
     Class.new(Herb::Lint::Rules::VisitorRule) do
       def self.rule_name = "test/safe-rule"
       def self.description = "Safe test rule"
@@ -14,11 +14,11 @@ RSpec.describe Herb::Lint::Autofixer do
         node.body.clear
         true
       end
-    end
+    end.new
   end
 
   # Stub rule: clears the element body (unsafe autofix)
-  let(:unsafe_rule_class) do
+  let(:unsafe_rule) do
     Class.new(Herb::Lint::Rules::VisitorRule) do
       def self.rule_name = "test/unsafe-rule"
       def self.description = "Unsafe test rule"
@@ -30,11 +30,11 @@ RSpec.describe Herb::Lint::Autofixer do
         node.body.clear
         true
       end
-    end
+    end.new
   end
 
   # Stub rule whose autofix always fails
-  let(:failing_rule_class) do
+  let(:failing_rule) do
     Class.new(Herb::Lint::Rules::VisitorRule) do
       def self.rule_name = "test/failing-rule"
       def self.description = "Failing test rule"
@@ -45,7 +45,7 @@ RSpec.describe Herb::Lint::Autofixer do
       def autofix(_node, _parse_result)
         false
       end
-    end
+    end.new
   end
 
   let(:source) { "<div>hello</div>" }
@@ -78,21 +78,21 @@ RSpec.describe Herb::Lint::Autofixer do
       end
 
       context "when there is at least one safe autofixable offense" do
-        let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule_class: safe_rule_class) }
+        let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule: safe_rule) }
         let(:autofixer) { described_class.new(parse_result, [build(:offense, autofix_context:)]) }
 
         it { is_expected.to be true }
       end
 
       context "when there is at least one unsafe autofixable offense" do
-        let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule_class: unsafe_rule_class) }
+        let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule: unsafe_rule) }
         let(:autofixer) { described_class.new(parse_result, [build(:offense, autofix_context:)]) }
 
         it { is_expected.to be false }
       end
 
       context "with mixed autofixable and non-autofixable offenses" do
-        let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule_class: safe_rule_class) }
+        let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule: safe_rule) }
         let(:autofixer) do
           described_class.new(parse_result, [
                                 build(:offense, autofix_context:),
@@ -108,14 +108,14 @@ RSpec.describe Herb::Lint::Autofixer do
       let(:unsafe) { true }
 
       context "when there is at least one safe autofixable offense" do
-        let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule_class: safe_rule_class) }
+        let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule: safe_rule) }
         let(:autofixer) { described_class.new(parse_result, [build(:offense, autofix_context:)]) }
 
         it { is_expected.to be true }
       end
 
       context "when there is at least one unsafe autofixable offense" do
-        let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule_class: unsafe_rule_class) }
+        let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule: unsafe_rule) }
         let(:autofixer) { described_class.new(parse_result, [build(:offense, autofix_context:)]) }
 
         it { is_expected.to be true }
@@ -149,7 +149,7 @@ RSpec.describe Herb::Lint::Autofixer do
     context "when a safe autofix is applied successfully" do
       subject { described_class.new(parse_result, unfixed_offenses).apply }
 
-      let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule_class: safe_rule_class) }
+      let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule: safe_rule) }
       let(:unfixed_offenses) do
         [build(:offense, autofix_context:)]
       end
@@ -164,7 +164,7 @@ RSpec.describe Herb::Lint::Autofixer do
     context "when an unsafe autofix is applied with unsafe: true" do
       subject { described_class.new(parse_result, unfixed_offenses, unsafe: true).apply }
 
-      let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule_class: unsafe_rule_class) }
+      let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule: unsafe_rule) }
       let(:unfixed_offenses) do
         [build(:offense, autofix_context:)]
       end
@@ -179,7 +179,7 @@ RSpec.describe Herb::Lint::Autofixer do
     context "when an unsafe autofix is skipped without unsafe flag" do
       subject { described_class.new(parse_result, unfixed_offenses).apply }
 
-      let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule_class: unsafe_rule_class) }
+      let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule: unsafe_rule) }
       let(:unfixed_offenses) do
         [build(:offense, autofix_context:)]
       end
@@ -194,7 +194,7 @@ RSpec.describe Herb::Lint::Autofixer do
     context "when autofix returns false (fix failed)" do
       subject { described_class.new(parse_result, unfixed_offenses).apply }
 
-      let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule_class: failing_rule_class) }
+      let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule: failing_rule) }
       let(:unfixed_offenses) do
         [build(:offense, autofix_context:)]
       end
@@ -209,7 +209,7 @@ RSpec.describe Herb::Lint::Autofixer do
     context "with a mix of autofixable and non-autofixable offenses" do
       subject { described_class.new(parse_result, unfixed_offenses).apply }
 
-      let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule_class: safe_rule_class) }
+      let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule: safe_rule) }
       let(:unfixed_offenses) do
         [
           build(:offense, autofix_context:),
@@ -227,8 +227,8 @@ RSpec.describe Herb::Lint::Autofixer do
     context "with unsafe: true and both safe and unsafe offenses" do
       subject { described_class.new(parse_result, unfixed_offenses, unsafe: true).apply }
 
-      let(:safe_context) { Herb::Lint::AutofixContext.new(node: element, rule_class: safe_rule_class) }
-      let(:unsafe_context) { Herb::Lint::AutofixContext.new(node: element, rule_class: unsafe_rule_class) }
+      let(:safe_context) { Herb::Lint::AutofixContext.new(node: element, rule: safe_rule) }
+      let(:unsafe_context) { Herb::Lint::AutofixContext.new(node: element, rule: unsafe_rule) }
       let(:unfixed_offenses) do
         [
           build(:offense, autofix_context: safe_context),
