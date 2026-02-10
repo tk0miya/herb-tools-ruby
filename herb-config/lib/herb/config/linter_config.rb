@@ -64,7 +64,6 @@ module Herb
       # Returns the fail level for the linter.
       # This determines which severity levels should cause non-zero exit codes.
       # Defaults to "error" if not configured.
-      # @rbs return: String
       def fail_level #: String
         linter_config["failLevel"] || "error"
       end

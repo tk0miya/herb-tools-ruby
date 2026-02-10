@@ -14,7 +14,6 @@ module Herb
       def valid?: () -> bool
 
       # Validate configuration and raise error if invalid
-      # @rbs return: void
       def validate!: () -> void
 
       # Return list of validation errors

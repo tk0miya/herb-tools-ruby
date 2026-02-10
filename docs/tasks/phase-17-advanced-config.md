@@ -130,16 +130,14 @@ class LinterConfig
     @config = config
   end
 
-  # @rbs return: Array[String]
-  def include_patterns
+  def include_patterns #: Array[String]
     # Additive: merge both arrays
     files_include = @config.dig("files", "include") || []
     linter_include = @config.dig("linter", "include") || []
     files_include + linter_include
   end
 
-  # @rbs return: Array[String]
-  def exclude_patterns
+  def exclude_patterns #: Array[String]
     # Override: linter.exclude takes precedence
     @config.dig("linter", "exclude") || @config.dig("files", "exclude") || []
   end
@@ -426,8 +424,7 @@ module Herb
     module Rewriter
       class Base
         # @rbs ast: Herb::AST::Node
-        # @rbs return: Herb::AST::Node
-        def rewrite(ast)
+        def rewrite(ast) #: Herb::AST::Node
           # Transform AST
         end
       end
