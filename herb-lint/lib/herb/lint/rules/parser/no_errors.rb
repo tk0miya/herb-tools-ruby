@@ -34,6 +34,14 @@ module Herb
             "error"
           end
 
+          def self.safe_autofixable? #: bool
+            false
+          end
+
+          def self.unsafe_autofixable? #: bool
+            false
+          end
+
           # This method is not called by the Linter.
           # Parser errors are detected and reported directly by the Linter class
           # before normal rule checking begins.

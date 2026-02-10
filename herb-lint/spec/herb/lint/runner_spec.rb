@@ -15,6 +15,7 @@ RSpec.describe Herb::Lint::Runner do
         def self.rule_name = "test/unsafe-fixable"
         def self.description = "Test unsafe fixable rule"
         def self.default_severity = "warning"
+        def self.safe_autofixable? = false
         def self.unsafe_autofixable? = true
 
         def visit_html_element_node(node)
@@ -41,6 +42,7 @@ RSpec.describe Herb::Lint::Runner do
         def self.description = "Test safe fixable rule"
         def self.default_severity = "warning"
         def self.safe_autofixable? = true
+        def self.unsafe_autofixable? = false
 
         def visit_html_element_node(node)
           if tag_name(node) == "div"

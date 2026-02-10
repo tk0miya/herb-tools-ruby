@@ -35,6 +35,14 @@ module Herb
             "error"
           end
 
+          def self.safe_autofixable? #: bool
+            false
+          end
+
+          def self.unsafe_autofixable? #: bool
+            false
+          end
+
           # @rbs override
           def visit_html_attribute_node(node)
             if aria_level_attribute?(node)

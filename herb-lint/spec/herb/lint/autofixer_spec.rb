@@ -8,6 +8,7 @@ RSpec.describe Herb::Lint::Autofixer do
       def self.description = "Safe test rule"
       def self.default_severity = "warning"
       def self.safe_autofixable? = true
+      def self.unsafe_autofixable? = false
 
       def autofix(node, _parse_result)
         node.body.clear
@@ -22,6 +23,7 @@ RSpec.describe Herb::Lint::Autofixer do
       def self.rule_name = "test/unsafe-rule"
       def self.description = "Unsafe test rule"
       def self.default_severity = "warning"
+      def self.safe_autofixable? = false
       def self.unsafe_autofixable? = true
 
       def autofix(node, _parse_result)
@@ -38,6 +40,7 @@ RSpec.describe Herb::Lint::Autofixer do
       def self.description = "Failing test rule"
       def self.default_severity = "warning"
       def self.safe_autofixable? = true
+      def self.unsafe_autofixable? = false
 
       def autofix(_node, _parse_result)
         false

@@ -38,6 +38,10 @@ module Herb
             true
           end
 
+          def self.unsafe_autofixable? #: bool
+            false
+          end
+
           # Check each ERB node for the obscure =%> syntax
           # @rbs override
           def visit_child_nodes(node)

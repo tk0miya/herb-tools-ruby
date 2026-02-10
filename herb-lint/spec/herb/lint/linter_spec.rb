@@ -49,6 +49,8 @@ RSpec.describe Herb::Lint::Linter do
         Class.new(Herb::Lint::Rules::VisitorRule) do
           def self.rule_name = "test-rule"
           def self.description = "Test rule"
+          def self.safe_autofixable? = false
+          def self.unsafe_autofixable? = false
 
           def visit_html_element_node(node)
             add_offense(message: "Found element", location: node.location)

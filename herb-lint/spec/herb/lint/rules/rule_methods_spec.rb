@@ -7,6 +7,7 @@ RSpec.describe Herb::Lint::Rules::RuleMethods do
         def self.rule_name = "autofix-test-rule"
         def self.description = "Test rule with autofix"
         def self.safe_autofixable? = true
+        def self.unsafe_autofixable? = false
 
         def visit_html_element_node(node)
           add_offense_with_autofix(

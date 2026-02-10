@@ -35,6 +35,7 @@ RSpec.describe Herb::Lint::AutofixContext do
             def self.rule_name = "test/safe-rule"
             def self.description = "Safe test rule"
             def self.safe_autofixable? = true
+            def self.unsafe_autofixable? = false
           end
         end
 
@@ -46,6 +47,7 @@ RSpec.describe Herb::Lint::AutofixContext do
           Class.new(Herb::Lint::Rules::VisitorRule) do
             def self.rule_name = "test/unsafe-rule"
             def self.description = "Unsafe test rule"
+            def self.safe_autofixable? = false
             def self.unsafe_autofixable? = true
           end
         end
@@ -67,6 +69,7 @@ RSpec.describe Herb::Lint::AutofixContext do
             def self.rule_name = "test/safe-rule"
             def self.description = "Safe test rule"
             def self.safe_autofixable? = true
+            def self.unsafe_autofixable? = false
           end
         end
 
@@ -78,6 +81,7 @@ RSpec.describe Herb::Lint::AutofixContext do
           Class.new(Herb::Lint::Rules::VisitorRule) do
             def self.rule_name = "test/unsafe-rule"
             def self.description = "Unsafe test rule"
+            def self.safe_autofixable? = false
             def self.unsafe_autofixable? = true
           end
         end

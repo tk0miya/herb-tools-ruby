@@ -28,6 +28,8 @@ module Herb
 
           def self.safe_autofixable?: () -> bool
 
+          def self.unsafe_autofixable?: () -> bool
+
           # @rbs override
           def visit_document_node: ...
 

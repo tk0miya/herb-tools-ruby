@@ -46,6 +46,10 @@ module Herb
             true
           end
 
+          def self.unsafe_autofixable? #: bool
+            false
+          end
+
           # @rbs override
           def visit_erb_content_node(node)
             content = node.content.value
