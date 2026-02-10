@@ -41,7 +41,7 @@ RSpec.describe Herb::Lint::Context do
     end
 
     context "when rule severity is not configured but rule_registry is provided" do
-      let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false) }
+      let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false, config:) }
       let(:test_rule_class) do
         Class.new(Herb::Lint::Rules::Base) do
           def self.rule_name = "test-rule"
@@ -58,7 +58,7 @@ RSpec.describe Herb::Lint::Context do
     end
 
     context "when rule severity is not configured and rule is not in registry" do
-      let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false) }
+      let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false, config:) }
 
       it { is_expected.to eq("error") }
     end
@@ -68,7 +68,7 @@ RSpec.describe Herb::Lint::Context do
     end
 
     context "when configured severity overrides rule default" do
-      let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false) }
+      let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false, config:) }
       let(:config_hash) { { "linter" => { "rules" => { "test-rule" => { "severity" => "warning" } } } } }
       let(:test_rule_class) do
         Class.new(Herb::Lint::Rules::Base) do

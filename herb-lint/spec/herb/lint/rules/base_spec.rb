@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Herb::Lint::Rules::Base do
+  let(:matcher) { build(:pattern_matcher) }
+
   describe ".rule_name" do
     subject { described_class.rule_name }
 
@@ -29,7 +31,7 @@ RSpec.describe Herb::Lint::Rules::Base do
 
   describe "#initialize" do
     context "with default values" do
-      subject { described_class.new }
+      subject { described_class.new(matcher:) }
 
       it "uses default severity from class" do
         expect(subject.severity).to eq("warning")
@@ -37,7 +39,7 @@ RSpec.describe Herb::Lint::Rules::Base do
     end
 
     context "with custom values" do
-      subject { described_class.new(severity: "error") }
+      subject { described_class.new(severity: "error", matcher:) }
 
       it "uses provided values" do
         expect(subject.severity).to eq("error")
@@ -46,7 +48,9 @@ RSpec.describe Herb::Lint::Rules::Base do
   end
 
   describe "#check" do
-    subject { described_class.new.check(nil, nil) }
+    subject { described_class.new(matcher:).check(nil, nil) }
+
+    let(:matcher) { build(:pattern_matcher) }
 
     it "raises NotImplementedError" do
       expect { subject }.to raise_error(NotImplementedError, /must implement #check/)
@@ -67,7 +71,7 @@ RSpec.describe Herb::Lint::Rules::Base do
         end
       end
     end
-    let(:rule) { test_rule_class.new(severity: "error") }
+    let(:rule) { test_rule_class.new(severity: "error", matcher:) }
     let(:location) { build(:location) }
 
     it "creates an offense with correct attributes" do
@@ -80,7 +84,7 @@ RSpec.describe Herb::Lint::Rules::Base do
   end
 
   describe "subclass implementation" do
-    subject { concrete_rule_class.new }
+    subject { concrete_rule_class.new(matcher:) }
 
     let(:concrete_rule_class) do
       Class.new(described_class) do

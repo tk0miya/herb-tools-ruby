@@ -22,11 +22,13 @@ RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentValidRuleName do
   end
 
   describe "#check" do
-    subject { described_class.new.check(document, context) }
+    subject { described_class.new(matcher:).check(document, context) }
 
+    let(:matcher) { build(:pattern_matcher) }
     let(:document) { Herb.parse(source, track_whitespace: true) }
+    let(:config) { Herb::Config::LinterConfig.new({}) }
     let(:rule_registry) do
-      registry = Herb::Lint::RuleRegistry.new(builtins: false)
+      registry = Herb::Lint::RuleRegistry.new(builtins: false, config:)
       [
         described_class, # Register the rule being tested so severity_for can find its default_severity
         Herb::Lint::Rules::Erb::CommentSyntax,
@@ -38,7 +40,7 @@ RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentValidRuleName do
       ].each { |rule_class| registry.register(rule_class) }
       registry
     end
-    let(:context) { build(:context, source:, rule_registry:) }
+    let(:context) { build(:context, source:, config:, rule_registry:) }
 
     context "when the comment is not a directive" do
       let(:source) { "<%# just a regular comment %>" }

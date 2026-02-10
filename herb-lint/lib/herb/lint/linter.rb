@@ -17,7 +17,7 @@ module Herb
         @config = config
         @rule_registry = rule_registry
         @ignore_disable_comments = ignore_disable_comments
-        @rules = rule_registry.build_all(config:)
+        @rules = rule_registry.build_all
       end
 
       # Lint a single file and return the result.

@@ -72,7 +72,7 @@ module Herb
       # Build and configure a Linter instance.
       # @rbs registry: RuleRegistry? -- optional custom rule registry (defaults to all built-in rules)
       def build_linter(registry = nil) #: Linter
-        registry ||= RuleRegistry.new
+        registry ||= RuleRegistry.new(config:)
 
         Linter.new(config, rule_registry: registry, ignore_disable_comments:)
       end

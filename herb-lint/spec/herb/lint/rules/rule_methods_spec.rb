@@ -24,7 +24,8 @@ RSpec.describe Herb::Lint::Rules::RuleMethods do
       source = "<div>hello</div>"
       parse_result = Herb.parse(source, track_whitespace: true)
       context = build(:context, source:)
-      rule = rule_class.new
+      matcher = build(:pattern_matcher)
+      rule = rule_class.new(matcher:)
       offenses = rule.check(parse_result, context)
 
       expect(offenses.size).to eq(1)

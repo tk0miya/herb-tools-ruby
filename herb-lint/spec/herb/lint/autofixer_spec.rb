@@ -14,7 +14,7 @@ RSpec.describe Herb::Lint::Autofixer do
         node.body.clear
         true
       end
-    end.new
+    end.new(matcher: build(:pattern_matcher))
   end
 
   # Stub rule: clears the element body (unsafe autofix)
@@ -30,7 +30,7 @@ RSpec.describe Herb::Lint::Autofixer do
         node.body.clear
         true
       end
-    end.new
+    end.new(matcher: build(:pattern_matcher))
   end
 
   # Stub rule whose autofix always fails
@@ -45,7 +45,7 @@ RSpec.describe Herb::Lint::Autofixer do
       def autofix(_node, _parse_result)
         false
       end
-    end.new
+    end.new(matcher: build(:pattern_matcher))
   end
 
   let(:source) { "<div>hello</div>" }

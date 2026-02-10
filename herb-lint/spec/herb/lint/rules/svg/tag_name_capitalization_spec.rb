@@ -22,8 +22,9 @@ RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
   end
 
   describe "#check" do
-    subject { described_class.new.check(document, context) }
+    subject { described_class.new(matcher:).check(document, context) }
 
+    let(:matcher) { build(:pattern_matcher) }
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
@@ -188,8 +189,9 @@ RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
   end
 
   describe "#autofix" do
-    subject { described_class.new }
+    subject { described_class.new(matcher:) }
 
+    let(:matcher) { build(:pattern_matcher) }
     let(:document) { Herb.parse(source, track_whitespace: true) }
 
     describe "when fixing incorrect capitalization" do

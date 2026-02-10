@@ -22,8 +22,9 @@ RSpec.describe Herb::Lint::Rules::Html::HeadOnlyElements do
   end
 
   describe "#check" do
-    subject { described_class.new.check(document, context) }
+    subject { described_class.new(matcher:).check(document, context) }
 
+    let(:matcher) { build(:pattern_matcher) }
     let(:document) { Herb.parse(source) }
     let(:context) { build(:context) }
 

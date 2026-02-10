@@ -28,8 +28,9 @@ RSpec.describe Herb::Lint::Rules::Erb::RequireWhitespaceInsideTags do
   end
 
   describe "#check" do
-    subject { described_class.new.check(document, context) }
+    subject { described_class.new(matcher:).check(document, context) }
 
+    let(:matcher) { build(:pattern_matcher) }
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
@@ -263,8 +264,9 @@ RSpec.describe Herb::Lint::Rules::Erb::RequireWhitespaceInsideTags do
   end
 
   describe "#autofix" do
-    subject { described_class.new.autofix(node, document) }
+    subject { described_class.new(matcher:).autofix(node, document) }
 
+    let(:matcher) { build(:pattern_matcher) }
     let(:document) { Herb.parse(source, track_whitespace: true) }
 
     context "when fixing a tag with no whitespace on either side" do
@@ -341,10 +343,10 @@ RSpec.describe Herb::Lint::Rules::Erb::RequireWhitespaceInsideTags do
         nodes = document.value.children.select { |n| n.is_a?(Herb::AST::ERBContentNode) }
         expect(nodes.size).to eq(2)
 
-        result1 = described_class.new.autofix(nodes[0], document)
+        result1 = described_class.new(matcher: build(:pattern_matcher)).autofix(nodes[0], document)
         expect(result1).to be(true)
 
-        result2 = described_class.new.autofix(nodes[1], document)
+        result2 = described_class.new(matcher: build(:pattern_matcher)).autofix(nodes[1], document)
         expect(result2).to be(true)
 
         result = Herb::Printer::IdentityPrinter.print(document)

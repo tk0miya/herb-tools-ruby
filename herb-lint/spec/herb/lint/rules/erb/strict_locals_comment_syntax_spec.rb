@@ -22,8 +22,9 @@ RSpec.describe Herb::Lint::Rules::Erb::StrictLocalsCommentSyntax do
   end
 
   describe "#check" do
-    subject { described_class.new.check(document, context) }
+    subject { described_class.new(matcher:).check(document, context) }
 
+    let(:matcher) { build(:pattern_matcher) }
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context, file_path: "/path/to/_partial.html.erb") }
 
