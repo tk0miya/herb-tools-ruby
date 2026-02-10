@@ -31,25 +31,11 @@ module Herb
         #   <img src="<%= root_path %><%= "icon.png" %>" alt="Icon">
         #
         class PreferImageTagHelper < VisitorRule
-          def self.rule_name #: String
-            "erb-prefer-image-tag-helper"
-          end
-
-          def self.description #: String
-            "Prefer Rails image_tag helper over raw <img> tags"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "erb-prefer-image-tag-helper" #: String
+          def self.description = "Prefer Rails image_tag helper over raw <img> tags" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_element_node(node)

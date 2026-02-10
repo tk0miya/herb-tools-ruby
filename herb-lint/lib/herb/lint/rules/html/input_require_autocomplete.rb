@@ -38,25 +38,11 @@ module Herb
             ]
           ).freeze #: Set[String]
 
-          def self.rule_name #: String
-            "html-input-require-autocomplete"
-          end
-
-          def self.description #: String
-            "Require autocomplete attribute on input elements that accept text input"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-input-require-autocomplete" #: String
+          def self.description = "Require autocomplete attribute on input elements that accept text input" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_element_node(node)

@@ -38,25 +38,11 @@ module Herb
         #     C
         #   <% end %>
         class NoCaseNodeChildren < VisitorRule
-          def self.rule_name #: String
-            "erb-no-case-node-children"
-          end
-
-          def self.description #: String
-            "Disallow direct children inside case ERB blocks"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "erb-no-case-node-children" #: String
+          def self.description = "Disallow direct children inside case ERB blocks" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_erb_case_node(node)

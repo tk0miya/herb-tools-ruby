@@ -22,25 +22,11 @@ module Herb
         #   - Unclosed HTML tags: <div><span>unclosed
         #   - Malformed ERB syntax
         class NoErrors < Base
-          def self.rule_name #: String
-            "parser-no-errors"
-          end
-
-          def self.description #: String
-            "Report parser errors as lint offenses"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "parser-no-errors" #: String
+          def self.description = "Report parser errors as lint offenses" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # This method is not called by the Linter.
           # Parser errors are detected and reported directly by the Linter class

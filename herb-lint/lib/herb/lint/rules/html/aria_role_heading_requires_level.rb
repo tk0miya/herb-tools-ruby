@@ -18,25 +18,11 @@ module Herb
         # Bad:
         #   <div role="heading">Title</div>
         class AriaRoleHeadingRequiresLevel < VisitorRule
-          def self.rule_name #: String
-            "html-aria-role-heading-requires-level"
-          end
-
-          def self.description #: String
-            "Require aria-level on elements with role=\"heading\""
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-aria-role-heading-requires-level" #: String
+          def self.description = "Require aria-level on elements with role=\"heading\"" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_element_node(node)

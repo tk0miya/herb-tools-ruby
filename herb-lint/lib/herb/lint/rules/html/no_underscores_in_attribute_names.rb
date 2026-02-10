@@ -18,25 +18,11 @@ module Herb
         # Bad:
         #   <div data_value="foo">
         class NoUnderscoresInAttributeNames < VisitorRule
-          def self.rule_name #: String
-            "html-no-underscores-in-attribute-names"
-          end
-
-          def self.description #: String
-            "Disallow underscores in HTML attribute names"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-no-underscores-in-attribute-names" #: String
+          def self.description = "Disallow underscores in HTML attribute names" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_attribute_node(node)

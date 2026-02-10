@@ -30,25 +30,11 @@ module Herb
         #
         #   <%== # This should also be an ERB comment %>
         class CommentSyntax < VisitorRule
-          def self.rule_name #: String
-            "erb-comment-syntax"
-          end
-
-          def self.description #: String
-            "Enforce ERB comment style"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            true
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "erb-comment-syntax" #: String
+          def self.description = "Enforce ERB comment style" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = true #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_erb_content_node(node)

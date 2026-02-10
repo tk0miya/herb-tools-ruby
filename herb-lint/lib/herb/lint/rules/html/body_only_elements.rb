@@ -31,25 +31,11 @@ module Herb
             *DOCUMENT_ONLY_TAGS, *HTML_ONLY_TAGS, *HEAD_ONLY_TAGS, *HEAD_AND_BODY_TAGS
           ].freeze #: Array[String]
 
-          def self.rule_name #: String
-            "html-body-only-elements"
-          end
-
-          def self.description #: String
-            "Certain elements should only appear inside `<body>`"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-body-only-elements" #: String
+          def self.description = "Certain elements should only appear inside `<body>`" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs @element_stack: Array[String]
 

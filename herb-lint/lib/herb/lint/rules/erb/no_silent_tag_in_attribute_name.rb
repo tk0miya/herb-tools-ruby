@@ -22,25 +22,11 @@ module Herb
         #   <div data-<%- key -%>-id="thing"></div>
         #
         class NoSilentTagInAttributeName < VisitorRule
-          def self.rule_name #: String
-            "erb-no-silent-tag-in-attribute-name"
-          end
-
-          def self.description #: String
-            "Disallow ERB silent tags within HTML attribute names"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "erb-no-silent-tag-in-attribute-name" #: String
+          def self.description = "Disallow ERB silent tags within HTML attribute names" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_element_node(node)

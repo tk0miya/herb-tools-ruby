@@ -23,25 +23,11 @@ module Herb
         class AriaLevelMustBeValid < VisitorRule
           VALID_LEVELS = (1..6) #: Range[Integer]
 
-          def self.rule_name #: String
-            "html-aria-level-must-be-valid"
-          end
-
-          def self.description #: String
-            "aria-level attribute must have a valid integer value (1-6)"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-aria-level-must-be-valid" #: String
+          def self.description = "aria-level attribute must have a valid integer value (1-6)" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_attribute_node(node)

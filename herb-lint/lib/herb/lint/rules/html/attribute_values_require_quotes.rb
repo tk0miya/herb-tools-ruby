@@ -21,25 +21,11 @@ module Herb
         #   <div class=container>
         #   <input type=text>
         class AttributeValuesRequireQuotes < VisitorRule
-          def self.rule_name #: String
-            "html-attribute-values-require-quotes"
-          end
-
-          def self.description #: String
-            "Require quotes around attribute values"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            true
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-attribute-values-require-quotes" #: String
+          def self.description = "Require quotes around attribute values" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = true #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_attribute_node(node)

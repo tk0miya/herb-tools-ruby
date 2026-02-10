@@ -19,25 +19,11 @@ module Herb
         # Bad:
         #   <button disabled aria-disabled="true">Submit</button>
         class AvoidBothDisabledAndAriaDisabled < VisitorRule
-          def self.rule_name #: String
-            "html-avoid-both-disabled-and-aria-disabled"
-          end
-
-          def self.description #: String
-            "Disallow using both `disabled` and `aria-disabled` on the same element"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-avoid-both-disabled-and-aria-disabled" #: String
+          def self.description = "Disallow using both `disabled` and `aria-disabled` on the same element" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_element_node(node)

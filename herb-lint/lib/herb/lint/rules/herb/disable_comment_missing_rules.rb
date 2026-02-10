@@ -19,25 +19,11 @@ module Herb
         # Bad:
         #   <%# herb:disable %>
         class DisableCommentMissingRules < DirectiveRule
-          def self.rule_name #: String
-            "herb-disable-comment-missing-rules"
-          end
-
-          def self.description #: String
-            "Require rule names in herb:disable comments"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "herb-disable-comment-missing-rules" #: String
+          def self.description = "Require rule names in herb:disable comments" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           private
 

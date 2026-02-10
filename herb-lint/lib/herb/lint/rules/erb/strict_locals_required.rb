@@ -19,25 +19,11 @@ module Herb
         # Bad (missing strict_locals in partial):
         #   <div><%= name %></div>
         class StrictLocalsRequired < VisitorRule
-          def self.rule_name #: String
-            "erb-strict-locals-required"
-          end
-
-          def self.description #: String
-            "Require strict_locals magic comment in partial files"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "erb-strict-locals-required" #: String
+          def self.description = "Require strict_locals magic comment in partial files" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs @locals_definition_found: bool
 

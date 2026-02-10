@@ -21,25 +21,11 @@ module Herb
         #   <button tabindex="1">Click</button>
         #   <div tabindex="5">Content</div>
         class NoPositiveTabIndex < VisitorRule
-          def self.rule_name #: String
-            "html-no-positive-tab-index"
-          end
-
-          def self.description #: String
-            "Disallow positive tabindex values"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-no-positive-tab-index" #: String
+          def self.description = "Disallow positive tabindex values" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_attribute_node(node)

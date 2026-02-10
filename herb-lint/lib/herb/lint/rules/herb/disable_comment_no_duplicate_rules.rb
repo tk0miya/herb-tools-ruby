@@ -18,25 +18,11 @@ module Herb
         # Bad:
         #   <%# herb:disable rule1, rule1 %>
         class DisableCommentNoDuplicateRules < DirectiveRule
-          def self.rule_name #: String
-            "herb-disable-comment-no-duplicate-rules"
-          end
-
-          def self.description #: String
-            "Disallow duplicate rule names in herb:disable comments"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "herb-disable-comment-no-duplicate-rules" #: String
+          def self.description = "Disallow duplicate rule names in herb:disable comments" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           private
 

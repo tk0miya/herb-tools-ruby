@@ -19,25 +19,11 @@ module Herb
         # Bad:
         #   <div class="foo" class="bar">content</div>
         class NoDuplicateAttributes < VisitorRule
-          def self.rule_name #: String
-            "html-no-duplicate-attributes"
-          end
-
-          def self.description #: String
-            "Disallow duplicate attributes on the same element"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-no-duplicate-attributes" #: String
+          def self.description = "Disallow duplicate attributes on the same element" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_element_node(node)

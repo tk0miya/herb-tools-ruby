@@ -33,25 +33,11 @@ module Herb
         #     </lineargradient>
         #   </svg>
         class TagNameCapitalization < VisitorRule
-          def self.rule_name #: String
-            "svg-tag-name-capitalization"
-          end
-
-          def self.description #: String
-            "Enforce correct capitalization of SVG element names"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            true
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "svg-tag-name-capitalization" #: String
+          def self.description = "Enforce correct capitalization of SVG element names" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = true #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # SVG elements that require specific capitalization (camelCase).
           # Maps lowercase version to correct capitalization.

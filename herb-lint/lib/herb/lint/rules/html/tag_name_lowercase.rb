@@ -20,25 +20,11 @@ module Herb
         #   <DIV></DIV>
         #   <Span>text</Span>
         class TagNameLowercase < VisitorRule
-          def self.rule_name #: String
-            "html-tag-name-lowercase"
-          end
-
-          def self.description #: String
-            "Enforce lowercase tag names"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            true
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-tag-name-lowercase" #: String
+          def self.description = "Enforce lowercase tag names" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = true #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_element_node(node)

@@ -59,25 +59,11 @@ module Herb
             ]
           ).freeze #: Set[String]
 
-          def self.rule_name #: String
-            "html-boolean-attributes-no-value"
-          end
-
-          def self.description #: String
-            "Boolean attributes should not have values"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            true
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-boolean-attributes-no-value" #: String
+          def self.description = "Boolean attributes should not have values" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = true #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_attribute_node(node)

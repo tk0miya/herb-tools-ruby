@@ -27,25 +27,11 @@ module Herb
         #   %>
         #
         class NoEmptyTags < VisitorRule
-          def self.rule_name #: String
-            "erb-no-empty-tags"
-          end
-
-          def self.description #: String
-            "Disallow empty ERB tags"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            true
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "erb-no-empty-tags" #: String
+          def self.description = "Disallow empty ERB tags" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = true #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_erb_content_node(node)
