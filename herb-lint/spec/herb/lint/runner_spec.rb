@@ -9,58 +9,8 @@ RSpec.describe Herb::Lint::Runner do
     subject { runner.run(paths) }
 
     let(:runner) { described_class.new(config) }
-    # Stub rule that clears the body of <span> elements (unsafe autofix)
-    let(:unsafe_fixable_rule) do
-      Class.new(Herb::Lint::Rules::VisitorRule) do
-        def self.rule_name = "test/unsafe-fixable"
-        def self.description = "Test unsafe fixable rule"
-        def self.default_severity = "warning"
-        def self.safe_autofixable? = false
-        def self.unsafe_autofixable? = true
-
-        def visit_html_element_node(node)
-          if tag_name(node) == "span"
-            add_offense_with_autofix(
-              message: "Span should be empty",
-              location: node.location,
-              node:
-            )
-          end
-          super
-        end
-
-        def autofix(node, _parse_result)
-          node.body.clear
-          true
-        end
-      end
-    end
-    # Stub rule that clears the body of <div> elements (safe autofix)
-    let(:safe_fixable_rule) do
-      Class.new(Herb::Lint::Rules::VisitorRule) do
-        def self.rule_name = "test/safe-fixable"
-        def self.description = "Test safe fixable rule"
-        def self.default_severity = "warning"
-        def self.safe_autofixable? = true
-        def self.unsafe_autofixable? = false
-
-        def visit_html_element_node(node)
-          if tag_name(node) == "div"
-            add_offense_with_autofix(
-              message: "Div should be empty",
-              location: node.location,
-              node:
-            )
-          end
-          super
-        end
-
-        def autofix(node, _parse_result)
-          node.body.clear
-          true
-        end
-      end
-    end
+    let(:safe_fixable_rule) { TestRules::SafeFixableRule }
+    let(:unsafe_fixable_rule) { TestRules::UnsafeFixableRule }
     let(:config) { Herb::Config::LinterConfig.new(config_hash) }
     let(:config_hash) { { "linter" => linter_config } }
     let(:linter_config) { { "include" => include_patterns, "exclude" => exclude_patterns } }
