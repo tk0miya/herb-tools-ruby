@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "herb/core"
+
 # Require files in ASCII order
 require_relative "config/defaults"
 require_relative "config/errors"

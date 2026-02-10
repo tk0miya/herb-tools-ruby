@@ -1,7 +1,13 @@
 PATH
+  remote: ../herb-core
+  specs:
+    herb-core (0.1.0)
+
+PATH
   remote: .
   specs:
     herb-config (0.1.0)
+      herb-core
       json-schema (~> 6.0)
 
 GEM
@@ -174,6 +180,7 @@ PLATFORMS
 
 DEPENDENCIES
   herb-config!
+  herb-core!
   irb
   rake
   rbs
