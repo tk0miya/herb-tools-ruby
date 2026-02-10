@@ -13,7 +13,6 @@ module Herb
       # Check if configuration is valid
       def valid?: () -> bool
 
-      # Validate configuration and raise error if invalid
       def validate!: () -> void
 
       # Return list of validation errors
@@ -23,7 +22,8 @@ module Herb
 
       attr_reader config: Hash[String, untyped]
 
-      # @rbs @errors: Array[String]
+      @errors: Array[String]
+
       def validate_config: () -> void
 
       # Load JSON Schema from file

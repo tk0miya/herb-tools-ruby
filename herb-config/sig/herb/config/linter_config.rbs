@@ -51,9 +51,8 @@ module Herb
 
       # Build a pattern matcher for a specific rule.
       # Rule patterns are independent from global linter patterns (not additive).
-      # @rbs base_dir: String
       # @rbs rule_name: String
-      def build_pattern_matcher: (String base_dir, String rule_name) -> PatternMatcher
+      def build_pattern_matcher: (String rule_name) -> PatternMatcher
 
       private
 

@@ -24,9 +24,10 @@ RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentValidRuleName do
   describe "#check" do
     subject { described_class.new.check(document, context) }
 
+    let(:config) { Herb::Config::LinterConfig.new({}) }
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:rule_registry) do
-      registry = Herb::Lint::RuleRegistry.new(builtins: false)
+      registry = Herb::Lint::RuleRegistry.new(config:, builtins: false)
       [
         described_class, # Register the rule being tested so severity_for can find its default_severity
         Herb::Lint::Rules::Erb::CommentSyntax,

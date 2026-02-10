@@ -20,6 +20,7 @@ module Herb
       end
 
       # Validate configuration and raise error if invalid
+
       def validate! #: void
         return if valid?
 
@@ -37,6 +38,7 @@ module Herb
       attr_reader :config #: Hash[String, untyped]
 
       # @rbs @errors: Array[String]
+
       def validate_config #: void
         return if @errors
 

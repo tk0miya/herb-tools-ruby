@@ -178,7 +178,7 @@ RSpec.describe Herb::Lint::Runner do
     end
 
     context "with autofix: true" do
-      let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false, rules: [safe_fixable_rule, unsafe_fixable_rule]) }
+      let(:rule_registry) { Herb::Lint::RuleRegistry.new(config:, builtins: false, rules: [safe_fixable_rule, unsafe_fixable_rule]) }
       let(:runner) { described_class.new(config, autofix: true, rule_registry:) }
 
       context "with autofixable files" do
@@ -216,7 +216,7 @@ RSpec.describe Herb::Lint::Runner do
     end
 
     context "with autofix: true, unsafe: true" do
-      let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false, rules: [safe_fixable_rule, unsafe_fixable_rule]) }
+      let(:rule_registry) { Herb::Lint::RuleRegistry.new(config:, builtins: false, rules: [safe_fixable_rule, unsafe_fixable_rule]) }
       let(:runner) { described_class.new(config, autofix: true, unsafe: true, rule_registry:) }
 
       it "applies both safe and unsafe fixes" do
@@ -231,7 +231,7 @@ RSpec.describe Herb::Lint::Runner do
     end
 
     context "with autofix: false" do
-      let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false, rules: [safe_fixable_rule]) }
+      let(:rule_registry) { Herb::Lint::RuleRegistry.new(config:, builtins: false, rules: [safe_fixable_rule]) }
       let(:runner) { described_class.new(config, autofix: false, rule_registry:) }
 
       it "does not apply any fixes" do

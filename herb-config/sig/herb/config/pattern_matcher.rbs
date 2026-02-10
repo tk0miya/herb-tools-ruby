@@ -3,21 +3,17 @@
 module Herb
   module Config
     # Handles file pattern matching for rules.
-    # Evaluates paths relative to base_dir.
     class PatternMatcher
-      attr_reader base_dir: String
-
       attr_reader includes: Array[String]
 
       attr_reader excludes: Array[String]
 
       attr_reader only: Array[String]
 
-      # @rbs base_dir: String
       # @rbs includes: Array[String]
       # @rbs excludes: Array[String]
       # @rbs only: Array[String]
-      def initialize: (base_dir: String, ?includes: Array[String], ?excludes: Array[String], ?only: Array[String]) -> void
+      def initialize: (?includes: Array[String], ?excludes: Array[String], ?only: Array[String]) -> void
 
       # Check if the given file path matches the patterns.
       # @rbs file_path: String -- relative path from base_dir
