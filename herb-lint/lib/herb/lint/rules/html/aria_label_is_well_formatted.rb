@@ -21,25 +21,11 @@ module Herb
         #   <button aria-label="   ">Submit</button>
         #   <button aria-label="submit form">Submit</button>
         class AriaLabelIsWellFormatted < VisitorRule
-          def self.rule_name #: String
-            "html-aria-label-is-well-formatted"
-          end
-
-          def self.description #: String
-            "Require well-formatted aria-label values"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-aria-label-is-well-formatted" #: String
+          def self.description = "Require well-formatted aria-label values" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_element_node(node)

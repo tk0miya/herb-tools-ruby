@@ -40,25 +40,11 @@ module Herb
             wbr
           ].freeze #: Array[String]
 
-          def self.rule_name #: String
-            "html-no-self-closing"
-          end
-
-          def self.description #: String
-            "Consistent self-closing style for void elements"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            true
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-no-self-closing" #: String
+          def self.description = "Consistent self-closing style for void elements" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = true #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_element_node(node)

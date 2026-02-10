@@ -109,25 +109,11 @@ module Herb
             treeitem
           ].to_set.freeze #: Set[String]
 
-          def self.rule_name #: String
-            "html-aria-role-must-be-valid"
-          end
-
-          def self.description #: String
-            "The role attribute must contain a valid WAI-ARIA role"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-aria-role-must-be-valid" #: String
+          def self.description = "The role attribute must contain a valid WAI-ARIA role" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_element_node(node)

@@ -26,25 +26,11 @@ module Herb
         class HeadOnlyElements < VisitorRule
           HEAD_ONLY_ELEMENTS = %w[title meta link base].freeze #: Array[String]
 
-          def self.rule_name #: String
-            "html-head-only-elements"
-          end
-
-          def self.description #: String
-            "Disallow head-only elements outside of <head>"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-head-only-elements" #: String
+          def self.description = "Disallow head-only elements outside of <head>" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs @inside_head: bool
 

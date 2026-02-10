@@ -22,25 +22,11 @@ module Herb
         #   <%# herb:disable html-img-require-alts %>
         #   <%# herb:disable nonexistent-rule %>
         class DisableCommentValidRuleName < DirectiveRule
-          def self.rule_name #: String
-            "herb-disable-comment-valid-rule-name"
-          end
-
-          def self.description #: String
-            "Disallow unknown rule names in herb:disable comments"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "herb-disable-comment-valid-rule-name" #: String
+          def self.description = "Disallow unknown rule names in herb:disable comments" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           private
 

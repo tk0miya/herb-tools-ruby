@@ -29,25 +29,11 @@ module Herb
         #   <% end %>
         #
         class NoOutputControlFlow < VisitorRule
-          def self.rule_name #: String
-            "erb-no-output-control-flow"
-          end
-
-          def self.description #: String
-            "Disallow control flow statements in ERB output tags"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "erb-no-output-control-flow" #: String
+          def self.description = "Disallow control flow statements in ERB output tags" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_erb_if_node(node)

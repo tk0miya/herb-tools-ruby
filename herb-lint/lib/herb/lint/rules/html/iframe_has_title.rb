@@ -19,25 +19,11 @@ module Herb
         #   <iframe src="content.html"></iframe>
         #   <iframe src="content.html" title=""></iframe>
         class IframeHasTitle < VisitorRule
-          def self.rule_name #: String
-            "html-iframe-has-title"
-          end
-
-          def self.description #: String
-            "Require title attribute on iframe elements"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-iframe-has-title" #: String
+          def self.description = "Require title attribute on iframe elements" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_element_node(node)

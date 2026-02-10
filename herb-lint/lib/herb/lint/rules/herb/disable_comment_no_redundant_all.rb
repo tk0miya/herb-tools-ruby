@@ -19,25 +19,11 @@ module Herb
         # Bad:
         #   <%# herb:disable all, rule-name %>
         class DisableCommentNoRedundantAll < DirectiveRule
-          def self.rule_name #: String
-            "herb-disable-comment-no-redundant-all"
-          end
-
-          def self.description #: String
-            "Disallow specific rule names alongside `all` in herb:disable comments"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "herb-disable-comment-no-redundant-all" #: String
+          def self.description = "Disallow specific rule names alongside `all` in herb:disable comments" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           private
 

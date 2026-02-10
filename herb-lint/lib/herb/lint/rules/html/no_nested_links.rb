@@ -21,25 +21,11 @@ module Herb
         #     <a href="/inner">Nested link</a>
         #   </a>
         class NoNestedLinks < VisitorRule
-          def self.rule_name #: String
-            "html-no-nested-links"
-          end
-
-          def self.description #: String
-            "Disallow nesting of anchor elements"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-no-nested-links" #: String
+          def self.description = "Disallow nesting of anchor elements" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs @anchor_depth: Integer
 

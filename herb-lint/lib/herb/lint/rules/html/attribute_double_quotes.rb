@@ -21,25 +21,11 @@ module Herb
         #   <div class=container>
         #   <input type=text>
         class AttributeDoubleQuotes < VisitorRule
-          def self.rule_name #: String
-            "html-attribute-double-quotes"
-          end
-
-          def self.description #: String
-            "Attribute values should be quoted"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            true
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-attribute-double-quotes" #: String
+          def self.description = "Attribute values should be quoted" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = true #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_attribute_node(node)

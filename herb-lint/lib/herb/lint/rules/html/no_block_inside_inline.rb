@@ -38,25 +38,11 @@ module Herb
             ]
           ).freeze #: Set[String]
 
-          def self.rule_name #: String
-            "html-no-block-inside-inline"
-          end
-
-          def self.description #: String
-            "Disallow block-level elements nested inside inline elements"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-no-block-inside-inline" #: String
+          def self.description = "Disallow block-level elements nested inside inline elements" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs @inline_depth: Integer
 

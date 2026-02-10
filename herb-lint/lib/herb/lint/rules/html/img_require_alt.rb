@@ -26,25 +26,11 @@ module Herb
         #   <img src="/logo.png">
         #   <img src="/logo.png" />
         class ImgRequireAlt < VisitorRule
-          def self.rule_name #: String
-            "html-img-require-alt"
-          end
-
-          def self.description #: String
-            "Require alt attribute on img tags"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-img-require-alt" #: String
+          def self.description = "Require alt attribute on img tags" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_element_node(node)

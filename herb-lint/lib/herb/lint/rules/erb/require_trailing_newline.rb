@@ -24,25 +24,11 @@ module Herb
         #   (Note: File ends without a trailing newline)
         #
         class RequireTrailingNewline < VisitorRule
-          def self.rule_name #: String
-            "erb-require-trailing-newline"
-          end
-
-          def self.description #: String
-            "Require a trailing newline at the end of the file"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            true
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "erb-require-trailing-newline" #: String
+          def self.description = "Require a trailing newline at the end of the file" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = true #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_document_node(node)

@@ -15,25 +15,11 @@ module Herb
         # - Trailing commas in the rule list (e.g. `herb:disable rule-name,`)
         # - Consecutive commas in the rule list (e.g. `herb:disable rule1,,rule2`)
         class DisableCommentMalformed < DirectiveRule
-          def self.rule_name #: String
-            "herb-disable-comment-malformed"
-          end
-
-          def self.description #: String
-            "Detect malformed herb:disable comments"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "herb-disable-comment-malformed" #: String
+          def self.description = "Detect malformed herb:disable comments" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           private
 

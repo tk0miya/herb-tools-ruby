@@ -22,25 +22,11 @@ module Herb
         #     <p>Content</p>
         #   <% end -%>
         class RightTrim < VisitorRule
-          def self.rule_name #: String
-            "erb-right-trim"
-          end
-
-          def self.description #: String
-            "Use `-%>` instead of `=%>` for right-trimming"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            true
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "erb-right-trim" #: String
+          def self.description = "Use `-%>` instead of `=%>` for right-trimming" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = true #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # Check each ERB node for the obscure =%> syntax
           # @rbs override

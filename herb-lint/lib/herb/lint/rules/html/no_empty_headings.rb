@@ -22,25 +22,11 @@ module Herb
         class NoEmptyHeadings < VisitorRule
           HEADING_TAGS = %w[h1 h2 h3 h4 h5 h6].freeze #: Array[String]
 
-          def self.rule_name #: String
-            "html-no-empty-headings"
-          end
-
-          def self.description #: String
-            "Heading elements must not be empty"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-no-empty-headings" #: String
+          def self.description = "Heading elements must not be empty" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_element_node(node)

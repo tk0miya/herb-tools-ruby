@@ -26,25 +26,11 @@ module Herb
         class StrictLocalsCommentSyntax < VisitorRule
           STATEMENT_TAG_COMMENT_PATTERN = /\A\s*#\s*/
 
-          def self.rule_name #: String
-            "erb-strict-locals-comment-syntax"
-          end
-
-          def self.description #: String
-            "Enforce correct syntax for strict_locals magic comment"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "erb-strict-locals-comment-syntax" #: String
+          def self.description = "Enforce correct syntax for strict_locals magic comment" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs @first_locals_line: Integer?
 

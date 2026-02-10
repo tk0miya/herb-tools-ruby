@@ -73,25 +73,11 @@ module Herb
             ]
           ).freeze #: Set[String]
 
-          def self.rule_name #: String
-            "html-aria-attribute-must-be-valid"
-          end
-
-          def self.description #: String
-            "ARIA attributes must be valid"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-aria-attribute-must-be-valid" #: String
+          def self.description = "ARIA attributes must be valid" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_attribute_node(node)

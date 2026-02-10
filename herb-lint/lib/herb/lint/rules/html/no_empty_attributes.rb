@@ -25,25 +25,11 @@ module Herb
           # Attributes where an empty value is semantically valid.
           ALLOWED_EMPTY_ATTRIBUTES = %w[alt].freeze #: Array[String]
 
-          def self.rule_name #: String
-            "html-no-empty-attributes"
-          end
-
-          def self.description #: String
-            "Disallow empty attribute values"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-no-empty-attributes" #: String
+          def self.description = "Disallow empty attribute values" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_element_node(node)

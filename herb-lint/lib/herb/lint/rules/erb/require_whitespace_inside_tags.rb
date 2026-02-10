@@ -20,25 +20,11 @@ module Herb
         #   <%value%>
         #   <%=value%>
         class RequireWhitespaceInsideTags < VisitorRule
-          def self.rule_name #: String
-            "erb-require-whitespace-inside-tags"
-          end
-
-          def self.description #: String
-            "Require whitespace inside ERB tag delimiters"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            true
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "erb-require-whitespace-inside-tags" #: String
+          def self.description = "Require whitespace inside ERB tag delimiters" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = true #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_erb_content_node(node)

@@ -21,25 +21,11 @@ module Herb
         #   <div id="content">...</div>
         #   <div id="content">...</div>
         class NoDuplicateIds < VisitorRule
-          def self.rule_name #: String
-            "html-no-duplicate-ids"
-          end
-
-          def self.description #: String
-            "Disallow duplicate id attribute values"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-no-duplicate-ids" #: String
+          def self.description = "Disallow duplicate id attribute values" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs @seen_ids: Hash[String, Herb::Location]
 

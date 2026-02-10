@@ -57,25 +57,11 @@ module Herb
         #   <%= user.email %>
         #
         class NoExtraNewline < Base
-          def self.rule_name #: String
-            "erb-no-extra-newline"
-          end
-
-          def self.description #: String
-            "Disallow more than 2 consecutive blank lines in ERB files"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "erb-no-extra-newline" #: String
+          def self.description = "Disallow more than 2 consecutive blank lines in ERB files" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def check(_document, context)

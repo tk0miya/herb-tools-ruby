@@ -19,25 +19,11 @@ module Herb
         # Bad:
         #   <span title="More info">Hover me</span>
         class NoTitleAttribute < VisitorRule
-          def self.rule_name #: String
-            "html-no-title-attribute"
-          end
-
-          def self.description #: String
-            "Disallow use of `title` attribute"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-no-title-attribute" #: String
+          def self.description = "Disallow use of `title` attribute" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_attribute_node(node)

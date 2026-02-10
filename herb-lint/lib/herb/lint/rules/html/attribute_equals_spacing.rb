@@ -20,25 +20,11 @@ module Herb
         #   <div class ="foo">
         #   <div class= "foo">
         class AttributeEqualsSpacing < VisitorRule
-          def self.rule_name #: String
-            "html-attribute-equals-spacing"
-          end
-
-          def self.description #: String
-            "Disallow spaces around `=` in attribute assignments"
-          end
-
-          def self.default_severity #: String
-            "warning"
-          end
-
-          def self.safe_autofixable? #: bool
-            true
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-attribute-equals-spacing" #: String
+          def self.description = "Disallow spaces around `=` in attribute assignments" #: String
+          def self.default_severity = "warning" #: String
+          def self.safe_autofixable? = true #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_attribute_node(node)

@@ -21,25 +21,11 @@ module Herb
         #   <meta name="description" content="First">
         #   <meta name="description" content="Second">
         class NoDuplicateMetaNames < VisitorRule
-          def self.rule_name #: String
-            "html-no-duplicate-meta-names"
-          end
-
-          def self.description #: String
-            "Disallow duplicate meta elements with the same name attribute"
-          end
-
-          def self.default_severity #: String
-            "error"
-          end
-
-          def self.safe_autofixable? #: bool
-            false
-          end
-
-          def self.unsafe_autofixable? #: bool
-            false
-          end
+          def self.rule_name = "html-no-duplicate-meta-names" #: String
+          def self.description = "Disallow duplicate meta elements with the same name attribute" #: String
+          def self.default_severity = "error" #: String
+          def self.safe_autofixable? = false #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs @seen_meta_names: Hash[String, Herb::Location]
 
