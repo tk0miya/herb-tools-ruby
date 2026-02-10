@@ -191,6 +191,97 @@ Detailed design available: [herb-lint-autofix-design.md](../design/herb-lint-aut
 
 ---
 
+### 11. Formatter include/exclude Patterns
+
+**Status:** ⏸️ Blocked by herb-format gem implementation
+
+**Location:** `herb-format/lib/herb/format/config.rb` (future)
+
+**Future Enhancements:**
+- [ ] Read `formatter.include` from config
+- [ ] Read `formatter.exclude` from config
+- [ ] Merge with top-level `files` patterns
+- [ ] Add unit tests
+
+**Configuration Example:**
+
+```yaml
+# .herb.yml
+files:
+  exclude:
+    - 'vendor/**/*'
+
+formatter:
+  include:
+    - '**/*.html.erb'
+  exclude:
+    - 'tmp/**/*'
+```
+
+**Priority:** Medium
+
+**Implementation Complexity:** Low
+
+**Dependencies:** herb-format gem implementation
+
+**Reference:** [Phase 17: Advanced Configuration Features](./phase-17-advanced-config.md) - Originally Task 17.6
+
+---
+
+### 12. Formatter Rewriter Hooks
+
+**Status:** ⏸️ Blocked by herb-format gem implementation
+
+**Location:** `herb-format/lib/herb/format/rewriter_pipeline.rb` (future)
+
+**Future Enhancements:**
+- [ ] Implement RewriterRegistry
+- [ ] Implement pre-format rewriter pipeline
+- [ ] Implement post-format rewriter pipeline
+- [ ] Add unit tests
+- [ ] Document rewriter API
+
+**Configuration Example:**
+
+```yaml
+# .herb.yml
+formatter:
+  rewriter:
+    pre:
+      - 'normalize-whitespace'
+      - 'custom-preprocessor'
+    post:
+      - 'trim-trailing-spaces'
+      - 'ensure-final-newline'
+```
+
+**Rewriter API:**
+
+```ruby
+module Herb
+  module Format
+    module Rewriter
+      class Base
+        # @rbs ast: Herb::AST::Node
+        def rewrite(ast) #: Herb::AST::Node
+          # Transform AST
+        end
+      end
+    end
+  end
+end
+```
+
+**Priority:** Low
+
+**Implementation Complexity:** Medium
+
+**Dependencies:** herb-format gem implementation
+
+**Reference:** [Phase 17: Advanced Configuration Features](./phase-17-advanced-config.md) - Originally Task 17.7
+
+---
+
 ## Priority Summary
 
 ### High Priority (Consider immediately after MVP)
@@ -203,6 +294,7 @@ Detailed design available: [herb-lint-autofix-design.md](../design/herb-lint-aut
 3. RuleRegistry dynamic discovery
 4. Multiple Reporter implementations
 5. Custom rule loading
+6. Formatter include/exclude patterns (requires herb-format)
 
 ### Low Priority (When needed)
 1. PatternMatcher separation

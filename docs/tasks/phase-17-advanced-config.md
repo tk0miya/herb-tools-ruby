@@ -358,80 +358,14 @@ herb-lint test.html.erb
 
 ---
 
-## Part D: Formatter Configuration (Deferred)
+## Part D: Formatter Configuration (Moved to Phase 22)
 
-These tasks depend on `herb-format` gem implementation.
+Formatter-related configuration tasks have been moved to [Phase 22: Future Enhancements](./phase-22-future-enhancements.md) as they depend on `herb-format` gem implementation:
 
-### Task 17.6: Formatter include/exclude Patterns
+- **Task 17.6** → Future Enhancement #11: Formatter include/exclude Patterns
+- **Task 17.7** → Future Enhancement #12: Formatter Rewriter Hooks
 
-**Status:** ⏸️ Blocked by herb-format gem
-
-**Location:** `herb-format/lib/herb/format/config.rb` (future)
-
-- [ ] Read `formatter.include` from config
-- [ ] Read `formatter.exclude` from config
-- [ ] Merge with top-level `files` patterns
-- [ ] Add unit tests
-
-**Configuration:**
-
-```yaml
-# .herb.yml
-files:
-  exclude:
-    - 'vendor/**/*'
-
-formatter:
-  include:
-    - '**/*.html.erb'
-  exclude:
-    - 'tmp/**/*'
-```
-
----
-
-### Task 17.7: Formatter Rewriter Hooks
-
-**Status:** ⏸️ Blocked by herb-format gem
-
-**Location:** `herb-format/lib/herb/format/rewriter_pipeline.rb` (future)
-
-- [ ] Implement RewriterRegistry
-- [ ] Implement pre-format rewriter pipeline
-- [ ] Implement post-format rewriter pipeline
-- [ ] Add unit tests
-- [ ] Document rewriter API
-
-**Configuration:**
-
-```yaml
-# .herb.yml
-formatter:
-  rewriter:
-    pre:
-      - 'normalize-whitespace'
-      - 'custom-preprocessor'
-    post:
-      - 'trim-trailing-spaces'
-      - 'ensure-final-newline'
-```
-
-**Rewriter API:**
-
-```ruby
-module Herb
-  module Format
-    module Rewriter
-      class Base
-        # @rbs ast: Herb::AST::Node
-        def rewrite(ast) #: Herb::AST::Node
-          # Transform AST
-        end
-      end
-    end
-  end
-end
-```
+These features will be implemented after the herb-format gem is complete.
 
 ---
 
@@ -496,12 +430,10 @@ herb-lint lib/views/test.html.erb
 | 17.2 | herb-config | Top-level files section | ✅ Completed |
 | 17.4 | herb-config + herb-lint | Per-rule include/only/exclude | Ready |
 | 17.5 | herb-lint | Rule severity config override | Ready |
-| 17.6 | herb-format | Formatter include/exclude | Blocked |
-| 17.7 | herb-format | Rewriter hooks | Blocked |
 
-**Total: 6 tasks (2 completed, 2 ready, 2 blocked)**
+**Total: 4 tasks (2 completed, 2 ready)**
 
-**Note:** Task 17.5 addresses rule severity configuration from config files, which was identified during Phase 17.1 implementation and initially deferred. Tasks 17.6-17.7 are formatter-related features that are blocked pending herb-format gem implementation.
+**Note:** Task 17.5 addresses rule severity configuration from config files, which was identified during Phase 17.1 implementation and initially deferred. Tasks 17.6-17.7 have been moved to [Phase 22: Future Enhancements](./phase-22-future-enhancements.md) as they depend on herb-format gem implementation.
 
 ## Related Documents
 
@@ -532,6 +464,7 @@ All new features are optional and backward compatible:
 **Medium Priority:**
 - Task 17.2 (files section) - Nice to have, not critical
 - Task 17.4 (per-rule patterns) - Advanced feature, less common
+- Task 17.5 (rule severity override) - Flexibility for gradual adoption
 
-**Deferred:**
-- Tasks 17.5-17.6 - Blocked by herb-format implementation
+**Moved to Phase 22:**
+- Tasks 17.6-17.7 - Formatter features moved to Future Enhancements
