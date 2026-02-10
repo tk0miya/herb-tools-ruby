@@ -27,7 +27,111 @@ RSpec.describe Herb::Lint::Rules::Erb::RightTrim do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when ERB tag uses obscure =%> syntax" do
+    # Good examples from documentation
+    context "with <%= title -%>" do
+      let(:source) { "<%= title -%>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with <% if condition? %> ... <% end %>" do
+      let(:source) do
+        <<~ERB
+          <% if condition? %>
+           <h1>Content</h1>
+          <% end %>
+        ERB
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with <% items.each do |item| %> ... <% end %>" do
+      let(:source) do
+        <<~ERB
+          <% items.each do |item| %>
+           <li><%= item -%></li>
+          <% end %>
+        ERB
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with <%= title =%>" do
+      let(:source) { "<%= title =%>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("Use `-%>` instead of `=%>`")
+      end
+    end
+
+    context "with <% title =%>" do
+      let(:source) { "<% title =%>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("Use `-%>` instead of `=%>`")
+      end
+    end
+
+    context "with <% if true =%> ... <% end %>" do
+      let(:source) do
+        <<~ERB
+          <% if true =%>
+           <h1>Content</h1>
+          <% end %>
+        ERB
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("Use `-%>` instead of `=%>`")
+      end
+    end
+
+    context "with <% items.each do |item| =%> ... <% end %>" do
+      let(:source) do
+        <<~ERB
+          <% items.each do |item| =%>
+           <li><%= item %></li>
+          <% end %>
+        ERB
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("Use `-%>` instead of `=%>`")
+      end
+    end
+
+    # Edge cases not covered by documentation
+    context "when no ERB tags exist" do
+      let(:source) { "<div>Plain HTML</div>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when ERB comment uses =%> syntax" do
+      let(:source) { "<%# comment =%>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("Use `-%>` instead of `=%>`")
+      end
+    end
+
+    context "when multiple =%> tags are used" do
       let(:source) do
         <<~ERB
           <% if condition =%>
@@ -43,75 +147,6 @@ RSpec.describe Herb::Lint::Rules::Erb::RightTrim do
           "Use `-%>` instead of `=%>` for right-trimming. " \
           "The `=%>` syntax is obscure and not well-supported in most ERB engines."
         )
-      end
-    end
-
-    context "when ERB tag uses standard %> syntax" do
-      let(:source) do
-        <<~ERB
-          <% if condition %>
-            <p>Content</p>
-          <% end %>
-        ERB
-      end
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when ERB tag uses standard -%> syntax" do
-      let(:source) do
-        <<~ERB
-          <% if condition -%>
-            <p>Content</p>
-          <% end -%>
-        ERB
-      end
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when ERB output tag uses =%> syntax" do
-      let(:source) { "<%= value =%>" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to include("Use `-%>` instead of `=%>`")
-      end
-    end
-
-    context "when mixing =%> with other syntaxes" do
-      let(:source) do
-        <<~ERB
-          <% if condition =%>
-            <%= value %>
-          <% end -%>
-        ERB
-      end
-
-      it "reports offense only for =%> tag" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to include("Use `-%>` instead of `=%>`")
-      end
-    end
-
-    context "when no ERB tags exist" do
-      let(:source) { "<div>Plain HTML</div>" }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when ERB comment uses =%> syntax" do
-      let(:source) { "<%# comment =%>" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to include("Use `-%>` instead of `=%>`")
       end
     end
   end

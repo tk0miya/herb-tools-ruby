@@ -4,20 +4,32 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that detects the obscure `=%>` right-trim syntax in ERB tags.
-        #
-        # The `=%>` syntax is obscure and not well-supported in most ERB engines.
-        # Use `-%>` instead for right-trimming whitespace after ERB tags.
-        #
-        # Bad:
-        #   <% if condition =%>
-        #     <p>Content</p>
-        #   <% end =%>
+        # Description:
+        #   This rule enforces the use of `-%>` for right-trimming ERB output tags (like `<%= %>`) instead of `=%>`.
         #
         # Good:
-        #   <% if condition -%>
-        #     <p>Content</p>
-        #   <% end -%>
+        #   <%= title -%>
+        #
+        #   <% if condition? %>
+        #    <h1>Content</h1>
+        #   <% end %>
+        #
+        #   <% items.each do |item| %>
+        #    <li><%= item -%></li>
+        #   <% end %>
+        #
+        # Bad:
+        #   <%= title =%>
+        #
+        #   <% title =%>
+        #
+        #   <% if true =%>
+        #    <h1>Content</h1>
+        #   <% end %>
+        #
+        #   <% items.each do |item| =%>
+        #    <li><%= item %></li>
+        #   <% end %>
         class RightTrim < VisitorRule
           def self.rule_name: () -> String
 
