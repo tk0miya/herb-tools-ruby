@@ -56,6 +56,10 @@ module Herb
             true
           end
 
+          def self.unsafe_autofixable? #: bool
+            false
+          end
+
           # @rbs override
           def visit_html_element_node(node)
             if void_element?(node) && self_closing?(node)

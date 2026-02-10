@@ -41,6 +41,14 @@ module Herb
             "warning"
           end
 
+          def self.safe_autofixable? #: bool
+            false
+          end
+
+          def self.unsafe_autofixable? #: bool
+            false
+          end
+
           # @rbs override
           def visit_erb_if_node(node)
             check_output_tag(node, "if")

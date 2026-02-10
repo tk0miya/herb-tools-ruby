@@ -11,7 +11,7 @@ module Herb
         # including spaces between the tag name and attributes,
         # between consecutive attributes, trailing spaces before `>`,
         # incorrect spacing around `/>`, and multiline indentation.
-        class NoSpaceInTag < VisitorRule
+        class NoSpaceInTag < VisitorRule # rubocop:disable Metrics/ClassLength
           EXTRA_SPACE_NO_SPACE = "Extra space detected where there should be no space."
           EXTRA_SPACE_SINGLE_SPACE = "Extra space detected where there should be a single space."
           EXTRA_SPACE_SINGLE_BREAK = "Extra space detected where there should be a single space or a single line break."
@@ -20,6 +20,14 @@ module Herb
           def self.rule_name = "html-no-space-in-tag" #: String
           def self.description = "Disallow extra whitespace inside HTML tags" #: String
           def self.default_severity = "warning" #: String
+
+          def self.safe_autofixable? #: bool
+            false
+          end
+
+          def self.unsafe_autofixable? #: bool
+            false
+          end
 
           # @rbs override
           def visit_html_open_tag_node(node)

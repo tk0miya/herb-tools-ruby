@@ -45,7 +45,10 @@ RSpec.describe Herb::Lint::Context do
       let(:test_rule_class) do
         Class.new(Herb::Lint::Rules::Base) do
           def self.rule_name = "test-rule"
+          def self.description = "Test rule"
           def self.default_severity = "info"
+          def self.safe_autofixable? = false
+          def self.unsafe_autofixable? = false
         end
       end
 
@@ -70,7 +73,10 @@ RSpec.describe Herb::Lint::Context do
       let(:test_rule_class) do
         Class.new(Herb::Lint::Rules::Base) do
           def self.rule_name = "test-rule"
+          def self.description = "Test rule"
           def self.default_severity = "error"
+          def self.safe_autofixable? = false
+          def self.unsafe_autofixable? = false
         end
       end
 

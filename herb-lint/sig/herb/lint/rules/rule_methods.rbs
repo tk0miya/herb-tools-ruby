@@ -18,9 +18,11 @@ module Herb
           def default_severity: () -> String
 
           # Whether the rule provides safe autofix.
+          # Subclasses must implement this method.
           def safe_autofixable?: () -> bool
 
           # Whether the rule provides unsafe autofix (requires --fix-unsafely).
+          # Subclasses must implement this method.
           def unsafe_autofixable?: () -> bool
         end
 

@@ -43,6 +43,14 @@ module Herb
             "error"
           end
 
+          def self.safe_autofixable? #: bool
+            false
+          end
+
+          def self.unsafe_autofixable? #: bool
+            false
+          end
+
           # @rbs @element_stack: Array[String]
 
           # @rbs override

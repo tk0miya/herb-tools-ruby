@@ -38,6 +38,8 @@ module Herb
 
           def self.safe_autofixable?: () -> bool
 
+          def self.unsafe_autofixable?: () -> bool
+
           # SVG elements that require specific capitalization (camelCase).
           # Maps lowercase version to correct capitalization.
           SVG_ELEMENTS: untyped

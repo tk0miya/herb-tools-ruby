@@ -33,6 +33,14 @@ module Herb
             "error"
           end
 
+          def self.safe_autofixable? #: bool
+            false
+          end
+
+          def self.unsafe_autofixable? #: bool
+            false
+          end
+
           # @rbs @seen_meta_names: Hash[String, Herb::Location]
 
           # @rbs override

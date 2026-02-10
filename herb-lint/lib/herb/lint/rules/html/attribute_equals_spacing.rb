@@ -36,6 +36,10 @@ module Herb
             true
           end
 
+          def self.unsafe_autofixable? #: bool
+            false
+          end
+
           # @rbs override
           def visit_html_attribute_node(node)
             check_spacing(node) if node.equals

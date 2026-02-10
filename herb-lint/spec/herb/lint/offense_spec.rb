@@ -60,12 +60,14 @@ RSpec.describe Herb::Lint::Offense do
         def self.rule_name = "test/safe-rule"
         def self.description = "Safe test rule"
         def self.safe_autofixable? = true
+        def self.unsafe_autofixable? = false
       end
     end
     let(:unsafe_rule_class) do
       Class.new(Herb::Lint::Rules::VisitorRule) do
         def self.rule_name = "test/unsafe-rule"
         def self.description = "Unsafe test rule"
+        def self.safe_autofixable? = false
         def self.unsafe_autofixable? = true
       end
     end

@@ -40,6 +40,10 @@ module Herb
             true
           end
 
+          def self.unsafe_autofixable? #: bool
+            false
+          end
+
           # @rbs override
           def visit_document_node(node)
             last_child = node.children.last

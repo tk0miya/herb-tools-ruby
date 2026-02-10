@@ -6,12 +6,18 @@ RSpec.describe Herb::Lint::RuleRegistry do
   let(:test_rule_class) do
     Class.new(Herb::Lint::Rules::Base) do
       def self.rule_name = "test-rule"
+      def self.description = "Test rule"
+      def self.safe_autofixable? = false
+      def self.unsafe_autofixable? = false
     end
   end
 
   let(:another_rule_class) do
     Class.new(Herb::Lint::Rules::Base) do
       def self.rule_name = "another-rule"
+      def self.description = "Another test rule"
+      def self.safe_autofixable? = false
+      def self.unsafe_autofixable? = false
     end
   end
 

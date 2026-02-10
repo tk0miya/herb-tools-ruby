@@ -27,13 +27,15 @@ module Herb
           end
 
           # Whether the rule provides safe autofix.
+          # Subclasses must implement this method.
           def safe_autofixable? #: bool
-            false
+            raise NotImplementedError, "#{name} must implement .safe_autofixable?"
           end
 
           # Whether the rule provides unsafe autofix (requires --fix-unsafely).
+          # Subclasses must implement this method.
           def unsafe_autofixable? #: bool
-            false
+            raise NotImplementedError, "#{name} must implement .unsafe_autofixable?"
           end
         end
 

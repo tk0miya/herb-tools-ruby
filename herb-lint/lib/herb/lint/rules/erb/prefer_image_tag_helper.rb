@@ -43,6 +43,14 @@ module Herb
             "warning"
           end
 
+          def self.safe_autofixable? #: bool
+            false
+          end
+
+          def self.unsafe_autofixable? #: bool
+            false
+          end
+
           # @rbs override
           def visit_html_element_node(node)
             return super unless tag_name(node) == "img"
