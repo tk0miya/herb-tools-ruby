@@ -7,13 +7,16 @@ module Herb
     class RuleRegistry
       @rules: Hash[String, singleton(Rules::Base) | singleton(Rules::VisitorRule)]
 
+      @config: Herb::Config::LinterConfig
+
       # Built-in rule classes shipped with herb-lint.
       # rubocop:disable Metrics/MethodLength
       def self.builtin_rules: () -> Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
 
+      # @rbs config: Herb::Config::LinterConfig -- configuration for rules
       # @rbs builtins: bool -- when true, automatically load built-in rules
       # @rbs rules: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
-      def initialize: (?builtins: bool, ?rules: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]) -> void
+      def initialize: (config: Herb::Config::LinterConfig, ?builtins: bool, ?rules: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]) -> void
 
       # Register a rule class in the registry.
       # @rbs rule_class: singleton(Rules::Base) | singleton(Rules::VisitorRule)
@@ -28,8 +31,8 @@ module Herb
 
       # Build instances of all registered rules.
       # Reads enabled status and severity from config for each rule.
-      # @rbs config: Herb::Config::LinterConfig -- configuration for rules
-      def build_all: (config: Herb::Config::LinterConfig) -> Array[Rules::Base | Rules::VisitorRule]
+      # Creates a PatternMatcher for each rule based on its include/exclude/only configuration.
+      def build_all: () -> Array[Rules::Base | Rules::VisitorRule]
 
       # Load custom rules from a directory.
       # @rbs path: String -- path to directory containing rule files

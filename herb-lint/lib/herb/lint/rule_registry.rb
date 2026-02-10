@@ -6,6 +6,7 @@ module Herb
     # Provides registration, lookup, and loading of built-in and custom rules.
     class RuleRegistry
       # @rbs @rules: Hash[String, singleton(Rules::Base) | singleton(Rules::VisitorRule)]
+      # @rbs @config: Herb::Config::LinterConfig
 
       # Built-in rule classes shipped with herb-lint.
       # rubocop:disable Metrics/MethodLength
@@ -66,10 +67,12 @@ module Herb
       end
       # rubocop:enable Metrics/MethodLength
 
+      # @rbs config: Herb::Config::LinterConfig -- configuration for rules
       # @rbs builtins: bool -- when true, automatically load built-in rules
       # @rbs rules: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule)]
-      def initialize(builtins: true, rules: []) #: void
+      def initialize(config:, builtins: true, rules: []) #: void
         @rules = {}
+        @config = config
         load_builtin_rules if builtins
         rules.each { register(_1) }
       end
@@ -94,12 +97,13 @@ module Herb
 
       # Build instances of all registered rules.
       # Reads enabled status and severity from config for each rule.
-      # @rbs config: Herb::Config::LinterConfig -- configuration for rules
-      def build_all(config:) #: Array[Rules::Base | Rules::VisitorRule]
+      # Creates a PatternMatcher for each rule based on its include/exclude/only configuration.
+      def build_all #: Array[Rules::Base | Rules::VisitorRule]
         @rules.filter_map do |rule_name, rule_class|
-          next unless config.enabled_rule?(rule_name)
+          next unless @config.enabled_rule?(rule_name)
 
-          rule_class.new(severity: config.rule_severity(rule_name))
+          matcher = @config.build_pattern_matcher(rule_name)
+          rule_class.new(severity: @config.rule_severity(rule_name), matcher:)
         end
       end
 

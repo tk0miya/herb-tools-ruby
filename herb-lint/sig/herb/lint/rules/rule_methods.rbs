@@ -26,8 +26,9 @@ module Herb
           def unsafe_autofixable?: () -> bool
         end
 
+        # @rbs matcher: Herb::Core::PatternMatcher -- pattern matcher for include/exclude rules
         # @rbs severity: String?
-        def initialize: (?severity: String?) -> void
+        def initialize: (matcher: Herb::Core::PatternMatcher, ?severity: String?) -> void
 
         @offenses: Array[Offense]
 

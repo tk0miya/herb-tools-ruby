@@ -28,8 +28,9 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeDoubleQuotes do
   end
 
   describe "#check" do
-    subject { described_class.new.check(document, context) }
+    subject { described_class.new(matcher:).check(document, context) }
 
+    let(:matcher) { build(:pattern_matcher) }
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
@@ -119,8 +120,9 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeDoubleQuotes do
   end
 
   describe "#autofix" do
-    subject { described_class.new.autofix(node, document) }
+    subject { described_class.new(matcher:).autofix(node, document) }
 
+    let(:matcher) { build(:pattern_matcher) }
     let(:document) { Herb.parse(source, track_whitespace: true) }
 
     context "when fixing a single unquoted attribute" do

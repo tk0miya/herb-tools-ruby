@@ -4,7 +4,7 @@ RSpec.describe Herb::Lint::AutofixContext do
   let(:source) { '<img src="test.png">' }
   let(:parse_result) { Herb.parse(source, track_whitespace: true) }
   let(:node) { parse_result.value.children.first }
-  let(:rule) { Herb::Lint::Rules::Html::ImgRequireAlt.new }
+  let(:rule) { Herb::Lint::Rules::Html::ImgRequireAlt.new(matcher: build(:pattern_matcher)) }
   let(:autofix_context) { described_class.new(node:, rule:) }
 
   describe "#node" do
@@ -36,7 +36,7 @@ RSpec.describe Herb::Lint::AutofixContext do
             def self.description = "Safe test rule"
             def self.safe_autofixable? = true
             def self.unsafe_autofixable? = false
-          end.new
+          end.new(matcher: build(:pattern_matcher))
         end
 
         it { is_expected.to be true }
@@ -49,7 +49,7 @@ RSpec.describe Herb::Lint::AutofixContext do
             def self.description = "Unsafe test rule"
             def self.safe_autofixable? = false
             def self.unsafe_autofixable? = true
-          end.new
+          end.new(matcher: build(:pattern_matcher))
         end
 
         it { is_expected.to be false }
@@ -70,7 +70,7 @@ RSpec.describe Herb::Lint::AutofixContext do
             def self.description = "Safe test rule"
             def self.safe_autofixable? = true
             def self.unsafe_autofixable? = false
-          end.new
+          end.new(matcher: build(:pattern_matcher))
         end
 
         it { is_expected.to be true }
@@ -83,7 +83,7 @@ RSpec.describe Herb::Lint::AutofixContext do
             def self.description = "Unsafe test rule"
             def self.safe_autofixable? = false
             def self.unsafe_autofixable? = true
-          end.new
+          end.new(matcher: build(:pattern_matcher))
         end
 
         it { is_expected.to be true }
@@ -102,7 +102,8 @@ RSpec.describe Herb::Lint::AutofixContext do
     end
 
     it "is not equal when rule differs" do
-      other = described_class.new(node:, rule: Herb::Lint::Rules::Html::TagNameLowercase.new)
+      other = described_class.new(node:,
+                                  rule: Herb::Lint::Rules::Html::TagNameLowercase.new(matcher: build(:pattern_matcher)))
       expect(autofix_context).not_to eq(other)
     end
   end

@@ -20,11 +20,12 @@ RSpec.describe Herb::Lint::Rules::VisitorRule do
   end
 
   describe "#check" do
+    let(:matcher) { build(:pattern_matcher) }
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { instance_double(Object) }
 
     context "when no visit methods are overridden" do
-      subject { test_rule_class.new.check(document, context) }
+      subject { test_rule_class.new(matcher:).check(document, context) }
 
       let(:source) { "<div><p>Hello</p></div>" }
 
@@ -34,7 +35,7 @@ RSpec.describe Herb::Lint::Rules::VisitorRule do
     end
 
     context "when visit method is overridden" do
-      subject { element_counting_rule.new.check(document, context) }
+      subject { element_counting_rule.new(matcher:).check(document, context) }
 
       let(:source) { "<div><p>Hello</p><span>World</span></div>" }
       let(:element_counting_rule) do
@@ -62,7 +63,7 @@ RSpec.describe Herb::Lint::Rules::VisitorRule do
     end
 
     context "when rule checks specific attribute" do
-      subject { img_alt_rule.new.check(document, context) }
+      subject { img_alt_rule.new(matcher:).check(document, context) }
 
       let(:img_alt_rule) do
         Class.new(described_class) do
@@ -127,7 +128,7 @@ RSpec.describe Herb::Lint::Rules::VisitorRule do
       end
 
       it "calls on_new_investigation before visiting nodes" do
-        rule = stateful_rule.new
+        rule = stateful_rule.new(matcher:)
         document = Herb.parse(source, track_whitespace: true)
 
         rule.check(document, context)

@@ -61,7 +61,7 @@ RSpec.describe Herb::Lint::Offense do
         def self.description = "Safe test rule"
         def self.safe_autofixable? = true
         def self.unsafe_autofixable? = false
-      end.new
+      end.new(matcher: build(:pattern_matcher))
     end
     let(:unsafe_rule) do
       Class.new(Herb::Lint::Rules::VisitorRule) do
@@ -69,7 +69,7 @@ RSpec.describe Herb::Lint::Offense do
         def self.description = "Unsafe test rule"
         def self.safe_autofixable? = false
         def self.unsafe_autofixable? = true
-      end.new
+      end.new(matcher: build(:pattern_matcher))
     end
     let(:offense) do
       described_class.new(
