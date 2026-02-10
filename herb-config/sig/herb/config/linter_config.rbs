@@ -44,6 +44,9 @@ module Herb
       # @rbs default: bool -- the default enabled state if not configured (default: true)
       def enabled_rule?: (String rule_name, ?default: bool) -> bool
 
+      # Returns the fail level for the linter.
+      # This determines which severity levels should cause non-zero exit codes.
+      # Defaults to "error" if not configured.
       def fail_level: () -> String
 
       # Build a pattern matcher for a specific rule.
