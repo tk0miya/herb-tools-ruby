@@ -9,6 +9,14 @@ gems:
     revision: df9d229e947f792bd36073421340236617dd28c3
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
+- name: addressable
+  version: '2.8'
+  source:
+    type: git
+    name: ruby/gem_rbs_collection
+    revision: d70d634c6e848dc5e93cea0163cc8206448be048
+    remote: https://github.com/ruby/gem_rbs_collection.git
+    repo_dir: gems
 - name: ast
   version: '2.4'
   source:
@@ -94,6 +102,14 @@ gems:
   source:
     type: rubygems
 - name: herb-config
+  version: 0.1.0
+  source:
+    type: rubygems
+- name: herb-core
+  version: 0.1.0
+  source:
+    type: rubygems
+- name: herb-printer
   version: 0.1.0
   source:
     type: rubygems
