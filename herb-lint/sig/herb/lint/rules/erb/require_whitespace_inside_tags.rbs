@@ -4,18 +4,24 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that requires whitespace between ERB tag delimiters and content.
-        #
-        # ERB tags should have whitespace separating the opening/closing delimiters
-        # from the tag content for readability.
+        # Description:
+        #   Require a single space before and after Ruby code inside ERB tags (< % ... % > and < %= ... % >).
+        #   This improves readability and keeps ERB code visually consistent with Ruby style guides.
         #
         # Good:
-        #   <% value %>
-        #   <%= value %>
+        #   <%= user.name %>
+        #
+        #   <% if admin %>
+        #     Hello, admin.
+        #   <% end %>
         #
         # Bad:
-        #   <%value%>
-        #   <%=value%>
+        #   <%=user.name %>
+        #
+        #   <%if admin %>
+        #
+        #     Hello, admin.
+        #   <% end%>
         class RequireWhitespaceInsideTags < VisitorRule
           def self.rule_name: () -> String
 
@@ -28,20 +34,27 @@ module Herb
           def self.unsafe_autofixable?: () -> bool
 
           # @rbs override
-          def visit_erb_content_node: ...
+          def visit_child_nodes: ...
 
-          # @rbs node: Herb::AST::ERBContentNode
+          # @rbs node: Herb::AST::Node
           # @rbs parse_result: Herb::ParseResult
-          def autofix: (Herb::AST::ERBContentNode node, Herb::ParseResult parse_result) -> bool
+          def autofix: (Herb::AST::Node node, Herb::ParseResult parse_result) -> bool
 
           private
 
-          # @rbs node: Herb::AST::ERBContentNode
-          # @rbs content_value: String?
-          def missing_whitespace?: (Herb::AST::ERBContentNode node, String? content_value) -> bool
+          # @rbs node: Herb::AST::Node
+          # @rbs content_value: String
+          def fix_whitespace: (Herb::AST::Node node, String content_value) -> String
 
-          # @rbs node: Herb::AST::ERBContentNode
-          def comment_tag?: (Herb::AST::ERBContentNode node) -> bool
+          # @rbs node: Herb::AST::Node
+          def check_node_whitespace: (Herb::AST::Node node) -> void
+
+          # @rbs node: Herb::AST::Node
+          def missing_whitespace?: (Herb::AST::Node node) -> bool
+
+          # @rbs node: Herb::AST::Node
+          # @rbs content_value: String
+          def commented_output_tag?: (Herb::AST::Node node, String content_value) -> bool
         end
       end
     end
