@@ -65,14 +65,14 @@ module Herb
         end
 
         # Add an offense with autofix context for the current rule.
-        # Creates an AutofixContext from the given node and current rule class,
+        # Creates an AutofixContext from the given node and current rule instance,
         # then delegates to add_offense.
         #
         # @rbs message: String -- description of the violation
         # @rbs location: Herb::Location -- location of the violation
         # @rbs node: Herb::AST::Node -- the offending AST node (direct reference for autofix)
         def add_offense_with_autofix(message:, location:, node:) #: void
-          context = AutofixContext.new(node:, rule_class: self.class)
+          context = AutofixContext.new(node:, rule: self)
           add_offense(message:, location:, autofix_context: context)
         end
 

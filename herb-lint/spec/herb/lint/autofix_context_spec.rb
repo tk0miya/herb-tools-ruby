@@ -4,8 +4,8 @@ RSpec.describe Herb::Lint::AutofixContext do
   let(:source) { '<img src="test.png">' }
   let(:parse_result) { Herb.parse(source, track_whitespace: true) }
   let(:node) { parse_result.value.children.first }
-  let(:rule_class) { Herb::Lint::Rules::Html::ImgRequireAlt }
-  let(:autofix_context) { described_class.new(node:, rule_class:) }
+  let(:rule) { Herb::Lint::Rules::Html::ImgRequireAlt.new }
+  let(:autofix_context) { described_class.new(node:, rule:) }
 
   describe "#node" do
     subject { autofix_context.node }
@@ -15,11 +15,11 @@ RSpec.describe Herb::Lint::AutofixContext do
     end
   end
 
-  describe "#rule_class" do
-    subject { autofix_context.rule_class }
+  describe "#rule" do
+    subject { autofix_context.rule }
 
-    it "returns the rule class" do
-      expect(subject).to eq(Herb::Lint::Rules::Html::ImgRequireAlt)
+    it "returns the rule instance" do
+      expect(subject).to be_a(Herb::Lint::Rules::Html::ImgRequireAlt)
     end
   end
 
@@ -30,26 +30,26 @@ RSpec.describe Herb::Lint::AutofixContext do
       let(:unsafe) { false }
 
       context "when rule declares safe_autofixable?" do
-        let(:rule_class) do
+        let(:rule) do
           Class.new(Herb::Lint::Rules::VisitorRule) do
             def self.rule_name = "test/safe-rule"
             def self.description = "Safe test rule"
             def self.safe_autofixable? = true
             def self.unsafe_autofixable? = false
-          end
+          end.new
         end
 
         it { is_expected.to be true }
       end
 
       context "when rule declares unsafe_autofixable?" do
-        let(:rule_class) do
+        let(:rule) do
           Class.new(Herb::Lint::Rules::VisitorRule) do
             def self.rule_name = "test/unsafe-rule"
             def self.description = "Unsafe test rule"
             def self.safe_autofixable? = false
             def self.unsafe_autofixable? = true
-          end
+          end.new
         end
 
         it { is_expected.to be false }
@@ -64,26 +64,26 @@ RSpec.describe Herb::Lint::AutofixContext do
       let(:unsafe) { true }
 
       context "when rule declares safe_autofixable?" do
-        let(:rule_class) do
+        let(:rule) do
           Class.new(Herb::Lint::Rules::VisitorRule) do
             def self.rule_name = "test/safe-rule"
             def self.description = "Safe test rule"
             def self.safe_autofixable? = true
             def self.unsafe_autofixable? = false
-          end
+          end.new
         end
 
         it { is_expected.to be true }
       end
 
       context "when rule declares unsafe_autofixable?" do
-        let(:rule_class) do
+        let(:rule) do
           Class.new(Herb::Lint::Rules::VisitorRule) do
             def self.rule_name = "test/unsafe-rule"
             def self.description = "Unsafe test rule"
             def self.safe_autofixable? = false
             def self.unsafe_autofixable? = true
-          end
+          end.new
         end
 
         it { is_expected.to be true }
@@ -97,12 +97,12 @@ RSpec.describe Herb::Lint::AutofixContext do
 
   describe "equality" do
     it "is equal to another AutofixContext with the same attributes" do
-      other = described_class.new(node:, rule_class:)
+      other = described_class.new(node:, rule:)
       expect(autofix_context).to eq(other)
     end
 
-    it "is not equal when rule_class differs" do
-      other = described_class.new(node:, rule_class: Herb::Lint::Rules::Html::TagNameLowercase)
+    it "is not equal when rule differs" do
+      other = described_class.new(node:, rule: Herb::Lint::Rules::Html::TagNameLowercase.new)
       expect(autofix_context).not_to eq(other)
     end
   end

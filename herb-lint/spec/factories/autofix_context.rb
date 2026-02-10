@@ -3,8 +3,8 @@
 FactoryBot.define do
   factory :autofix_context, class: "Herb::Lint::AutofixContext" do
     node { Herb.parse("").value }
-    rule_class { Herb::Lint::Rules::Html::TagNameLowercase }
+    rule { Herb::Lint::Rules::Html::TagNameLowercase.new }
 
-    initialize_with { new(node:, rule_class:) }
+    initialize_with { new(node:, rule:) }
   end
 end

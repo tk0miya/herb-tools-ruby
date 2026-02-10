@@ -30,7 +30,7 @@ RSpec.describe Herb::Lint::Rules::RuleMethods do
       expect(offenses.size).to eq(1)
       expect(offenses.first.autofixable?).to be true
       expect(offenses.first.autofix_context).to be_a(Herb::Lint::AutofixContext)
-      expect(offenses.first.autofix_context.rule_class).to eq(rule_class)
+      expect(offenses.first.autofix_context.rule).to be_a(rule_class)
       expect(offenses.first.autofix_context.node).not_to be_nil
     end
   end
