@@ -5,6 +5,9 @@ require "herb/lint"
 
 FactoryBot.find_definitions
 
+# Load shared test helpers from spec/support
+Dir[File.join(__dir__, "support", "**", "*.rb")].each { |f| require f }
+
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
 

@@ -1,52 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe Herb::Lint::Autofixer do
-  # Stub rule: clears the element body (safe autofix)
-  let(:safe_rule) do
-    Class.new(Herb::Lint::Rules::VisitorRule) do
-      def self.rule_name = "test/safe-rule"
-      def self.description = "Safe test rule"
-      def self.default_severity = "warning"
-      def self.safe_autofixable? = true
-      def self.unsafe_autofixable? = false
-
-      def autofix(node, _parse_result)
-        node.body.clear
-        true
-      end
-    end.new(matcher: build(:pattern_matcher))
-  end
-
-  # Stub rule: clears the element body (unsafe autofix)
-  let(:unsafe_rule) do
-    Class.new(Herb::Lint::Rules::VisitorRule) do
-      def self.rule_name = "test/unsafe-rule"
-      def self.description = "Unsafe test rule"
-      def self.default_severity = "warning"
-      def self.safe_autofixable? = false
-      def self.unsafe_autofixable? = true
-
-      def autofix(node, _parse_result)
-        node.body.clear
-        true
-      end
-    end.new(matcher: build(:pattern_matcher))
-  end
-
-  # Stub rule whose autofix always fails
-  let(:failing_rule) do
-    Class.new(Herb::Lint::Rules::VisitorRule) do
-      def self.rule_name = "test/failing-rule"
-      def self.description = "Failing test rule"
-      def self.default_severity = "warning"
-      def self.safe_autofixable? = true
-      def self.unsafe_autofixable? = false
-
-      def autofix(_node, _parse_result)
-        false
-      end
-    end.new(matcher: build(:pattern_matcher))
-  end
+  let(:safe_rule) { TestRules::SafeFixableRule.new(matcher: build(:pattern_matcher)) }
+  let(:unsafe_rule) { TestRules::UnsafeFixableRule.new(matcher: build(:pattern_matcher)) }
+  let(:failing_rule) { TestRules::FailingFixableRule.new(matcher: build(:pattern_matcher)) }
 
   let(:source) { "<div>hello</div>" }
   let(:fixed_source) { "<div></div>" }
@@ -164,6 +121,8 @@ RSpec.describe Herb::Lint::Autofixer do
     context "when an unsafe autofix is applied with unsafe: true" do
       subject { described_class.new(parse_result, unfixed_offenses, unsafe: true).apply }
 
+      let(:source) { "<span>hello</span>" }
+      let(:fixed_source) { "<span></span>" }
       let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule: unsafe_rule) }
       let(:unfixed_offenses) do
         [build(:offense, autofix_context:)]
@@ -179,6 +138,7 @@ RSpec.describe Herb::Lint::Autofixer do
     context "when an unsafe autofix is skipped without unsafe flag" do
       subject { described_class.new(parse_result, unfixed_offenses).apply }
 
+      let(:source) { "<span>hello</span>" }
       let(:autofix_context) { Herb::Lint::AutofixContext.new(node: element, rule: unsafe_rule) }
       let(:unfixed_offenses) do
         [build(:offense, autofix_context:)]
@@ -227,8 +187,12 @@ RSpec.describe Herb::Lint::Autofixer do
     context "with unsafe: true and both safe and unsafe offenses" do
       subject { described_class.new(parse_result, unfixed_offenses, unsafe: true).apply }
 
-      let(:safe_context) { Herb::Lint::AutofixContext.new(node: element, rule: safe_rule) }
-      let(:unsafe_context) { Herb::Lint::AutofixContext.new(node: element, rule: unsafe_rule) }
+      let(:source) { "<div>content</div><span>content</span>" }
+      let(:fixed_source) { "<div></div><span></span>" }
+      let(:div_element) { parse_result.value.children[0] }
+      let(:span_element) { parse_result.value.children[1] }
+      let(:safe_context) { Herb::Lint::AutofixContext.new(node: div_element, rule: safe_rule) }
+      let(:unsafe_context) { Herb::Lint::AutofixContext.new(node: span_element, rule: unsafe_rule) }
       let(:unfixed_offenses) do
         [
           build(:offense, autofix_context: safe_context),

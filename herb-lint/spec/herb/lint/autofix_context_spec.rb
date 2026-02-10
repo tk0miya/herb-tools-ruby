@@ -30,27 +30,13 @@ RSpec.describe Herb::Lint::AutofixContext do
       let(:unsafe) { false }
 
       context "when rule declares safe_autofixable?" do
-        let(:rule) do
-          Class.new(Herb::Lint::Rules::VisitorRule) do
-            def self.rule_name = "test/safe-rule"
-            def self.description = "Safe test rule"
-            def self.safe_autofixable? = true
-            def self.unsafe_autofixable? = false
-          end.new(matcher: build(:pattern_matcher))
-        end
+        let(:rule) { TestRules::SafeFixableRule.new(matcher: build(:pattern_matcher)) }
 
         it { is_expected.to be true }
       end
 
       context "when rule declares unsafe_autofixable?" do
-        let(:rule) do
-          Class.new(Herb::Lint::Rules::VisitorRule) do
-            def self.rule_name = "test/unsafe-rule"
-            def self.description = "Unsafe test rule"
-            def self.safe_autofixable? = false
-            def self.unsafe_autofixable? = true
-          end.new(matcher: build(:pattern_matcher))
-        end
+        let(:rule) { TestRules::UnsafeFixableRule.new(matcher: build(:pattern_matcher)) }
 
         it { is_expected.to be false }
       end
@@ -64,27 +50,13 @@ RSpec.describe Herb::Lint::AutofixContext do
       let(:unsafe) { true }
 
       context "when rule declares safe_autofixable?" do
-        let(:rule) do
-          Class.new(Herb::Lint::Rules::VisitorRule) do
-            def self.rule_name = "test/safe-rule"
-            def self.description = "Safe test rule"
-            def self.safe_autofixable? = true
-            def self.unsafe_autofixable? = false
-          end.new(matcher: build(:pattern_matcher))
-        end
+        let(:rule) { TestRules::SafeFixableRule.new(matcher: build(:pattern_matcher)) }
 
         it { is_expected.to be true }
       end
 
       context "when rule declares unsafe_autofixable?" do
-        let(:rule) do
-          Class.new(Herb::Lint::Rules::VisitorRule) do
-            def self.rule_name = "test/unsafe-rule"
-            def self.description = "Unsafe test rule"
-            def self.safe_autofixable? = false
-            def self.unsafe_autofixable? = true
-          end.new(matcher: build(:pattern_matcher))
-        end
+        let(:rule) { TestRules::UnsafeFixableRule.new(matcher: build(:pattern_matcher)) }
 
         it { is_expected.to be true }
       end
