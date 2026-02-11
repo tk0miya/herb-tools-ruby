@@ -4,17 +4,22 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that requires ARIA attributes to be valid.
-        #
-        # Only known `aria-*` attributes from the WAI-ARIA specification
-        # are allowed. Misspelled or non-standard ARIA attributes are flagged.
+        # Description:
+        #   Disallow unknown or invalid `aria-*` attributes. Only attributes defined in the WAI-ARIA specification
+        #   should be used. This rule helps catch typos (e.g. `aria-lable`), misuse, or outdated attribute names that
+        #   won't be interpreted by assistive technologies.
         #
         # Good:
-        #   <div aria-label="Name">
-        #   <div aria-labelledby="name-id">
+        #   <div role="button" aria-pressed="false">Toggle</div>
+        #   <input type="text" aria-label="Search" autocomplete="off">
+        #   <span role="heading" aria-level="2">Title</span>
         #
         # Bad:
-        #   <div aria-labelled="Name">
+        #   <div role="button" aria-presed="false">Toggle</div>
+        #
+        #   <input type="text" aria-lable="Search" autocomplete="off">
+        #
+        #   <span aria-size="large" role="heading" aria-level="2">Title</span>
         class AriaAttributeMustBeValid < VisitorRule
           # Valid ARIA attributes from the WAI-ARIA specification.
           VALID_ARIA_ATTRIBUTES: Set[String]
@@ -24,6 +29,10 @@ module Herb
           def self.description: () -> String
 
           def self.default_severity: () -> String
+
+          def self.safe_autofixable?: () -> bool
+
+          def self.unsafe_autofixable?: () -> bool
 
           # @rbs override
           def visit_html_attribute_node: ...
