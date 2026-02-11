@@ -208,6 +208,91 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
       end
     end
 
+    context "when results include info-level offenses" do
+      let(:results) do
+        [
+          build(:lint_result,
+                file_path: "app/views/test.html.erb",
+                unfixed_offenses: [
+                  build(:offense, severity: "info", rule_name: "html-info-rule", message: "Info message")
+                ])
+        ]
+      end
+
+      it "reports info count in the summary" do
+        subject
+
+        summary = parsed_output["summary"]
+        expect(summary["totalInfo"]).to eq(1)
+        expect(summary["totalErrors"]).to eq(0)
+        expect(summary["totalWarnings"]).to eq(0)
+        expect(summary["totalHints"]).to eq(0)
+        expect(summary["totalOffenses"]).to eq(1)
+      end
+
+      it "includes the info offense in the offenses array" do
+        subject
+
+        offenses = parsed_output["offenses"]
+        expect(offenses.size).to eq(1)
+        expect(offenses[0]["severity"]).to eq("info")
+        expect(offenses[0]["code"]).to eq("html-info-rule")
+      end
+    end
+
+    context "when results include hint-level offenses" do
+      let(:results) do
+        [
+          build(:lint_result,
+                file_path: "app/views/test.html.erb",
+                unfixed_offenses: [
+                  build(:offense, severity: "hint", rule_name: "html-hint-rule", message: "Hint message")
+                ])
+        ]
+      end
+
+      it "reports hint count in the summary" do
+        subject
+
+        summary = parsed_output["summary"]
+        expect(summary["totalHints"]).to eq(1)
+        expect(summary["totalErrors"]).to eq(0)
+        expect(summary["totalWarnings"]).to eq(0)
+        expect(summary["totalInfo"]).to eq(0)
+        expect(summary["totalOffenses"]).to eq(1)
+      end
+
+      it "includes the hint offense in the offenses array" do
+        subject
+
+        offenses = parsed_output["offenses"]
+        expect(offenses.size).to eq(1)
+        expect(offenses[0]["severity"]).to eq("hint")
+        expect(offenses[0]["code"]).to eq("html-hint-rule")
+      end
+    end
+
+    context "when results include ignored offenses" do
+      let(:results) do
+        [
+          build(:lint_result,
+                file_path: "app/views/test.html.erb",
+                unfixed_offenses: [
+                  build(:offense, severity: "error", rule_name: "html-img-require-alt", message: "Missing alt")
+                ],
+                ignored_count: 3)
+        ]
+      end
+
+      it "reports ignored count in the summary" do
+        subject
+
+        summary = parsed_output["summary"]
+        expect(summary["totalIgnored"]).to eq(3)
+        expect(summary["totalOffenses"]).to eq(1)
+      end
+    end
+
     context "when aggregated result includes rule count" do
       let(:aggregated_result) { Herb::Lint::AggregatedResult.new(results, rule_count: 42) }
       let(:results) do

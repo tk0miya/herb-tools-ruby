@@ -289,9 +289,9 @@ end
 
 ### Implementation
 
-- [ ] Run `rbs-inline` to generate RBS types
-- [ ] Verify type signatures with `steep check`
-- [ ] Update manual RBS files if needed
+- [x] Run `rbs-inline` to generate RBS types
+- [x] Verify type signatures with `steep check`
+- [x] Update manual RBS files if needed
 
 **Verification:**
 ```bash
@@ -309,11 +309,11 @@ cd herb-lint
 
 **Location:** `herb-lint/spec/herb/lint/reporter/json_reporter_spec.rb`
 
-- [ ] Add test case with info-level offenses
-- [ ] Add test case with hint-level offenses
-- [ ] Add test case with ignored offenses
-- [ ] Verify rule count is accurate
-- [ ] Add integration test with mixed severities
+- [x] Add test case with info-level offenses
+- [x] Add test case with hint-level offenses
+- [x] Add test case with ignored offenses
+- [x] Verify rule count is accurate
+- [x] Add integration test with mixed severities
 
 ### Example Test
 
@@ -380,8 +380,8 @@ All tasks completed and verified:
 - [x] Task 23.1: Info/hint severity levels implemented
 - [x] Task 23.2: Ignored offenses count tracked
 - [x] Task 23.3: Active rule count reported
-- [ ] Task 23.4: RBS types updated
-- [ ] Task 23.5: Integration tests passing
+- [x] Task 23.4: RBS types updated
+- [x] Task 23.5: Integration tests passing
 - [ ] Task 23.6: Documentation updated
 
 **Full verification:**
