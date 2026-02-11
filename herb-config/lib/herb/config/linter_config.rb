@@ -71,7 +71,6 @@ module Herb
       # Builds a PatternMatcher for a specific rule.
       # Returns a matcher configured with the rule's include, exclude, and only patterns.
       # @rbs rule_name: String -- the name of the rule
-      # @rbs return: Herb::Core::PatternMatcher
       def build_pattern_matcher(rule_name) #: Herb::Core::PatternMatcher
         rule_config = rules[rule_name] || {}
         includes = rule_config["include"] || []

@@ -41,7 +41,6 @@ module Herb
       # 4. If no patterns are specified, return true (match all)
       #
       # @rbs path: String -- the file path to check (relative or absolute)
-      # @rbs return: bool
       def match?(path) #: bool
         # Only patterns are exclusive - if specified, path must match one
         if !@only.empty?
@@ -63,7 +62,6 @@ module Herb
       # Normalizes glob patterns for consistent matching behavior.
       # Patterns ending with ** are expanded to **/* to match files.
       # @rbs pattern: String
-      # @rbs return: String
       def normalize_pattern(pattern) #: String
         # Pattern ends with /** -> convert to /**/*
         return "#{pattern}/*" if pattern.end_with?("/**")
@@ -77,7 +75,6 @@ module Herb
       # Checks if a path matches a single pattern.
       # @rbs path: String
       # @rbs pattern: String
-      # @rbs return: bool
       def matches?(path, pattern) #: bool
         File.fnmatch?(pattern, path, File::FNM_PATHNAME | File::FNM_DOTMATCH | File::FNM_EXTGLOB)
       end
