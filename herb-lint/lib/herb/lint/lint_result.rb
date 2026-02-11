@@ -43,6 +43,16 @@ module Herb
         unfixed_offenses.count { |offense| offense.severity == "warning" }
       end
 
+      # Returns the count of info-level offenses.
+      def info_count #: Integer
+        unfixed_offenses.count { |offense| offense.severity == "info" }
+      end
+
+      # Returns the count of hint-level offenses.
+      def hint_count #: Integer
+        unfixed_offenses.count { |offense| offense.severity == "hint" }
+      end
+
       # Returns the total number of offenses.
       def offense_count #: Integer
         unfixed_offenses.size

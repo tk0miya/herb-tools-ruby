@@ -75,8 +75,8 @@ module Herb
             "filesWithOffenses" => files_with_offenses,
             "totalErrors" => aggregated_result.error_count,
             "totalWarnings" => aggregated_result.warning_count,
-            "totalInfo" => 0,
-            "totalHints" => 0,
+            "totalInfo" => aggregated_result.info_count,
+            "totalHints" => aggregated_result.hint_count,
             "totalIgnored" => 0,
             "totalOffenses" => aggregated_result.offense_count,
             "ruleCount" => 0

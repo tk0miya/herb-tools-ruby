@@ -26,6 +26,16 @@ module Herb
         results.sum(&:warning_count)
       end
 
+      # Returns the total number of info-level offenses across all files.
+      def info_count #: Integer
+        results.sum(&:info_count)
+      end
+
+      # Returns the total number of hint-level offenses across all files.
+      def hint_count #: Integer
+        results.sum(&:hint_count)
+      end
+
       # Returns the number of files processed.
       def file_count #: Integer
         results.size
