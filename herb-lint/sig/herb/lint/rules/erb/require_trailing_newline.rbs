@@ -19,7 +19,7 @@ module Herb
         #   <%= render partial: "footer" %>
         #
         #   (Note: File ends without a trailing newline)
-        class RequireTrailingNewline < VisitorRule
+        class RequireTrailingNewline < SourceRule
           def self.rule_name: () -> String
 
           def self.description: () -> String
@@ -31,27 +31,20 @@ module Herb
           def self.unsafe_autofixable?: () -> bool
 
           # @rbs override
-          def visit_document_node: ...
+          def check_source: ...
 
-          # @rbs node: Herb::AST::DocumentNode | Herb::AST::HTMLTextNode
-          # @rbs parse_result: Herb::ParseResult
-          def autofix: (Herb::AST::DocumentNode | Herb::AST::HTMLTextNode node, Herb::ParseResult parse_result) -> bool
+          # @rbs override
+          # @rbs offense: Offense
+          # @rbs source: String
+          def autofix_source: ...
 
           private
 
-          @context: Context
+          # @rbs source: String
+          def check_no_trailing_newline: (String source) -> void
 
-          # @rbs node: Herb::AST::HTMLTextNode
-          def check_text_node_trailing_newline: (Herb::AST::HTMLTextNode node) -> void
-
-          # Fix trailing newlines in an HTMLTextNode.
-          # @rbs node: Herb::AST::HTMLTextNode
-          # @rbs parse_result: Herb::ParseResult
-          def fix_text_node_trailing_newline: (Herb::AST::HTMLTextNode node, Herb::ParseResult parse_result) -> bool
-
-          # Append a text node with trailing newline when the last node is not an HTMLTextNode.
-          # @rbs document_node: Herb::AST::DocumentNode
-          def append_trailing_newline_text_node: (Herb::AST::DocumentNode document_node) -> bool
+          # @rbs source: String
+          def check_multiple_trailing_newlines: (String source) -> void
         end
       end
     end
