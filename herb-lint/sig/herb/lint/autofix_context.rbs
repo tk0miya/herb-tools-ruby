@@ -3,18 +3,34 @@
 module Herb
   module Lint
     # Bridges the check phase and autofix phase.
-    # Carries a direct reference to the offending AST node and the rule instance that can fix it.
+    # Carries a direct reference to the offending AST node (for VisitorRule) or
+    # source offsets (for SourceRule) and the rule instance that can fix it.
     class AutofixContext < Data
-      attr_reader node(): Herb::AST::Node
+      attr_reader rule(): Herb::Lint::Rules::Base
 
-      attr_reader rule(): Herb::Lint::Rules::VisitorRule
+      attr_reader node(): Herb::AST::Node?
 
-      def self.new: (Herb::AST::Node node, Herb::Lint::Rules::VisitorRule rule) -> instance
-                  | (node: Herb::AST::Node, rule: Herb::Lint::Rules::VisitorRule) -> instance
+      attr_reader start_offset(): Integer?
 
-      def self.members: () -> [ :node, :rule ]
+      attr_reader end_offset(): Integer?
 
-      def members: () -> [ :node, :rule ]
+      # VisitorRule pattern: rule + node
+      # SourceRule pattern: rule + offsets
+      def initialize: (rule: Rules::VisitorRule, node: Herb::AST::Node) -> void
+                    | (rule: Rules::Base, start_offset: Integer, end_offset: Integer) -> void
+
+      # Returns true when this is a source rule context (has offset information)
+      def source_rule?: () -> bool
+
+      # Returns true when this is a visitor rule context (has node information)
+      def visitor_rule?: () -> bool
+
+      # Returns true when the rule can autofix this offense
+      def autofixable?: (?unsafe: bool) -> bool
+
+      def self.members: () -> [ :rule, :node, :start_offset, :end_offset ]
+
+      def members: () -> [ :rule, :node, :start_offset, :end_offset ]
     end
   end
 end

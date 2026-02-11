@@ -36,13 +36,13 @@ This task introduces the `SourceRule` base class for rules that operate on raw s
 
 **Location:** `herb-lint/lib/herb/lint/autofix_context.rb`
 
-- [ ] Add `start_offset` and `end_offset` optional fields to `AutofixContext`
-- [ ] Add `source_rule?` method -- returns `true` when `start_offset` is present
-- [ ] Add `visitor_rule?` method -- returns `true` when `node` is present
-- [ ] Ensure all fields are optional with defaults (`node: nil`, `start_offset: nil`, `end_offset: nil`)
-- [ ] Verify backward compatibility: existing `AutofixContext.new(node:, rule_class:)` still works
-- [ ] Update unit tests
-- [ ] Update RBS types
+- [x] Add `start_offset` and `end_offset` optional fields to `AutofixContext`
+- [x] Add `source_rule?` method -- returns `true` when `start_offset` is present
+- [x] Add `visitor_rule?` method -- returns `true` when `node` is present
+- [x] Ensure all fields are optional with defaults (`node: nil`, `start_offset: nil`, `end_offset: nil`)
+- [x] Verify backward compatibility: existing `AutofixContext.new(node:, rule:)` still works
+- [x] Update unit tests
+- [x] Update RBS types
 
 **Data Structure:**
 
