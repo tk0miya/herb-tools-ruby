@@ -266,10 +266,13 @@ If Task 24.5 decides to align with TypeScript, change each rule's `default_sever
 
 #### Task 24.9: Change erb-require-whitespace-inside-tags severity to error
 
+**Status:** ✅ Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/erb/require_whitespace_inside_tags.rb`
 
-- [ ] Change `default_severity` to `"error"`
-- [ ] Update test expectations
+- [x] Change `default_severity` to `"error"`
+- [x] Update test expectations
+- [x] All tests pass (37 examples, 0 failures)
 
 #### Task 24.10: Change erb-strict-locals-required severity to error
 

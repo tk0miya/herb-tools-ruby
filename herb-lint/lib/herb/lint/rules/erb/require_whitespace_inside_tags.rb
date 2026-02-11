@@ -29,7 +29,7 @@ module Herb
         class RequireWhitespaceInsideTags < VisitorRule
           def self.rule_name = "erb-require-whitespace-inside-tags" #: String
           def self.description = "Require whitespace inside ERB tag delimiters" #: String
-          def self.default_severity = "warning" #: String
+          def self.default_severity = "error" #: String
           def self.safe_autofixable? = true #: bool
           def self.unsafe_autofixable? = false #: bool
 
