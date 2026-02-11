@@ -164,21 +164,22 @@ cd herb-lint && ./bin/steep check
 
 ---
 
-### Task 24.4: Propose erb-no-empty-tags Autofix to TypeScript (Optional)
+### Task 24.4: Remove erb-no-empty-tags Autofix (Align with TypeScript)
 
-**Status:** ⏳ Pending (External Project)
+**Status:** ✅ Complete
 
 **Description:**
-Ruby has autofix for `erb-no-empty-tags`, but TypeScript doesn't. This is a Ruby-first implementation.
+Ruby had autofix for `erb-no-empty-tags`, but TypeScript doesn't provide it. Since the Ruby implementation should align with the TypeScript original, the autofix has been removed to maintain consistency.
 
 **Action:**
 
-- [ ] Create Issue or PR in TypeScript repository
-  - [ ] Provide Ruby autofix implementation as reference
-  - [ ] Explain usefulness of the feature
-- [ ] Or maintain as Ruby-specific implementation
+- [x] Remove `autofix` method from `NoEmptyTags` rule
+- [x] Change `safe_autofixable?` to `false`
+- [x] Change `add_offense_with_autofix` to `add_offense`
+- [x] Remove autofix tests from spec
+- [x] Update RBS type signature
 
-**Priority:** Low (no impact on Ruby version)
+**Rationale:** If the original TypeScript implementation does not provide autofix, the Ruby version should not provide it either. Maintaining feature parity with the original is the project policy.
 
 ---
 
@@ -517,7 +518,7 @@ grep -r "html-no-space-in-tag" docs/
 
 ### Part B: Autofix Alignment (2 tasks)
 - [x] 24.3: Add autofix to erb-no-extra-newline (Completed via Phase 18)
-- [ ] 24.4: Propose to TypeScript (optional)
+- [x] 24.4: Remove erb-no-empty-tags autofix (align with TypeScript)
 
 ### Part C: Severity Alignment (17 tasks)
 - [x] 24.5: Decide severity policy
@@ -541,7 +542,7 @@ grep -r "html-no-space-in-tag" docs/
 5. ~~**Task 24.5** (High Priority): Decide severity policy~~ ✅ Complete
 6. ~~**Tasks 24.6-24.21**: Update severities (after policy decision)~~ ✅ Complete
 7. **Task 24.24**: Update documentation
-8. **Task 24.4**: Propose to TypeScript (optional)
+8. ~~**Task 24.4**: Remove erb-no-empty-tags autofix~~ ✅ Complete
 
 ---
 

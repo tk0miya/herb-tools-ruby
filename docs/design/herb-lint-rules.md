@@ -96,13 +96,12 @@ Currently unused in herb-lint, reserved for:
 
 ## Autofix Capabilities
 
-### Safe Autofix (17 rules support this)
+### Safe Autofix (16 rules support this)
 
 Changes that are **guaranteed to preserve behavior**:
 
-**ERB Rules (6 rules):**
+**ERB Rules (5 rules):**
 - `erb-comment-syntax` - Convert `<% # comment %>` to `<%# comment %>`
-- `erb-no-empty-tags` - Remove empty `<% %>` tags
 - `erb-no-extra-whitespace-inside-tags` - Normalize whitespace
 - `erb-require-whitespace-inside-tags` - Add required whitespace
 - `erb-right-trim` - Add right-trim `-%>` where needed

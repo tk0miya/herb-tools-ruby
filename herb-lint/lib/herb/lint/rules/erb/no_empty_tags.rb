@@ -30,26 +30,13 @@ module Herb
           def self.rule_name = "erb-no-empty-tags" #: String
           def self.description = "Disallow empty ERB tags" #: String
           def self.default_severity = "error" #: String
-          def self.safe_autofixable? = true #: bool
+          def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_erb_content_node(node)
-            if empty_tag?(node)
-              add_offense_with_autofix(
-                message: "Remove empty ERB tag",
-                location: node.location,
-                node:
-              )
-            end
+            add_offense(message: "Remove empty ERB tag", location: node.location) if empty_tag?(node)
             super
-          end
-
-          # @rbs node: Herb::AST::ERBContentNode
-          # @rbs parse_result: Herb::ParseResult
-          def autofix(node, parse_result) #: bool
-            # Remove the empty ERB tag from the AST
-            remove_node(parse_result, node)
           end
 
           private
