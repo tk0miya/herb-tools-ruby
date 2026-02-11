@@ -10,12 +10,15 @@ module Herb
 
       attr_reader parse_result: Herb::ParseResult?
 
+      attr_reader source: String
+
       attr_reader unsafe: bool
 
       # @rbs parse_result: Herb::ParseResult? -- the parse result from the lint phase (nil on parse error)
       # @rbs offenses: Array[Offense] -- offenses detected during linting
+      # @rbs source: String -- the original source code
       # @rbs unsafe: bool -- when true, also apply unsafe autofixes
-      def initialize: (Herb::ParseResult? parse_result, Array[Offense] offenses, ?unsafe: bool) -> void
+      def initialize: (Herb::ParseResult? parse_result, Array[Offense] offenses, source: String, ?unsafe: bool) -> void
 
       # Returns true when there are any autofixable offenses.
       # Requires a valid parse_result and at least one offense that can be autocorrected.
@@ -27,18 +30,29 @@ module Herb
       #
       # Processing:
       # 1. Partition offenses into autofixable and non-autofixable
-      # 2. Apply AST-phase autofixes for autofixable offenses
-      # 3. Return AutoFixResult with corrected source and categorized offenses
+      # 2. Partition autofixable offenses into AST-based (visitor rules) and source-based (source rules)
+      # 3. Apply AST-phase autofixes first
+      # 4. Apply source-phase autofixes to the resulting source
+      # 5. Return AutoFixResult with corrected source and categorized offenses
       def apply: () -> AutoFixResult
 
       private
 
-      # Apply autofixes for autofixable offenses.
+      # Apply AST-based autofixes for visitor rule offenses.
       # For each offense, use the cached rule instance to call its autofix method.
       # After all fixes, serialize the modified AST via IdentityPrinter.
       #
-      # @rbs offenses: Array[Offense] -- autofixable offenses to apply
-      def apply_fixes: (Array[Offense] offenses) -> [ String, Array[Offense], Array[Offense] ]
+      # @rbs offenses: Array[Offense] -- autofixable visitor rule offenses
+      def apply_ast_fixes: (Array[Offense] offenses) -> [ String, Array[Offense], Array[Offense] ]
+
+      # Apply source-based autofixes for source rule offenses.
+      # For each offense, call the rule's autofix_source method sequentially.
+      # Fixes are applied from end to start (by descending end_offset) to avoid
+      # invalidating subsequent offsets.
+      #
+      # @rbs offenses: Array[Offense] -- autofixable source rule offenses
+      # @rbs source: String -- the source code to apply fixes to
+      def apply_source_fixes: (Array[Offense] offenses, String source) -> [ String, Array[Offense], Array[Offense] ]
     end
   end
 end
