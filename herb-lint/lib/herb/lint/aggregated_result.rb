@@ -36,6 +36,11 @@ module Herb
         results.sum(&:hint_count)
       end
 
+      # Returns the total number of ignored offenses across all files.
+      def ignored_count #: Integer
+        results.sum(&:ignored_count)
+      end
+
       # Returns the number of files processed.
       def file_count #: Integer
         results.size

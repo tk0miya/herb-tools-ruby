@@ -24,6 +24,9 @@ module Herb
       # Returns the total number of hint-level offenses across all files.
       def hint_count: () -> Integer
 
+      # Returns the total number of ignored offenses across all files.
+      def ignored_count: () -> Integer
+
       # Returns the number of files processed.
       def file_count: () -> Integer
 
