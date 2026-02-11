@@ -256,10 +256,13 @@ If Task 24.5 decides to align with TypeScript, change each rule's `default_sever
 
 #### Task 24.8: Change erb-no-output-control-flow severity to error
 
+**Status:** ✅ Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/erb/no_output_control_flow.rb`
 
-- [ ] Change `default_severity` to `"error"`
-- [ ] Update test expectations
+- [x] Change `default_severity` to `"error"`
+- [x] Update test expectations
+- [x] All tests pass (18 examples, 0 failures)
 
 #### Task 24.9: Change erb-require-whitespace-inside-tags severity to error
 
