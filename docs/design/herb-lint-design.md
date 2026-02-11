@@ -226,17 +226,17 @@ class Herb::Lint::CLI
   def handle_help: () -> Integer
   def load_config: () -> Herb::Config::LinterConfig
   def create_reporter: (String format, bool github) -> Reporter::BaseReporter
-  def determine_exit_code: (AggregatedResult result, Symbol fail_level) -> Integer
+  def determine_exit_code: (AggregatedResult result) -> Integer
 end
 ```
 
 **Processing Flow:**
-1. Parse command-line options
+1. Parse command-line options (including --fail-level override)
 2. Handle special flags (--init, --version, --help)
 3. Load configuration via Herb::Config::Loader
 4. Create and run Runner
 5. Format output via Reporter
-6. Determine exit code based on fail-level threshold
+6. Determine exit code based on fail-level threshold (from CLI option or config.fail_level)
 
 **Command-Line Options:**
 - `--init` - Generate default .herb.yml
@@ -244,7 +244,7 @@ end
 - `--fix-unsafely` - Apply potentially unsafe autofixes
 - `--format TYPE` - Output format (detailed, simple, json)
 - `--github` - GitHub Actions annotation format
-- `--fail-level LEVEL` - Minimum severity to trigger failure (error, warning, info, hint)
+- `--fail-level LEVEL` - Minimum severity to trigger failure (error, warning, info, hint); overrides `linter.failLevel` from config
 - `--config PATH` - Custom configuration file path
 - `--ignore-disable-comments` - Report offenses even when suppressed with `<%# herb:disable %>` comments
 - `--version` - Display version information
@@ -1239,9 +1239,51 @@ end
 - Autofix options modify files
 - Configuration loading works
 
+## Advanced Configuration Features
+
+### Exit Code Control (failLevel)
+
+The `--fail-level` CLI option and `linter.failLevel` config setting control which severity levels cause non-zero exit codes. The CLI option takes precedence over the config setting.
+
+When lint results contain offenses at or above the specified severity level, the linter exits with code 1. Otherwise, it exits with code 0.
+
+**Severity levels (from highest to lowest):**
+- `error` (default)
+- `warning`
+- `info`
+- `hint`
+
+**Example usage:**
+```bash
+# Exit with error only if errors found (default)
+herb-lint --fail-level error app/views/
+
+# Exit with error if warnings or errors found
+herb-lint --fail-level warning app/views/
+```
+
+### Top-level Files Section
+
+The configuration supports a top-level `files` section that provides project-wide file patterns. The `LinterConfig#include_patterns` and `LinterConfig#exclude_patterns` methods merge these with linter-specific patterns.
+
+See [herb-config Design](./herb-config-design.md) for details.
+
+### Per-Rule File Patterns
+
+Rules can specify their own `include`, `exclude`, and `only` patterns for fine-grained control over which files they check. When a file does not match a rule's patterns, that rule is skipped for that file.
+
+Pattern matching uses glob syntax and is performed via `PatternMatcher` instances configured through `LinterConfig#build_pattern_matcher`.
+
+### Rule Severity Override
+
+Rules can override their default severity through configuration. When a rule's severity is specified in the config, it takes precedence over the rule's default severity.
+
+**Priority:** configured severity > default severity
+
 ## Related Documents
 
 - [Overall Architecture](./architecture.md)
 - [herb-config Design](./herb-config-design.md)
 - [herb-core Design](./herb-core-design.md)
 - [Requirements: herb-lint](../requirements/herb-lint.md)
+- [Autofix Design](./herb-lint-autofix-design.md)
