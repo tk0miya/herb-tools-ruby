@@ -309,4 +309,68 @@ RSpec.describe Herb::Lint::Rules::Html::NoSpaceInTag do
       end
     end
   end
+
+  describe "#autofix" do
+    subject { described_class.new(matcher:).autofix(node, document) }
+
+    let(:matcher) { build(:pattern_matcher) }
+    let(:document) { Herb.parse(source, track_whitespace: true) }
+
+    context "when fixing close tag with space after </" do
+      let(:source) { "<div>content</  div>" }
+      let(:expected) { "<div>content</div>" }
+      let(:node) do
+        element = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
+        element.close_tag
+      end
+
+      it "removes the space after </" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing close tag with space before >" do
+      let(:source) { "<div>content</div >" }
+      let(:expected) { "<div>content</div>" }
+      let(:node) do
+        element = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
+        element.close_tag
+      end
+
+      it "removes the space before >" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing close tag with both spaces" do
+      let(:source) { "<div>content</  div  >" }
+      let(:expected) { "<div>content</div>" }
+      let(:node) do
+        element = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
+        element.close_tag
+      end
+
+      it "removes all spaces" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when node is not HTMLCloseTagNode" do
+      let(:source) { "<div  >content</div>" }
+      let(:node) do
+        element = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
+        element.open_tag
+      end
+
+      it "returns false" do
+        expect(subject).to be(false)
+      end
+    end
+  end
 end

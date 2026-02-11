@@ -20,7 +20,7 @@ module Herb
           def self.rule_name = "html-no-space-in-tag" #: String
           def self.description = "Disallow extra whitespace inside HTML tags" #: String
           def self.default_severity = "warning" #: String
-          def self.safe_autofixable? = false #: bool
+          def self.safe_autofixable? = true #: bool
           def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
@@ -39,7 +39,29 @@ module Herb
             super
           end
 
+          # @rbs node: Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def autofix(node, parse_result) #: bool
+            case node
+            when Herb::AST::HTMLCloseTagNode
+              fix_close_tag_spacing(node, parse_result)
+            else
+              false # HTMLOpenTagNode will be handled in a later step
+            end
+          end
+
           private
+
+          # @rbs node: Herb::AST::HTMLCloseTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def fix_close_tag_spacing(node, parse_result) #: bool
+            # Remove all whitespace nodes from children
+            children = node.children.reject { |child| child.is_a?(Herb::AST::WhitespaceNode) }
+
+            # Create new close tag node without whitespace
+            new_close_tag = copy_html_close_tag_node(node, children:)
+            replace_node(parse_result, node, new_close_tag)
+          end
 
           # @rbs node: Herb::AST::HTMLOpenTagNode
           def self_closing?(node) #: bool
@@ -143,11 +165,16 @@ module Herb
           def check_close_tag(node) #: void
             return unless node.tag_name
 
-            before = gap_size(node.tag_opening, node.tag_name)
-            after = gap_size(node.tag_name, node.tag_closing)
+            # Report all whitespace nodes (matching TypeScript implementation)
+            node.children.each do |child|
+              next unless child.is_a?(Herb::AST::WhitespaceNode)
 
-            report(EXTRA_SPACE_NO_SPACE, gap_loc(node.tag_opening, node.tag_name)) if before.positive?
-            report(EXTRA_SPACE_NO_SPACE, gap_loc(node.tag_name, node.tag_closing)) if after.positive?
+              add_offense_with_autofix(
+                message: EXTRA_SPACE_NO_SPACE,
+                location: child.location,
+                node:
+              )
+            end
           end
 
           # @rbs left: Herb::Token | Herb::AST::HTMLAttributeNode

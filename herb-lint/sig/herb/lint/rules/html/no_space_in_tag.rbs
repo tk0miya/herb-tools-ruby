@@ -33,7 +33,15 @@ module Herb
           # @rbs override
           def visit_html_close_tag_node: ...
 
+          # @rbs node: Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def autofix: (Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode node, Herb::ParseResult parse_result) -> bool
+
           private
+
+          # @rbs node: Herb::AST::HTMLCloseTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def fix_close_tag_spacing: (Herb::AST::HTMLCloseTagNode node, Herb::ParseResult parse_result) -> bool
 
           # @rbs node: Herb::AST::HTMLOpenTagNode
           def self_closing?: (Herb::AST::HTMLOpenTagNode node) -> bool
