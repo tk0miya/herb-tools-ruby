@@ -1,0 +1,20 @@
+# Generated from lib/herb/lint/string_utils.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # String utility methods for formatting and text manipulation.
+    module StringUtils
+      # Pluralizes a word based on count.
+      #
+      # @rbs count: Integer -- the count to determine singular/plural
+      # @rbs singular: String -- the singular form of the word
+      # @return String -- singular or plural form
+      #
+      # @example
+      #   pluralize(1, "file") # => "file"
+      #   pluralize(2, "file") # => "files"
+      #   pluralize(0, "error") # => "errors"
+      def self?.pluralize: (Integer count, String singular) -> String
+    end
+  end
+end

@@ -337,14 +337,14 @@ Note: `result.parse_result` is `nil` when parsing fails, so autofix is skipped f
 
 **Reference:** TypeScript `@herb-tools/linter` uses `[Correctable]` label (green) to indicate fixable offenses.
 
-- [ ] Update `print_offense` to show `[Correctable]` label
-  - [ ] Append `[Correctable]` for `offense.fixable?`
-  - [ ] Use green color if TTY supports it
-- [ ] Update `format_summary` to show autofix statistics
-  - [ ] When fixes applied: `"X problems (Y corrected, Z fixable) in N files"`
-  - [ ] When no fixes applied but fixable exist: `"X problems (Z fixable) in N files"`
-  - [ ] When no fixable: `"X problems in N files"`
-- [ ] Add unit tests
+- [x] Update `print_offense` to show `[Correctable]` label
+  - [x] Append `[Correctable]` for `offense.fixable?`
+  - [x] Use green color if TTY supports it
+- [x] Update `format_summary` to show autofix statistics
+  - [x] When fixes applied: `"X problems (Y corrected, Z fixable) in N files"`
+  - [x] When no fixes applied but fixable exist: `"X problems (Z fixable) in N files"`
+  - [x] When no fixable: `"X problems in N files"`
+- [x] Add unit tests
 
 **Output Examples:**
 

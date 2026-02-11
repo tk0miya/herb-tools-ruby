@@ -278,4 +278,60 @@ RSpec.describe Herb::Lint::AggregatedResult do
       end
     end
   end
+
+  describe "#files_with_offenses_count" do
+    subject { aggregated_result.files_with_offenses_count }
+
+    let(:aggregated_result) { described_class.new(results) }
+
+    context "when there are no results" do
+      let(:results) { [] }
+
+      it "returns 0" do
+        expect(subject).to eq(0)
+      end
+    end
+
+    context "when all files have no offenses" do
+      let(:results) do
+        [
+          build(:lint_result),
+          build(:lint_result),
+          build(:lint_result)
+        ]
+      end
+
+      it "returns 0" do
+        expect(subject).to eq(0)
+      end
+    end
+
+    context "when some files have offenses" do
+      let(:results) do
+        [
+          build(:lint_result, error_count: 2, warning_count: 1),
+          build(:lint_result),
+          build(:lint_result, error_count: 1, warning_count: 0)
+        ]
+      end
+
+      it "returns the count of files with offenses" do
+        expect(subject).to eq(2)
+      end
+    end
+
+    context "when all files have offenses" do
+      let(:results) do
+        [
+          build(:lint_result, error_count: 1, warning_count: 0),
+          build(:lint_result, error_count: 0, warning_count: 2),
+          build(:lint_result, error_count: 3, warning_count: 1)
+        ]
+      end
+
+      it "returns the total file count" do
+        expect(subject).to eq(3)
+      end
+    end
+  end
 end
