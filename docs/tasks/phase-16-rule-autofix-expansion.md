@@ -11,7 +11,7 @@ This phase implements autofix methods for all existing fixable rules.
 This phase expands autofix support across all rule categories:
 
 - **Part A**: Complete autofix infrastructure (Task 16.1)
-- **Part B**: ERB rule autofix (12 implemented: 6 fixable + 6 not fixable)
+- **Part B**: ERB rule autofix (12 implemented: 5 fixable + 7 not fixable)
 - **Part C**: HTML rule autofix (31 implemented: 6 fixable + 25 not fixable)
 - **Part D**: Herb comment directive rules (5 implemented, detection-only)
 - **Part E**: SVG rule autofix (1 implemented: 1 fixable)
@@ -56,7 +56,7 @@ cd herb-lint && ./bin/steep check
 |------|--------|---------|------|
 | `erb/comment-syntax` | ✅ | Yes | 16.2 |
 | `erb/no-case-node-children` | ✔️ | No | - |
-| `erb/no-empty-tags` | ✅ | Yes | 16.3 |
+| `erb/no-empty-tags` | ✔️ | No | - |
 | `erb/no-extra-newline` | ✔️ | No | - |
 | `erb/no-extra-whitespace-inside-tags` | ✅ | Yes | 16.4 |
 | `erb/no-output-control-flow` | ✔️ | No | - |
@@ -91,26 +91,11 @@ cd herb-lint && ./bin/steep check
 
 ### Task 16.3: ErbNoEmptyTags Autofix
 
-**Status:** Complete
+**Status:** Reverted (Phase 24.4)
 
-**Location:** `herb-lint/lib/herb/lint/rules/erb_no_empty_tags.rb`
+**Location:** `herb-lint/lib/herb/lint/rules/erb/no_empty_tags.rb`
 
-- [x] Add `def self.safe_autofixable? = true`
-- [x] Change `add_offense` to `add_offense_with_autofix`
-- [x] Implement `autofix(node, parse_result)` method
-  - [x] Remove empty ERB tags
-- [x] Add autofix tests
-- [x] Add `remove_node` helper to `AutofixHelpers`
-
-**Example:**
-
-```erb
-# Before
-<% %>
-
-# After
-(removed)
-```
+**Note:** Autofix was implemented but later removed in Phase 24.4 to align with the TypeScript original, which does not provide autofix for this rule.
 
 ### Task 16.4: ErbNoExtraWhitespaceInsideTags Autofix
 
@@ -423,20 +408,20 @@ cat test.html.erb
 | Part | Tasks | Description |
 |------|-------|-------------|
 | A | 16.1 | Complete autofix infrastructure |
-| B | 16.2-16.7 | ERB rules autofix (6 fixable rules) |
+| B | 16.2-16.7 | ERB rules autofix (5 fixable rules) |
 | C | 16.8-16.13 | HTML rules autofix (6 fixable rules) |
 | D | - | Herb directive rules (detection-only, 5 rules) |
 | E | 16.14 | SVG rules autofix (1 fixable rule) |
 | F | - | Parser rules (detection-only, 1 rule) |
 
-**Total: 14 tasks** (covering all 50 implemented rules: 13 fixable + 37 not fixable)
+**Total: 14 tasks** (covering all 50 implemented rules: 12 fixable + 38 not fixable)
 
 ## Task Priorities
 
 ### High Priority (Core Fixable Rules)
 
 - 16.1: AutofixHelpers ✅
-- 16.3: ErbNoEmptyTags ✅
+- 16.3: ErbNoEmptyTags (Reverted in Phase 24.4)
 - 16.4: ErbNoExtraWhitespaceInsideTags ✅
 - 16.5: ErbRequireWhitespaceInsideTags ✅
 - 16.8: HtmlAttributeDoubleQuotes ✅

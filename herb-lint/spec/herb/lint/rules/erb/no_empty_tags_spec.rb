@@ -22,8 +22,8 @@ RSpec.describe Herb::Lint::Rules::Erb::NoEmptyTags do
   end
 
   describe ".safe_autofixable?" do
-    it "returns true" do
-      expect(described_class.safe_autofixable?).to be(true)
+    it "returns false" do
+      expect(described_class.safe_autofixable?).to be(false)
     end
   end
 
@@ -170,61 +170,6 @@ RSpec.describe Herb::Lint::Rules::Erb::NoEmptyTags do
 
       it "does not report an offense" do
         expect(subject).to be_empty
-      end
-    end
-  end
-
-  describe "#autofix" do
-    subject { described_class.new(matcher:).autofix(node, document) }
-
-    let(:matcher) { build(:pattern_matcher) }
-    let(:document) { Herb.parse(source, track_whitespace: true) }
-
-    context "when fixing a simple empty tag" do
-      let(:source) { "<% %>" }
-      let(:expected) { "" }
-      let(:node) { document.value.children.first }
-
-      it "removes the empty tag and returns true" do
-        expect(subject).to be(true)
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
-
-    context "when fixing an empty output tag" do
-      let(:source) { "<%= %>" }
-      let(:expected) { "" }
-      let(:node) { document.value.children.first }
-
-      it "removes the empty tag" do
-        expect(subject).to be(true)
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
-
-    context "when fixing an empty tag with surrounding content" do
-      let(:source) { "<p>before</p><% %><p>after</p>" }
-      let(:expected) { "<p>before</p><p>after</p>" }
-      let(:node) { document.value.children.find { |n| n.is_a?(Herb::AST::ERBContentNode) } }
-
-      it "removes only the empty tag" do
-        expect(subject).to be(true)
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
-
-    context "when fixing an empty tag with tabs and newlines" do
-      let(:source) { "<% \t\n %>" }
-      let(:expected) { "" }
-      let(:node) { document.value.children.first }
-
-      it "removes the empty tag" do
-        expect(subject).to be(true)
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
       end
     end
   end
