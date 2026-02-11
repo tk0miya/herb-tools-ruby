@@ -28,6 +28,65 @@ RSpec.describe Herb::Lint::Rules::Html::AriaAttributeMustBeValid do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
+    # Good examples from documentation
+    context "when div has valid aria-pressed attribute" do
+      let(:source) { '<div role="button" aria-pressed="false">Toggle</div>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when input has valid aria-label attribute" do
+      let(:source) { '<input type="text" aria-label="Search" autocomplete="off">' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when span has valid aria-level attribute" do
+      let(:source) { '<span role="heading" aria-level="2">Title</span>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "when div has typo in aria-pressed attribute" do
+      let(:source) { '<div role="button" aria-presed="false">Toggle</div>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-aria-attribute-must-be-valid")
+        expect(subject.first.message).to include("aria-presed")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when input has typo in aria-label attribute" do
+      let(:source) { '<input type="text" aria-lable="Search" autocomplete="off">' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-aria-attribute-must-be-valid")
+        expect(subject.first.message).to include("aria-lable")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when span has non-existent aria-size attribute" do
+      let(:source) { '<span aria-size="large" role="heading" aria-level="2">Title</span>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-aria-attribute-must-be-valid")
+        expect(subject.first.message).to include("aria-size")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
     context "when element has valid ARIA attributes" do
       let(:source) do
         '<div aria-label="Name" aria-describedby="desc" aria-expanded="false">content</div>'
@@ -35,20 +94,6 @@ RSpec.describe Herb::Lint::Rules::Html::AriaAttributeMustBeValid do
 
       it "does not report an offense" do
         expect(subject).to be_empty
-      end
-    end
-
-    context "when element has an invalid ARIA attribute" do
-      let(:source) { '<div aria-labelled="Name">content</div>' }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html-aria-attribute-must-be-valid")
-        expect(subject.first.message).to eq(
-          "The attribute `aria-labelled` is not a valid ARIA attribute. " \
-          "ARIA attributes must match the WAI-ARIA specification."
-        )
-        expect(subject.first.severity).to eq("error")
       end
     end
 
@@ -125,18 +170,6 @@ RSpec.describe Herb::Lint::Rules::Html::AriaAttributeMustBeValid do
 
       it "reports an offense for each element" do
         expect(subject.size).to eq(2)
-      end
-    end
-
-    context "when self-closing element has invalid ARIA attribute" do
-      let(:source) { '<input aria-labelled="Name">' }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq(
-          "The attribute `aria-labelled` is not a valid ARIA attribute. " \
-          "ARIA attributes must match the WAI-ARIA specification."
-        )
       end
     end
   end
