@@ -185,20 +185,20 @@ end
 
 **Location:** `herb-lint/lib/herb/lint/rules/erb/no_extra_newline.rb`
 
-- [ ] Change base class from `Base` to `SourceRule`
-- [ ] Rename `check` to `check_source` with signature `(source, context)`
-- [ ] Remove `_document` parameter
-- [ ] Remove `@source = context.source` (now provided by base class as `source` param and `@source`)
-- [ ] Remove private `location_from_offsets` and `position_from_offset` methods (now in `SourceRule` base)
-- [ ] Add `self.safe_autofixable?` returning `true`
-- [ ] Replace `add_offense` with `add_offense_with_source_autofix` (include `start_offset:` and `end_offset:`)
-- [ ] Implement `autofix_source(offense, source)` with offset verification
-  - [ ] Read `start_offset` and `end_offset` from `offense.autofix_context`
-  - [ ] Verify content at offsets is newlines only (`/\A\n+\z/`)
-  - [ ] If valid: return `source[0...start_offset] + source[end_offset..]`
-  - [ ] If invalid: return `nil`
-- [ ] Update existing tests to use new base class
-- [ ] Add autofix-specific tests
+- [x] Change base class from `Base` to `SourceRule`
+- [x] Rename `check` to `check_source` with signature `(source, context)`
+- [x] Remove `_document` parameter
+- [x] Remove `@source = context.source` (now provided by base class as `source` param and `@source`)
+- [x] Remove private `location_from_offsets` and `position_from_offset` methods (now in `SourceRule` base)
+- [x] Add `self.safe_autofixable?` returning `true`
+- [x] Replace `add_offense` with `add_offense_with_source_autofix` (include `start_offset:` and `end_offset:`)
+- [x] Implement `autofix_source(offense, source)` with offset verification
+  - [x] Read `start_offset` and `end_offset` from `offense.autofix_context`
+  - [x] Verify content at offsets is newlines only (`/\A\n+\z/`)
+  - [x] If valid: return `source[0...start_offset] + source[end_offset..]`
+  - [x] If invalid: return `nil`
+- [x] Update existing tests to use new base class
+- [x] Add autofix-specific tests
 
 **Before (current):**
 
