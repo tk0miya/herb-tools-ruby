@@ -44,18 +44,30 @@ module Herb
           def fix_close_tag_spacing: (Herb::AST::HTMLCloseTagNode node, Herb::ParseResult parse_result) -> bool
 
           # @rbs node: Herb::AST::HTMLOpenTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def fix_single_line_open_tag_spacing: (Herb::AST::HTMLOpenTagNode node, Herb::ParseResult parse_result) -> bool
+
+          # @rbs node: Herb::AST::HTMLOpenTagNode
           def self_closing?: (Herb::AST::HTMLOpenTagNode node) -> bool
 
+          # Check all whitespace nodes in a single-line tag
+          # Matches TypeScript implementation: directly check whitespace node content
           # @rbs node: Herb::AST::HTMLOpenTagNode
           def check_single_line_open_tag: (Herb::AST::HTMLOpenTagNode node) -> void
 
+          # Check if trailing whitespace exists for self-closing tags
           # @rbs node: Herb::AST::HTMLOpenTagNode
-          # @rbs children: Array[Herb::AST::HTMLAttributeNode]
-          def check_inter_element_gaps: (Herb::AST::HTMLOpenTagNode node, Array[Herb::AST::HTMLAttributeNode] children) -> void
+          def check_trailing_whitespace_existence: (Herb::AST::HTMLOpenTagNode node) -> void
 
+          # Check non-trailing whitespace (between elements)
           # @rbs node: Herb::AST::HTMLOpenTagNode
-          # @rbs last: Herb::Token | Herb::AST::HTMLAttributeNode
-          def check_trailing_gap: (Herb::AST::HTMLOpenTagNode node, Herb::Token | Herb::AST::HTMLAttributeNode last) -> void
+          # @rbs whitespace: Herb::AST::WhitespaceNode
+          def check_non_trailing_whitespace: (Herb::AST::HTMLOpenTagNode node, Herb::AST::WhitespaceNode whitespace) -> void
+
+          # Check trailing whitespace (before closing bracket)
+          # @rbs node: Herb::AST::HTMLOpenTagNode
+          # @rbs whitespace: Herb::AST::WhitespaceNode
+          def check_trailing_whitespace: (Herb::AST::HTMLOpenTagNode node, Herb::AST::WhitespaceNode whitespace) -> void
 
           # @rbs node: Herb::AST::HTMLOpenTagNode
           def check_multiline_open_tag: (Herb::AST::HTMLOpenTagNode node) -> void

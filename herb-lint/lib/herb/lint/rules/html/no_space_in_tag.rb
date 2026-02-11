@@ -43,10 +43,17 @@ module Herb
           # @rbs parse_result: Herb::ParseResult
           def autofix(node, parse_result) #: bool
             case node
+            when Herb::AST::HTMLOpenTagNode
+              # Only handle single-line open tags for now
+              if node.location.start.line == node.location.end.line
+                fix_single_line_open_tag_spacing(node, parse_result)
+              else
+                false # Multiline open tags not yet supported
+              end
             when Herb::AST::HTMLCloseTagNode
               fix_close_tag_spacing(node, parse_result)
             else
-              false # HTMLOpenTagNode will be handled in a later step
+              false
             end
           end
 
@@ -64,46 +71,88 @@ module Herb
           end
 
           # @rbs node: Herb::AST::HTMLOpenTagNode
+          # @rbs parse_result: Herb::ParseResult
+          def fix_single_line_open_tag_spacing(node, parse_result) #: bool
+            # Build new children with correct spacing
+            attributes = node.children.select { |child| child.is_a?(Herb::AST::HTMLAttributeNode) }
+            children = []
+
+            # Add whitespace + attribute for each attribute
+            attributes.each do |attr|
+              children << build_whitespace_node
+              children << attr
+            end
+
+            # Add whitespace before closing for self-closing tags
+            children << build_whitespace_node if self_closing?(node)
+
+            # Create new open tag with corrected spacing
+            new_open_tag = copy_html_open_tag_node(node, children:)
+            replace_node(parse_result, node, new_open_tag)
+          end
+
+          # @rbs node: Herb::AST::HTMLOpenTagNode
           def self_closing?(node) #: bool
             node.tag_closing&.value == "/>"
           end
 
+          # Check all whitespace nodes in a single-line tag
+          # Matches TypeScript implementation: directly check whitespace node content
           # @rbs node: Herb::AST::HTMLOpenTagNode
           def check_single_line_open_tag(node) #: void
-            children = node.children.select { _1.is_a?(Herb::AST::HTMLAttributeNode) }
+            check_trailing_whitespace_existence(node) if self_closing?(node)
 
-            check_inter_element_gaps(node, children)
-            check_trailing_gap(node, children.last || node.tag_name)
-          end
-
-          # @rbs node: Herb::AST::HTMLOpenTagNode
-          # @rbs children: Array[Herb::AST::HTMLAttributeNode]
-          def check_inter_element_gaps(node, children) #: void
-            return if children.empty?
-
-            gap = gap_size(node.tag_name, children.first)
-            report(EXTRA_SPACE_SINGLE_SPACE, gap_loc(node.tag_name, children.first)) if gap > 1
-
-            children.each_cons(2) do |left, right|
-              gap = gap_size(left, right)
-              report(EXTRA_SPACE_SINGLE_SPACE, gap_loc(left, right)) if gap > 1
-            end
-          end
-
-          # @rbs node: Herb::AST::HTMLOpenTagNode
-          # @rbs last: Herb::Token | Herb::AST::HTMLAttributeNode
-          def check_trailing_gap(node, last) #: void
-            gap = gap_size(last, node.tag_closing)
-
-            if self_closing?(node)
-              if gap.zero?
-                report(NO_SPACE_SINGLE_SPACE, node.tag_closing.location)
-              elsif gap > 1
-                report(EXTRA_SPACE_NO_SPACE, gap_loc(last, node.tag_closing))
+            whitespace_nodes = node.children.select { |c| c.is_a?(Herb::AST::WhitespaceNode) }
+            whitespace_nodes.each do |ws|
+              if ws == node.children.last
+                check_trailing_whitespace(node, ws)
+              else
+                # Non-trailing whitespace should be exactly 1 character
+                check_non_trailing_whitespace(node, ws)
               end
-            elsif gap.positive?
-              report(EXTRA_SPACE_NO_SPACE, gap_loc(last, node.tag_closing))
             end
+          end
+
+          # Check if trailing whitespace exists for self-closing tags
+          # @rbs node: Herb::AST::HTMLOpenTagNode
+          def check_trailing_whitespace_existence(node) #: void
+            last_child = node.children.last
+            return if last_child.is_a?(Herb::AST::WhitespaceNode)
+
+            # Self-closing tag needs space before />
+            add_offense_with_autofix(
+              message: NO_SPACE_SINGLE_SPACE,
+              location: node.tag_closing.location,
+              node:
+            )
+          end
+
+          # Check non-trailing whitespace (between elements)
+          # @rbs node: Herb::AST::HTMLOpenTagNode
+          # @rbs whitespace: Herb::AST::WhitespaceNode
+          def check_non_trailing_whitespace(node, whitespace) #: void
+            return if whitespace.value.value.length == 1
+
+            add_offense_with_autofix(
+              message: EXTRA_SPACE_SINGLE_SPACE,
+              location: whitespace.location,
+              node:
+            )
+          end
+
+          # Check trailing whitespace (before closing bracket)
+          # @rbs node: Herb::AST::HTMLOpenTagNode
+          # @rbs whitespace: Herb::AST::WhitespaceNode
+          def check_trailing_whitespace(node, whitespace) #: void
+            # Self-closing tags need exactly 1 space before />
+            return if self_closing?(node) && whitespace.value.value.length == 1
+
+            # Regular tags should have no trailing whitespace, or self-closing with wrong spacing
+            add_offense_with_autofix(
+              message: EXTRA_SPACE_NO_SPACE,
+              location: whitespace.location,
+              node:
+            )
           end
 
           # @rbs node: Herb::AST::HTMLOpenTagNode

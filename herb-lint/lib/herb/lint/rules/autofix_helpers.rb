@@ -96,6 +96,21 @@ module Herb
         Herb::Token.new('"', range, location, "TOKEN_QUOTE")
       end
 
+      # Create a whitespace node for spacing.
+      # Location is set to (0, 0) as it doesn't affect printer output.
+      # The printer uses the AST structure (whitespace nodes) for spacing, not locations.
+      #
+      # @rbs return: Herb::AST::WhitespaceNode -- a whitespace node containing a single space
+      def build_whitespace_node #: Herb::AST::WhitespaceNode
+        ws_loc = Herb::Location.new(
+          Herb::Position.new(0, 0),
+          Herb::Position.new(0, 1)
+        )
+        ws_range = Herb::Range.new(0, 1)
+        ws_token = Herb::Token.new(" ", ws_range, ws_loc, "TOKEN_WHITESPACE")
+        Herb::AST::WhitespaceNode.new("AST_WHITESPACE_NODE", ws_loc, [], ws_token)
+      end
+
       # Create a new token by copying an existing token with optional attribute overrides.
       # This is useful for creating modified tokens during autofix operations.
       #
