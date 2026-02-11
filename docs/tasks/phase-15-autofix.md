@@ -377,27 +377,16 @@ app/views/users/show.html.erb
 
 ### Task 15.9: GithubReporter Autofix Support
 
+**Status:** NOT IMPLEMENTED (TypeScript compatibility)
+
 **Location:** `herb-lint/lib/herb/lint/reporter/github_reporter.rb`
 
-**Goal:** Add `[Correctable]` suffix to GitHub Actions annotations for fixable offenses.
+**Decision:** The TypeScript reference implementation does not include `[Correctable]` markers in GitHub Actions annotations. To maintain CLI compatibility with the TypeScript implementation, this feature will not be implemented in the Ruby version.
 
-- [ ] Update `print_offense` to show `[Correctable]` suffix
-  - [ ] Append `[Correctable]` to message for fixable offenses
-  - [ ] Maintain GitHub Actions annotation format
-- [ ] Consider whether to show autofixed offenses
-  - [ ] Decision: show all offenses (both autofixed and unfixed) or only unfixed
-- [ ] Add unit tests
+**Reference:** TypeScript `@herb-tools/linter` GitHub Actions formatter outputs annotations without autocorrectable indicators.
 
-**Output Example:**
-```
-::error file=app/views/users/show.html.erb,line=3,col=10::Missing alt attribute on img tag [Correctable] (html/img-require-alt)
-::warning file=app/views/users/show.html.erb,line=5,col=15::Prefer double quotes for attributes (html/attribute-double-quotes)
-```
-
-**Test Cases:**
-- `print_offense` appends `[Correctable]` for fixable offenses
-- `print_offense` does not append suffix for non-fixable offenses
-- Annotation format remains valid for GitHub Actions
+- [x] Verified TypeScript implementation does not show `[Correctable]` suffix
+- [x] Decision: Skip implementation for TypeScript compatibility
 
 ---
 
@@ -482,9 +471,9 @@ cd herb-lint && ./bin/steep check
 | 15.6 | B | Runner and CLI integration |
 | 15.7 | C | LintResult and AggregatedResult extensions |
 | 15.8 | C | SimpleReporter autofix support |
-| 15.9 | C | GithubReporter autofix support |
+| 15.9 | C | GithubReporter autofix support (skipped for TypeScript compatibility) |
 
-**Total: 9 tasks**
+**Total: 8 tasks (1 skipped for compatibility)**
 
 **Note:** The original Task 15.7 (Autofix utility helpers) and rule-specific autofix implementations have been extracted to [Phase 16: Rule Autofix Expansion](./phase-16-rule-autofix-expansion.md) for better organization and incremental implementation.
 
