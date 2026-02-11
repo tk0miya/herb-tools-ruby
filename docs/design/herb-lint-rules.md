@@ -220,7 +220,24 @@ Meta-rules that validate herb-lint directive comments.
 - `herb-disable-comment-valid-rule-name` - Validate rule names exist
 - `herb-disable-comment-no-duplicate-rules` - No duplicate rules in directive
 - `herb-disable-comment-no-redundant-all` - Don't use `all` with specific rules
-- `herb-disable-comment-unnecessary` - Warn when directive suppresses nothing (TypeScript only)
+- `herb-disable-comment-unnecessary` - Warn when directive suppresses nothing
+
+**Special Implementation Note:**
+
+The `herb-disable-comment-unnecessary` rule has a unique implementation in **both TypeScript and Ruby**. Unlike other rules that validate syntax alone, this rule requires knowledge of which offenses were actually suppressed by disable comments.
+
+- **TypeScript**: Special integration at Linter level
+  - Detection happens after offense filtering via `checkForUnnecessaryDirectives()`
+  - Integrated into the main linting flow
+  - See: `javascript/packages/linter/src/linter.ts`
+
+- **Ruby**: Implemented via `UnnecessaryDirectiveDetector` at Linter level
+  - Detection happens after all rules run and offenses are filtered
+  - Integrated into `Linter#build_lint_result`
+  - Respects rule configuration (enabled/disabled, severity)
+  - See: `lib/herb/lint/unnecessary_directive_detector.rb`
+
+Both implementations use the same architectural approach: integrating detection at the Linter level rather than as a standard rule, because this rule uniquely depends on the results of all other rules.
 
 ### SVG Rules (1 rule)
 

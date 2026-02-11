@@ -26,39 +26,39 @@ Differences between TypeScript and Ruby implementations:
 
 ### Task 24.1: Implement herb-disable-comment-unnecessary Rule
 
-**Status:** ⏳ Pending
+**Status:** ✅ Complete (Already Implemented)
 
-**Location:** `herb-lint/lib/herb/lint/rules/herb/disable_comment_unnecessary.rb`
+**Location:** `herb-lint/lib/herb/lint/unnecessary_directive_detector.rb`
 
 **Description:**
-This rule exists in TypeScript but is missing in Ruby. It warns when a `herb:disable` comment doesn't actually suppress any violations.
+This rule exists in TypeScript and warns when a `herb:disable` comment doesn't actually suppress any violations.
 
 **Implementation:**
 
-- [ ] Create `Herb::Lint::Rules::Herb::DisableCommentUnnecessary` class
-  - [ ] Extend `DirectiveRule`
-  - [ ] Set `rule_name = "herb-disable-comment-unnecessary"`
-  - [ ] Set `default_severity = "warning"`
-  - [ ] Set `description`
-- [ ] Implement detection logic (reference TypeScript implementation)
-  - [ ] Check if disable comment actually suppresses any violations
-  - [ ] Report offense if no violations are suppressed
-- [ ] Register in RuleRegistry
-- [ ] Create test cases
-  - [ ] Detect unnecessary disable comments
-  - [ ] Don't report necessary disable comments
-  - [ ] Handle `all` keyword cases
-- [ ] Add RBS type annotations
+- [x] Already implemented via `UnnecessaryDirectiveDetector`
+  - [x] Integrated at Linter level in `Linter#build_lint_result`
+  - [x] Rule name: `"herb-disable-comment-unnecessary"`
+  - [x] Default severity: `"warning"`
+  - [x] Detects unnecessary disable comments
+  - [x] Handles `all` keyword cases
+  - [x] Comprehensive test coverage (11 test cases)
+  - [x] RBS type annotations present
 
-**TypeScript Reference:**
-```typescript
-// /tmp/herb-original/javascript/packages/linter/src/rules/herb-disable-comment-unnecessary.ts
-```
+**Architectural Decision:**
+
+Unlike TypeScript which implements this as a separate rule class, the Ruby implementation uses `UnnecessaryDirectiveDetector` integrated at the Linter level. This design is intentional because:
+
+1. The rule requires knowledge of which offenses were actually suppressed
+2. Detection must happen after all rules run and offenses are filtered
+3. Integration at Linter level provides the necessary context
+
+This approach maintains equivalent functionality while working within Ruby's linter flow. Documented in `docs/design/herb-lint-rules.md`.
 
 **Verification:**
 ```bash
-cd herb-lint && ./bin/rspec spec/herb/lint/rules/herb/disable_comment_unnecessary_spec.rb
-cd herb-lint && ./bin/steep check
+cd herb-lint && ./bin/rspec spec/herb/lint/unnecessary_directive_detector_spec.rb
+cd herb-lint && ./bin/rspec spec/herb/lint/linter_spec.rb:124
+# All tests pass ✅
 ```
 
 **Priority:** Medium
@@ -434,7 +434,7 @@ grep -r "html-no-space-in-tag" docs/
 ## Progress Summary
 
 ### Part A: Missing Rules (2 tasks)
-- [ ] 24.1: Implement herb-disable-comment-unnecessary
+- [x] 24.1: Implement herb-disable-comment-unnecessary (Already implemented)
 - [x] 24.2: Verify/implement html-no-space-in-tag
 
 ### Part B: Autofix Alignment (2 tasks)
@@ -450,7 +450,7 @@ grep -r "html-no-space-in-tag" docs/
 - [x] 24.23: Align default enabled status (5 rules)
 - [ ] 24.24: Update README etc.
 
-**Total: 24 tasks** (3 complete, 21 pending)
+**Total: 24 tasks** (4 complete, 20 pending)
 
 ---
 
@@ -458,7 +458,7 @@ grep -r "html-no-space-in-tag" docs/
 
 1. ~~**Task 24.23** (High Priority): Align default enabled status (5 rules)~~ ✅ Complete
 2. ~~**Task 24.2** (High Priority): Verify html-no-space-in-tag~~ ✅ Complete
-3. **Task 24.1** (Medium Priority): Implement herb-disable-comment-unnecessary
+3. ~~**Task 24.1** (Medium Priority): Implement herb-disable-comment-unnecessary~~ ✅ Complete (Already implemented)
 4. **Task 24.5** (High Priority): Decide severity policy
 5. **Tasks 24.6-24.21**: Update severities (after policy decision)
 6. **Task 24.3**: Add erb-no-extra-newline autofix (after Phase 18)
