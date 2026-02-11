@@ -116,33 +116,49 @@ cd herb-lint && ./bin/steep check
 
 ### Task 24.3: Add Autofix to erb-no-extra-newline
 
-**Status:** ⏳ Pending (Coordinate with Phase 18)
+**Status:** ✅ Complete (Completed via Phase 18 Task S.4)
 
 **Location:** `herb-lint/lib/herb/lint/rules/erb/no_extra_newline.rb`
 
 **Description:**
-TypeScript version has autofix for `erb-no-extra-newline`, but Ruby doesn't. However, this rule is planned for migration to SourceRule (Phase 18).
+TypeScript version has autofix for `erb-no-extra-newline`, but Ruby didn't. This rule has been migrated to SourceRule (Phase 18) with full autofix support.
 
 **Dependencies:**
-- Phase 18: Source Rule Introduction (Task 18.4)
+- Phase 18: Source Rule Introduction (Task S.4) ✅ Complete
 
 **Implementation:**
 
-- [ ] Verify Phase 18 progress
-  - [ ] Check if SourceRule base class is implemented
-  - [ ] Check if Autofixer source phase is implemented
-- [ ] Implement autofix after SourceRule migration
-  - [ ] Add `safe_autofixable? = true`
-  - [ ] Implement source-level autofix
-  - [ ] Remove extra newlines
-- [ ] Add test cases
-- [ ] Update RBS type annotations
+- [x] Verify Phase 18 progress
+  - [x] Check if SourceRule base class is implemented ✅
+  - [x] Check if Autofixer source phase is implemented ✅
+- [x] Implement autofix after SourceRule migration
+  - [x] Add `safe_autofixable? = true` ✅
+  - [x] Implement source-level autofix ✅
+  - [x] Remove extra newlines ✅
+- [x] Add test cases ✅
+- [x] Update RBS type annotations ✅
+
+**Implementation Details:**
+- Change base class from `Base` to `SourceRule`
+- Rename `check` to `check_source` with signature `(source, context)`
+- Add `safe_autofixable? = true`
+- Replace `add_offense` with `add_offense_with_source_autofix`
+- Implement `autofix_source` with offset verification
+- Remove helper methods now provided by base class
+
+**Tests:**
+- Detection tests: 12 examples
+- Autofix tests: 4 examples (single occurrence, multiple occurrences, EOF, offset verification)
+- All tests pass: 20 examples, 0 failures
 
 **Verification:**
 ```bash
-cd herb-lint && ./bin/rspec spec/herb/lint/rules/erb/no_extra_newline_spec.rb --tag autofix
+cd herb-lint && ./bin/rspec spec/herb/lint/rules/erb/no_extra_newline_spec.rb
+# 20 examples, 0 failures ✅
 cd herb-lint && ./bin/steep check
 ```
+
+**Completed:** 2026-02-11 (Commit: 0780bcb)
 
 **Priority:** Medium (after Phase 18 completion)
 
@@ -467,7 +483,7 @@ grep -r "html-no-space-in-tag" docs/
 - [x] 24.2: Verify/implement html-no-space-in-tag
 
 ### Part B: Autofix Alignment (2 tasks)
-- [ ] 24.3: Add autofix to erb-no-extra-newline (Phase 18 coordination)
+- [x] 24.3: Add autofix to erb-no-extra-newline (Completed via Phase 18)
 - [ ] 24.4: Propose to TypeScript (optional)
 
 ### Part C: Severity Alignment (17 tasks)
@@ -479,7 +495,7 @@ grep -r "html-no-space-in-tag" docs/
 - [x] 24.23: Align default enabled status (5 rules)
 - [ ] 24.24: Update README etc.
 
-**Total: 24 tasks** (4 complete, 20 pending)
+**Total: 24 tasks** (5 complete, 19 pending)
 
 ---
 
@@ -488,9 +504,9 @@ grep -r "html-no-space-in-tag" docs/
 1. ~~**Task 24.23** (High Priority): Align default enabled status (5 rules)~~ ✅ Complete
 2. ~~**Task 24.2** (High Priority): Verify html-no-space-in-tag~~ ✅ Complete
 3. ~~**Task 24.1** (Medium Priority): Implement herb-disable-comment-unnecessary~~ ✅ Complete (Already implemented)
-4. **Task 24.5** (High Priority): Decide severity policy
-5. **Tasks 24.6-24.21**: Update severities (after policy decision)
-6. **Task 24.3**: Add erb-no-extra-newline autofix (after Phase 18)
+4. ~~**Task 24.3** (Medium Priority): Add erb-no-extra-newline autofix~~ ✅ Complete (Completed via Phase 18)
+5. **Task 24.5** (High Priority): Decide severity policy
+6. **Tasks 24.6-24.21**: Update severities (after policy decision)
 7. **Task 24.24**: Update documentation
 8. **Task 24.4**: Propose to TypeScript (optional)
 
