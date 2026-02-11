@@ -2,12 +2,25 @@
 
 RSpec.describe Herb::Lint::AggregatedResult do
   describe "#initialize" do
-    subject { described_class.new(results) }
+    subject { described_class.new(results, rule_count:) }
 
     let(:results) { [] }
+    let(:rule_count) { 0 }
 
     it "sets the results attribute" do
       expect(subject.results).to eq([])
+    end
+
+    it "sets the rule_count attribute" do
+      expect(subject.rule_count).to eq(0)
+    end
+
+    context "with a custom rule count" do
+      let(:rule_count) { 42 }
+
+      it "sets the rule_count to the provided value" do
+        expect(subject.rule_count).to eq(42)
+      end
     end
   end
 

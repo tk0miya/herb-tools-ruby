@@ -228,19 +228,19 @@ The rule count should reflect the number of rules actually used during linting, 
 
 **Location:** `herb-lint/lib/herb/lint/runner.rb`
 
-- [ ] Track active rule count in runner
-- [ ] Pass rule count to `AggregatedResult`
+- [x] Track active rule count in runner
+- [x] Pass rule count to `AggregatedResult`
 
 **Location:** `herb-lint/lib/herb/lint/aggregated_result.rb`
 
-- [ ] Add `rule_count` attribute
-- [ ] Update initializer to accept `rule_count` parameter
-- [ ] Update tests
+- [x] Add `rule_count` attribute
+- [x] Update initializer to accept `rule_count` parameter
+- [x] Update tests
 
 **Location:** `herb-lint/lib/herb/lint/reporter/json_reporter.rb`
 
-- [ ] Update `build_summary` to use actual `rule_count`
-- [ ] Update tests
+- [x] Update `build_summary` to use actual `rule_count`
+- [x] Update tests
 
 **Verification:**
 ```bash
@@ -379,7 +379,7 @@ cd herb-lint
 All tasks completed and verified:
 - [x] Task 23.1: Info/hint severity levels implemented
 - [x] Task 23.2: Ignored offenses count tracked
-- [ ] Task 23.3: Active rule count reported
+- [x] Task 23.3: Active rule count reported
 - [ ] Task 23.4: RBS types updated
 - [ ] Task 23.5: Integration tests passing
 - [ ] Task 23.6: Documentation updated
