@@ -4,22 +4,32 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that enforces correct syntax for strict_locals magic comments.
-        #
-        # Uses StrictLocalsValidator to detect and validate locals declarations
-        # in ERB comment tags. Also detects locals declarations in statement tags
-        # (`<% # locals: ... %>`) and duplicate declarations.
+        # Description:
+        #   Ensures that strict locals comments use the exact `locals: ( ... )` syntax so they are properly
+        #   recognized by Rails and tooling. Also validates that only keyword arguments are used (no
+        #   positional, block, or splat arguments).
         #
         # Good:
-        #   <%# locals: (name:) %>
-        #   <%# locals: (name:, age: 0) %>
+        #   <%# locals: (user:) %>
+        #   <%# locals: (user:, admin: false) %>
+        #   <%# locals: (items: [], config: {}) %>
         #   <%# locals: () %>
+        #   <%# locals: (message: "Hello", **attributes) %>
         #
         # Bad:
-        #   <%# locals: (name) %>
-        #   <%# locals(name:) %>
-        #   <%# local: (name:) %>
-        #   <% # locals: (name:) %>
+        #   <%# locals() %>
+        #   <%# local: (user:) %>
+        #   <%# locals (user:) %>
+        #   <%# locals: user %>
+        #   <%# locals: %>
+        #   <%# locals: (user: %>
+        #   <% # locals: (user:) %>
+        #   <%# locals: (user) %>
+        #   <%# locals: (&block) %>
+        #   <%# locals: (*args) %>
+        #   <%# locals: (user:,) %>
+        #   <%# locals: (, user:) %>
+        #   <%# locals: (user:,, admin:) %>
         class StrictLocalsCommentSyntax < VisitorRule
           STATEMENT_TAG_COMMENT_PATTERN: ::Regexp
 
@@ -28,6 +38,10 @@ module Herb
           def self.description: () -> String
 
           def self.default_severity: () -> String
+
+          def self.safe_autofixable?: () -> bool
+
+          def self.unsafe_autofixable?: () -> bool
 
           @first_locals_line: Integer?
 

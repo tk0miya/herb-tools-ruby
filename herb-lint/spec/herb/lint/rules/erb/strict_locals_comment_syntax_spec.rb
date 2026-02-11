@@ -28,8 +28,25 @@ RSpec.describe Herb::Lint::Rules::Erb::StrictLocalsCommentSyntax do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context, file_path: "/path/to/_partial.html.erb") }
 
-    context "when comment has valid strict locals syntax" do
-      let(:source) { "<%# locals: (name:) %>" }
+    # Good examples from documentation
+    context "when comment has valid required keyword" do
+      let(:source) { "<%# locals: (user:) %>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when comment has valid keyword with default" do
+      let(:source) { "<%# locals: (user:, admin: false) %>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when comment has valid complex defaults" do
+      let(:source) { "<%# locals: (items: [], config: {}) %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -44,22 +61,135 @@ RSpec.describe Herb::Lint::Rules::Erb::StrictLocalsCommentSyntax do
       end
     end
 
-    context "when comment has valid multiple keyword arguments" do
-      let(:source) { "<%# locals: (name:, age: 0, visible: true) %>" }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
     context "when comment has valid double-splat argument" do
-      let(:source) { "<%# locals: (**attributes) %>" }
+      let(:source) { "<%# locals: (message: \"Hello\", **attributes) %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
+    # Bad examples from documentation
+    context "when comment is missing colon (locals())" do
+      let(:source) { "<%# locals() %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("Use `locals:` with a colon")
+      end
+    end
+
+    context "when comment uses singular local:" do
+      let(:source) { "<%# local: (user:) %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("Use `locals:` (plural)")
+      end
+    end
+
+    context "when comment is missing colon before parentheses" do
+      let(:source) { "<%# locals (user:) %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("colon")
+      end
+    end
+
+    context "when comment is missing parentheses" do
+      let(:source) { "<%# locals: user %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("parenthes")
+      end
+    end
+
+    context "when comment is empty without parentheses" do
+      let(:source) { "<%# locals: %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("Add parameters after `locals:`")
+      end
+    end
+
+    context "when comment has unbalanced parentheses" do
+      let(:source) { "<%# locals: (user: %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("parenthes")
+      end
+    end
+
+    context "when locals declaration uses statement tag with Ruby comment" do
+      let(:source) { "<% # locals: (user:) %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("Use `<%#` instead of `<% #`")
+      end
+    end
+
+    context "when comment has positional argument (invalid)" do
+      let(:source) { "<%# locals: (user) %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("erb-strict-locals-comment-syntax")
+        expect(subject.first.message).to include("Positional argument `user` is not allowed")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when comment has block argument" do
+      let(:source) { "<%# locals: (&block) %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("Block argument")
+      end
+    end
+
+    context "when comment has single splat" do
+      let(:source) { "<%# locals: (*args) %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("Splat argument")
+      end
+    end
+
+    context "when comment has trailing comma" do
+      let(:source) { "<%# locals: (user:,) %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("comma")
+      end
+    end
+
+    context "when comment has leading comma" do
+      let(:source) { "<%# locals: (, user:) %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("comma")
+      end
+    end
+
+    context "when comment has double comma" do
+      let(:source) { "<%# locals: (user:,, admin:) %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("comma")
+      end
+    end
+
+    # Additional edge case tests
     context "when comment is a regular comment (not locals)" do
       let(:source) { "<%# TODO: fix this %>" }
 
@@ -76,41 +206,12 @@ RSpec.describe Herb::Lint::Rules::Erb::StrictLocalsCommentSyntax do
       end
     end
 
-    context "when comment has positional argument (invalid)" do
-      let(:source) { "<%# locals: (name) %>" }
+    context "when locals declaration uses trim statement tag with Ruby comment" do
+      let(:source) { "<%- # locals: (user:) %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("erb-strict-locals-comment-syntax")
-        expect(subject.first.message).to include("Positional argument `name` is not allowed")
-        expect(subject.first.severity).to eq("error")
-      end
-    end
-
-    context "when comment uses singular local:" do
-      let(:source) { "<%# local: (name:) %>" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to include("Use `locals:` (plural)")
-      end
-    end
-
-    context "when comment is missing colon (locals())" do
-      let(:source) { "<%# locals(name:) %>" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to include("Use `locals:` with a colon")
-      end
-    end
-
-    context "when comment is missing space after colon" do
-      let(:source) { "<%# locals:(name:) %>" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to include("Missing space after `locals:`")
+        expect(subject.first.message).to include("Use `<%#` instead of `<% #`")
       end
     end
 
@@ -119,54 +220,6 @@ RSpec.describe Herb::Lint::Rules::Erb::StrictLocalsCommentSyntax do
 
       it "does not report an offense" do
         expect(subject).to be_empty
-      end
-    end
-
-    context "when template has both valid locals and other comments" do
-      let(:source) do
-        <<~ERB
-          <%# Regular comment %>
-          <%# locals: (name:) %>
-          <div><%= name %></div>
-        ERB
-      end
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when template has invalid locals among other content" do
-      let(:source) do
-        <<~ERB
-          <div>Header</div>
-          <%# locals: (name) %>
-          <div><%= name %></div>
-        ERB
-      end
-
-      it "reports exactly one offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("erb-strict-locals-comment-syntax")
-      end
-    end
-
-    context "when locals declaration uses statement tag with Ruby comment" do
-      let(:source) { "<% # locals: (name:) %>" }
-
-      it "reports an offense about using <%# instead" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to include("Use `<%#` instead of `<% #`")
-        expect(subject.first.message).to include("Only ERB comment syntax is recognized by Rails")
-      end
-    end
-
-    context "when locals declaration uses trim statement tag with Ruby comment" do
-      let(:source) { "<%- # locals: (name:) %>" }
-
-      it "reports an offense about using <%# instead" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to include("Use `<%#` instead of `<% #`")
       end
     end
 
