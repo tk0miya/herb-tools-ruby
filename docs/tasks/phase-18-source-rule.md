@@ -142,14 +142,14 @@ end
 
 **Location:** `herb-lint/lib/herb/lint/autofixer.rb`
 
-- [ ] Refactor `apply_fixes` into `apply_ast_fixes` (existing logic)
-- [ ] Add `apply_source_fixes(offenses, source)` private method
-- [ ] Update `apply` to partition offenses by `autofix_context.source_rule?`
-- [ ] Apply AST fixes first, then source fixes on the resulting source string
-- [ ] Source fixes call `rule.autofix_source(offense, source)` sequentially
-- [ ] Track fixed/unfixed for source fixes
-- [ ] Update unit tests
-- [ ] Update RBS types
+- [x] Refactor `apply_fixes` into `apply_ast_fixes` (existing logic)
+- [x] Add `apply_source_fixes(offenses, source)` private method
+- [x] Update `apply` to partition offenses by `autofix_context.source_rule?`
+- [x] Apply AST fixes first, then source fixes on the resulting source string
+- [x] Source fixes call `rule.autofix_source(offense, source)` sequentially
+- [x] Track fixed/unfixed for source fixes
+- [x] Update unit tests
+- [x] Update RBS types
 
 **Processing Flow:**
 

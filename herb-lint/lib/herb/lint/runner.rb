@@ -83,6 +83,7 @@ module Herb
         Autofixer.new(
           lint_result.parse_result,
           lint_result.unfixed_offenses,
+          source: lint_result.source,
           unsafe:
         )
       end

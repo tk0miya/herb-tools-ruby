@@ -79,4 +79,77 @@ module TestRules
       false
     end
   end
+
+  # Safe source rule that removes trailing whitespace
+  #
+  # Used in: autofixer_spec.rb
+  class SafeSourceRule < Herb::Lint::Rules::SourceRule
+    def self.rule_name = "test/safe-source"
+    def self.description = "Test safe source rule"
+    def self.default_severity = "warning"
+    def self.safe_autofixable? = true
+    def self.unsafe_autofixable? = false
+
+    def check_source(source, _context)
+      # Find trailing whitespace at end of lines
+      source.scan(/[ \t]+$/) do
+        match_start = Regexp.last_match.offset(0)[0]
+        match_end = Regexp.last_match.offset(0)[1]
+        location = location_from_offsets(match_start, match_end)
+
+        add_offense_with_source_autofix(
+          message: "Remove trailing whitespace",
+          location:,
+          start_offset: match_start,
+          end_offset: match_end
+        )
+      end
+    end
+
+    def autofix_source(offense, source)
+      ctx = offense.autofix_context
+      # Verify offsets are within bounds
+      return nil if ctx.start_offset >= source.length
+      return nil if ctx.end_offset > source.length
+
+      # Verify the content at the offset is still whitespace
+      content = source[ctx.start_offset...ctx.end_offset]
+      return nil unless content&.match?(/\A[ \t]+\z/)
+
+      # Remove the trailing whitespace
+      source[0...ctx.start_offset] + source[ctx.end_offset..]
+    end
+  end
+
+  # Failing source rule whose autofix_source always returns nil
+  #
+  # Used in: autofixer_spec.rb
+  class FailingSourceRule < Herb::Lint::Rules::SourceRule
+    def self.rule_name = "test/failing-source"
+    def self.description = "Test failing source rule"
+    def self.default_severity = "warning"
+    def self.safe_autofixable? = true
+    def self.unsafe_autofixable? = false
+
+    def check_source(source, _context)
+      # Find trailing whitespace at end of lines
+      source.scan(/[ \t]+$/) do
+        match_start = Regexp.last_match.offset(0)[0]
+        match_end = Regexp.last_match.offset(0)[1]
+        location = location_from_offsets(match_start, match_end)
+
+        add_offense_with_source_autofix(
+          message: "Will fail to fix",
+          location:,
+          start_offset: match_start,
+          end_offset: match_end
+        )
+      end
+    end
+
+    def autofix_source(_offense, _source)
+      # Always fail
+      nil
+    end
+  end
 end
