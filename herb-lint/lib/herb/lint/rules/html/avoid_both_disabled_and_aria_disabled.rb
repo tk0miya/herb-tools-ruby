@@ -21,7 +21,7 @@ module Herb
         class AvoidBothDisabledAndAriaDisabled < VisitorRule
           def self.rule_name = "html-avoid-both-disabled-and-aria-disabled" #: String
           def self.description = "Disallow using both `disabled` and `aria-disabled` on the same element" #: String
-          def self.default_severity = "warning" #: String
+          def self.default_severity = "error" #: String
           def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
 

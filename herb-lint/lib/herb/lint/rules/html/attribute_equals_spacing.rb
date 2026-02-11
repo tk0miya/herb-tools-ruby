@@ -22,7 +22,7 @@ module Herb
         class AttributeEqualsSpacing < VisitorRule
           def self.rule_name = "html-attribute-equals-spacing" #: String
           def self.description = "Disallow spaces around `=` in attribute assignments" #: String
-          def self.default_severity = "warning" #: String
+          def self.default_severity = "error" #: String
           def self.safe_autofixable? = true #: bool
           def self.unsafe_autofixable? = false #: bool
 

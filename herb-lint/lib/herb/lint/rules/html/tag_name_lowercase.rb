@@ -22,7 +22,7 @@ module Herb
         class TagNameLowercase < VisitorRule
           def self.rule_name = "html-tag-name-lowercase" #: String
           def self.description = "Enforce lowercase tag names" #: String
-          def self.default_severity = "warning" #: String
+          def self.default_severity = "error" #: String
           def self.safe_autofixable? = true #: bool
           def self.unsafe_autofixable? = false #: bool
 

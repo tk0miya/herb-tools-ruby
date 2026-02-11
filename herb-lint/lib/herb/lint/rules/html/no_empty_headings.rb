@@ -24,7 +24,7 @@ module Herb
 
           def self.rule_name = "html-no-empty-headings" #: String
           def self.description = "Heading elements must not be empty" #: String
-          def self.default_severity = "warning" #: String
+          def self.default_severity = "error" #: String
           def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
 

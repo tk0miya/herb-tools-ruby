@@ -61,7 +61,7 @@ module Herb
 
           def self.rule_name = "html-boolean-attributes-no-value" #: String
           def self.description = "Boolean attributes should not have values" #: String
-          def self.default_severity = "warning" #: String
+          def self.default_severity = "error" #: String
           def self.safe_autofixable? = true #: bool
           def self.unsafe_autofixable? = false #: bool
 
