@@ -163,7 +163,6 @@ end
 
 **Location:** `herb-lint/lib/herb/lint/linter.rb`
 
-- [x] Check global `linter.exclude` in `collect_offenses`
 - [x] Use `rule.matcher.match?` for rule-specific pattern filtering
 - [x] Add integration tests
 
