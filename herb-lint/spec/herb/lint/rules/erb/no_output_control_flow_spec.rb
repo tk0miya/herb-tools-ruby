@@ -16,8 +16,8 @@ RSpec.describe Herb::Lint::Rules::Erb::NoOutputControlFlow do
   end
 
   describe ".default_severity" do
-    it "returns 'warning'" do
-      expect(described_class.default_severity).to eq("warning")
+    it "returns 'error'" do
+      expect(described_class.default_severity).to eq("error")
     end
   end
 
@@ -68,7 +68,7 @@ RSpec.describe Herb::Lint::Rules::Erb::NoOutputControlFlow do
           "Control flow statements like `if` should not be used with output tags. " \
           "Use `<% if ... %>` instead."
         )
-        expect(subject.first.severity).to eq("warning")
+        expect(subject.first.severity).to eq("error")
       end
     end
 

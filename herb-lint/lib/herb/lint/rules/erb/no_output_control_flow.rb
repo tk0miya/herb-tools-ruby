@@ -31,7 +31,7 @@ module Herb
         class NoOutputControlFlow < VisitorRule
           def self.rule_name = "erb-no-output-control-flow" #: String
           def self.description = "Disallow control flow statements in ERB output tags" #: String
-          def self.default_severity = "warning" #: String
+          def self.default_severity = "error" #: String
           def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
 
