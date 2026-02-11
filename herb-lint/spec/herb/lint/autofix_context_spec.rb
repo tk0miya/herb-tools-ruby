@@ -23,6 +23,42 @@ RSpec.describe Herb::Lint::AutofixContext do
     end
   end
 
+  describe "#source_rule?" do
+    subject { autofix_context.source_rule? }
+
+    context "when created with node (visitor rule)" do
+      let(:autofix_context) { described_class.new(node:, rule:) }
+
+      it { is_expected.to be false }
+    end
+
+    context "when created with offsets (source rule)" do
+      let(:autofix_context) do
+        described_class.new(rule:, start_offset: 10, end_offset: 20)
+      end
+
+      it { is_expected.to be true }
+    end
+  end
+
+  describe "#visitor_rule?" do
+    subject { autofix_context.visitor_rule? }
+
+    context "when created with node (visitor rule)" do
+      let(:autofix_context) { described_class.new(node:, rule:) }
+
+      it { is_expected.to be true }
+    end
+
+    context "when created with offsets (source rule)" do
+      let(:autofix_context) do
+        described_class.new(rule:, start_offset: 10, end_offset: 20)
+      end
+
+      it { is_expected.to be false }
+    end
+  end
+
   describe "#autofixable?" do
     subject { autofix_context.autofixable?(unsafe:) }
 
@@ -73,7 +109,7 @@ RSpec.describe Herb::Lint::AutofixContext do
       expect(autofix_context).to eq(other)
     end
 
-    it "is not equal when rule differs" do
+    it "is not equal when rule class differs" do
       other = described_class.new(node:,
                                   rule: Herb::Lint::Rules::Html::TagNameLowercase.new(matcher: build(:pattern_matcher)))
       expect(autofix_context).not_to eq(other)
