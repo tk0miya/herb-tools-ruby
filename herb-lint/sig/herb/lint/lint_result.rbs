@@ -30,6 +30,12 @@ module Herb
       # Returns the count of warnings.
       def warning_count: () -> Integer
 
+      # Returns the count of info-level offenses.
+      def info_count: () -> Integer
+
+      # Returns the count of hint-level offenses.
+      def hint_count: () -> Integer
+
       # Returns the total number of offenses.
       def offense_count: () -> Integer
 

@@ -35,20 +35,20 @@ Currently, these are hardcoded to `0` in the Ruby implementation.
 
 **Location:** `herb-lint/lib/herb/lint/aggregated_result.rb`
 
-- [ ] Add `info_count` method
-- [ ] Add `hint_count` method
-- [ ] Update tests in `spec/herb/lint/aggregated_result_spec.rb`
+- [x] Add `info_count` method
+- [x] Add `hint_count` method
+- [x] Update tests in `spec/herb/lint/aggregated_result_spec.rb`
 
 **Location:** `herb-lint/lib/herb/lint/lint_result.rb`
 
-- [ ] Add `info_count` method
-- [ ] Add `hint_count` method
-- [ ] Update tests in `spec/herb/lint/lint_result_spec.rb`
+- [x] Add `info_count` method
+- [x] Add `hint_count` method
+- [x] Update tests in `spec/herb/lint/lint_result_spec.rb`
 
 **Location:** `herb-lint/lib/herb/lint/reporter/json_reporter.rb`
 
-- [ ] Update `build_summary` to use actual `info_count` and `hint_count`
-- [ ] Update tests in `spec/herb/lint/reporter/json_reporter_spec.rb`
+- [x] Update `build_summary` to use actual `info_count` and `hint_count`
+- [x] Update tests in `spec/herb/lint/reporter/json_reporter_spec.rb`
 
 **Verification:**
 ```bash
@@ -377,7 +377,7 @@ cd herb-lint
 ## Success Criteria
 
 All tasks completed and verified:
-- [ ] Task 23.1: Info/hint severity levels implemented
+- [x] Task 23.1: Info/hint severity levels implemented
 - [ ] Task 23.2: Ignored offenses count tracked
 - [ ] Task 23.3: Active rule count reported
 - [ ] Task 23.4: RBS types updated

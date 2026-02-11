@@ -18,6 +18,12 @@ module Herb
       # Returns the total number of warnings across all files.
       def warning_count: () -> Integer
 
+      # Returns the total number of info-level offenses across all files.
+      def info_count: () -> Integer
+
+      # Returns the total number of hint-level offenses across all files.
+      def hint_count: () -> Integer
+
       # Returns the number of files processed.
       def file_count: () -> Integer
 
