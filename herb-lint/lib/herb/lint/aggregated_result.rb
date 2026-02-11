@@ -55,6 +55,11 @@ module Herb
       def autofixable_count #: Integer
         results.sum(&:autofixable_count)
       end
+
+      # Returns the number of files that have offenses.
+      def files_with_offenses_count #: Integer
+        @files_with_offenses_count ||= results.count { |r| r.offense_count.positive? }
+      end
     end
   end
 end

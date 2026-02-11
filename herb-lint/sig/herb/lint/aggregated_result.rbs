@@ -35,6 +35,9 @@ module Herb
 
       # Returns the total number of autofixable offenses across all files.
       def autofixable_count: () -> Integer
+
+      # Returns the number of files that have offenses.
+      def files_with_offenses_count: () -> Integer
     end
   end
 end

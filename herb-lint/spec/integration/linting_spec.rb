@@ -11,7 +11,8 @@ RSpec.describe "End-to-end linting integration" do # rubocop:disable RSpec/Descr
 
       it "reports no offenses" do
         expect(subject[:exit_code]).to eq(Herb::Lint::CLI::EXIT_SUCCESS)
-        expect(subject[:stdout]).to include("0 problems")
+        expect(subject[:stdout]).to include("Summary:")
+        expect(subject[:stdout]).to include("0 offenses")
       end
     end
 
@@ -58,7 +59,10 @@ RSpec.describe "End-to-end linting integration" do # rubocop:disable RSpec/Descr
 
     it "processes all files and aggregates offenses" do
       expect(subject[:exit_code]).to eq(Herb::Lint::CLI::EXIT_LINT_ERROR)
-      expect(subject[:stdout]).to match(/\d+ problems.*in 5 files/)
+      expect(subject[:stdout]).to include("Summary:")
+      expect(subject[:stdout]).to include("Checked")
+      expect(subject[:stdout]).to include("5 files")
+      expect(subject[:stdout]).to include("Offenses")
     end
   end
 

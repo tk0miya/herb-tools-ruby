@@ -29,7 +29,8 @@ RSpec.describe "CLI integration" do # rubocop:disable RSpec/DescribeClass
       subject { run_cli(fixture_path("valid.html.erb")) }
 
       it "reports no problems and exits with success code" do
-        expect(subject[:stdout]).to include("0 problems")
+        expect(subject[:stdout]).to include("Summary:")
+        expect(subject[:stdout]).to include("0 offenses")
         expect(subject[:status].exitstatus).to eq(Herb::Lint::CLI::EXIT_SUCCESS)
       end
     end
@@ -39,7 +40,9 @@ RSpec.describe "CLI integration" do # rubocop:disable RSpec/DescribeClass
 
       it "reports offenses and exits with lint error code" do
         expect(subject[:stdout]).to include("html-img-require-alt")
-        expect(subject[:stdout]).to include("1 problem")
+        expect(subject[:stdout]).to include("Summary:")
+        expect(subject[:stdout]).to include("1 error")
+        expect(subject[:stdout]).to include("Offenses")
         expect(subject[:status].exitstatus).to eq(Herb::Lint::CLI::EXIT_LINT_ERROR)
       end
     end
@@ -48,7 +51,9 @@ RSpec.describe "CLI integration" do # rubocop:disable RSpec/DescribeClass
       subject { run_cli(fixtures_path) }
 
       it "processes all files, reports offenses, and exits with lint error code" do
-        expect(subject[:stdout]).to include("problems")
+        expect(subject[:stdout]).to include("Summary:")
+        expect(subject[:stdout]).to include("Offenses")
+        expect(subject[:stdout]).to include("errors")
         expect(subject[:status].exitstatus).to eq(Herb::Lint::CLI::EXIT_LINT_ERROR)
       end
     end
@@ -58,11 +63,15 @@ RSpec.describe "CLI integration" do # rubocop:disable RSpec/DescribeClass
     subject { run_cli(fixture_path("mixed_issues.html.erb")) }
 
     it "includes file path, line/column, severity, rule name, and summary" do
-      expect(subject[:stdout]).to include("mixed_issues.html.erb")
-      expect(subject[:stdout]).to match(/\d+:\d+/)
-      expect(subject[:stdout]).to match(/error|warning/)
-      expect(subject[:stdout]).to match(/html-img-require-alt|html-attribute-double-quotes/)
-      expect(subject[:stdout]).to match(/\d+ problems?\s+\(\d+ errors?,\s+\d+ warnings?\)/)
+      output = subject[:stdout].force_encoding("UTF-8")
+      expect(output).to include("mixed_issues.html.erb")
+      expect(output).to match(/\d+:\d+/)
+      expect(output).to match(/✗|⚠|ℹ/)
+      expect(output).to match(/html-img-require-alt|html-attribute-double-quotes/)
+      # Check for TypeScript-style summary format
+      expect(output).to include("Summary:")
+      expect(output).to include("Checked")
+      expect(output).to include("Offenses")
     end
   end
 
