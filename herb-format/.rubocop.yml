@@ -1,0 +1,4 @@
+inherit_from: ../.rubocop-common.yml
+
+plugins:
+  - rubocop-factory_bot

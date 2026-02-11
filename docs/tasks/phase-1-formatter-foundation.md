@@ -37,7 +37,7 @@ This phase establishes the foundational infrastructure for herb-format, includin
 
 **Location:** `herb-format/`
 
-- [ ] Create directory structure matching herb-lint pattern
+- [x] Create directory structure matching herb-lint pattern
   ```
   herb-format/
   ├── bin/                 # Binstubs
@@ -61,8 +61,8 @@ This phase establishes the foundational infrastructure for herb-format, includin
   ├── rbs_collection.yaml
   └── rbs_collection.lock.yaml
   ```
-- [ ] Copy and adapt configuration files from herb-lint
-- [ ] Update .gitignore for formatter-specific patterns
+- [x] Copy and adapt configuration files from herb-lint
+- [x] Update .gitignore for formatter-specific patterns
 
 **Verification:**
 - Directory structure exists
