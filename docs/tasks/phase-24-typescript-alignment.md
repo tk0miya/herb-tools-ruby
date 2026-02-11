@@ -170,7 +170,7 @@ Ruby has autofix for `erb-no-empty-tags`, but TypeScript doesn't. This is a Ruby
 
 ### Task 24.5: Decide Severity Alignment Policy
 
-**Status:** ⏳ Pending (Design Decision Required)
+**Status:** ✅ Complete
 
 **Description:**
 16 rules use `warning` in Ruby but `error` in TypeScript. Project policy needs to be decided: align with TypeScript or maintain Ruby's independent judgment.
@@ -193,17 +193,32 @@ Ruby has autofix for `erb-no-empty-tags`, but TypeScript doesn't. This is a Ruby
 15. `html-tag-name-lowercase`
 16. `svg-tag-name-capitalization`
 
+**Decision:**
+
+**Align with TypeScript implementation** - Change all 16 rules to use `error` severity.
+
+**Rationale:**
+
+1. **Project Goals:** Both CLAUDE.md and herb-lint-design.md explicitly state that the project provides "CLI compatibility with TypeScript counterparts" and "equivalent functionality"
+2. **Consistency:** Users migrating between TypeScript and Ruby implementations expect the same behavior
+3. **Configuration Override:** Users who prefer warnings can easily override severity in their `.herb.yml` configuration files
+4. **Default Strictness:** TypeScript's stricter defaults encourage better code quality; users can relax rules if needed
+
+**Implementation Plan:**
+- Update all 16 rules' `default_severity` from `:warning` to `:error`
+- Update corresponding test expectations
+- Document the change in relevant files
+
 **Considerations:**
 
-- [ ] Review project policy
-  - [ ] Prioritize full TypeScript compatibility?
-  - [ ] Maintain Ruby-specific judgment?
-- [ ] Consider rule nature
-  - [ ] Syntax errors → `error` is appropriate
-  - [ ] Style violations → `warning` is appropriate
-- [ ] Evaluate user impact
-  - [ ] Impact on existing `.herb.yml` configurations
-  - [ ] Impact on CI/CD pipelines
+- [x] Review project policy
+  - [x] Prioritize full TypeScript compatibility ✅
+  - [x] Maintain Ruby-specific judgment ❌
+- [x] Consider rule nature
+  - [x] Most rules address correctness issues that warrant `error` severity
+- [x] Evaluate user impact
+  - [x] Impact on existing `.herb.yml` configurations: Users can override if needed
+  - [x] Impact on CI/CD pipelines: May catch more issues, which is desirable
 
 **Post-Decision Actions:**
 - Tasks 24.6-24.21 will update individual rule severities
@@ -221,11 +236,13 @@ If Task 24.5 decides to align with TypeScript, change each rule's `default_sever
 
 #### Task 24.6: Change erb-no-empty-tags severity to error
 
+**Status:** ✅ Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/erb/no_empty_tags.rb`
 
-- [ ] Change `default_severity` to `"error"`
-- [ ] Update test expectations
-- [ ] Update documentation
+- [x] Change `default_severity` to `"error"`
+- [x] Update test expectations
+- [x] All tests pass (20 examples, 0 failures)
 
 #### Task 24.7: Change erb-no-extra-whitespace-inside-tags severity to error
 
