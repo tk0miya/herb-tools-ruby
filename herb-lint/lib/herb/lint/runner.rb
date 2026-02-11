@@ -31,7 +31,8 @@ module Herb
       def run(paths = []) #: AggregatedResult
         files = discover_files(paths)
         results = files.map { process_file(_1) }
-        AggregatedResult.new(results)
+        rule_count = linter.rules.size
+        AggregatedResult.new(results, rule_count:)
       end
 
       private

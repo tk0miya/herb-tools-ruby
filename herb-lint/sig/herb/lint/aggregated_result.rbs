@@ -6,8 +6,11 @@ module Herb
     class AggregatedResult
       attr_reader results: Array[LintResult]
 
+      attr_reader rule_count: Integer
+
       # @rbs results: Array[LintResult]
-      def initialize: (Array[LintResult] results) -> void
+      # @rbs rule_count: Integer
+      def initialize: (Array[LintResult] results, ?rule_count: Integer) -> void
 
       # Returns the total number of offenses across all files.
       def offense_count: () -> Integer

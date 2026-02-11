@@ -202,6 +202,34 @@ RSpec.describe Herb::Lint::Runner do
         expect(result.offense_count).to eq(1)
       end
     end
+
+    context "when tracking rule count" do
+      context "with custom rules" do
+        let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false, rules: [safe_fixable_rule, unsafe_fixable_rule], config:) }
+        let(:runner) { described_class.new(config, rule_registry:) }
+
+        it "tracks the number of active rules" do
+          create_file("app/views/test.html.erb", "<div>content</div>")
+
+          result = subject
+
+          expect(result.rule_count).to eq(2)
+        end
+      end
+
+      context "with all built-in rules" do
+        let(:runner) { described_class.new(config) }
+
+        it "tracks the count of all built-in rules" do
+          create_file("app/views/test.html.erb", "<div>content</div>")
+
+          result = subject
+
+          # Should count all built-in rules (this number may change as rules are added)
+          expect(result.rule_count).to be > 0
+        end
+      end
+    end
   end
 
   describe "#config" do
