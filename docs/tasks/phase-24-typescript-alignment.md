@@ -67,33 +67,35 @@ cd herb-lint && ./bin/steep check
 
 ### Task 24.2: Verify and Implement html-no-space-in-tag Rule
 
-**Status:** ⏳ Pending (Investigation Required)
+**Status:** ✅ Complete
 
 **Description:**
 The TypeScript `html-no-space-in-tag` rule may be missing from Ruby. The Phase 16 task list mentions it, but the implementation file cannot be found.
 
 **Investigation:**
 
-- [ ] Search for `html-no-space-in-tag` rule file
-  - [ ] Check `herb-lint/lib/herb/lint/rules/html/` directory
-  - [ ] Look for similar named rules
-- [ ] Review TypeScript implementation
-  - [ ] Understand what violations it detects
-  - [ ] Check autofix support
+- [x] Search for `html-no-space-in-tag` rule file
+  - [x] Check `herb-lint/lib/herb/lint/rules/html/` directory
+  - [x] Look for similar named rules
+- [x] Review TypeScript implementation
+  - [x] Understand what violations it detects
+  - [x] Check autofix support
 
-**If Implementation is Needed:**
+**Investigation Results:**
 
-- [ ] Create `Herb::Lint::Rules::Html::NoSpaceInTag` class
-  - [ ] Extend `VisitorRule`
-  - [ ] Set `rule_name = "html-no-space-in-tag"`
-  - [ ] Set `default_severity = "error"`
-  - [ ] Set `safe_autofixable? = true`
-- [ ] Implement detection logic
-  - [ ] Check for illegal spaces immediately after tag names
-- [ ] Implement autofix
-- [ ] Register in RuleRegistry
-- [ ] Create test cases
-- [ ] Add RBS type annotations
+The `html-no-space-in-tag` rule is already fully implemented:
+
+- [x] Implementation file: `herb-lint/lib/herb/lint/rules/html/no_space_in_tag.rb`
+- [x] Test file: `herb-lint/spec/herb/lint/rules/html/no_space_in_tag_spec.rb`
+- [x] Rule name: `"html-no-space-in-tag"`
+- [x] Default severity: `"warning"`
+- [x] Autofix support: `safe_autofixable = true`
+- [x] Disabled by default: `enabled_by_default = false` (aligned with TypeScript)
+- [x] Registered in RuleRegistry
+- [x] All tests pass: 35 examples, 0 failures
+- [x] RBS type annotations present
+
+No additional implementation needed.
 
 **TypeScript Reference:**
 ```typescript
@@ -433,7 +435,7 @@ grep -r "html-no-space-in-tag" docs/
 
 ### Part A: Missing Rules (2 tasks)
 - [ ] 24.1: Implement herb-disable-comment-unnecessary
-- [ ] 24.2: Verify/implement html-no-space-in-tag
+- [x] 24.2: Verify/implement html-no-space-in-tag
 
 ### Part B: Autofix Alignment (2 tasks)
 - [ ] 24.3: Add autofix to erb-no-extra-newline (Phase 18 coordination)
@@ -448,14 +450,14 @@ grep -r "html-no-space-in-tag" docs/
 - [x] 24.23: Align default enabled status (5 rules)
 - [ ] 24.24: Update README etc.
 
-**Total: 24 tasks** (2 complete, 22 pending)
+**Total: 24 tasks** (3 complete, 21 pending)
 
 ---
 
 ## Recommended Implementation Order
 
-1. **Task 24.23** (High Priority): Align default enabled status (5 rules)
-2. **Task 24.2** (High Priority): Verify html-no-space-in-tag
+1. ~~**Task 24.23** (High Priority): Align default enabled status (5 rules)~~ ✅ Complete
+2. ~~**Task 24.2** (High Priority): Verify html-no-space-in-tag~~ ✅ Complete
 3. **Task 24.1** (Medium Priority): Implement herb-disable-comment-unnecessary
 4. **Task 24.5** (High Priority): Decide severity policy
 5. **Tasks 24.6-24.21**: Update severities (after policy decision)
