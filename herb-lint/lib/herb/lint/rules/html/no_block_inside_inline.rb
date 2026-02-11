@@ -43,6 +43,7 @@ module Herb
           def self.default_severity = "error" #: String
           def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
+          def self.enabled_by_default? = false #: bool
 
           # @rbs @inline_depth: Integer
 

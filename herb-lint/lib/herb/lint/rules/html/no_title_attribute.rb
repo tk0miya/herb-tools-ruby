@@ -24,6 +24,7 @@ module Herb
           def self.default_severity = "warning" #: String
           def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
+          def self.enabled_by_default? = false #: bool
 
           # @rbs override
           def visit_html_attribute_node(node)

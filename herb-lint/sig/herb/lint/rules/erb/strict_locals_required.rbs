@@ -63,6 +63,8 @@ module Herb
 
           def self.unsafe_autofixable?: () -> bool
 
+          def self.enabled_by_default?: () -> bool
+
           @locals_definition_found: bool
 
           # @rbs override

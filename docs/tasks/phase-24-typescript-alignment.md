@@ -356,7 +356,7 @@ Completed:
 
 ### Task 24.23: Align Default Enabled Status
 
-**Status:** ⏳ Pending (High Priority)
+**Status:** ✅ Complete
 
 **Description:**
 5 rules are disabled by default in TypeScript but enabled in Ruby. Align the behavior.
@@ -366,21 +366,26 @@ Completed:
 1. `erb-strict-locals-required` - Opt-in Rails feature
 2. `html-navigation-has-label` - May have false positives
 3. `html-no-block-inside-inline` - Complex nesting rules
-4. `html-no-space-in-tag` - When implemented (Task 24.2)
+4. `html-no-space-in-tag` - Controversial rule (already implemented)
 5. `html-no-title-attribute` - Controversial accessibility rule
+
+**Note:** All 5 rules were verified against the TypeScript implementation. Each rule in TypeScript has `enabled: false` in its `defaultConfig` getter.
 
 **Implementation:**
 
-- [ ] Add `def self.enabled_by_default? = false` to each rule
-- [ ] Update RuleRegistry to respect `enabled_by_default?`
-- [ ] Update tests to verify disabled-by-default behavior
-- [ ] Update documentation
+- [x] Add `def self.enabled_by_default? = false` to each rule (5 rules)
+- [x] Update RuleRegistry to respect `enabled_by_default?`
+- [x] Update tests to verify disabled-by-default behavior
+- [x] Update RBS type signatures
+- [x] Verify alignment with TypeScript implementation
+- [x] Update documentation
 
 **Files to Modify:**
 
 - `herb-lint/lib/herb/lint/rules/erb/strict_locals_required.rb`
 - `herb-lint/lib/herb/lint/rules/html/navigation_has_label.rb`
 - `herb-lint/lib/herb/lint/rules/html/no_block_inside_inline.rb`
+- `herb-lint/lib/herb/lint/rules/html/no_space_in_tag.rb`
 - `herb-lint/lib/herb/lint/rules/html/no_title_attribute.rb`
 - `herb-lint/lib/herb/lint/rule_registry.rb` (if changes needed)
 
@@ -440,10 +445,10 @@ grep -r "html-no-space-in-tag" docs/
 
 ### Part D: Documentation & Alignment (3 tasks)
 - [x] 24.22: Create analysis documents
-- [ ] 24.23: Align default enabled status (5 rules)
+- [x] 24.23: Align default enabled status (5 rules)
 - [ ] 24.24: Update README etc.
 
-**Total: 24 tasks** (1 complete, 23 pending)
+**Total: 24 tasks** (2 complete, 22 pending)
 
 ---
 
