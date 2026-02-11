@@ -158,10 +158,10 @@ This phase establishes the foundational infrastructure for herb-format, includin
 
 **Location:** `.github/workflows/ci.yml` (root level)
 
-- [ ] Add herb-format job to `.github/workflows/ci.yml`
-- [ ] Configure job to run in herb-format directory
-- [ ] Set up Ruby 3.3 and bundler cache
-- [ ] Run `bundle exec rake` for all checks
+- [x] Add herb-format job to `.github/workflows/ci.yml`
+- [x] Configure job to run in herb-format directory
+- [x] Set up Ruby 3.3 and bundler cache
+- [x] Run `bundle exec rake` for all checks
 
 **CI Configuration to Add:**
 
