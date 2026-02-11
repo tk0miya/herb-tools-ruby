@@ -276,10 +276,13 @@ If Task 24.5 decides to align with TypeScript, change each rule's `default_sever
 
 #### Task 24.10: Change erb-strict-locals-required severity to error
 
+**Status:** ✅ Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/erb/strict_locals_required.rb`
 
-- [ ] Change `default_severity` to `"error"`
-- [ ] Update test expectations
+- [x] Change `default_severity` to `"error"`
+- [x] Update test expectations
+- [x] All tests pass (14 examples, 0 failures)
 
 #### Task 24.11: Change html-anchor-require-href severity to error
 
