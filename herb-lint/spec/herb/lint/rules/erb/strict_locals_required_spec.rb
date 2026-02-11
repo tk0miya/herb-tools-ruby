@@ -16,8 +16,8 @@ RSpec.describe Herb::Lint::Rules::Erb::StrictLocalsRequired do
   end
 
   describe ".default_severity" do
-    it "returns 'warning'" do
-      expect(described_class.default_severity).to eq("warning")
+    it "returns 'error'" do
+      expect(described_class.default_severity).to eq("error")
     end
   end
 
@@ -56,11 +56,15 @@ RSpec.describe Herb::Lint::Rules::Erb::StrictLocalsRequired do
     context "when file is a partial (starts with underscore)" do
       let(:file_path) { "/path/to/_partial.html.erb" }
 
-      context "when it has valid strict_locals comment" do
+      # Good examples from documentation
+      context "when partial has required keyword argument" do
         let(:source) do
           <<~ERB
-            <%# locals: (name: String) %>
-            <div><%= name %></div>
+            <%# locals: (user:) %>
+
+            <div class="user-card">
+              <%= user.name %>
+            </div>
           ERB
         end
 
@@ -69,6 +73,61 @@ RSpec.describe Herb::Lint::Rules::Erb::StrictLocalsRequired do
         end
       end
 
+      context "when partial has keyword argument and default" do
+        let(:source) do
+          <<~ERB
+            <%# locals: (user:, admin: false) %>
+
+            <div class="user-card">
+              <%= user.name %>
+
+              <% if admin %>
+              <span class="badge">Admin</span>
+              <% end %>
+            </div>
+          ERB
+        end
+
+        it "does not report an offense" do
+          expect(subject).to be_empty
+        end
+      end
+
+      context "when partial has no locals (empty declaration)" do
+        let(:source) do
+          <<~ERB
+            <%# locals: () %>
+
+            <p>Static content only</p>
+          ERB
+        end
+
+        it "does not report an offense" do
+          expect(subject).to be_empty
+        end
+      end
+
+      # Bad examples from documentation
+      context "when partial is without strict locals declaration" do
+        let(:source) do
+          <<~ERB
+            <div class="user-card">
+              <%= user.name %>
+            </div>
+          ERB
+        end
+
+        it "reports an offense" do
+          expected_message = "Partial is missing a strict locals declaration. " \
+                             "Add `<%# locals: (...) %>` at the top of the file."
+          expect(subject.size).to eq(1)
+          expect(subject.first.rule_name).to eq("erb-strict-locals-required")
+          expect(subject.first.message).to eq(expected_message)
+          expect(subject.first.severity).to eq("error")
+        end
+      end
+
+      # Additional edge case tests
       context "when it has strict_locals comment with extra whitespace" do
         let(:source) do
           <<~ERB
@@ -95,18 +154,6 @@ RSpec.describe Herb::Lint::Rules::Erb::StrictLocalsRequired do
         end
       end
 
-      context "when it has no strict_locals comment" do
-        let(:source) { "<div><%= name %></div>" }
-
-        it "reports an offense" do
-          expected_message = "Partial files must have a strict_locals magic comment (<%# locals: ... %>)"
-          expect(subject.size).to eq(1)
-          expect(subject.first.rule_name).to eq("erb-strict-locals-required")
-          expect(subject.first.message).to eq(expected_message)
-          expect(subject.first.severity).to eq("warning")
-        end
-      end
-
       context "when it has only a regular comment" do
         let(:source) do
           <<~ERB
@@ -118,19 +165,6 @@ RSpec.describe Herb::Lint::Rules::Erb::StrictLocalsRequired do
         it "reports an offense" do
           expect(subject.size).to eq(1)
           expect(subject.first.rule_name).to eq("erb-strict-locals-required")
-        end
-      end
-
-      context "when it has empty strict_locals declaration" do
-        let(:source) do
-          <<~ERB
-            <%# locals: () %>
-            <div>Static content</div>
-          ERB
-        end
-
-        it "does not report an offense" do
-          expect(subject).to be_empty
         end
       end
 

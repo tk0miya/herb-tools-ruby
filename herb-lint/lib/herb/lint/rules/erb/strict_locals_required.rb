@@ -7,21 +7,59 @@ module Herb
   module Lint
     module Rules
       module Erb
-        # Rule that requires strict_locals magic comment in partial files.
+        # Description:
+        #   The rule requires that every Rails partial template includes a strict locals
+        #   declaration comment using this syntax:
         #
-        # Partial files (files whose basename starts with underscore) should have
-        # a strict_locals magic comment at the top of the file to declare local variables.
+        #   ```erb
+        #   <%# locals: () %>
+        #   ```
+        #
+        #   A partial is any template whose filename begins with an underscore (e.g.
+        #   `_card.html.erb`).
         #
         # Good:
-        #   <%# locals: (name: String) %>
-        #   <div><%= name %></div>
+        #   Partial with required keyword argument:
+        #   ```erb
+        #   <%# locals: (user:) %>
         #
-        # Bad (missing strict_locals in partial):
-        #   <div><%= name %></div>
+        #   <div class="user-card">
+        #     <%= user.name %>
+        #   </div>
+        #   ```
+        #
+        #   Partial with keyword argument and default:
+        #   ```erb
+        #   <%# locals: (user:, admin: false) %>
+        #
+        #   <div class="user-card">
+        #     <%= user.name %>
+        #
+        #     <% if admin %>
+        #     <span class="badge">Admin</span>
+        #     <% end %>
+        #   </div>
+        #   ```
+        #
+        #   Partial with no locals (empty declaration):
+        #   ```erb
+        #   <%# locals: () %>
+        #
+        #   <p>Static content only</p>
+        #   ```
+        #
+        # Bad:
+        #   Partial without strict locals declaration:
+        #   ```erb
+        #   <div class="user-card">
+        #     <%= user.name %>
+        #   </div>
+        #   ```
+        #
         class StrictLocalsRequired < VisitorRule
           def self.rule_name = "erb-strict-locals-required" #: String
           def self.description = "Require strict_locals magic comment in partial files" #: String
-          def self.default_severity = "warning" #: String
+          def self.default_severity = "error" #: String
           def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
 
@@ -42,7 +80,8 @@ module Herb
             return if @locals_definition_found
 
             add_offense(
-              message: "Partial files must have a strict_locals magic comment (<%# locals: ... %>)",
+              message: "Partial is missing a strict locals declaration. " \
+                       "Add `<%# locals: (...) %>` at the top of the file.",
               location: node.location
             )
           end
