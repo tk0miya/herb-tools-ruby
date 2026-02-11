@@ -7,16 +7,25 @@ module Herb
   module Lint
     module Rules
       module HerbDirective
-        # Meta-rule that detects duplicate rule names in herb:disable comments.
-        #
-        # Listing the same rule name more than once in a single herb:disable
-        # comment is redundant and likely a mistake.
+        # Description:
+        #   Prevents listing the same rule name multiple times in a `<%# herb:disable ... %>` comment.
         #
         # Good:
-        #   <%# herb:disable rule1, rule2 %>
+        #   <DIV class='value'>test</DIV> <%# herb:disable html-tag-name-lowercase, html-attribute-double-quotes %>
+        #
+        #   <DIV>test</DIV> <%# herb:disable html-tag-name-lowercase %>
+        #
+        #   <DIV>test</DIV> <%# herb:disable all %>
         #
         # Bad:
-        #   <%# herb:disable rule1, rule1 %>
+        #   <DIV>test</DIV> <%# herb:disable html-tag-name-lowercase, html-tag-name-lowercase %>
+        #
+        #   <DIV class='value'>test</DIV> <%# herb:disable html-attribute-double-quotes, html-tag-name-lowercase, html-tag-name-lowercase %> # rubocop:disable Layout/LineLength
+        #
+        #   <DIV class='value'>test</DIV> <%# herb:disable html-tag-name-lowercase, html-tag-name-lowercase, html-attribute-double-quotes, html-attribute-double-quotes %> # rubocop:disable Layout/LineLength
+        #
+        #   <DIV>test</DIV> <%# herb:disable all, all %>
+        #
         class DisableCommentNoDuplicateRules < DirectiveRule
           def self.rule_name = "herb-disable-comment-no-duplicate-rules" #: String
           def self.description = "Disallow duplicate rule names in herb:disable comments" #: String
@@ -35,7 +44,7 @@ module Herb
             comment.rule_name_details.each do |detail|
               if seen.key?(detail.name)
                 add_offense(
-                  message: "Duplicate rule '#{detail.name}' in herb:disable comment",
+                  message: "Duplicate rule `#{detail.name}` in `herb:disable` comment. Remove the duplicate.",
                   location: offset_location(comment, detail)
                 )
               else
