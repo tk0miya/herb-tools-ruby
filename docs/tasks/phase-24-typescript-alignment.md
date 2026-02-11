@@ -495,9 +495,9 @@ Update related documentation to reflect Phase 24 changes.
 - [ ] `docs/requirements/herb-lint.md`
   - [ ] Update rule list
   - [ ] Reflect severity changes
-- [ ] `docs/tasks/README.md`
-  - [ ] Add Phase 24
-  - [ ] Update task counts
+- [x] `docs/tasks/README.md`
+  - [x] Add Phase 24
+  - [x] Update task counts
 - [ ] `docs/tasks/phase-16-rule-autofix-expansion.md`
   - [ ] Update Task 16.13 completion status
 
