@@ -28,16 +28,17 @@ RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentMissingRules do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context, source:) }
 
-    context "when comment is not a directive" do
-      let(:source) { "<%# This is a regular comment %>" }
+    # Good examples from documentation
+    context "when herb:disable specifies all" do
+      let(:source) { "<DIV class='value'>test</DIV> <%# herb:disable all %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when herb:disable specifies a rule name" do
-      let(:source) { "<%# herb:disable rule-name %>" }
+    context "when herb:disable specifies a single rule name" do
+      let(:source) { "<DIV>test</DIV> <%# herb:disable html-tag-name-lowercase %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -45,29 +46,44 @@ RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentMissingRules do
     end
 
     context "when herb:disable specifies multiple rule names" do
-      let(:source) { "<%# herb:disable rule1, rule2 %>" }
+      let(:source) do
+        "<DIV class='value'>test</DIV> <%# herb:disable html-tag-name-lowercase, html-attribute-double-quotes %>"
+      end
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when herb:disable specifies all" do
-      let(:source) { "<%# herb:disable all %>" }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
+    # Bad examples from documentation
     context "when herb:disable has no rule names" do
-      let(:source) { "<%# herb:disable %>" }
+      let(:source) { "<div>test</div> <%# herb:disable %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("herb-disable-comment-missing-rules")
         expect(subject.first.message).to eq("`herb:disable` comment must specify at least one rule name or `all`")
         expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when herb:disable has only whitespace after directive" do
+      let(:source) { "<div>test</div> <%# herb:disable   %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("herb-disable-comment-missing-rules")
+        expect(subject.first.message).to eq("`herb:disable` comment must specify at least one rule name or `all`")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    # Additional edge cases
+    context "when comment is not a directive" do
+      let(:source) { "<%# This is a regular comment %>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
       end
     end
 

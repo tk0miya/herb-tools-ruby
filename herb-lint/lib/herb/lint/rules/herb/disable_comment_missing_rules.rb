@@ -7,17 +7,21 @@ module Herb
   module Lint
     module Rules
       module HerbDirective
-        # Rule that detects `herb:disable` comments with no rule names specified.
-        #
-        # A `herb:disable` comment must specify at least one rule name or `all`.
-        # An empty `herb:disable` comment has no effect and is likely a mistake.
+        # Description:
+        #   Requires that `<%# herb:disable %>` comments specify either `all` or at least one specific rule name.
         #
         # Good:
-        #   <%# herb:disable rule-name %>
-        #   <%# herb:disable all %>
+        #   <DIV class='value'>test</DIV> <%# herb:disable all %>
+        #
+        #   <DIV>test</DIV> <%# herb:disable html-tag-name-lowercase %>
+        #
+        #   <DIV class='value'>test</DIV> <%# herb:disable html-tag-name-lowercase, html-attribute-double-quotes %>
         #
         # Bad:
-        #   <%# herb:disable %>
+        #   <div>test</div> <%# herb:disable %>
+        #
+        #   <div>test</div> <%# herb:disable   %>
+        #
         class DisableCommentMissingRules < DirectiveRule
           def self.rule_name = "herb-disable-comment-missing-rules" #: String
           def self.description = "Require rule names in herb:disable comments" #: String
