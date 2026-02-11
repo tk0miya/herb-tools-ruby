@@ -53,6 +53,8 @@ module Herb
         #
         #   <%= user.email %>
         class NoExtraNewline < Base
+          include StringUtils
+
           def self.rule_name: () -> String
 
           def self.description: () -> String

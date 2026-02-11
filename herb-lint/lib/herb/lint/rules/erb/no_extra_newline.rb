@@ -3,6 +3,8 @@
 # Source: https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/erb-no-extra-newline.ts
 # Documentation: https://herb-tools.dev/linter/rules/erb-no-extra-newline
 
+require_relative "../../string_utils"
+
 module Herb
   module Lint
     module Rules
@@ -57,6 +59,8 @@ module Herb
         #   <%= user.email %>
         #
         class NoExtraNewline < Base
+          include StringUtils
+
           def self.rule_name = "erb-no-extra-newline" #: String
           def self.description = "Disallow more than 2 consecutive blank lines in ERB files" #: String
           def self.default_severity = "error" #: String
@@ -85,7 +89,7 @@ module Herb
 
               location = location_from_offsets(offense_start, offense_end)
 
-              plural = excess_lines == 1 ? "line" : "lines"
+              plural = pluralize(excess_lines, "line")
               message = "Extra blank line detected. Remove #{excess_lines} blank #{plural} " \
                         "to maintain consistent spacing (max 2 allowed)"
 
