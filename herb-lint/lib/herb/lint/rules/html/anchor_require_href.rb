@@ -7,23 +7,20 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that requires href attribute on anchor elements.
-        #
-        # Anchor elements should have an href attribute to function
-        # as proper hyperlinks. Without href, the anchor element
-        # does not behave as a link.
+        # Description:
+        #   Disallow the use of anchor tags without an `href` attribute in HTML templates. Use if you want to
+        #   perform an action without having the user navigated to a new URL.
         #
         # Good:
-        #   <a href="/page">Click here</a>
-        #   <a href="#">Click here</a>
+        #   <a href="https://alink.com">I'm a real link</a>
         #
         # Bad:
-        #   <a>Click here</a>
-        #   <a name="anchor">Section</a>
+        #   <a data-action="click->doSomething">I'm a fake link</a>
+        #
         class AnchorRequireHref < VisitorRule
           def self.rule_name = "html-anchor-require-href" #: String
           def self.description = "Require href attribute on anchor elements" #: String
-          def self.default_severity = "warning" #: String
+          def self.default_severity = "error" #: String
           def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
 
@@ -31,7 +28,7 @@ module Herb
           def visit_html_element_node(node)
             if anchor_element?(node) && !attribute?(node, "href")
               add_offense(
-                message: "Missing href attribute on anchor element",
+                message: "Add an `href` attribute to `<a>` to ensure it is focusable and accessible.",
                 location: node.location
               )
             end

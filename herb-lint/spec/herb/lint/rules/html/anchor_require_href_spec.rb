@@ -16,8 +16,8 @@ RSpec.describe Herb::Lint::Rules::Html::AnchorRequireHref do
   end
 
   describe ".default_severity" do
-    it "returns 'warning'" do
-      expect(described_class.default_severity).to eq("warning")
+    it "returns 'error'" do
+      expect(described_class.default_severity).to eq("error")
     end
   end
 
@@ -28,27 +28,26 @@ RSpec.describe Herb::Lint::Rules::Html::AnchorRequireHref do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
+    # Good examples from documentation
     context "when anchor has href attribute" do
-      let(:source) { '<a href="/page">Click here</a>' }
+      let(:source) { '<a href="https://alink.com">I\'m a real link</a>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when anchor has href with hash" do
-      let(:source) { '<a href="#">Click here</a>' }
+    # Bad examples from documentation
+    context "when anchor has no href but has data-action attribute" do
+      let(:source) { '<a data-action="click->doSomething">I\'m a fake link</a>' }
 
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when anchor has empty href attribute" do
-      let(:source) { '<a href="">Click here</a>' }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-anchor-require-href")
+        expect(subject.first.message).to eq(
+          "Add an `href` attribute to `<a>` to ensure it is focusable and accessible."
+        )
+        expect(subject.first.severity).to eq("error")
       end
     end
 
@@ -58,29 +57,14 @@ RSpec.describe Herb::Lint::Rules::Html::AnchorRequireHref do
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-anchor-require-href")
-        expect(subject.first.message).to eq("Missing href attribute on anchor element")
-        expect(subject.first.severity).to eq("warning")
+        expect(subject.first.message).to eq(
+          "Add an `href` attribute to `<a>` to ensure it is focusable and accessible."
+        )
+        expect(subject.first.severity).to eq("error")
       end
     end
 
-    context "when anchor has name but no href" do
-      let(:source) { '<a name="anchor">Section</a>' }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html-anchor-require-href")
-      end
-    end
-
-    context "when multiple anchors are missing href" do
-      let(:source) { "<a>First</a><a>Second</a>" }
-
-      it "reports an offense for each" do
-        expect(subject.size).to eq(2)
-        expect(subject.map(&:rule_name)).to all(eq("html-anchor-require-href"))
-      end
-    end
-
+    # Edge cases
     context "when anchor has uppercase HREF attribute" do
       let(:source) { '<a HREF="/page">Click here</a>' }
 
@@ -97,11 +81,29 @@ RSpec.describe Herb::Lint::Rules::Html::AnchorRequireHref do
       end
     end
 
+    context "when anchor has name attribute but no href" do
+      let(:source) { '<a name="anchor">Section</a>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-anchor-require-href")
+      end
+    end
+
     context "with non-anchor elements" do
       let(:source) { '<div class="container"><p>Hello</p></div>' }
 
       it "does not report offenses" do
         expect(subject).to be_empty
+      end
+    end
+
+    context "when multiple anchors are missing href" do
+      let(:source) { "<a>First</a><a>Second</a>" }
+
+      it "reports an offense for each" do
+        expect(subject.size).to eq(2)
+        expect(subject.map(&:rule_name)).to all(eq("html-anchor-require-href"))
       end
     end
 
