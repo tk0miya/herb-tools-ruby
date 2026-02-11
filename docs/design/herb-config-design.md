@@ -249,8 +249,12 @@ module Herb
 
       def enabled?: () -> bool
 
+      # Returns file patterns to include in linting
+      # Merges patterns from both 'files.include' and 'linter.include' (additive)
       def include_patterns: () -> Array[String]
 
+      # Returns file patterns to exclude from linting
+      # Uses 'linter.exclude' if present (override), otherwise 'files.exclude' (fallback)
       def exclude_patterns: () -> Array[String]
 
       def rules: () -> Hash[String, untyped]
@@ -258,6 +262,15 @@ module Herb
       def rule_enabled?: (String rule_name) -> bool
 
       def rule_severity: (String rule_name, ?default: Symbol) -> Symbol
+
+      # Returns the fail level for the linter (CI/CD exit code control)
+      # Determines which severity levels cause non-zero exit codes
+      # Defaults to "error" if not configured
+      def fail_level: () -> String
+
+      # Builds a PatternMatcher for rule-specific file patterns
+      # Returns a matcher configured with rule's include, exclude, and only patterns
+      def build_pattern_matcher: (String rule_name) -> Herb::Core::PatternMatcher
 
       private
 
@@ -437,6 +450,78 @@ formatter.post_rewriters           # => []
 - Configuration value access
 - Rewriter list extraction
 - Default value fallback
+
+## Advanced Configuration Features
+
+### Top-level Files Section
+
+The configuration supports a top-level `files` section for specifying file patterns that apply to both linter and formatter. This provides a convenient way to set project-wide file patterns.
+
+**Configuration Example:**
+```yaml
+files:
+  include:
+    - '**/*.xml.erb'
+    - 'custom/**/*.html'
+  exclude:
+    - 'vendor/**/*'
+    - 'node_modules/**/*'
+
+linter:
+  include:
+    - '**/*.html.erb'  # Merged with files.include (additive)
+  exclude:
+    - 'tmp/**/*'       # Overrides files.exclude (precedence)
+```
+
+**Pattern Merge Behavior:**
+- **`include` patterns**: ADDITIVE - Both `files.include` and `linter.include` are merged together
+- **`exclude` patterns**: OVERRIDE - `linter.exclude` takes precedence; `files.exclude` is used only as fallback
+
+This is implemented in `LinterConfig#include_patterns` and `LinterConfig#exclude_patterns`.
+
+### Fail Level Configuration
+
+The `linter.failLevel` setting controls CI/CD exit code behavior by specifying which severity levels should cause non-zero exit codes.
+
+**Configuration Example:**
+```yaml
+linter:
+  failLevel: warning  # Exit with error on warnings and errors
+  rules:
+    html-alt-text: error
+    html-attribute-quotes: warning  # This will cause exit code 1
+    html-deprecated-tags: info      # This will NOT cause exit code 1
+```
+
+**Valid values:** `error`, `warning`, `info`, `hint` (default: `error`)
+
+This is implemented in `LinterConfig#fail_level`.
+
+### Per-Rule File Patterns
+
+Rules can have their own `include`, `exclude`, and `only` patterns for fine-grained control over which files they apply to.
+
+**Configuration Example:**
+```yaml
+linter:
+  include:
+    - '**/*.html.erb'
+  rules:
+    html-alt-text:
+      severity: error
+      only:
+        - 'app/views/**/*.html.erb'  # Only apply to app/views
+
+    html-deprecated-tags:
+      severity: warning
+      include:
+        - '**/*.xml.erb'  # Also check XML templates
+      exclude:
+        - 'legacy/**/*'   # Skip legacy code
+```
+
+This is implemented in `LinterConfig#build_pattern_matcher`.
 
 ## Related Documentation
 
