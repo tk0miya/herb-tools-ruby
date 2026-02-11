@@ -5,7 +5,7 @@ module Herb
     # Linter processes a single file and returns lint results.
     # It applies a set of rules to a parsed document and collects offenses.
     class Linter
-      attr_reader rules: Array[Rules::Base | Rules::VisitorRule]
+      attr_reader rules: Array[Rules::Base | Rules::VisitorRule | Rules::SourceRule]
 
       attr_reader config: Herb::Config::LinterConfig
 
