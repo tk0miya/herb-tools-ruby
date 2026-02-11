@@ -37,7 +37,6 @@ module Herb
       # 4. If no patterns are specified, return true (match all)
       #
       # @rbs path: String -- the file path to check (relative or absolute)
-      # @rbs return: bool
       def match?: (String path) -> bool
 
       private
@@ -45,13 +44,11 @@ module Herb
       # Normalizes glob patterns for consistent matching behavior.
       # Patterns ending with ** are expanded to **/* to match files.
       # @rbs pattern: String
-      # @rbs return: String
       def normalize_pattern: (String pattern) -> String
 
       # Checks if a path matches a single pattern.
       # @rbs path: String
       # @rbs pattern: String
-      # @rbs return: bool
       def matches?: (String path, String pattern) -> bool
     end
   end
