@@ -74,22 +74,22 @@ This phase establishes the foundational infrastructure for herb-format, includin
 
 **Location:** `herb-format/herb-format.gemspec`
 
-- [ ] Create gemspec file based on herb-lint template
-- [ ] Set name to "herb-format"
-- [ ] Set version to "0.1.0"
-- [ ] Add runtime dependencies:
+- [x] Create gemspec file based on herb-lint template
+- [x] Set name to "herb-format"
+- [x] Set version to "0.1.0"
+- [x] Add runtime dependencies:
   - herb (~> 0.1)
   - herb-config (~> 0.1)
   - herb-core (~> 0.1)
   - herb-printer (~> 0.1)
-- [ ] Add development dependencies:
+- [x] Add development dependencies:
   - rake
   - rspec (~> 3.13)
   - rubocop (~> 1.69)
   - rbs-inline (~> 0.8)
   - steep (~> 1.9)
   - factory_bot (~> 6.5)
-- [ ] Set required_ruby_version to >= 3.3.0
+- [x] Set required_ruby_version to >= 3.3.0
 
 **Verification:**
 - `gem build herb-format.gemspec` succeeds
