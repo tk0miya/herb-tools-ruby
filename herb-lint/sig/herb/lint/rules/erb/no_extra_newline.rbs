@@ -53,11 +53,17 @@ module Herb
         #
         #   <%= user.email %>
         class NoExtraNewline < Base
+          include StringUtils
+
           def self.rule_name: () -> String
 
           def self.description: () -> String
 
           def self.default_severity: () -> String
+
+          def self.safe_autofixable?: () -> bool
+
+          def self.unsafe_autofixable?: () -> bool
 
           # @rbs override
           def check: ...
