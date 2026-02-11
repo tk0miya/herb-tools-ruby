@@ -11,7 +11,7 @@ module Herb
         # including spaces between the tag name and attributes,
         # between consecutive attributes, trailing spaces before `>`,
         # incorrect spacing around `/>`, and multiline indentation.
-        class NoSpaceInTag < VisitorRule # rubocop:disable Metrics/ClassLength
+        class NoSpaceInTag < VisitorRule
           EXTRA_SPACE_NO_SPACE = "Extra space detected where there should be no space."
           EXTRA_SPACE_SINGLE_SPACE = "Extra space detected where there should be a single space."
           EXTRA_SPACE_SINGLE_BREAK = "Extra space detected where there should be a single space or a single line break."
@@ -20,7 +20,8 @@ module Herb
           def self.rule_name = "html-no-space-in-tag" #: String
           def self.description = "Disallow extra whitespace inside HTML tags" #: String
           def self.default_severity = "warning" #: String
-          def self.safe_autofixable? = true #: bool
+          # TODO: enable and fix autofix (matching TypeScript implementation)
+          def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
           def self.enabled_by_default? = false #: bool
 
@@ -40,57 +41,7 @@ module Herb
             super
           end
 
-          # @rbs node: Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode
-          # @rbs parse_result: Herb::ParseResult
-          def autofix(node, parse_result) #: bool
-            case node
-            when Herb::AST::HTMLOpenTagNode
-              # Only handle single-line open tags for now
-              if node.location.start.line == node.location.end.line
-                fix_single_line_open_tag_spacing(node, parse_result)
-              else
-                false # Multiline open tags not yet supported
-              end
-            when Herb::AST::HTMLCloseTagNode
-              fix_close_tag_spacing(node, parse_result)
-            else
-              false
-            end
-          end
-
           private
-
-          # @rbs node: Herb::AST::HTMLCloseTagNode
-          # @rbs parse_result: Herb::ParseResult
-          def fix_close_tag_spacing(node, parse_result) #: bool
-            # Remove all whitespace nodes from children
-            children = node.children.reject { _1.is_a?(Herb::AST::WhitespaceNode) }
-
-            # Create new close tag node without whitespace
-            new_close_tag = copy_html_close_tag_node(node, children:)
-            replace_node(parse_result, node, new_close_tag)
-          end
-
-          # @rbs node: Herb::AST::HTMLOpenTagNode
-          # @rbs parse_result: Herb::ParseResult
-          def fix_single_line_open_tag_spacing(node, parse_result) #: bool
-            # Build new children with correct spacing
-            attributes = node.children.select { _1.is_a?(Herb::AST::HTMLAttributeNode) }
-            children = []
-
-            # Add whitespace + attribute for each attribute
-            attributes.each do |attr|
-              children << build_whitespace_node
-              children << attr
-            end
-
-            # Add whitespace before closing for self-closing tags
-            children << build_whitespace_node if self_closing?(node)
-
-            # Create new open tag with corrected spacing
-            new_open_tag = copy_html_open_tag_node(node, children:)
-            replace_node(parse_result, node, new_open_tag)
-          end
 
           # @rbs node: Herb::AST::HTMLOpenTagNode
           def self_closing?(node) #: bool
@@ -121,24 +72,16 @@ module Herb
             return if last_child.is_a?(Herb::AST::WhitespaceNode)
 
             # Self-closing tag needs space before />
-            add_offense_with_autofix(
-              message: NO_SPACE_SINGLE_SPACE,
-              location: node.tag_closing.location,
-              node:
-            )
+            add_offense(message: NO_SPACE_SINGLE_SPACE, location: node.tag_closing.location)
           end
 
           # Check non-trailing whitespace (between elements)
           # @rbs node: Herb::AST::HTMLOpenTagNode
           # @rbs whitespace: Herb::AST::WhitespaceNode
-          def check_non_trailing_whitespace(node, whitespace) #: void
+          def check_non_trailing_whitespace(_node, whitespace) #: void
             return if whitespace.value.value.length == 1
 
-            add_offense_with_autofix(
-              message: EXTRA_SPACE_SINGLE_SPACE,
-              location: whitespace.location,
-              node:
-            )
+            add_offense(message: EXTRA_SPACE_SINGLE_SPACE, location: whitespace.location)
           end
 
           # Check trailing whitespace (before closing bracket)
@@ -149,11 +92,7 @@ module Herb
             return if self_closing?(node) && whitespace.value.value.length == 1
 
             # Regular tags should have no trailing whitespace, or self-closing with wrong spacing
-            add_offense_with_autofix(
-              message: EXTRA_SPACE_NO_SPACE,
-              location: whitespace.location,
-              node:
-            )
+            add_offense(message: EXTRA_SPACE_NO_SPACE, location: whitespace.location)
           end
 
           # Check multiline open tag by inspecting whitespace nodes directly
@@ -230,11 +169,7 @@ module Herb
             node.children.each do |child|
               next unless child.is_a?(Herb::AST::WhitespaceNode)
 
-              add_offense_with_autofix(
-                message: EXTRA_SPACE_NO_SPACE,
-                location: child.location,
-                node:
-              )
+              add_offense(message: EXTRA_SPACE_NO_SPACE, location: child.location)
             end
           end
         end
