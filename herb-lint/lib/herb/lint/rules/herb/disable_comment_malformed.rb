@@ -7,13 +7,32 @@ module Herb
   module Lint
     module Rules
       module HerbDirective
-        # Meta-rule that detects syntactically malformed `herb:disable` directive comments.
+        # Description:
+        #   Detects malformed `<%# herb:disable ... %>` comments that have syntax errors like trailing commas,
+        #   leading commas, consecutive commas, or missing spaces after `herb:disable`.
         #
-        # Detects:
-        # - Missing space after `herb:disable` prefix (e.g. `herb:disablerule-name`)
-        # - Leading commas in the rule list (e.g. `herb:disable ,rule-name`)
-        # - Trailing commas in the rule list (e.g. `herb:disable rule-name,`)
-        # - Consecutive commas in the rule list (e.g. `herb:disable rule1,,rule2`)
+        # Good:
+        #   <DIV>test</DIV> <%# herb:disable html-tag-name-lowercase %>
+        #
+        #   <DIV class='value'>test</DIV> <%# herb:disable html-tag-name-lowercase, html-attribute-double-quotes %>
+        #
+        #   <DIV class='value'>test</DIV> <%# herb:disable html-tag-name-lowercase , html-attribute-double-quotes %>
+        #
+        #   <DIV>test</DIV> <%# herb:disable all %>
+        #
+        # Bad:
+        #   <div>test</div> <%# herb:disable html-tag-name-lowercase, %>
+        #
+        #   <div>test</div> <%# herb:disable , html-tag-name-lowercase %>
+        #
+        #   <div>test</div> <%# herb:disable html-tag-name-lowercase,, html-attribute-double-quotes %>
+        #
+        #   <div>test</div> <%# herb:disable html-tag-name-localhost,, %>
+        #
+        #   <DIV>test</DIV> <%# herb:disableall %>
+        #
+        #   <DIV>test</DIV> <%# herb:disablehtml-tag-name-lowercase %>
+        #
         class DisableCommentMalformed < DirectiveRule
           def self.rule_name = "herb-disable-comment-malformed" #: String
           def self.description = "Detect malformed herb:disable comments" #: String

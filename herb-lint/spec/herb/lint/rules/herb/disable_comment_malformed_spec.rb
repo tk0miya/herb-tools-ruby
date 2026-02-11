@@ -28,24 +28,109 @@ RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentMalformed do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context, source:) }
 
+    # Good examples from documentation
+    context "with single rule" do
+      let(:source) { "<DIV>test</DIV> <%# herb:disable html-tag-name-lowercase %>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with multiple rules" do
+      let(:source) do
+        "<DIV class='value'>test</DIV> <%# herb:disable html-tag-name-lowercase, html-attribute-double-quotes %>"
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with multiple rules and space before comma" do
+      let(:source) do
+        "<DIV class='value'>test</DIV> <%# herb:disable html-tag-name-lowercase , html-attribute-double-quotes %>"
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with 'all' keyword" do
+      let(:source) { "<DIV>test</DIV> <%# herb:disable all %>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with trailing comma" do
+      let(:source) { "<div>test</div> <%# herb:disable html-tag-name-lowercase, %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("herb-disable-comment-malformed")
+        expect(subject.first.message).to match(/trailing comma/)
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "with leading comma" do
+      let(:source) { "<div>test</div> <%# herb:disable , html-tag-name-lowercase %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("herb-disable-comment-malformed")
+        expect(subject.first.message).to match(/leading comma/)
+      end
+    end
+
+    context "with consecutive commas between rules" do
+      let(:source) { "<div>test</div> <%# herb:disable html-tag-name-lowercase,, html-attribute-double-quotes %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("herb-disable-comment-malformed")
+        expect(subject.first.message).to match(/consecutive commas/)
+      end
+    end
+
+    context "with consecutive commas and trailing comma" do
+      let(:source) { "<div>test</div> <%# herb:disable html-tag-name-lowercase,, %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(2)
+        messages = subject.map(&:message)
+        expect(messages).to include(match(/trailing comma/))
+        expect(messages).to include(match(/consecutive commas/))
+      end
+    end
+
+    context "with missing space after herb:disable (all)" do
+      let(:source) { "<DIV>test</DIV> <%# herb:disableall %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("herb-disable-comment-malformed")
+        expect(subject.first.message).to match(/missing space after `herb:disable`/)
+      end
+    end
+
+    context "with missing space after herb:disable (rule name)" do
+      let(:source) { "<DIV>test</DIV> <%# herb:disablehtml-tag-name-lowercase %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("herb-disable-comment-malformed")
+        expect(subject.first.message).to match(/missing space after `herb:disable`/)
+      end
+    end
+
+    # Additional edge cases not covered by documentation
     context "when comment is not a directive" do
       let(:source) { "<%# regular comment %>" }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when herb:disable is properly formatted with a single rule" do
-      let(:source) { "<%# herb:disable rule-name %>" }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when herb:disable is properly formatted with multiple rules" do
-      let(:source) { "<%# herb:disable rule1, rule2 %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -57,66 +142,6 @@ RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentMalformed do
 
       it "does not report an offense (handled by herb-disable-comment-missing-rules)" do
         expect(subject).to be_empty
-      end
-    end
-
-    context "when herb:disable uses 'all'" do
-      let(:source) { "<%# herb:disable all %>" }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when herb:disable is missing space before rule name" do
-      let(:source) { "<%# herb:disablerule-name %>" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("herb-disable-comment-malformed")
-        expect(subject.first.message).to match(/missing space after `herb:disable`/)
-        expect(subject.first.severity).to eq("error")
-      end
-    end
-
-    context "when herb:disable has a leading comma" do
-      let(:source) { "<%# herb:disable ,rule-name %>" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("herb-disable-comment-malformed")
-        expect(subject.first.message).to match(/leading comma/)
-      end
-    end
-
-    context "when herb:disable has a trailing comma" do
-      let(:source) { "<%# herb:disable rule-name, %>" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("herb-disable-comment-malformed")
-        expect(subject.first.message).to match(/trailing comma/)
-      end
-    end
-
-    context "when herb:disable has consecutive commas" do
-      let(:source) { "<%# herb:disable rule1,,rule2 %>" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("herb-disable-comment-malformed")
-        expect(subject.first.message).to match(/consecutive commas/)
-      end
-    end
-
-    context "when herb:disable has both leading and trailing commas" do
-      let(:source) { "<%# herb:disable ,rule-name, %>" }
-
-      it "reports offenses for both issues" do
-        expect(subject.size).to eq(2)
-        messages = subject.map(&:message)
-        expect(messages).to include(match(/leading comma/))
-        expect(messages).to include(match(/trailing comma/))
       end
     end
 
