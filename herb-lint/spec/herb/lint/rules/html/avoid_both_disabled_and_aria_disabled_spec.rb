@@ -19,7 +19,7 @@ RSpec.describe Herb::Lint::Rules::Html::AvoidBothDisabledAndAriaDisabled do
 
   describe ".default_severity" do
     it "returns 'warning'" do
-      expect(described_class.default_severity).to eq("error")
+      expect(described_class.default_severity).to eq("warning")
     end
   end
 
@@ -55,7 +55,7 @@ RSpec.describe Herb::Lint::Rules::Html::AvoidBothDisabledAndAriaDisabled do
         expect(subject.first.message).to eq(
           "Avoid using both 'disabled' and 'aria-disabled' on the same element; they are redundant"
         )
-        expect(subject.first.severity).to eq("error")
+        expect(subject.first.severity).to eq("warning")
       end
     end
 

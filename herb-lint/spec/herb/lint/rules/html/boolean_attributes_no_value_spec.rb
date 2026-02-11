@@ -17,7 +17,7 @@ RSpec.describe Herb::Lint::Rules::Html::BooleanAttributesNoValue do
 
   describe ".default_severity" do
     it "returns 'warning'" do
-      expect(described_class.default_severity).to eq("error")
+      expect(described_class.default_severity).to eq("warning")
     end
   end
 
@@ -59,7 +59,7 @@ RSpec.describe Herb::Lint::Rules::Html::BooleanAttributesNoValue do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-boolean-attributes-no-value")
         expect(subject.first.message).to eq("Boolean attribute 'disabled' should not have a value")
-        expect(subject.first.severity).to eq("error")
+        expect(subject.first.severity).to eq("warning")
       end
     end
 

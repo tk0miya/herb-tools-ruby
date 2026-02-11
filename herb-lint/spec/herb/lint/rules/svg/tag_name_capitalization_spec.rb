@@ -17,7 +17,7 @@ RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
 
   describe ".default_severity" do
     it "returns 'warning'" do
-      expect(described_class.default_severity).to eq("error")
+      expect(described_class.default_severity).to eq("warning")
     end
   end
 

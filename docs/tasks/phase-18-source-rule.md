@@ -261,12 +261,12 @@ end
 
 The TypeScript reference implementation (`erb-require-trailing-newline.ts`) uses `SourceRule` — it receives the raw source string and checks for trailing newlines directly. The current Ruby implementation uses `VisitorRule` and inspects AST nodes (`visit_document_node`), which is unnecessarily complex for this rule.
 
-- [ ] Change base class from `VisitorRule` to `SourceRule`
-- [ ] Replace `visit_document_node` with `check_source(source, context)` that inspects the source string directly
-- [ ] Simplify detection: check `source.end_with?("\n")` and `source.end_with?("\n\n")` (matching TypeScript logic)
-- [ ] Replace AST-based autofix with `autofix_source(offense, source)` returning `source.rstrip + "\n"`
-- [ ] Remove AST node manipulation helpers (`copy_html_text_node`, `replace_node`, `append_trailing_newline_text_node`)
-- [ ] Update existing tests
+- [x] Change base class from `VisitorRule` to `SourceRule`
+- [x] Replace `visit_document_node` with `check_source(source, context)` that inspects the source string directly
+- [x] Simplify detection: check `source.end_with?("\n")` and `source.end_with?("\n\n")` (matching TypeScript logic)
+- [x] Replace AST-based autofix with `autofix_source(offense, source)` returning `source.rstrip + "\n"`
+- [x] Remove AST node manipulation helpers (`copy_html_text_node`, `replace_node`, `append_trailing_newline_text_node`)
+- [x] Update existing tests
 
 **Reference (TypeScript):**
 

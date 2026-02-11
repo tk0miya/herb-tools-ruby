@@ -76,57 +76,55 @@ RSpec.describe Herb::Lint::Rules::Erb::RequireTrailingNewline do
     end
   end
 
-  describe "#autofix" do
-    subject { described_class.new(matcher:).autofix(node, document) }
+  describe "#autofix_source" do
+    subject { rule.autofix_source(offense, source) }
 
     let(:matcher) { build(:pattern_matcher) }
-    let(:document) { Herb.parse(source, track_whitespace: true) }
+    let(:rule) { described_class.new(matcher:) }
+    let(:offense) { build(:offense) }
 
     context "when fixing a file with no trailing newline" do
       let(:source) { "<div>content</div>" }
       let(:expected) { "<div>content</div>\n" }
-      let(:node) { document.value }
 
-      it "adds a trailing newline and returns true" do
-        expect(subject).to be(true)
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
+      it "adds a trailing newline" do
+        expect(subject).to eq(expected)
       end
     end
 
     context "when fixing a file with multiple trailing newlines" do
       let(:source) { "<div>content</div>\n\n" }
       let(:expected) { "<div>content</div>\n" }
-      let(:node) { document.value.children.last }
 
-      it "removes extra newlines and returns true" do
-        expect(subject).to be(true)
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
+      it "removes extra newlines" do
+        expect(subject).to eq(expected)
       end
     end
 
     context "when fixing a file with three trailing newlines" do
       let(:source) { "<div>content</div>\n\n\n" }
       let(:expected) { "<div>content</div>\n" }
-      let(:node) { document.value.children.last }
 
-      it "removes all extra newlines and returns true" do
-        expect(subject).to be(true)
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
+      it "removes all extra newlines" do
+        expect(subject).to eq(expected)
       end
     end
 
     context "when last node is not a text node and needs newline" do
       let(:source) { "<%= foo %>" }
       let(:expected) { "<%= foo %>\n" }
-      let(:node) { document.value }
 
-      it "appends a text node with newline and returns true" do
-        expect(subject).to be(true)
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
+      it "appends a newline" do
+        expect(subject).to eq(expected)
+      end
+    end
+
+    context "when source has trailing spaces before newline" do
+      let(:source) { "<div>content</div>  \n" }
+      let(:expected) { "<div>content</div>\n" }
+
+      it "removes trailing spaces and keeps one newline" do
+        expect(subject).to eq(expected)
       end
     end
   end

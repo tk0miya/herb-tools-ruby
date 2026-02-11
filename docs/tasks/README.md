@@ -15,9 +15,7 @@ The MVP (Minimum Viable Product) has been completed with:
 
 Phases 1-14, 19, and 20 have been completed and their task files have been removed from this directory. The completed work is documented in the git history and reflected in the current implementation.
 
-## herb-lint Implementation Phases
-
-### Remaining Phases
+## Remaining Implementation Phases
 
 | Phase | File | Tasks | Description | Status |
 |-------|------|-------|-------------|--------|
@@ -33,9 +31,9 @@ Phases 1-14, 19, and 20 have been completed and their task files have been remov
 
 Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
-### Phase Overview (herb-lint)
+## Phase Overview
 
-#### Phase 15: Autofix (9 tasks)
+### Phase 15: Autofix (9 tasks)
 
 | Part | Tasks | Description |
 |------|-------|-------------|
@@ -114,7 +112,7 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 4. Check off completed tasks (`- [ ]` → `- [x]`)
 5. Move to the next phase when all tasks are complete
 
-## Completed Phases (herb-lint)
+## Completed Phases
 
 The following phases have been completed and their task files removed:
 
@@ -130,88 +128,16 @@ The following phases have been completed and their task files removed:
 
 All completed work is documented in the git history and reflected in the current implementation.
 
-**Note:** Phase 14 (herb-printer gem) is a prerequisite for herb-format implementation.
-
-## herb-format Implementation Phases
-
-| Phase | File | Tasks | Description | Status |
-|-------|------|-------|-------------|--------|
-| Phase 1 | [phase-1-formatter-foundation.md](./phase-1-formatter-foundation.md) | 19 | Gem scaffold, data structures, configuration, CI | 📋 |
-| Phase 2 | [phase-2-formatter-engine.md](./phase-2-formatter-engine.md) | 12 | Core formatting engine (HTML, ERB, whitespace) | 📋 |
-| Phase 3 | [phase-3-formatter-core.md](./phase-3-formatter-core.md) | 6 | FormatIgnore, Formatter, FormatterFactory | 📋 |
-| Phase 4 | [phase-4-formatter-rewriters.md](./phase-4-formatter-rewriters.md) | 9 | Rewriter system (base, registry, built-ins, custom loader) | 📋 |
-| Phase 5 | [phase-5-formatter-runner.md](./phase-5-formatter-runner.md) | 4 | Runner and batch file processing | 📋 |
-| Phase 6 | [phase-6-formatter-cli.md](./phase-6-formatter-cli.md) | 9 | CLI (options, --init, --stdin, --check, reporting) | 📋 |
-
-**Total: ~59 tasks**
-
-Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
-
-### Phase Overview (herb-format)
-
-#### Phase 1: Foundation (19 tasks)
-
-| Part | Tasks | Description |
-|------|-------|-------------|
-| Part A | 10 | Gem scaffold, boilerplate, and CI setup |
-| Part B | 3 | Data structures (FormatResult, AggregatedResult, Context) |
-| Part C | 4 | Configuration and error handling |
-| Part D | 2 | Integration testing |
-
-#### Phase 2: Engine (12 tasks)
-
-| Part | Tasks | Description |
-|------|-------|-------------|
-| Part A | 1 | Engine foundation |
-| Part B | 4 | HTML formatting (document, text, elements, attributes, comments) |
-| Part C | 4 | ERB formatting (content, blocks, control flow, exception handling) |
-| Part D | 3 | Integration and refinement |
-
-#### Phase 3: Formatter Core (6 tasks)
-
-| Part | Tasks | Description |
-|------|-------|-------------|
-| Part A | 1 | FormatIgnore module |
-| Part B | 1 | Formatter class |
-| Part C | 1 | FormatterFactory |
-| Part D | 3 | Integration and tests |
-
-#### Phase 4: Rewriters (9 tasks)
-
-| Part | Tasks | Description |
-|------|-------|-------------|
-| Part A | 2 | Rewriter base class and registry |
-| Part B | 3 | Built-in rewriters (NormalizeAttributes, SortAttributes, TailwindClassSorter) |
-| Part C | 1 | CustomRewriterLoader |
-| Part D | 3 | Integration and tests |
-
-#### Phase 5: Runner (4 tasks)
-
-| Part | Tasks | Description |
-|------|-------|-------------|
-| Part A | 1 | Runner implementation |
-| Part B | 3 | Integration and verification |
-
-#### Phase 6: CLI (9 tasks)
-
-| Part | Tasks | Description |
-|------|-------|-------------|
-| Part A | 1 | Basic CLI structure |
-| Part B | 2 | --version, --help, --init handlers |
-| Part C | 1 | --stdin handler |
-| Part D | 1 | Check mode and reporting |
-| Part E | 4 | Executable and integration tests |
-
 ## Unscheduled Tasks (Low Priority)
 
 The following features are not yet scheduled into phases. Consider adding them when needed:
 
-### Custom Rule Loading (Linter)
+### Custom Rule Loading
 - CustomRuleLoader implementation
 - Plugin mechanism for third-party rules
 - Dynamic rule discovery from `.herb/rules/` directory
 
-### RuleRegistry Dynamic Discovery (Linter)
+### RuleRegistry Dynamic Discovery
 - Automatic rule discovery by directory scanning
 - Dynamic loading using reflection
 - Consider when rule count exceeds 10
@@ -222,9 +148,13 @@ The following features are not yet scheduled into phases. Consider adding them w
 
 ### Performance
 - Parallel file processing
-- Caching for repeated lints/formats
+- Caching for repeated lints
 
-See [phase-22-future-enhancements.md](./phase-22-future-enhancements.md) for detailed descriptions of linter enhancement features.
+### herb-format Implementation
+- Full formatter gem (see [herb-format requirements](../requirements/herb-format.md))
+- Formatter engine, rewriters, CLI
+
+See [phase-22-future-enhancements.md](./phase-22-future-enhancements.md) for detailed descriptions of each feature.
 
 ## Related Documentation
 

@@ -23,7 +23,7 @@ module Herb
         class AttributeValuesRequireQuotes < VisitorRule
           def self.rule_name = "html-attribute-values-require-quotes" #: String
           def self.description = "Require quotes around attribute values" #: String
-          def self.default_severity = "error" #: String
+          def self.default_severity = "warning" #: String
           def self.safe_autofixable? = true #: bool
           def self.unsafe_autofixable? = false #: bool
 

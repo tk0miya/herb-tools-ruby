@@ -17,7 +17,7 @@ RSpec.describe Herb::Lint::Rules::Html::NoTitleAttribute do
 
   describe ".default_severity" do
     it "returns 'warning'" do
-      expect(described_class.default_severity).to eq("error")
+      expect(described_class.default_severity).to eq("warning")
     end
   end
 
@@ -45,7 +45,7 @@ RSpec.describe Herb::Lint::Rules::Html::NoTitleAttribute do
         expect(subject.first.message).to eq(
           "Avoid using the 'title' attribute; it is unreliable for screen readers and touch devices"
         )
-        expect(subject.first.severity).to eq("error")
+        expect(subject.first.severity).to eq("warning")
       end
     end
 

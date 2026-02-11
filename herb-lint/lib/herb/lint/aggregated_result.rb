@@ -5,13 +5,10 @@ module Herb
     # Aggregates linting results across multiple files.
     class AggregatedResult
       attr_reader :results #: Array[LintResult]
-      attr_reader :rule_count #: Integer
 
       # @rbs results: Array[LintResult]
-      # @rbs rule_count: Integer
-      def initialize(results, rule_count: 0) #: void
+      def initialize(results) #: void
         @results = results
-        @rule_count = rule_count
       end
 
       # Returns the total number of offenses across all files.
@@ -37,11 +34,6 @@ module Herb
       # Returns the total number of hint-level offenses across all files.
       def hint_count #: Integer
         results.sum(&:hint_count)
-      end
-
-      # Returns the total number of ignored offenses across all files.
-      def ignored_count #: Integer
-        results.sum(&:ignored_count)
       end
 
       # Returns the number of files processed.

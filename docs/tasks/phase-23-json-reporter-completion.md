@@ -134,26 +134,26 @@ Currently, `DirectiveParser` filters offenses but doesn't track the count of ign
 
 **Location:** `herb-lint/lib/herb/lint/lint_result.rb`
 
-- [x] Add `ignored_offenses` attribute (default: `[]`)
-- [x] Add `ignored_count` method
-- [x] Update initializer to accept `ignored_offenses` parameter
-- [x] Update tests
+- [ ] Add `ignored_offenses` attribute (default: `[]`)
+- [ ] Add `ignored_count` method
+- [ ] Update initializer to accept `ignored_offenses` parameter
+- [ ] Update tests
 
 **Location:** `herb-lint/lib/herb/lint/linter.rb`
 
-- [x] Update `lint` method to track ignored offenses from `Directives#filter_offenses`
-- [x] Pass ignored offenses to `LintResult.new`
-- [x] Update tests to verify ignored offenses are tracked
+- [ ] Update `lint` method to track ignored offenses from `Directives#filter_offenses`
+- [ ] Pass ignored offenses to `LintResult.new`
+- [ ] Update tests to verify ignored offenses are tracked
 
 **Location:** `herb-lint/lib/herb/lint/aggregated_result.rb`
 
-- [x] Add `ignored_count` method
-- [x] Update tests
+- [ ] Add `ignored_count` method
+- [ ] Update tests
 
 **Location:** `herb-lint/lib/herb/lint/reporter/json_reporter.rb`
 
-- [x] Update `build_summary` to use actual `ignored_count`
-- [x] Update tests
+- [ ] Update `build_summary` to use actual `ignored_count`
+- [ ] Update tests
 
 **Verification:**
 ```bash
@@ -228,19 +228,19 @@ The rule count should reflect the number of rules actually used during linting, 
 
 **Location:** `herb-lint/lib/herb/lint/runner.rb`
 
-- [x] Track active rule count in runner
-- [x] Pass rule count to `AggregatedResult`
+- [ ] Track active rule count in runner
+- [ ] Pass rule count to `AggregatedResult`
 
 **Location:** `herb-lint/lib/herb/lint/aggregated_result.rb`
 
-- [x] Add `rule_count` attribute
-- [x] Update initializer to accept `rule_count` parameter
-- [x] Update tests
+- [ ] Add `rule_count` attribute
+- [ ] Update initializer to accept `rule_count` parameter
+- [ ] Update tests
 
 **Location:** `herb-lint/lib/herb/lint/reporter/json_reporter.rb`
 
-- [x] Update `build_summary` to use actual `rule_count`
-- [x] Update tests
+- [ ] Update `build_summary` to use actual `rule_count`
+- [ ] Update tests
 
 **Verification:**
 ```bash
@@ -378,8 +378,8 @@ cd herb-lint
 
 All tasks completed and verified:
 - [x] Task 23.1: Info/hint severity levels implemented
-- [x] Task 23.2: Ignored offenses count tracked
-- [x] Task 23.3: Active rule count reported
+- [ ] Task 23.2: Ignored offenses count tracked
+- [ ] Task 23.3: Active rule count reported
 - [ ] Task 23.4: RBS types updated
 - [ ] Task 23.5: Integration tests passing
 - [ ] Task 23.6: Documentation updated

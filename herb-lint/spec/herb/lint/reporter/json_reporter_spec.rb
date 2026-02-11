@@ -207,20 +207,5 @@ RSpec.describe Herb::Lint::Reporter::JsonReporter do
         expect(parsed_output["completed"]).to be(true)
       end
     end
-
-    context "when aggregated result includes rule count" do
-      let(:aggregated_result) { Herb::Lint::AggregatedResult.new(results, rule_count: 42) }
-      let(:results) do
-        [
-          build(:lint_result, file_path: "app/views/test.html.erb")
-        ]
-      end
-
-      it "includes the rule count in the summary" do
-        subject
-
-        expect(parsed_output["summary"]["ruleCount"]).to eq(42)
-      end
-    end
   end
 end

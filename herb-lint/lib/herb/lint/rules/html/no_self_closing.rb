@@ -42,7 +42,7 @@ module Herb
 
           def self.rule_name = "html-no-self-closing" #: String
           def self.description = "Consistent self-closing style for void elements" #: String
-          def self.default_severity = "error" #: String
+          def self.default_severity = "warning" #: String
           def self.safe_autofixable? = true #: bool
           def self.unsafe_autofixable? = false #: bool
 

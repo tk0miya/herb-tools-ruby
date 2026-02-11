@@ -77,9 +77,9 @@ module Herb
             "totalWarnings" => aggregated_result.warning_count,
             "totalInfo" => aggregated_result.info_count,
             "totalHints" => aggregated_result.hint_count,
-            "totalIgnored" => aggregated_result.ignored_count,
+            "totalIgnored" => 0,
             "totalOffenses" => aggregated_result.offense_count,
-            "ruleCount" => aggregated_result.rule_count
+            "ruleCount" => 0
           }
         end
       end

@@ -23,7 +23,7 @@ module Herb
         class AriaLabelIsWellFormatted < VisitorRule
           def self.rule_name = "html-aria-label-is-well-formatted" #: String
           def self.description = "Require well-formatted aria-label values" #: String
-          def self.default_severity = "error" #: String
+          def self.default_severity = "warning" #: String
           def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
 

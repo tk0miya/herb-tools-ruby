@@ -21,7 +21,7 @@ module Herb
         class NoTitleAttribute < VisitorRule
           def self.rule_name = "html-no-title-attribute" #: String
           def self.description = "Disallow use of `title` attribute" #: String
-          def self.default_severity = "error" #: String
+          def self.default_severity = "warning" #: String
           def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
           def self.enabled_by_default? = false #: bool
