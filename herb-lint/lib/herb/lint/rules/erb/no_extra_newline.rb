@@ -58,23 +58,19 @@ module Herb
         #
         #   <%= user.email %>
         #
-        class NoExtraNewline < Base
+        class NoExtraNewline < SourceRule
           include StringUtils
 
           def self.rule_name = "erb-no-extra-newline" #: String
           def self.description = "Disallow more than 2 consecutive blank lines in ERB files" #: String
           def self.default_severity = "error" #: String
-          def self.safe_autofixable? = false #: bool
+          def self.safe_autofixable? = true #: bool
           def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
-          def check(_document, context)
-            @offenses = []
-            @context = context
-            @source = context.source
-
+          def check_source(source, _context)
             # Find all sequences of 4 or more consecutive newlines
-            @source.scan(/\n{4,}/) do
+            source.scan(/\n{4,}/) do
               match_data = Regexp.last_match
               match_start = match_data.begin(0)
               match_length = match_data[0].length
@@ -93,49 +89,27 @@ module Herb
               message = "Extra blank line detected. Remove #{excess_lines} blank #{plural} " \
                         "to maintain consistent spacing (max 2 allowed)"
 
-              add_offense(message:, location:)
+              add_offense_with_source_autofix(
+                message:,
+                location:,
+                start_offset: offense_start,
+                end_offset: offense_end
+              )
             end
-
-            @offenses
           end
 
-          private
+          # @rbs override
+          def autofix_source(offense, source)
+            ctx = offense.autofix_context
+            start_offset = ctx.start_offset
+            end_offset = ctx.end_offset
 
-          # @rbs @source: String
+            # Verify content at offsets is newlines only
+            content = source[start_offset...end_offset]
+            return nil unless content&.match?(/\A\n+\z/)
 
-          # Create a location object from character offsets.
-          # @rbs start_offset: Integer
-          # @rbs end_offset: Integer
-          def location_from_offsets(start_offset, end_offset) #: Herb::Location
-            start_pos = position_from_offset(start_offset)
-            end_pos = position_from_offset(end_offset)
-
-            Herb::Location.new(
-              Herb::Position.new(start_pos[:line], start_pos[:column]),
-              Herb::Position.new(end_pos[:line], end_pos[:column])
-            )
-          end
-
-          # Convert character offset to line and column position (0-indexed).
-          # @rbs offset: Integer
-          def position_from_offset(offset) #: Hash[Symbol, Integer]
-            line = 0
-            column = 0
-            current_offset = 0
-
-            @source.each_char do |char|
-              break if current_offset >= offset
-
-              if char == "\n"
-                line += 1
-                column = 0
-              else
-                column += 1
-              end
-              current_offset += 1
-            end
-
-            { line:, column: }
+            # Remove the extra newlines
+            source[0...start_offset] + source[end_offset..]
           end
         end
       end

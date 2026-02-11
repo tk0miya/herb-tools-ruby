@@ -21,6 +21,12 @@ RSpec.describe Herb::Lint::Rules::Erb::NoExtraNewline do
     end
   end
 
+  describe ".safe_autofixable?" do
+    it "returns true" do
+      expect(described_class.safe_autofixable?).to be(true)
+    end
+  end
+
   describe "#check" do
     subject { described_class.new(matcher:).check(document, context) }
 
@@ -160,6 +166,90 @@ RSpec.describe Herb::Lint::Rules::Erb::NoExtraNewline do
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
+      end
+    end
+  end
+
+  describe "#autofix_source" do
+    let(:matcher) { build(:pattern_matcher) }
+    let(:rule) { described_class.new(matcher:) }
+
+    context "with single occurrence of extra newlines" do
+      let(:source) { "line 1\n\n\n\nline 3" }
+      let(:expected) { "line 1\n\n\nline 3" }
+
+      it "removes the extra newline" do
+        document = Herb.parse(source, track_whitespace: true)
+        context = build(:context, source:)
+        offenses = rule.check(document, context)
+
+        expect(offenses.size).to eq(1)
+
+        autofixer = Herb::Lint::Autofixer.new(document, offenses, source:)
+        result = autofixer.apply
+
+        expect(result.fixed_count).to eq(1)
+        expect(result.unfixed).to be_empty
+        expect(result.source).to eq(expected)
+      end
+    end
+
+    context "with multiple occurrences in same file" do
+      let(:source) { "<div>First</div>\n\n\n\n<div>Second</div>\n\n\n\n\n<div>Third</div>" }
+      let(:expected) { "<div>First</div>\n\n\n<div>Second</div>\n\n\n<div>Third</div>" }
+
+      it "removes all extra newlines" do
+        document = Herb.parse(source, track_whitespace: true)
+        context = build(:context, source:)
+        offenses = rule.check(document, context)
+
+        expect(offenses.size).to eq(2)
+
+        autofixer = Herb::Lint::Autofixer.new(document, offenses, source:)
+        result = autofixer.apply
+
+        expect(result.fixed_count).to eq(2)
+        expect(result.unfixed).to be_empty
+        expect(result.source).to eq(expected)
+      end
+    end
+
+    context "with extra newlines at end of file" do
+      let(:source) { "<div>content</div>\n\n\n\n" }
+      let(:expected) { "<div>content</div>\n\n\n" }
+
+      it "removes extra newlines at EOF" do
+        document = Herb.parse(source, track_whitespace: true)
+        context = build(:context, source:)
+        offenses = rule.check(document, context)
+
+        expect(offenses.size).to eq(1)
+
+        autofixer = Herb::Lint::Autofixer.new(document, offenses, source:)
+        result = autofixer.apply
+
+        expect(result.fixed_count).to eq(1)
+        expect(result.unfixed).to be_empty
+        expect(result.source).to eq(expected)
+      end
+    end
+
+    context "when content at offset has changed" do
+      let(:source) { "line 1\n\n\n\nline 3" }
+      let(:modified_source) { "line 1\n\n  \n\nline 3" } # newline replaced with spaces
+
+      it "returns nil and skips the fix" do
+        document = Herb.parse(source, track_whitespace: true)
+        context = build(:context, source:)
+        offenses = rule.check(document, context)
+
+        expect(offenses.size).to eq(1)
+        offense = offenses.first
+
+        # Simulate content change by using modified_source for autofix
+        result = rule.autofix_source(offense, modified_source)
+
+        expect(result).to be_nil
       end
     end
   end
