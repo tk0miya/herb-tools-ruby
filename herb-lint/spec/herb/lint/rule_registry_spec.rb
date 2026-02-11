@@ -21,6 +21,15 @@ RSpec.describe Herb::Lint::RuleRegistry do
       def self.unsafe_autofixable? = false
     end
   end
+  let(:disabled_by_default_rule_class) do
+    Class.new(Herb::Lint::Rules::Base) do
+      def self.rule_name = "disabled-by-default-rule"
+      def self.description = "Rule disabled by default"
+      def self.safe_autofixable? = false
+      def self.unsafe_autofixable? = false
+      def self.enabled_by_default? = false
+    end
+  end
 
   describe "#initialize" do
     context "with builtins: true (default)" do
@@ -225,6 +234,63 @@ RSpec.describe Herb::Lint::RuleRegistry do
         expect(rules.size).to eq(1)
         expect(rules[0]).to be_a(another_rule_class)
         expect(rules[0].severity).to eq("error")
+      end
+    end
+
+    context "with rule that is disabled by default" do
+      before do
+        registry.register(disabled_by_default_rule_class)
+      end
+
+      context "when no config is specified" do
+        it "does not build the disabled-by-default rule" do
+          rules = registry.build_all
+
+          expect(rules.size).to eq(2)
+          expect(rules.map(&:class)).not_to include(disabled_by_default_rule_class)
+        end
+      end
+
+      context "when explicitly enabled in config" do
+        let(:config_hash) do
+          {
+            "linter" => {
+              "rules" => {
+                "disabled-by-default-rule" => {
+                  "enabled" => true
+                }
+              }
+            }
+          }
+        end
+
+        it "builds the disabled-by-default rule" do
+          rules = registry.build_all
+
+          expect(rules.size).to eq(3)
+          expect(rules.map(&:class)).to include(disabled_by_default_rule_class)
+        end
+      end
+
+      context "when explicitly disabled in config" do
+        let(:config_hash) do
+          {
+            "linter" => {
+              "rules" => {
+                "disabled-by-default-rule" => {
+                  "enabled" => false
+                }
+              }
+            }
+          }
+        end
+
+        it "does not build the disabled-by-default rule" do
+          rules = registry.build_all
+
+          expect(rules.size).to eq(2)
+          expect(rules.map(&:class)).not_to include(disabled_by_default_rule_class)
+        end
       end
     end
   end

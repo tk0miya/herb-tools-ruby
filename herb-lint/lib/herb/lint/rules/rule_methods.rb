@@ -38,6 +38,13 @@ module Herb
           def unsafe_autofixable? #: bool
             raise NotImplementedError, "#{name} must implement .unsafe_autofixable?"
           end
+
+          # Whether the rule is enabled by default.
+          # Most rules are enabled by default, but some opt-in rules return false.
+          # Subclasses can override this method to change the default behavior.
+          def enabled_by_default? #: bool
+            true
+          end
         end
 
         # @rbs matcher: Herb::Core::PatternMatcher -- pattern matcher for include/exclude rules

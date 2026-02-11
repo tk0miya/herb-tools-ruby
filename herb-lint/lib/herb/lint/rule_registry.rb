@@ -100,7 +100,9 @@ module Herb
       # Creates a PatternMatcher for each rule based on its include/exclude/only configuration.
       def build_all #: Array[Rules::Base | Rules::VisitorRule]
         @rules.filter_map do |rule_name, rule_class|
-          next unless @config.enabled_rule?(rule_name)
+          # Check if rule is enabled, using the rule's default enabled state
+          default_enabled = rule_class.enabled_by_default?
+          next unless @config.enabled_rule?(rule_name, default: default_enabled)
 
           matcher = @config.build_pattern_matcher(rule_name)
           rule_class.new(severity: @config.rule_severity(rule_name), matcher:)
