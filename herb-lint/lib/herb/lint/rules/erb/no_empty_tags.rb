@@ -29,7 +29,7 @@ module Herb
         class NoEmptyTags < VisitorRule
           def self.rule_name = "erb-no-empty-tags" #: String
           def self.description = "Disallow empty ERB tags" #: String
-          def self.default_severity = "warning" #: String
+          def self.default_severity = "error" #: String
           def self.safe_autofixable? = true #: bool
           def self.unsafe_autofixable? = false #: bool
 
