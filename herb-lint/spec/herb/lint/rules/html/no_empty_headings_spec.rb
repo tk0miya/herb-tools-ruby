@@ -17,7 +17,7 @@ RSpec.describe Herb::Lint::Rules::Html::NoEmptyHeadings do
 
   describe ".default_severity" do
     it "returns 'warning'" do
-      expect(described_class.default_severity).to eq("warning")
+      expect(described_class.default_severity).to eq("error")
     end
   end
 
@@ -59,7 +59,7 @@ RSpec.describe Herb::Lint::Rules::Html::NoEmptyHeadings do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-no-empty-headings")
         expect(subject.first.message).to eq("Heading element `<h1>` must not be empty")
-        expect(subject.first.severity).to eq("warning")
+        expect(subject.first.severity).to eq("error")
       end
     end
 

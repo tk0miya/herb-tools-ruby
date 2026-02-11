@@ -35,7 +35,7 @@ module Herb
         class TagNameCapitalization < VisitorRule
           def self.rule_name = "svg-tag-name-capitalization" #: String
           def self.description = "Enforce correct capitalization of SVG element names" #: String
-          def self.default_severity = "warning" #: String
+          def self.default_severity = "error" #: String
           def self.safe_autofixable? = true #: bool
           def self.unsafe_autofixable? = false #: bool
 

@@ -17,7 +17,7 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeValuesRequireQuotes do
 
   describe ".default_severity" do
     it "returns 'warning'" do
-      expect(described_class.default_severity).to eq("warning")
+      expect(described_class.default_severity).to eq("error")
     end
   end
 
@@ -57,7 +57,7 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeValuesRequireQuotes do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-attribute-values-require-quotes")
         expect(subject.first.message).to eq("Attribute value should be quoted")
-        expect(subject.first.severity).to eq("warning")
+        expect(subject.first.severity).to eq("error")
       end
     end
 

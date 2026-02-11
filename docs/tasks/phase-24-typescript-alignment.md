@@ -302,80 +302,113 @@ If Task 24.5 decides to align with TypeScript, change each rule's `default_sever
 
 #### Task 24.11: Change html-anchor-require-href severity to error
 
+**Status:** ✅ Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/html/anchor_require_href.rb`
 
-- [ ] Change `default_severity` to `"error"`
-- [ ] Update test expectations
+- [x] Change `default_severity` to `"error"`
+- [x] Update test expectations
+- [x] All tests pass (12 examples, 0 failures)
 
 #### Task 24.12: Change html-aria-label-is-well-formatted severity to error
 
+**Status:** ✅ Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/html/aria_label_is_well_formatted.rb`
 
-- [ ] Change `default_severity` to `"error"`
-- [ ] Update test expectations
+- [x] Change `default_severity` to `"error"`
+- [x] Update test expectations
+- [x] All tests pass (13 examples, 0 failures)
 
 #### Task 24.13: Change html-attribute-equals-spacing severity to error
 
+**Status:** ✅ Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/html/attribute_equals_spacing.rb`
 
-- [ ] Change `default_severity` to `"error"`
-- [ ] Update test expectations
+- [x] Change `default_severity` to `"error"`
+- [x] Update test expectations
+- [x] All tests pass (18 examples, 0 failures)
 
 #### Task 24.14: Change html-attribute-values-require-quotes severity to error
 
+**Status:** ✅ Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/html/attribute_values_require_quotes.rb`
 
-- [ ] Change `default_severity` to `"error"`
-- [ ] Update test expectations
+- [x] Change `default_severity` to `"error"`
+- [x] Update test expectations
+- [x] All tests pass (14 examples, 0 failures)
 
 #### Task 24.15: Change html-avoid-both-disabled-and-aria-disabled severity to error
 
+**Status:** ✅ Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/html/avoid_both_disabled_and_aria_disabled.rb`
 
-- [ ] Change `default_severity` to `"error"`
-- [ ] Update test expectations
+- [x] Change `default_severity` to `"error"`
+- [x] Update test expectations
+- [x] All tests pass (12 examples, 0 failures)
 
 #### Task 24.16: Change html-boolean-attributes-no-value severity to error
 
+**Status:** ✅ Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/html/boolean_attributes_no_value.rb`
 
-- [ ] Change `default_severity` to `"error"`
-- [ ] Update test expectations
+- [x] Change `default_severity` to `"error"`
+- [x] Update test expectations
+- [x] All tests pass (17 examples, 0 failures)
 
 #### Task 24.17: Change html-no-empty-headings severity to error
 
+**Status:** ✅ Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/html/no_empty_headings.rb`
 
-- [ ] Change `default_severity` to `"error"`
-- [ ] Update test expectations
+- [x] Change `default_severity` to `"error"`
+- [x] Update test expectations
+- [x] All tests pass (16 examples, 0 failures)
 
 #### Task 24.18: Change html-no-self-closing severity to error
 
+**Status:** ✅ Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/html/no_self_closing.rb`
 
-- [ ] Change `default_severity` to `"error"`
-- [ ] Update test expectations
+- [x] Change `default_severity` to `"error"`
+- [x] Update test expectations
+- [x] All tests pass (18 examples, 0 failures)
 
 #### Task 24.19: Change html-no-title-attribute severity to error
 
+**Status:** ✅ Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/html/no_title_attribute.rb`
 
-- [ ] Change `default_severity` to `"error"`
-- [ ] Update test expectations
+- [x] Change `default_severity` to `"error"`
+- [x] Update test expectations
+- [x] All tests pass (11 examples, 0 failures)
 
 #### Task 24.20: Change html-tag-name-lowercase severity to error
 
+**Status:** ✅ Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/html/tag_name_lowercase.rb`
 
-- [ ] Change `default_severity` to `"error"`
-- [ ] Update test expectations
+- [x] Change `default_severity` to `"error"`
+- [x] Update test expectations
+- [x] All tests pass (18 examples, 0 failures)
 
 #### Task 24.21: Change svg-tag-name-capitalization severity to error
 
+**Status:** ✅ Complete
+
 **Location:** `herb-lint/lib/herb/lint/rules/svg/tag_name_capitalization.rb`
 
-- [ ] Change `default_severity` to `"error"`
-- [ ] Update test expectations
+- [x] Change `default_severity` to `"error"`
+- [x] Update test expectations
+- [x] All tests pass (12 examples, 0 failures)
 
 **Batch Verification:**
 ```bash
@@ -487,15 +520,15 @@ grep -r "html-no-space-in-tag" docs/
 - [ ] 24.4: Propose to TypeScript (optional)
 
 ### Part C: Severity Alignment (17 tasks)
-- [ ] 24.5: Decide severity policy
-- [ ] 24.6-24.21: Update individual rules (16 rules)
+- [x] 24.5: Decide severity policy
+- [x] 24.6-24.21: Update individual rules (16 rules)
 
 ### Part D: Documentation & Alignment (3 tasks)
 - [x] 24.22: Create analysis documents
 - [x] 24.23: Align default enabled status (5 rules)
 - [ ] 24.24: Update README etc.
 
-**Total: 24 tasks** (5 complete, 19 pending)
+**Total: 24 tasks** (22 complete, 2 pending)
 
 ---
 
@@ -505,8 +538,8 @@ grep -r "html-no-space-in-tag" docs/
 2. ~~**Task 24.2** (High Priority): Verify html-no-space-in-tag~~ ✅ Complete
 3. ~~**Task 24.1** (Medium Priority): Implement herb-disable-comment-unnecessary~~ ✅ Complete (Already implemented)
 4. ~~**Task 24.3** (Medium Priority): Add erb-no-extra-newline autofix~~ ✅ Complete (Completed via Phase 18)
-5. **Task 24.5** (High Priority): Decide severity policy
-6. **Tasks 24.6-24.21**: Update severities (after policy decision)
+5. ~~**Task 24.5** (High Priority): Decide severity policy~~ ✅ Complete
+6. ~~**Tasks 24.6-24.21**: Update severities (after policy decision)~~ ✅ Complete
 7. **Task 24.24**: Update documentation
 8. **Task 24.4**: Propose to TypeScript (optional)
 
