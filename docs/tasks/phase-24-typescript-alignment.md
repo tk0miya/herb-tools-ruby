@@ -481,24 +481,26 @@ cd herb-lint && ./bin/rspec spec/herb/lint/config_spec.rb
 
 ### Task 24.24: Update README and Documentation
 
-**Status:** ⏳ Pending (After Phase 24 Completion)
+**Status:** ✅ Complete
 
 **Description:**
 Update related documentation to reflect Phase 24 changes.
 
-**Files to Update:**
+**Files Updated:**
 
-- [ ] `herb-lint/README.md`
-  - [ ] Document newly added rules
-  - [ ] Update rule count (51 → 52+)
-- [ ] `docs/requirements/herb-lint.md`
-  - [ ] Update rule list
-  - [ ] Reflect severity changes
-- [ ] `docs/tasks/README.md`
-  - [ ] Add Phase 24
-  - [ ] Update task counts
-- [ ] `docs/tasks/phase-16-rule-autofix-expansion.md`
-  - [ ] Update Task 16.13 completion status
+- [x] `herb-lint/README.md`
+  - [x] Document all 52 rules with severity, fixable, and enabled status
+  - [x] Update rule count (3 → 52)
+  - [x] Add autofix, inline directives, and CLI options documentation
+  - [x] Remove outdated MVP limitations section
+- [x] `docs/requirements/herb-lint.md`
+  - [x] Update rule list with actual implementations (52 rules across 5 categories)
+  - [x] Reflect severity changes (16 rules changed from warning to error)
+  - [x] Update post-MVP features section
+- [x] `docs/tasks/README.md`
+  - [x] Update Phase 24 status from 📋 to 🚧
+- [x] `docs/tasks/phase-16-rule-autofix-expansion.md`
+  - [x] Task 16.13 already marked as Complete (no changes needed)
 
 **Verification:**
 ```bash
@@ -526,9 +528,9 @@ grep -r "html-no-space-in-tag" docs/
 ### Part D: Documentation & Alignment (3 tasks)
 - [x] 24.22: Create analysis documents
 - [x] 24.23: Align default enabled status (5 rules)
-- [ ] 24.24: Update README etc.
+- [x] 24.24: Update README etc.
 
-**Total: 24 tasks** (22 complete, 2 pending)
+**Total: 24 tasks** (23 complete, 1 pending - Task 24.4 external)
 
 ---
 
@@ -540,7 +542,7 @@ grep -r "html-no-space-in-tag" docs/
 4. ~~**Task 24.3** (Medium Priority): Add erb-no-extra-newline autofix~~ ✅ Complete (Completed via Phase 18)
 5. ~~**Task 24.5** (High Priority): Decide severity policy~~ ✅ Complete
 6. ~~**Tasks 24.6-24.21**: Update severities (after policy decision)~~ ✅ Complete
-7. **Task 24.24**: Update documentation
+7. ~~**Task 24.24**: Update documentation~~ ✅ Complete
 8. **Task 24.4**: Propose to TypeScript (optional)
 
 ---

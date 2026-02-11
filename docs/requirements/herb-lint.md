@@ -19,14 +19,19 @@ The MVP provides core linting functionality:
 
 ### Post-MVP Features
 
-Features described in this specification but not yet implemented:
+Features implemented after MVP:
 
-- **Configuration**: Full validation, schema checking, environment variables, upward directory search
-- **CLI**: `--init`, `--fix`, `--fix-unsafely`, `--format`, `--github`, `--fail-level`, `--config-file` options
+- **CLI**: `--fix`, `--fix-unsafely`, `--format`, `--github`, `--fail-level`, `--config-file`, `--ignore-disable-comments` options
 - **Reporters**: DetailedReporter, JsonReporter, GithubReporter
-- **Rules**: Complete rule set (50+ rules across ERB, HTML, and A11y categories)
+- **Rules**: 52 rules across ERB, HTML, HERB, SVG, and Parser categories
+- **Autofix**: Safe automatic fixes (14 autofixable rules)
+- **Inline Directives**: `herb:disable`, `herb:linter ignore` comments
+
+Features not yet implemented:
+
+- **Configuration**: Full validation, schema checking, environment variables
+- **CLI**: `--init` option
 - **Custom Rules**: Dynamic loading from `.herb/rules/` directory
-- **Autofix**: Safe and unsafe automatic fixes
 - **Advanced Features**: Parallel processing, caching, plugin system
 
 Refer to `docs/tasks/README.md` for the detailed implementation roadmap.
@@ -227,75 +232,84 @@ Annotations for GitHub Actions workflows:
 
 Rules specific to ERB syntax and conventions.
 
-| Rule | Description | Fixable |
-|------|-------------|---------|
-| `erb-comment-syntax` | Enforce ERB comment style | Yes |
-| `erb-tag-spacing` | Consistent spacing inside ERB tags | Yes |
-| `erb-no-trailing-whitespace` | No trailing whitespace in ERB output | Yes |
-| `erb-output-safety` | Warn about potentially unsafe output | No |
-| `erb-strict-locals` | Validate strict_locals magic comment | No |
-| `erb-no-multiline-output` | Avoid multiline expressions in output tags | No |
-| `erb-indent` | Consistent indentation in ERB blocks | Yes |
-| `erb-no-space-before-close` | No space before closing `%>` | Yes |
-| `erb-space-after-open` | Space after opening `<%` | Yes |
-| `erb-no-do-end` | Prefer `{ }` over `do end` in single-line ERB | Yes |
-| `erb-simple-output` | Simplify unnecessary `.to_s` calls | Yes |
-| `erb-no-inline-styles` | Discourage inline styles | No |
-| `erb-consistent-quotes` | Consistent quote style in ERB | Yes |
+| Rule | Default Severity | Fixable | Enabled |
+|------|------------------|---------|---------|
+| `erb-comment-syntax` | error | Yes | Yes |
+| `erb-no-case-node-children` | error | No | Yes |
+| `erb-no-empty-tags` | error | Yes | Yes |
+| `erb-no-extra-newline` | error | Yes | Yes |
+| `erb-no-extra-whitespace-inside-tags` | error | Yes | Yes |
+| `erb-no-output-control-flow` | error | No | Yes |
+| `erb-no-silent-tag-in-attribute-name` | error | No | Yes |
+| `erb-prefer-image-tag-helper` | warning | No | Yes |
+| `erb-require-trailing-newline` | error | Yes | Yes |
+| `erb-require-whitespace-inside-tags` | error | Yes | Yes |
+| `erb-right-trim` | error | Yes | Yes |
+| `erb-strict-locals-comment-syntax` | error | No | Yes |
+| `erb-strict-locals-required` | error | No | No (opt-in) |
 
-### HTML Rules (25+ rules)
+### HTML Rules (31 rules)
 
-General HTML validation and best practices.
+General HTML validation, best practices, and accessibility.
 
-| Rule | Description | Fixable |
-|------|-------------|---------|
-| `html-attribute-double-quotes` | Require quotes around attribute values | Yes |
-| `attribute-spacing` | No spaces around `=` in attributes | Yes |
-| `no-duplicate-attributes` | Disallow duplicate attributes | No |
-| `no-duplicate-id` | Disallow duplicate id values | No |
-| `valid-tag-nesting` | Validate tag nesting rules | No |
-| `void-element-style` | Consistent self-closing style for void elements | Yes |
-| `lowercase-tags` | Enforce lowercase tag names | Yes |
-| `lowercase-attributes` | Enforce lowercase attribute names | Yes |
-| `no-obsolete-tags` | Disallow obsolete HTML tags | No |
-| `html-no-positive-tab-index` | Disallow positive tabindex values | No |
-| `required-attributes` | Require mandatory attributes | No |
-| `no-inline-event-handlers` | Discourage inline event handlers | No |
-| `doctype` | Require DOCTYPE declaration | No |
-| `html-lang` | Require lang attribute on html element | No |
-| `meta-charset` | Require charset meta tag | No |
-| `meta-viewport` | Require viewport meta tag | No |
-| `title` | Require title element | No |
-| `no-autofocus` | Discourage autofocus attribute | No |
-| `no-target-blank` | Warn about target="_blank" without rel | Yes |
-| `button-type` | Require type attribute on buttons | Yes |
-| `form-action` | Require action attribute on forms | No |
-| `input-name` | Require name attribute on inputs | No |
-| `label-for` | Require for attribute on labels | No |
-| `script-type` | Omit type for JavaScript | Yes |
-| `style-type` | Omit type for CSS | Yes |
+| Rule | Default Severity | Fixable | Enabled |
+|------|------------------|---------|---------|
+| `html-anchor-require-href` | error | No | Yes |
+| `html-aria-attribute-must-be-valid` | error | No | Yes |
+| `html-aria-label-is-well-formatted` | error | No | Yes |
+| `html-aria-level-must-be-valid` | error | No | Yes |
+| `html-aria-role-heading-requires-level` | error | No | Yes |
+| `html-aria-role-must-be-valid` | error | No | Yes |
+| `html-attribute-double-quotes` | warning | Yes | Yes |
+| `html-attribute-equals-spacing` | error | Yes | Yes |
+| `html-attribute-values-require-quotes` | error | Yes | Yes |
+| `html-avoid-both-disabled-and-aria-disabled` | error | No | Yes |
+| `html-body-only-elements` | error | No | Yes |
+| `html-boolean-attributes-no-value` | error | Yes | Yes |
+| `html-head-only-elements` | error | No | Yes |
+| `html-iframe-has-title` | error | No | Yes |
+| `html-img-require-alt` | error | No | Yes |
+| `html-input-require-autocomplete` | error | No | Yes |
+| `html-navigation-has-label` | error | No | No (opt-in) |
+| `html-no-aria-hidden-on-focusable` | error | No | Yes |
+| `html-no-block-inside-inline` | error | No | No (opt-in) |
+| `html-no-duplicate-attributes` | error | No | Yes |
+| `html-no-duplicate-ids` | error | No | Yes |
+| `html-no-duplicate-meta-names` | error | No | Yes |
+| `html-no-empty-attributes` | warning | No | Yes |
+| `html-no-empty-headings` | error | No | Yes |
+| `html-no-nested-links` | error | No | Yes |
+| `html-no-positive-tab-index` | warning | No | Yes |
+| `html-no-self-closing` | error | Yes | Yes |
+| `html-no-space-in-tag` | warning | No | No (opt-in) |
+| `html-no-title-attribute` | error | No | No (opt-in) |
+| `html-no-underscores-in-attribute-names` | warning | No | Yes |
+| `html-tag-name-lowercase` | error | Yes | Yes |
 
-### Accessibility Rules (15+ rules)
+### HERB Directive Rules (6 rules)
 
-ARIA and accessibility validation.
+Rules for validating herb directive comments.
 
-| Rule | Description | Fixable |
-|------|-------------|---------|
-| `html-img-require-alt` | Require alt attribute on img tags | No |
-| `aria-valid-attr` | Valid ARIA attributes | No |
-| `aria-valid-attr-value` | Valid ARIA attribute values | No |
-| `aria-role` | Valid ARIA roles | No |
-| `aria-labelledby` | Validate aria-labelledby references | No |
-| `aria-describedby` | Validate aria-describedby references | No |
-| `role-supports-aria` | ARIA attributes supported by role | No |
-| `no-redundant-role` | Avoid redundant roles | Yes |
-| `heading-order` | Headings should not skip levels | No |
-| `iframe-has-title` | Require title on iframes | No |
-| `interactive-supports-focus` | Interactive elements must be focusable | No |
-| `click-events-have-key-events` | Click handlers need keyboard handlers | No |
-| `mouse-events-have-key-events` | Mouse events need keyboard events | No |
-| `no-access-key` | Avoid accesskey attribute | No |
-| `scope-valid` | Valid scope attribute on th elements | No |
+| Rule | Default Severity | Fixable | Enabled |
+|------|------------------|---------|---------|
+| `herb-disable-comment-malformed` | error | No | Yes |
+| `herb-disable-comment-missing-rules` | error | No | Yes |
+| `herb-disable-comment-no-duplicate-rules` | warning | No | Yes |
+| `herb-disable-comment-no-redundant-all` | warning | No | Yes |
+| `herb-disable-comment-unnecessary` | error | No | Yes |
+| `herb-disable-comment-valid-rule-name` | warning | No | Yes |
+
+### SVG Rules (1 rule)
+
+| Rule | Default Severity | Fixable | Enabled |
+|------|------------------|---------|---------|
+| `svg-tag-name-capitalization` | error | Yes | Yes |
+
+### Parser Rules (1 rule)
+
+| Rule | Default Severity | Fixable | Enabled |
+|------|------------------|---------|---------|
+| `parser-no-errors` | error | No | Yes |
 
 ## Severity Levels
 
