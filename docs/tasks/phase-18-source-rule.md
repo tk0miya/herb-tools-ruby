@@ -80,15 +80,15 @@ end
 
 **Location:** `herb-lint/lib/herb/lint/rules/source_rule.rb`
 
-- [ ] Create `SourceRule` class inheriting from `Base`
-- [ ] Implement `check(_parse_result, context)` -- delegates to `check_source`
-- [ ] Define abstract `check_source(source, context)` -- raises `NotImplementedError`
-- [ ] Define default `autofix_source(offense, source)` -- returns `nil`
-- [ ] Implement `add_offense_with_source_autofix(message:, location:, start_offset:, end_offset:)` -- creates `AutofixContext` with offsets
-- [ ] Extract `location_from_offsets` helper from `NoExtraNewline` into `SourceRule`
-- [ ] Extract `position_from_offset` helper from `NoExtraNewline` into `SourceRule`
-- [ ] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
-- [ ] Add unit tests
+- [x] Create `SourceRule` class inheriting from `Base`
+- [x] Implement `check(_parse_result, context)` -- delegates to `check_source`
+- [x] Define abstract `check_source(source, context)` -- raises `NotImplementedError`
+- [x] Define default `autofix_source(offense, source)` -- returns `nil`
+- [x] Implement `add_offense_with_source_autofix(message:, location:, start_offset:, end_offset:)` -- creates `AutofixContext` with offsets
+- [x] Extract `location_from_offsets` helper from `NoExtraNewline` into `SourceRule`
+- [x] Extract `position_from_offset` helper from `NoExtraNewline` into `SourceRule`
+- [x] Add `require_relative` to `herb-lint/lib/herb/lint.rb`
+- [x] Add unit tests
 
 **Interface:**
 

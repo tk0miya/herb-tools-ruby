@@ -99,7 +99,7 @@ module Herb
 
           # @rbs @source: String
 
-          # Create a location object from byte offsets.
+          # Create a location object from character offsets.
           # @rbs start_offset: Integer
           # @rbs end_offset: Integer
           def location_from_offsets(start_offset, end_offset) #: Herb::Location
@@ -112,7 +112,7 @@ module Herb
             )
           end
 
-          # Convert byte offset to line and column position (0-indexed).
+          # Convert character offset to line and column position (0-indexed).
           # @rbs offset: Integer
           def position_from_offset(offset) #: Hash[Symbol, Integer]
             line = 0
