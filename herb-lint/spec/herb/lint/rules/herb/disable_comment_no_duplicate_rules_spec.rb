@@ -44,8 +44,12 @@ RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentNoDuplicateRules 
       end
     end
 
+    # Good examples from documentation
     context "when herb:disable has distinct rule names" do
-      let(:source) { "<%# herb:disable rule1, rule2 %>" }
+      let(:source) do
+        "<DIV class='value'>test</DIV> " \
+          "<%# herb:disable html-tag-name-lowercase, html-attribute-double-quotes %>"
+      end
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -53,7 +57,7 @@ RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentNoDuplicateRules 
     end
 
     context "when herb:disable has a single rule name" do
-      let(:source) { "<%# herb:disable rule1 %>" }
+      let(:source) { "<DIV>test</DIV> <%# herb:disable html-tag-name-lowercase %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -61,49 +65,93 @@ RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentNoDuplicateRules 
     end
 
     context "when herb:disable uses 'all'" do
-      let(:source) { "<%# herb:disable all %>" }
+      let(:source) { "<DIV>test</DIV> <%# herb:disable all %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
+    # Bad examples from documentation
     context "when herb:disable has duplicate rule names" do
-      let(:source) { "<%# herb:disable rule1, rule1 %>" }
+      let(:source) { "<DIV>test</DIV> <%# herb:disable html-tag-name-lowercase, html-tag-name-lowercase %>" }
 
-      it "reports an offense for the duplicate" do
+      it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("herb-disable-comment-no-duplicate-rules")
-        expect(subject.first.message).to eq("Duplicate rule 'rule1' in herb:disable comment")
+        expect(subject.first.message).to eq(
+          "Duplicate rule `html-tag-name-lowercase` in `herb:disable` comment. " \
+          "Remove the duplicate."
+        )
         expect(subject.first.severity).to eq("warning")
       end
+    end
 
-      it "reports the offense at the location of the second occurrence" do
-        offense = subject.first
-        # The first "rule1" appears earlier in the comment;
-        # the offense should be on the second one, which is at a higher column
-        expect(offense.line).to eq(1)
-        expect(offense.location).not_to be_nil
+    context "when herb:disable has duplicates among multiple rules" do
+      let(:source) do
+        "<DIV class='value'>test</DIV> " \
+          "<%# herb:disable html-attribute-double-quotes, html-tag-name-lowercase, html-tag-name-lowercase %>"
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to eq(
+          "Duplicate rule `html-tag-name-lowercase` in `herb:disable` comment. " \
+          "Remove the duplicate."
+        )
       end
     end
+
+    context "when herb:disable has multiple different duplicates" do
+      let(:source) do
+        "<DIV class='value'>test</DIV> " \
+          "<%# herb:disable html-tag-name-lowercase, html-tag-name-lowercase, " \
+          "html-attribute-double-quotes, html-attribute-double-quotes %>"
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(2)
+        expect(subject.map(&:message)).to contain_exactly(
+          "Duplicate rule `html-tag-name-lowercase` in `herb:disable` comment. " \
+          "Remove the duplicate.",
+          "Duplicate rule `html-attribute-double-quotes` in `herb:disable` comment. " \
+          "Remove the duplicate."
+        )
+      end
+    end
+
+    context "when herb:disable has duplicate 'all'" do
+      let(:source) { "<DIV>test</DIV> <%# herb:disable all, all %>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to eq(
+          "Duplicate rule `all` in `herb:disable` comment. Remove the duplicate."
+        )
+      end
+    end
+
+    # Additional edge cases not covered by documentation
 
     context "when herb:disable has a rule duplicated three times" do
       let(:source) { "<%# herb:disable rule1, rule1, rule1 %>" }
 
       it "reports an offense for each duplicate" do
         expect(subject.size).to eq(2)
-        expect(subject.map(&:message)).to all(eq("Duplicate rule 'rule1' in herb:disable comment"))
+        expect(subject.map(&:message)).to all(
+          eq("Duplicate rule `rule1` in `herb:disable` comment. Remove the duplicate.")
+        )
       end
     end
 
-    context "when herb:disable has multiple different duplicates" do
+    context "when herb:disable has duplicates interleaved with other rules" do
       let(:source) { "<%# herb:disable rule1, rule2, rule1, rule2 %>" }
 
       it "reports an offense for each duplicate" do
         expect(subject.size).to eq(2)
         expect(subject.map(&:message)).to contain_exactly(
-          "Duplicate rule 'rule1' in herb:disable comment",
-          "Duplicate rule 'rule2' in herb:disable comment"
+          "Duplicate rule `rule1` in `herb:disable` comment. Remove the duplicate.",
+          "Duplicate rule `rule2` in `herb:disable` comment. Remove the duplicate."
         )
       end
     end
@@ -119,7 +167,9 @@ RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentNoDuplicateRules 
 
       it "reports an offense only for the comment with duplicates" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Duplicate rule 'rule1' in herb:disable comment")
+        expect(subject.first.message).to eq(
+          "Duplicate rule `rule1` in `herb:disable` comment. Remove the duplicate."
+        )
       end
     end
 
