@@ -23,6 +23,7 @@ module Herb
 
           def self.default_severity: () -> String
 
+          # TODO: enable and fix autofix (matching TypeScript implementation)
           def self.safe_autofixable?: () -> bool
 
           def self.unsafe_autofixable?: () -> bool
@@ -35,19 +36,7 @@ module Herb
           # @rbs override
           def visit_html_close_tag_node: ...
 
-          # @rbs node: Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode
-          # @rbs parse_result: Herb::ParseResult
-          def autofix: (Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode node, Herb::ParseResult parse_result) -> bool
-
           private
-
-          # @rbs node: Herb::AST::HTMLCloseTagNode
-          # @rbs parse_result: Herb::ParseResult
-          def fix_close_tag_spacing: (Herb::AST::HTMLCloseTagNode node, Herb::ParseResult parse_result) -> bool
-
-          # @rbs node: Herb::AST::HTMLOpenTagNode
-          # @rbs parse_result: Herb::ParseResult
-          def fix_single_line_open_tag_spacing: (Herb::AST::HTMLOpenTagNode node, Herb::ParseResult parse_result) -> bool
 
           # @rbs node: Herb::AST::HTMLOpenTagNode
           def self_closing?: (Herb::AST::HTMLOpenTagNode node) -> bool
@@ -64,7 +53,7 @@ module Herb
           # Check non-trailing whitespace (between elements)
           # @rbs node: Herb::AST::HTMLOpenTagNode
           # @rbs whitespace: Herb::AST::WhitespaceNode
-          def check_non_trailing_whitespace: (Herb::AST::HTMLOpenTagNode node, Herb::AST::WhitespaceNode whitespace) -> void
+          def check_non_trailing_whitespace: (untyped _node, Herb::AST::WhitespaceNode whitespace) -> void
 
           # Check trailing whitespace (before closing bracket)
           # @rbs node: Herb::AST::HTMLOpenTagNode

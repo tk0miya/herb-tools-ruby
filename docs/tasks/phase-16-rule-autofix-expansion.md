@@ -12,7 +12,7 @@ This phase expands autofix support across all rule categories:
 
 - **Part A**: Complete autofix infrastructure (Task 16.1)
 - **Part B**: ERB rule autofix (12 implemented: 6 fixable + 6 not fixable)
-- **Part C**: HTML rule autofix (31 implemented: 7 fixable + 24 not fixable)
+- **Part C**: HTML rule autofix (31 implemented: 6 fixable + 25 not fixable)
 - **Part D**: Herb comment directive rules (5 implemented, detection-only)
 - **Part E**: SVG rule autofix (1 implemented: 1 fixable)
 - **Part F**: Parser rules (1 implemented, detection-only)
@@ -207,7 +207,7 @@ cd herb-lint && ./bin/steep check
 
 ## Part C: HTML Rules
 
-### Implemented Rules with Autofix Needed
+### Implemented Rules with Autofix
 
 | Rule | Status | Fixable | Task |
 |------|--------|---------|------|
@@ -216,14 +216,14 @@ cd herb-lint && ./bin/steep check
 | `html/attribute-values-require-quotes` | ✅ | Yes | 16.10 |
 | `html/boolean-attributes-no-value` | ✅ | Yes | 16.11 |
 | `html/no-self-closing` | ✅ | Yes | 16.12 |
-| `html/no-space-in-tag` | 🔨 | Yes | 16.13 |
-| `html/tag-name-lowercase` | ✅ | Yes | 16.14 |
+| `html/tag-name-lowercase` | ✅ | Yes | 16.13 |
 
 ### Implemented Rules (Not Fixable)
 
 | Rule | Status | Fixable |
 |------|--------|---------|
 | `html/anchor-require-href` | ✔️ | No |
+| `html/no-space-in-tag` | ✔️ | No |
 | `html/aria-attribute-must-be-valid` | ✔️ | No |
 | `html/aria-label-is-well-formatted` | ✔️ | No |
 | `html/aria-level-must-be-valid` | ✔️ | No |
@@ -308,17 +308,7 @@ cd herb-lint && ./bin/steep check
   - [x] Convert self-closing tags to proper form
 - [x] Add autofix tests
 
-### Task 16.13: HtmlNoSpaceInTag Autofix
-
-**Location:** `herb-lint/lib/herb/lint/rules/html_no_space_in_tag.rb`
-
-- [ ] Add `def self.safe_autofixable? = true`
-- [ ] Change `add_offense` to `add_offense_with_autofix`
-- [ ] Implement `autofix(node, parse_result)` method
-  - [ ] Remove space after `<` in tag names
-- [ ] Add autofix tests
-
-### Task 16.14: HtmlTagNameLowercase Autofix
+### Task 16.13: HtmlTagNameLowercase Autofix
 
 **Status:** Complete
 
@@ -355,9 +345,9 @@ These rules validate herb directive comments and are not autofixable by design.
 
 | Rule | Status | Fixable | Task |
 |------|--------|---------|------|
-| `svg/tag-name-capitalization` | 🔨 | Yes | 16.15 |
+| `svg/tag-name-capitalization` | ✅ | Yes | 16.14 |
 
-### Task 16.15: SvgTagNameCapitalization Autofix
+### Task 16.14: SvgTagNameCapitalization Autofix
 
 **Status:** Complete
 
@@ -434,12 +424,12 @@ cat test.html.erb
 |------|-------|-------------|
 | A | 16.1 | Complete autofix infrastructure |
 | B | 16.2-16.7 | ERB rules autofix (6 fixable rules) |
-| C | 16.8-16.14 | HTML rules autofix (7 fixable rules) |
+| C | 16.8-16.13 | HTML rules autofix (6 fixable rules) |
 | D | - | Herb directive rules (detection-only, 5 rules) |
-| E | 16.15 | SVG rules autofix (1 fixable rule) |
+| E | 16.14 | SVG rules autofix (1 fixable rule) |
 | F | - | Parser rules (detection-only, 1 rule) |
 
-**Total: 15 tasks** (covering all 50 implemented rules: 14 fixable + 36 not fixable)
+**Total: 14 tasks** (covering all 50 implemented rules: 13 fixable + 37 not fixable)
 
 ## Task Priorities
 
@@ -451,21 +441,20 @@ cat test.html.erb
 - 16.5: ErbRequireWhitespaceInsideTags ✅
 - 16.8: HtmlAttributeDoubleQuotes ✅
 - 16.10: HtmlAttributeValuesRequireQuotes ✅
-- 16.14: HtmlTagNameLowercase ✅
+- 16.13: HtmlTagNameLowercase ✅
 
 ### Medium Priority (Style Rules)
 
 - 16.2: ErbCommentSyntax ✅
 - 16.6: ErbRightTrim ✅
 - 16.7: ErbRequireTrailingNewline ✅
-- 16.9: HtmlAttributeEqualsSpacing
-- 16.11: HtmlBooleanAttributesNoValue
-- 16.13: HtmlNoSpaceInTag
+- 16.9: HtmlAttributeEqualsSpacing ✅
+- 16.11: HtmlBooleanAttributesNoValue ✅
 
 ### Lower Priority
 
-- 16.12: HtmlNoSelfClosing
-- 16.15: SvgTagNameCapitalization
+- 16.12: HtmlNoSelfClosing ✅
+- 16.14: SvgTagNameCapitalization ✅
 
 ## Related Documents
 
