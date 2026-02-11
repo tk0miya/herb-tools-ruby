@@ -36,49 +36,67 @@ RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentNoRedundantAll do
       end
     end
 
+    # Good examples from documentation
     context "when herb:disable all is used alone" do
-      let(:source) { "<%# herb:disable all %>" }
+      let(:source) { "<DIV>test</DIV> <%# herb:disable all %>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when herb:disable is used with specific rules only" do
-      let(:source) { "<%# herb:disable rule-name %>" }
+    context "when herb:disable is used with multiple specific rules" do
+      let(:source) do
+        "<DIV class='value'>test</DIV> <%# herb:disable html-tag-name-lowercase, html-attribute-double-quotes %>"
+      end
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
+    context "when herb:disable is used with one specific rule" do
+      let(:source) { "<DIV>test</DIV> <%# herb:disable html-tag-name-lowercase %>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
     context "when herb:disable all is used with a specific rule" do
-      let(:source) { "<%# herb:disable all, rule-name %>" }
+      let(:source) { "<DIV>test</DIV> <%# herb:disable all, html-tag-name-lowercase %>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("herb-disable-comment-no-redundant-all")
-        expect(subject.first.message).to eq("Redundant rule name `rule-name` when `all` is already specified")
+        expect(subject.first.message).to eq(
+          "Redundant rule name `html-tag-name-lowercase` when `all` is already specified"
+        )
         expect(subject.first.severity).to eq("warning")
       end
     end
 
-    context "when herb:disable all is used with multiple specific rules" do
-      let(:source) { "<%# herb:disable all, rule1, rule2 %>" }
+    context "when herb:disable has specific rule before all and after all" do
+      let(:source) { "<DIV>test</DIV> <%# herb:disable html-tag-name-lowercase, all, html-attribute-double-quotes %>" }
 
       it "reports an offense for each redundant rule" do
         expect(subject.size).to eq(2)
-        expect(subject[0].message).to eq("Redundant rule name `rule1` when `all` is already specified")
-        expect(subject[1].message).to eq("Redundant rule name `rule2` when `all` is already specified")
+        expect(subject[0].message).to eq(
+          "Redundant rule name `html-tag-name-lowercase` when `all` is already specified"
+        )
+        expect(subject[1].message).to eq(
+          "Redundant rule name `html-attribute-double-quotes` when `all` is already specified"
+        )
       end
     end
 
-    context "when specific rule is listed before all" do
-      let(:source) { "<%# herb:disable rule-name, all %>" }
+    context "when herb:disable all is used multiple times" do
+      let(:source) { "<DIV>test</DIV> <%# herb:disable all, all %>" }
 
-      it "reports an offense for the specific rule" do
+      it "reports an offense for the duplicate all" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Redundant rule name `rule-name` when `all` is already specified")
+        expect(subject.first.message).to eq("Redundant rule name `all` when `all` is already specified")
       end
     end
 

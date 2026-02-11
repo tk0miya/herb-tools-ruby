@@ -7,17 +7,24 @@ module Herb
   module Lint
     module Rules
       module HerbDirective
-        # Rule that detects redundant rule names when `all` is used in herb:disable comments.
-        #
-        # When `all` is specified in a herb:disable comment, listing specific rule names
-        # is redundant since `all` already disables every rule.
+        # Description:
+        #   Prevents using `all` together with specific rule names in `<%# herb:disable ... %>`
+        #   comments, as this is redundant.
         #
         # Good:
-        #   <%# herb:disable all %>
-        #   <%# herb:disable rule-name %>
+        #   <DIV>test</DIV> <%# herb:disable all %>
+        #
+        #   <DIV class='value'>test</DIV> <%# herb:disable html-tag-name-lowercase, html-attribute-double-quotes %>
+        #
+        #   <DIV>test</DIV> <%# herb:disable html-tag-name-lowercase %>
         #
         # Bad:
-        #   <%# herb:disable all, rule-name %>
+        #   <DIV>test</DIV> <%# herb:disable all, html-tag-name-lowercase %>
+        #
+        #   <DIV>test</DIV> <%# herb:disable html-tag-name-lowercase, all, html-attribute-double-quotes %>
+        #
+        #   <DIV>test</DIV> <%# herb:disable all, all %>
+        #
         class DisableCommentNoRedundantAll < DirectiveRule
           def self.rule_name = "herb-disable-comment-no-redundant-all" #: String
           def self.description = "Disallow specific rule names alongside `all` in herb:disable comments" #: String
@@ -34,14 +41,24 @@ module Herb
             rule_names = comment.rule_names
             return unless rule_names.include?("all") && rule_names.size > 1
 
+            first_all_seen = false
             comment.rule_name_details.each do |detail|
-              next if detail.name == "all"
-
-              add_offense(
-                message: "Redundant rule name `#{detail.name}` when `all` is already specified",
-                location: comment.content_location
-              )
+              case detail.name
+              when "all"
+                report_redundant_rule(detail.name, comment) if first_all_seen
+                first_all_seen = true
+              else
+                report_redundant_rule(detail.name, comment)
+              end
             end
+          end
+
+          # @rbs rule_name: String, comment: HerbDirective::DisableComment -- return: void
+          def report_redundant_rule(rule_name, comment)
+            add_offense(
+              message: "Redundant rule name `#{rule_name}` when `all` is already specified",
+              location: comment.content_location
+            )
           end
         end
       end

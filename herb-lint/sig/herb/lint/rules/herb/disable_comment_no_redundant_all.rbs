@@ -4,17 +4,23 @@ module Herb
   module Lint
     module Rules
       module HerbDirective
-        # Rule that detects redundant rule names when `all` is used in herb:disable comments.
-        #
-        # When `all` is specified in a herb:disable comment, listing specific rule names
-        # is redundant since `all` already disables every rule.
+        # Description:
+        #   Prevents using `all` together with specific rule names in `<%# herb:disable ... %>`
+        #   comments, as this is redundant.
         #
         # Good:
-        #   <%# herb:disable all %>
-        #   <%# herb:disable rule-name %>
+        #   <DIV>test</DIV> <%# herb:disable all %>
+        #
+        #   <DIV class='value'>test</DIV> <%# herb:disable html-tag-name-lowercase, html-attribute-double-quotes %>
+        #
+        #   <DIV>test</DIV> <%# herb:disable html-tag-name-lowercase %>
         #
         # Bad:
-        #   <%# herb:disable all, rule-name %>
+        #   <DIV>test</DIV> <%# herb:disable all, html-tag-name-lowercase %>
+        #
+        #   <DIV>test</DIV> <%# herb:disable html-tag-name-lowercase, all, html-attribute-double-quotes %>
+        #
+        #   <DIV>test</DIV> <%# herb:disable all, all %>
         class DisableCommentNoRedundantAll < DirectiveRule
           def self.rule_name: () -> String
 
@@ -22,10 +28,17 @@ module Herb
 
           def self.default_severity: () -> String
 
+          def self.safe_autofixable?: () -> bool
+
+          def self.unsafe_autofixable?: () -> bool
+
           private
 
           # @rbs override
           def check_disable_comment: ...
+
+          # @rbs rule_name: String, comment: HerbDirective::DisableComment -- return: void
+          def report_redundant_rule: (String rule_name, untyped comment) -> untyped
         end
       end
     end
