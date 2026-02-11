@@ -15,6 +15,7 @@ For each rule, complete the following 8 steps:
 4. **Add the Description and Examples as comments** at the top of the rule class:
    - Add "Description:" heading (format: `# Description:` with 1 space)
    - Copy the Description text verbatim (word-for-word, including all paragraphs)
+   - **IMPORTANT: Copy ONLY the Description section. DO NOT copy Rationale, Examples, or other sections**
    - Indent each line of Description content with `#   ` (hash + 3 spaces)
    - DO NOT paraphrase, rewrite, or add your own explanations
    - Add blank line after Description
