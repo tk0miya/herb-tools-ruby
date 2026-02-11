@@ -63,7 +63,7 @@ module Herb
           # @rbs parse_result: Herb::ParseResult
           def fix_close_tag_spacing(node, parse_result) #: bool
             # Remove all whitespace nodes from children
-            children = node.children.reject { |child| child.is_a?(Herb::AST::WhitespaceNode) }
+            children = node.children.reject { _1.is_a?(Herb::AST::WhitespaceNode) }
 
             # Create new close tag node without whitespace
             new_close_tag = copy_html_close_tag_node(node, children:)
@@ -74,7 +74,7 @@ module Herb
           # @rbs parse_result: Herb::ParseResult
           def fix_single_line_open_tag_spacing(node, parse_result) #: bool
             # Build new children with correct spacing
-            attributes = node.children.select { |child| child.is_a?(Herb::AST::HTMLAttributeNode) }
+            attributes = node.children.select { _1.is_a?(Herb::AST::HTMLAttributeNode) }
             children = []
 
             # Add whitespace + attribute for each attribute
@@ -102,7 +102,7 @@ module Herb
           def check_single_line_open_tag(node) #: void
             check_trailing_whitespace_existence(node) if self_closing?(node)
 
-            whitespace_nodes = node.children.select { |c| c.is_a?(Herb::AST::WhitespaceNode) }
+            whitespace_nodes = node.children.select { _1.is_a?(Herb::AST::WhitespaceNode) }
             whitespace_nodes.each do |ws|
               if ws == node.children.last
                 check_trailing_whitespace(node, ws)
@@ -155,59 +155,70 @@ module Herb
             )
           end
 
+          # Check multiline open tag by inspecting whitespace nodes directly
+          # Matches TypeScript implementation: iterate through whitespace nodes,
+          # track consecutive newlines, and validate indentation
           # @rbs node: Herb::AST::HTMLOpenTagNode
           def check_multiline_open_tag(node) #: void
-            children = node.children.select { _1.is_a?(Herb::AST::HTMLAttributeNode) }
-            tag_col = node.location.start.column
+            whitespace_nodes = node.children.select { _1.is_a?(Herb::AST::WhitespaceNode) }
+            previous_whitespace = nil
 
-            check_blank_lines(node, children)
-            check_multiline_indentation(children, node.tag_closing, tag_col)
-            check_multiline_trailing(node, children)
-          end
+            whitespace_nodes.each_with_index do |whitespace, index|
+              content = whitespace_content(whitespace)
+              next unless content
 
-          # @rbs node: Herb::AST::HTMLOpenTagNode
-          # @rbs children: Array[Herb::AST::HTMLAttributeNode]
-          def check_blank_lines(node, children) #: void
-            elements = [node.tag_name, *children, node.tag_closing]
+              if consecutive_newlines?(content, previous_whitespace)
+                add_offense(message: EXTRA_SPACE_SINGLE_BREAK, location: whitespace.location)
+                previous_whitespace = whitespace
+                next
+              end
 
-            elements.each_cons(2) do |left, right|
-              next unless right.location.start.line - left.location.end.line > 1
+              check_indentation(whitespace, index, whitespace_nodes.size, node) if non_newline_whitespace?(content)
 
-              report(EXTRA_SPACE_SINGLE_BREAK, gap_loc(left, right))
+              previous_whitespace = whitespace
             end
           end
 
-          # @rbs children: Array[Herb::AST::HTMLAttributeNode]
-          # @rbs tag_closing: Herb::Token
-          # @rbs tag_col: Integer
-          def check_multiline_indentation(children, tag_closing, tag_col) #: void
-            children.each do |child|
-              report(EXTRA_SPACE_NO_SPACE, child.location) unless child.location.start.column == tag_col + 2
-            end
-            check_closing_indent(children.last, tag_closing, tag_col)
+          # Get whitespace content value
+          # @rbs whitespace: Herb::AST::WhitespaceNode
+          def whitespace_content(whitespace) #: String?
+            whitespace.value&.value
           end
 
-          # @rbs last_child: Herb::AST::HTMLAttributeNode?
-          # @rbs tag_closing: Herb::Token
-          # @rbs tag_col: Integer
-          def check_closing_indent(last_child, tag_closing, tag_col) #: void
-            return if last_child && tag_closing.location.start.line == last_child.location.end.line
-            return if tag_closing.location.start.column == tag_col
+          # Check if content has consecutive newlines
+          # @rbs content: String
+          # @rbs previous_whitespace: Herb::AST::WhitespaceNode?
+          def consecutive_newlines?(content, previous_whitespace) #: bool
+            return previous_whitespace&.value&.value == "\n" if content == "\n"
 
-            report(EXTRA_SPACE_NO_SPACE, tag_closing.location)
+            return false unless content.include?("\n")
+
+            newlines = content.scan("\n")
+            newlines.size > 1
           end
 
+          # Check if whitespace content is non-newline whitespace
+          # @rbs content: String
+          def non_newline_whitespace?(content) #: bool
+            !content.include?("\n")
+          end
+
+          # Check indentation of whitespace node
+          # @rbs whitespace: Herb::AST::WhitespaceNode
+          # @rbs index: Integer
+          # @rbs total_whitespace_nodes: Integer
           # @rbs node: Herb::AST::HTMLOpenTagNode
-          # @rbs children: Array[Herb::AST::HTMLAttributeNode]
-          def check_multiline_trailing(node, children) #: void
-            last = children.last || node.tag_name
+          def check_indentation(whitespace, index, total_whitespace_nodes, node) #: void
+            is_last_whitespace = index == total_whitespace_nodes - 1
+            expected_indent = if is_last_whitespace
+                                node.location.start.column
+                              else
+                                node.location.start.column + 2
+                              end
 
-            return unless node.tag_closing.location.start.line == last.location.end.line
+            return if whitespace.location.end.column == expected_indent
 
-            gap = gap_size(last, node.tag_closing)
-            return unless gap.positive?
-
-            report(EXTRA_SPACE_NO_SPACE, gap_loc(last, node.tag_closing))
+            add_offense(message: EXTRA_SPACE_NO_SPACE, location: whitespace.location)
           end
 
           # @rbs node: Herb::AST::HTMLCloseTagNode
@@ -224,27 +235,6 @@ module Herb
                 node:
               )
             end
-          end
-
-          # @rbs left: Herb::Token | Herb::AST::HTMLAttributeNode
-          # @rbs right: Herb::Token | Herb::AST::HTMLAttributeNode
-          def gap_size(left, right) #: Integer
-            right.location.start.column - left.location.end.column
-          end
-
-          # @rbs left: Herb::Token | Herb::AST::HTMLAttributeNode
-          # @rbs right: Herb::Token | Herb::AST::HTMLAttributeNode
-          def gap_loc(left, right) #: Herb::Location
-            Herb::Location.new(
-              Herb::Position.new(left.location.end.line, left.location.end.column),
-              Herb::Position.new(right.location.start.line, right.location.start.column)
-            )
-          end
-
-          # @rbs message: String
-          # @rbs location: Herb::Location
-          def report(message, location) #: void
-            add_offense(message:, location:)
           end
         end
       end
