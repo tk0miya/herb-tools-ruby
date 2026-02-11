@@ -4,19 +4,35 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that checks aria-label values are well-formatted.
-        #
-        # The `aria-label` attribute should have a meaningful value that is
-        # not empty, not just whitespace, and starts with an uppercase letter.
+        # Description:
+        #   Ensure that the value of the aria-label attribute is formatted like natural, visual text.
+        #   The text should use sentence case (capitalize the first letter), avoid line breaks,
+        #   and not look like an ID or code identifier.
         #
         # Good:
-        #   <button aria-label="Submit form">Submit</button>
-        #   <nav aria-label="Main navigation">...</nav>
+        #   <button aria-label="Close dialog">X</button>
+        #   <input aria-label="Search products" type="search" autocomplete="off">
+        #   <button aria-label="Page 2 of 10">2</button>
         #
         # Bad:
-        #   <button aria-label="">Submit</button>
-        #   <button aria-label="   ">Submit</button>
-        #   <button aria-label="submit form">Submit</button>
+        #   <!-- Starts with lowercase -->
+        #   <button aria-label="close dialog">X</button>
+        #
+        #   <!-- Contains line breaks -->
+        #   <button aria-label="Close
+        #   dialog">X</button>
+        #
+        #   <!-- Looks like an ID (snake_case) -->
+        #   <button aria-label="close_dialog">X</button>
+        #
+        #   <!-- Looks like an ID (kebab-case) -->
+        #   <button aria-label="close-dialog">X</button>
+        #
+        #   <!-- Looks like an ID (camelCase) -->
+        #   <button aria-label="closeDialog">X</button>
+        #
+        #   <!-- HTML entity line breaks -->
+        #   <button aria-label="Close&#10;dialog">X</button>
         class AriaLabelIsWellFormatted < VisitorRule
           def self.rule_name: () -> String
 
@@ -34,8 +50,14 @@ module Herb
           private
 
           # @rbs attr: Herb::AST::HTMLAttributeNode
-          # @rbs value: String?
-          def check_aria_label_value: (Herb::AST::HTMLAttributeNode attr, String? value) -> void
+          # @rbs value: String
+          def check_aria_label_value: (Herb::AST::HTMLAttributeNode attr, String value) -> void
+
+          # @rbs value: String
+          def contains_line_breaks?: (String value) -> bool
+
+          # @rbs value: String
+          def looks_like_id?: (String value) -> bool
         end
       end
     end

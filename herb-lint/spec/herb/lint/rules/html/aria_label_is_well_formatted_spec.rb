@@ -28,61 +28,105 @@ RSpec.describe Herb::Lint::Rules::Html::AriaLabelIsWellFormatted do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when aria-label has a well-formatted value" do
-      let(:source) { '<button aria-label="Submit form">Submit</button>' }
+    # Good examples from documentation
+    context "when aria-label is well-formatted (Close dialog)" do
+      let(:source) { '<button aria-label="Close dialog">X</button>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when aria-label value is empty" do
-      let(:source) { '<button aria-label="">Submit</button>' }
+    context "when aria-label is well-formatted on input (Search products)" do
+      let(:source) { '<input aria-label="Search products" type="search" autocomplete="off">' }
 
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html-aria-label-is-well-formatted")
-        expect(subject.first.message).to eq("Unexpected empty aria-label value")
-        expect(subject.first.severity).to eq("error")
+      it "does not report an offense" do
+        expect(subject).to be_empty
       end
     end
 
-    context "when aria-label value is whitespace only" do
-      let(:source) { '<button aria-label="   ">Submit</button>' }
+    context "when aria-label starts with a number (Page 2 of 10)" do
+      let(:source) { '<button aria-label="Page 2 of 10">2</button>' }
 
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Unexpected empty aria-label value")
+      it "does not report an offense" do
+        expect(subject).to be_empty
       end
     end
 
-    context "when aria-label value starts with a lowercase letter" do
-      let(:source) { '<button aria-label="submit form">Submit</button>' }
+    # Bad examples from documentation
+    context "when aria-label starts with lowercase" do
+      let(:source) { '<button aria-label="close dialog">X</button>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("aria-label value should start with an uppercase letter")
+        expect(subject.first.message).to eq(
+          "The `aria-label` attribute value text should be formatted like visual text. " \
+          "Use sentence case (capitalize the first letter)."
+        )
       end
     end
 
-    context "when aria-label value has leading whitespace" do
-      let(:source) { '<button aria-label=" Submit form">Submit</button>' }
+    context "when aria-label contains literal line breaks" do
+      let(:source) { "<button aria-label=\"Close\ndialog\">X</button>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Unexpected leading or trailing whitespace in aria-label value")
+        expect(subject.first.message).to eq(
+          "The `aria-label` attribute value text should not contain line breaks. " \
+          "Use concise, single-line descriptions."
+        )
       end
     end
 
-    context "when aria-label value has trailing whitespace" do
-      let(:source) { '<button aria-label="Submit form ">Submit</button>' }
+    context "when aria-label looks like an ID (snake_case)" do
+      let(:source) { '<button aria-label="close_dialog">X</button>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Unexpected leading or trailing whitespace in aria-label value")
+        expect(subject.first.message).to eq(
+          "The `aria-label` attribute value should not be formatted like an ID. " \
+          "Use natural, sentence-case text instead."
+        )
       end
     end
 
+    context "when aria-label looks like an ID (kebab-case)" do
+      let(:source) { '<button aria-label="close-dialog">X</button>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to eq(
+          "The `aria-label` attribute value should not be formatted like an ID. " \
+          "Use natural, sentence-case text instead."
+        )
+      end
+    end
+
+    context "when aria-label looks like an ID (camelCase)" do
+      let(:source) { '<button aria-label="closeDialog">X</button>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to eq(
+          "The `aria-label` attribute value should not be formatted like an ID. " \
+          "Use natural, sentence-case text instead."
+        )
+      end
+    end
+
+    context "when aria-label contains HTML entity line breaks" do
+      let(:source) { '<button aria-label="Close&#10;dialog">X</button>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to eq(
+          "The `aria-label` attribute value text should not contain line breaks. " \
+          "Use concise, single-line descriptions."
+        )
+      end
+    end
+
+    # Additional edge case tests
     context "when aria-label starts with a number" do
       let(:source) { '<button aria-label="3 items in cart">Cart</button>' }
 
@@ -107,35 +151,11 @@ RSpec.describe Herb::Lint::Rules::Html::AriaLabelIsWellFormatted do
       end
     end
 
-    context "when multiple elements have invalid aria-label values" do
-      let(:source) { '<button aria-label="">Submit</button><nav aria-label="">Nav</nav>' }
-
-      it "reports an offense for each" do
-        expect(subject.size).to eq(2)
-        expect(subject.map(&:rule_name)).to all(eq("html-aria-label-is-well-formatted"))
-      end
-    end
-
     context "with non-labeled elements" do
       let(:source) { '<div class="container"><p>Hello</p></div>' }
 
       it "does not report offenses" do
         expect(subject).to be_empty
-      end
-    end
-
-    context "with mixed valid and invalid aria-labels on multiple lines" do
-      let(:source) do
-        <<~HTML
-          <button aria-label="Submit form">Submit</button>
-          <button aria-label="">Cancel</button>
-          <nav aria-label="Main navigation">Nav</nav>
-        HTML
-      end
-
-      it "reports offense only for the invalid aria-label with correct line number" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.line).to eq(2)
       end
     end
   end
