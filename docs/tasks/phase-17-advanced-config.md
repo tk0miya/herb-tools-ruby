@@ -159,16 +159,13 @@ end
 
 **Location:** `herb-config/lib/herb/config/linter_config.rb`
 
-- [ ] Add `rule_include_patterns(rule_name)` method
-- [ ] Add `rule_only_patterns(rule_name)` method
-- [ ] Add `rule_exclude_patterns(rule_name)` method
-- [ ] Add unit tests
+- [x] Use `build_pattern_matcher` to create matchers with rule-specific patterns
 
-**Location:** `herb-lint/lib/herb/lint/runner.rb`
+**Location:** `herb-lint/lib/herb/lint/linter.rb`
 
-- [ ] Apply per-rule pattern filtering
-- [ ] Implement `only` pattern override logic
-- [ ] Add integration tests
+- [x] Check global `linter.exclude` in `collect_offenses`
+- [x] Use `rule.matcher.match?` for rule-specific pattern filtering
+- [x] Add integration tests
 
 **Configuration:**
 
@@ -191,44 +188,21 @@ linter:
         - 'legacy/**/*'   # Skip legacy code
 ```
 
-**Pattern Resolution Logic:**
+**Implementation:**
 
 ```ruby
-# For a given rule and file path:
-# 1. If rule has 'only': file must match one of 'only' patterns
-# 2. Else: file must match (linter.include OR rule.include)
-# 3. AND: file must NOT match (linter.exclude OR rule.exclude)
-
-def should_apply_rule?(rule_name, file_path)
-  only = rule_only_patterns(rule_name)
-
-  if only.any?
-    # 'only' overrides all include patterns
-    matches_only = only.any? { |pattern| File.fnmatch?(pattern, file_path) }
-    return false unless matches_only
-  else
-    # Check include patterns
-    all_includes = include_patterns + rule_include_patterns(rule_name)
-    matches_include = all_includes.any? { |pattern| File.fnmatch?(pattern, file_path) }
-    return false unless matches_include
+# Linter#collect_offenses
+def collect_offenses(parse_result, context)
+  rules.flat_map do |rule|
+    next [] unless rule.matcher.match?(context.file_path)
+    rule.check(parse_result, context)
   end
-
-  # Check exclude patterns
-  all_excludes = exclude_patterns + rule_exclude_patterns(rule_name)
-  matches_exclude = all_excludes.any? { |pattern| File.fnmatch?(pattern, file_path) }
-  return false if matches_exclude
-
-  true
 end
 ```
 
-**Test Cases:**
-- `only` overrides all include patterns
-- `include` is additive to linter.include
-- `exclude` is additive to linter.exclude
-- Empty patterns use linter defaults
-- Multiple patterns work correctly
-- Glob matching works correctly
+- Each rule gets a `PatternMatcher` via `RuleRegistry.build_all`
+- `PatternMatcher` handles rule-specific `include`/`only`/`exclude` patterns
+- Global `linter.include`/`exclude` applied during file discovery (Runner)
 
 ---
 
@@ -428,10 +402,12 @@ herb-lint lib/views/test.html.erb
 |------|-----------|-------------|--------|
 | 17.1 | herb-lint | failLevel exit code control | ✅ Completed |
 | 17.2 | herb-config | Top-level files section | ✅ Completed |
-| 17.4 | herb-config + herb-lint | Per-rule include/only/exclude | Ready |
-| 17.5 | herb-lint | Rule severity config override | Ready |
+| 17.4 | herb-config + herb-lint | Per-rule include/only/exclude | ✅ Completed |
+| 17.5 | herb-lint | Rule severity config override | ✅ Completed |
+| 17.6 | herb-format | Formatter include/exclude | Blocked |
+| 17.7 | herb-format | Rewriter hooks | Blocked |
 
-**Total: 4 tasks (2 completed, 2 ready)**
+**Total: 6 tasks (4 completed, 0 ready, 2 blocked)**
 
 **Note:** Task 17.5 addresses rule severity configuration from config files, which was identified during Phase 17.1 implementation and initially deferred. Tasks 17.6-17.7 have been moved to [Phase 22: Future Enhancements](./phase-22-future-enhancements.md) as they depend on herb-format gem implementation.
 

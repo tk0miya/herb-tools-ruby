@@ -48,7 +48,11 @@ module Herb
       # @rbs parse_result: Herb::ParseResult
       # @rbs context: Context
       def collect_offenses(parse_result, context) #: Array[Offense]
-        rules.flat_map { |rule| rule.check(parse_result, context) }
+        rules.flat_map do |rule|
+          next [] unless rule.matcher.match?(context.file_path)
+
+          rule.check(parse_result, context)
+        end
       end
 
       # Build LintResult from offenses.
