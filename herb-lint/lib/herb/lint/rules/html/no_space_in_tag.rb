@@ -21,6 +21,7 @@ module Herb
           def self.description = "Disallow extra whitespace inside HTML tags" #: String
           def self.default_severity = "warning" #: String
           def self.safe_autofixable? = true #: bool
+          def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_open_tag_node(node)
