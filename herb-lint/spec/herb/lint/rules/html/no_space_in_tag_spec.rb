@@ -316,6 +316,66 @@ RSpec.describe Herb::Lint::Rules::Html::NoSpaceInTag do
     let(:matcher) { build(:pattern_matcher) }
     let(:document) { Herb.parse(source, track_whitespace: true) }
 
+    context "when fixing single-line open tag with extra space before >" do
+      let(:source) { "<div  >content</div>" }
+      let(:expected) { "<div>content</div>" }
+      let(:node) do
+        element = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
+        element.open_tag
+      end
+
+      it "removes the extra space before >" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing single-line open tag with extra spaces between attributes" do
+      let(:source) { '<div   class="foo"  id="bar"   >content</div>' }
+      let(:expected) { '<div class="foo" id="bar">content</div>' }
+      let(:node) do
+        element = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
+        element.open_tag
+      end
+
+      it "normalizes spacing to single spaces" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing self-closing tag with no space before />" do
+      let(:source) { "<br/>" }
+      let(:expected) { "<br />" }
+      let(:node) do
+        element = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
+        element.open_tag
+      end
+
+      it "adds a single space before />" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
+    context "when fixing self-closing tag with extra space before />" do
+      let(:source) { "<br   />" }
+      let(:expected) { "<br />" }
+      let(:node) do
+        element = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
+        element.open_tag
+      end
+
+      it "normalizes to single space before />" do
+        expect(subject).to be(true)
+        result = Herb::Printer::IdentityPrinter.print(document)
+        expect(result).to eq(expected)
+      end
+    end
+
     context "when fixing close tag with space after </" do
       let(:source) { "<div>content</  div>" }
       let(:expected) { "<div>content</div>" }
@@ -358,18 +418,6 @@ RSpec.describe Herb::Lint::Rules::Html::NoSpaceInTag do
         expect(subject).to be(true)
         result = Herb::Printer::IdentityPrinter.print(document)
         expect(result).to eq(expected)
-      end
-    end
-
-    context "when node is not HTMLCloseTagNode" do
-      let(:source) { "<div  >content</div>" }
-      let(:node) do
-        element = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
-        element.open_tag
-      end
-
-      it "returns false" do
-        expect(subject).to be(false)
       end
     end
   end

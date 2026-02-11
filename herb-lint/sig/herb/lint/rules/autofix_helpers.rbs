@@ -56,6 +56,13 @@ module Herb
       # @rbs position: Herb::Position -- the position for the new token
       def build_quote_token: (Herb::Position position) -> Herb::Token
 
+      # Create a whitespace node for spacing.
+      # Location is set to (0, 0) as it doesn't affect printer output.
+      # The printer uses the AST structure (whitespace nodes) for spacing, not locations.
+      #
+      # @rbs return: Herb::AST::WhitespaceNode -- a whitespace node containing a single space
+      def build_whitespace_node: () -> Herb::AST::WhitespaceNode
+
       # Create a new token by copying an existing token with optional attribute overrides.
       # This is useful for creating modified tokens during autofix operations.
       #
