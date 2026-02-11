@@ -189,6 +189,110 @@ RSpec.describe Herb::Lint::Linter do
         end
       end
     end
+
+    context "with per-rule pattern filtering" do
+      let(:rules) { [Herb::Lint::Rules::Html::ImgRequireAlt] }
+      let(:source) { '<img src="test.png">' }
+
+      context "when rule has 'only' pattern that matches file" do
+        let(:config_hash) do
+          {
+            "linter" => {
+              "rules" => {
+                "html-img-require-alt" => {
+                  "only" => ["app/views/**/*.erb"]
+                }
+              }
+            }
+          }
+        end
+        let(:file_path) { "app/views/users/show.html.erb" }
+
+        it "applies the rule" do
+          expect(subject.unfixed_offenses.size).to eq(1)
+          expect(subject.unfixed_offenses.first.rule_name).to eq("html-img-require-alt")
+        end
+      end
+
+      context "when rule has 'only' pattern that does not match file" do
+        let(:config_hash) do
+          {
+            "linter" => {
+              "rules" => {
+                "html-img-require-alt" => {
+                  "only" => ["app/views/**/*.erb"]
+                }
+              }
+            }
+          }
+        end
+        let(:file_path) { "lib/views/users/show.html.erb" }
+
+        it "does not apply the rule" do
+          expect(subject.unfixed_offenses).to be_empty
+        end
+      end
+
+      context "when rule has 'include' pattern" do
+        let(:config_hash) do
+          {
+            "linter" => {
+              "rules" => {
+                "html-img-require-alt" => {
+                  "include" => ["**/*.xml.erb"]
+                }
+              }
+            }
+          }
+        end
+
+        context "when file matches rule include" do
+          let(:file_path) { "app/views/feed.xml.erb" }
+
+          it "applies the rule" do
+            expect(subject.unfixed_offenses.size).to eq(1)
+          end
+        end
+
+        context "when file does not match rule include" do
+          let(:file_path) { "app/views/test.html.erb" }
+
+          it "does not apply the rule" do
+            expect(subject.unfixed_offenses).to be_empty
+          end
+        end
+      end
+
+      context "when rule has 'exclude' pattern" do
+        let(:config_hash) do
+          {
+            "linter" => {
+              "rules" => {
+                "html-img-require-alt" => {
+                  "exclude" => ["legacy/**"]
+                }
+              }
+            }
+          }
+        end
+
+        context "when file matches rule exclude" do
+          let(:file_path) { "legacy/views/test.html.erb" }
+
+          it "does not apply the rule" do
+            expect(subject.unfixed_offenses).to be_empty
+          end
+        end
+
+        context "when file does not match exclude" do
+          let(:file_path) { "app/views/test.html.erb" }
+
+          it "applies the rule" do
+            expect(subject.unfixed_offenses.size).to eq(1)
+          end
+        end
+      end
+    end
   end
 
   describe "#rules" do
