@@ -59,6 +59,10 @@ module Herb
 
           def self.default_severity: () -> String
 
+          def self.safe_autofixable?: () -> bool
+
+          def self.unsafe_autofixable?: () -> bool
+
           # @rbs override
           def check: ...
 
@@ -66,12 +70,12 @@ module Herb
 
           @source: String
 
-          # Create a location object from byte offsets.
+          # Create a location object from character offsets.
           # @rbs start_offset: Integer
           # @rbs end_offset: Integer
           def location_from_offsets: (Integer start_offset, Integer end_offset) -> Herb::Location
 
-          # Convert byte offset to line and column position (0-indexed).
+          # Convert character offset to line and column position (0-indexed).
           # @rbs offset: Integer
           def position_from_offset: (Integer offset) -> Hash[Symbol, Integer]
         end
