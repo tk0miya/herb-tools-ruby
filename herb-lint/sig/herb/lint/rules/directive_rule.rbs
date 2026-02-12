@@ -24,7 +24,11 @@ module Herb
       #       end
       #     end
       #   end
-      class DirectiveRule < Base
+      class DirectiveRule
+        include RuleMethods
+
+        extend RuleMethods::ClassMethods
+
         # Check the document for rule violations by iterating over parsed directives.
         # @rbs override
         def check: ...

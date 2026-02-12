@@ -43,7 +43,7 @@ RSpec.describe Herb::Lint::Context do
     context "when rule severity is not configured but rule_registry is provided" do
       let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false, config:) }
       let(:test_rule_class) do
-        Class.new(Herb::Lint::Rules::Base) do
+        Class.new(Herb::Lint::Rules::VisitorRule) do
           def self.rule_name = "test-rule"
           def self.description = "Test rule"
           def self.default_severity = "info"
@@ -71,7 +71,7 @@ RSpec.describe Herb::Lint::Context do
       let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false, config:) }
       let(:config_hash) { { "linter" => { "rules" => { "test-rule" => { "severity" => "warning" } } } } }
       let(:test_rule_class) do
-        Class.new(Herb::Lint::Rules::Base) do
+        Class.new(Herb::Lint::Rules::VisitorRule) do
           def self.rule_name = "test-rule"
           def self.description = "Test rule"
           def self.default_severity = "error"

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "rule_methods"
+
 module Herb
   module Lint
     module Rules
@@ -24,7 +26,12 @@ module Herb
       #       end
       #     end
       #   end
-      class DirectiveRule < Base
+      class DirectiveRule
+        include RuleMethods
+
+        # @rbs!
+        #   extend RuleMethods::ClassMethods
+
         # Check the document for rule violations by iterating over parsed directives.
         # @rbs override
         def check(document, context) # rubocop:disable Lint/UnusedMethodArgument
