@@ -366,9 +366,9 @@ cd herb-lint
 
 **Location:** `docs/requirements/herb-lint.md`
 
-- [ ] Verify JSON output format is up-to-date
-- [ ] Add examples showing all severity levels
-- [ ] Document the meaning of each summary field
+- [x] Verify JSON output format is up-to-date
+- [x] Add examples showing all severity levels
+- [x] Document the meaning of each summary field
 
 **Verification:** Manual review of documentation
 
@@ -382,7 +382,7 @@ All tasks completed and verified:
 - [x] Task 23.3: Active rule count reported
 - [x] Task 23.4: RBS types updated
 - [x] Task 23.5: Integration tests passing
-- [ ] Task 23.6: Documentation updated
+- [x] Task 23.6: Documentation updated
 
 **Full verification:**
 ```bash
