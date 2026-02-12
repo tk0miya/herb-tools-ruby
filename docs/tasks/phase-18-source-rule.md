@@ -323,14 +323,14 @@ def instantiate_rules #: Array[Rules::Base | Rules::VisitorRule | Rules::SourceR
 
 ### Task S.8: Full Verification
 
-- [ ] Run `cd herb-lint && ./bin/rspec` -- all tests pass
-- [ ] Run `cd herb-lint && ./bin/rubocop` -- no offenses
-- [ ] Run `cd herb-lint && ./bin/steep check` -- type checking passes
-- [ ] Verify existing rules (VisitorRule-based) are unaffected
-- [ ] Verify `NoExtraNewline` detection behavior is unchanged
-- [ ] Verify `NoExtraNewline` autofix works end-to-end
-- [ ] Verify `RequireTrailingNewline` detection behavior is unchanged
-- [ ] Verify `RequireTrailingNewline` autofix works end-to-end
+- [x] Run `cd herb-lint && ./bin/rspec` -- all tests pass
+- [x] Run `cd herb-lint && ./bin/rubocop` -- no offenses
+- [x] Run `cd herb-lint && ./bin/steep check` -- type checking passes
+- [x] Verify existing rules (VisitorRule-based) are unaffected
+- [x] Verify `NoExtraNewline` detection behavior is unchanged
+- [x] Verify `NoExtraNewline` autofix works end-to-end
+- [x] Verify `RequireTrailingNewline` detection behavior is unchanged
+- [x] Verify `RequireTrailingNewline` autofix works end-to-end
 
 ---
 
