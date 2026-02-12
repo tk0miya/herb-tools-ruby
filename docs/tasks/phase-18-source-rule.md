@@ -301,11 +301,11 @@ autofix(_offense, source) { return source.trimEnd() + "\n" }
 
 **Location:** `herb-lint/lib/herb/lint/linter.rb`, `herb-lint/lib/herb/lint/runner.rb`, `herb-lint/lib/herb/lint/rule_registry.rb`
 
-- [ ] Update `Linter` type annotations to include `SourceRule` in rules union type
-- [ ] Update `Runner` type annotations to include `SourceRule`
-- [ ] Verify `RuleRegistry` can register `SourceRule` subclasses (should work since `SourceRule < Base`)
-- [ ] Update RBS signatures for all changed files
-- [ ] Run `steep check` to verify type correctness
+- [x] Update `Linter` type annotations to include `SourceRule` in rules union type
+- [x] Update `Runner` type annotations to include `SourceRule`
+- [x] Verify `RuleRegistry` can register `SourceRule` subclasses (should work since `SourceRule < Base`)
+- [x] Update RBS signatures for all changed files
+- [x] Run `steep check` to verify type correctness
 
 **Expected Changes:**
 
