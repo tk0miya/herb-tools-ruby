@@ -6,7 +6,7 @@ module Herb
     # Carries a direct reference to the offending AST node (for VisitorRule) or
     # source offsets (for SourceRule) and the rule instance that can fix it.
     class AutofixContext < Data
-      attr_reader rule(): Herb::Lint::Rules::Base
+      attr_reader rule(): Herb::Lint::Rules::VisitorRule | Herb::Lint::Rules::SourceRule
 
       attr_reader node(): Herb::AST::Node?
 
@@ -17,7 +17,7 @@ module Herb
       # VisitorRule pattern: rule + node
       # SourceRule pattern: rule + offsets
       def initialize: (rule: Rules::VisitorRule, node: Herb::AST::Node) -> void
-                    | (rule: Rules::Base, start_offset: Integer, end_offset: Integer) -> void
+                    | (rule: Rules::SourceRule, start_offset: Integer, end_offset: Integer) -> void
 
       # Returns true when this is a source rule context (has offset information)
       def source_rule?: () -> bool

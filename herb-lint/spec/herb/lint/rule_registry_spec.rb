@@ -6,7 +6,7 @@ RSpec.describe Herb::Lint::RuleRegistry do
   let(:config_hash) { {} }
   let(:config) { Herb::Config::LinterConfig.new(config_hash) }
   let(:test_rule_class) do
-    Class.new(Herb::Lint::Rules::Base) do
+    Class.new(Herb::Lint::Rules::VisitorRule) do
       def self.rule_name = "test-rule"
       def self.description = "Test rule"
       def self.safe_autofixable? = false
@@ -14,7 +14,7 @@ RSpec.describe Herb::Lint::RuleRegistry do
     end
   end
   let(:another_rule_class) do
-    Class.new(Herb::Lint::Rules::Base) do
+    Class.new(Herb::Lint::Rules::VisitorRule) do
       def self.rule_name = "another-rule"
       def self.description = "Another test rule"
       def self.safe_autofixable? = false
@@ -22,7 +22,7 @@ RSpec.describe Herb::Lint::RuleRegistry do
     end
   end
   let(:disabled_by_default_rule_class) do
-    Class.new(Herb::Lint::Rules::Base) do
+    Class.new(Herb::Lint::Rules::VisitorRule) do
       def self.rule_name = "disabled-by-default-rule"
       def self.description = "Rule disabled by default"
       def self.safe_autofixable? = false

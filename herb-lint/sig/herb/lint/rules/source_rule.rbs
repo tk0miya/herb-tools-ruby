@@ -14,7 +14,11 @@ module Herb
       #
       # For rules that traverse the AST using the visitor pattern,
       # use VisitorRule instead.
-      class SourceRule < Base
+      class SourceRule
+        include RuleMethods
+
+        extend RuleMethods::ClassMethods
+
         # @rbs override
         def check: ...
 
@@ -38,7 +42,6 @@ module Herb
         # that accumulate state during source checking.
         #
         # This hook is inspired by RuboCop's on_new_investigation pattern.
-        # Protected: intended to be overridden by subclasses only
         # @rbs override
         def on_new_investigation: ...
 

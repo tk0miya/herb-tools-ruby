@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "rule_methods"
+
 module Herb
   module Lint
     module Rules
@@ -14,7 +16,12 @@ module Herb
       #
       # For rules that traverse the AST using the visitor pattern,
       # use VisitorRule instead.
-      class SourceRule < Base
+      class SourceRule
+        include RuleMethods
+
+        # @rbs!
+        #   extend RuleMethods::ClassMethods
+
         # @rbs override
         def check(_parse_result, context)
           @offenses = []
