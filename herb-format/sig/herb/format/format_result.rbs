@@ -1,0 +1,49 @@
+# Generated from lib/herb/format/format_result.rb with RBS::Inline
+
+module Herb
+  module Format
+    # Represents the formatting result for a single file.
+    class FormatResult < Data
+      attr_reader file_path(): String
+
+      attr_reader original(): String
+
+      attr_reader formatted(): String
+
+      attr_reader ignored(): bool
+
+      attr_reader error(): StandardError?
+
+      def self.new: (String file_path, String original, String formatted, bool ignored, StandardError? error) -> instance
+                  | (file_path: String, original: String, formatted: String, ignored: bool, error: StandardError?) -> instance
+
+      def self.members: () -> [ :file_path, :original, :formatted, :ignored, :error ]
+
+      def members: () -> [ :file_path, :original, :formatted, :ignored, :error ]
+    end
+
+    # :nodoc:
+    class FormatResult
+      # @rbs file_path: String
+      # @rbs original: String
+      # @rbs formatted: String
+      # @rbs ignored: bool
+      # @rbs error: StandardError?
+      def initialize: (file_path: String, original: String, formatted: String, ?ignored: bool, ?error: StandardError?) -> void
+
+      def ignored?: () -> bool
+
+      def error?: () -> bool
+
+      def changed?: () -> bool
+
+      def diff: () -> String?
+
+      def to_h: () -> Hash[Symbol, untyped]
+
+      private
+
+      def generate_unified_diff: () -> String
+    end
+  end
+end

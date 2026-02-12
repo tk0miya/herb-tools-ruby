@@ -284,13 +284,13 @@ end
 
 **Location:** `herb-format/lib/herb/format/format_result.rb`
 
-- [ ] Create FormatResult as Data.define class
-- [ ] Add fields: file_path, original, formatted, ignored, error
-- [ ] Implement predicate methods: ignored?, error?, changed?
-- [ ] Implement diff method returning unified diff string
-- [ ] Implement to_h for serialization
-- [ ] Add RBS inline type annotations
-- [ ] Create spec file with comprehensive tests
+- [x] Create FormatResult as Data.define class
+- [x] Add fields: file_path, original, formatted, ignored, error
+- [x] Implement predicate methods: ignored?, error?, changed?
+- [x] Implement diff method returning unified diff string
+- [x] Implement to_h for serialization
+- [x] Add RBS inline type annotations
+- [x] Create spec file with comprehensive tests
 
 **Interface:**
 ```ruby
