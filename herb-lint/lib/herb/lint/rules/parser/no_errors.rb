@@ -1,43 +1,31 @@
 # frozen_string_literal: true
 
-# Source: https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/parser-no-errors.ts
-# Documentation: https://herb-tools.dev/linter/rules/parser-no-errors
-
-module Herb
-  module Lint
-    module Rules
-      module Parser
-        # Rule that reports parser errors as lint offenses.
-        #
-        # When the Herb parser encounters syntax errors in ERB templates,
-        # this rule surfaces them as lint violations so users see all issues
-        # in one report.
-        #
-        # This rule is special in that it doesn't implement a check method.
-        # Instead, the Linter class directly creates offenses for parser errors
-        # using this rule's metadata.
-        #
-        # Examples of parser errors:
-        #   - Unclosed ERB tags: <%= unclosed
-        #   - Unclosed HTML tags: <div><span>unclosed
-        #   - Malformed ERB syntax
-        class NoErrors < Base
-          def self.rule_name = "parser-no-errors" #: String
-          def self.description = "Report parser errors as lint offenses" #: String
-          def self.default_severity = "error" #: String
-          def self.safe_autofixable? = false #: bool
-          def self.unsafe_autofixable? = false #: bool
-
-          # This method is not called by the Linter.
-          # Parser errors are detected and reported directly by the Linter class
-          # before normal rule checking begins.
-          #
-          # @rbs override
-          def check(_document, _context) #: Array[Offense]
-            []
-          end
-        end
-      end
-    end
-  end
-end
+# This file serves as a reference marker for the parser-no-errors rule.
+#
+# Unlike other rules, parser-no-errors is NOT implemented as a standard rule class.
+# Instead, it is integrated at the Linter level and handled specially.
+#
+# **Why this design?**
+#
+# Parser errors occur before the AST is available, making it impossible to run
+# standard rule checks. The Linter needs to handle parse failures early in the
+# pipeline, before normal rule execution begins.
+#
+# **Processing Flow:**
+# 1. Linter calls Herb.parse(source)
+# 2. If parse_result.failed?, Linter creates parser error offenses directly
+# 3. Parser errors are reported with hardcoded rule_name "parser-no-errors" and severity "error"
+# 4. Normal rule checking is skipped (no valid AST available)
+#
+# **NOTE:** Both TypeScript and Ruby implementations use this same architectural approach.
+# TypeScript handles parser errors via the linter's error handling flow, not as a ParserRule.
+#
+# **Implementation Location:**
+# - Integration point: lib/herb/lint/linter.rb (parse_error_result and parse_error_offense methods)
+# - Rule metadata: Hardcoded in Linter (rule_name: "parser-no-errors", severity: "error")
+# - Test coverage: spec/herb/lint/linter_spec.rb (parser error handling tests)
+#
+# **For more details, see:**
+# - Source: https://github.com/marcoroth/herb/blob/main/javascript/packages/linter/src/rules/parser-no-errors.ts
+# - Documentation: https://herb-tools.dev/linter/rules/parser-no-errors
+# - docs/design/herb-lint-rules.md (Special Rules section)

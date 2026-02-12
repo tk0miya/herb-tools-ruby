@@ -5,7 +5,7 @@ module Herb
     # Linter processes a single file and returns lint results.
     # It applies a set of rules to a parsed document and collects offenses.
     class Linter
-      attr_reader :rules #: Array[Rules::Base | Rules::VisitorRule | Rules::SourceRule]
+      attr_reader :rules #: Array[Rules::VisitorRule | Rules::SourceRule]
       attr_reader :config #: Herb::Config::LinterConfig
       attr_reader :rule_registry #: RuleRegistry
       attr_reader :ignore_disable_comments #: bool
@@ -89,9 +89,9 @@ module Herb
       # @rbs error: untyped
       def parse_error_offense(error) #: Offense
         Offense.new(
-          rule_name: Rules::Parser::NoErrors.rule_name,
+          rule_name: "parser-no-errors",
           message: error.message,
-          severity: Rules::Parser::NoErrors.default_severity,
+          severity: "error",
           location: error.location
         )
       end

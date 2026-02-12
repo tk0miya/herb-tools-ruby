@@ -5,12 +5,12 @@ module Herb
     # Registry for managing lint rules.
     # Provides registration, lookup, and loading of built-in and custom rules.
     class RuleRegistry
-      # @rbs @rules: Hash[String, singleton(Rules::Base) | singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+      # @rbs @rules: Hash[String, singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
       # @rbs @config: Herb::Config::LinterConfig
 
       # Built-in rule classes shipped with herb-lint.
       # rubocop:disable Metrics/MethodLength
-      def self.builtin_rules #: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+      def self.builtin_rules #: Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
         [
           Rules::Erb::CommentSyntax,
           Rules::Erb::NoCaseNodeChildren,
@@ -61,7 +61,6 @@ module Herb
           Rules::Html::NoTitleAttribute,
           Rules::Html::NoUnderscoresInAttributeNames,
           Rules::Html::TagNameLowercase,
-          Rules::Parser::NoErrors,
           Rules::Svg::TagNameCapitalization
         ].freeze
       end
@@ -69,7 +68,7 @@ module Herb
 
       # @rbs config: Herb::Config::LinterConfig -- configuration for rules
       # @rbs builtins: bool -- when true, automatically load built-in rules
-      # @rbs rules: Array[singleton(Rules::Base) | singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+      # @rbs rules: Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
       def initialize(config:, builtins: true, rules: []) #: void
         @rules = {}
         @config = config
@@ -78,7 +77,7 @@ module Herb
       end
 
       # Register a rule class in the registry.
-      # @rbs rule_class: singleton(Rules::Base) | singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)
+      # @rbs rule_class: singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)
       def register(rule_class) #: void
         name = rule_class.rule_name
         @rules[name] = rule_class
@@ -86,7 +85,7 @@ module Herb
 
       # Get a rule class by its name.
       # @rbs name: String
-      def get(name) #: (singleton(Rules::Base) | singleton(Rules::VisitorRule) | singleton(Rules::SourceRule))?
+      def get(name) #: (singleton(Rules::VisitorRule) | singleton(Rules::SourceRule))?
         @rules[name]
       end
 
@@ -98,7 +97,7 @@ module Herb
       # Build instances of all registered rules.
       # Reads enabled status and severity from config for each rule.
       # Creates a PatternMatcher for each rule based on its include/exclude/only configuration.
-      def build_all #: Array[Rules::Base | Rules::VisitorRule | Rules::SourceRule]
+      def build_all #: Array[Rules::VisitorRule | Rules::SourceRule]
         @rules.filter_map do |rule_name, rule_class|
           # Check if rule is enabled, using the rule's default enabled state
           default_enabled = rule_class.enabled_by_default?
