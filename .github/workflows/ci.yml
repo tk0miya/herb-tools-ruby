@@ -66,3 +66,18 @@ jobs:
           working-directory: herb-lint
       - name: Run all checks
         run: bundle exec rake
+
+  herb-format:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: herb-format
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+          working-directory: herb-format
+      - name: Run all checks
+        run: bundle exec rake
