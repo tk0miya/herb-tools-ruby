@@ -28,16 +28,37 @@ RSpec.describe Herb::Lint::Rules::Html::AriaRoleHeadingRequiresLevel do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when element has role='heading' and aria-level" do
-      let(:source) { '<div role="heading" aria-level="2">Title</div>' }
+    # Good examples from documentation
+    context "when div has role='heading' and aria-level" do
+      let(:source) { '<div role="heading" aria-level="2">Section Title</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when element has role='heading' without aria-level" do
-      let(:source) { '<div role="heading">Title</div>' }
+    context "when span has role='heading' and aria-level" do
+      let(:source) { '<span role="heading" aria-level="1">Main Title</span>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "when div has role='heading' without aria-level" do
+      let(:source) { '<div role="heading">Section Title</div>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-aria-role-heading-requires-level")
+        expect(subject.first.message).to eq("Element with `role=\"heading\"` must have an `aria-level` attribute.")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when span has role='heading' without aria-level" do
+      let(:source) { '<span role="heading">Main Title</span>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)

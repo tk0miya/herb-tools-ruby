@@ -7,16 +7,21 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that requires aria-level on elements with role="heading".
-        #
-        # Elements with `role="heading"` must include an `aria-level` attribute
-        # to indicate the heading level to assistive technologies.
+        # Description:
+        #   Ensure that any element with `role="heading"` also has a valid `aria-level` attribute. The
+        #   `aria-level` defines the heading level (1–6) and is required for assistive technologies to properly
+        #   interpret the document structure.
         #
         # Good:
-        #   <div role="heading" aria-level="2">Title</div>
+        #   <div role="heading" aria-level="2">Section Title</div>
+        #
+        #   <span role="heading" aria-level="1">Main Title</span>
         #
         # Bad:
-        #   <div role="heading">Title</div>
+        #   <div role="heading">Section Title</div>
+        #
+        #   <span role="heading">Main Title</span>
+        #
         class AriaRoleHeadingRequiresLevel < VisitorRule
           def self.rule_name = "html-aria-role-heading-requires-level" #: String
           def self.description = "Require aria-level on elements with role=\"heading\"" #: String
