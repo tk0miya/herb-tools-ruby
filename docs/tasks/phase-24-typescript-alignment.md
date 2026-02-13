@@ -496,9 +496,11 @@ Update related documentation to reflect Phase 24 changes.
   - [x] Document autofix support
   - [x] Update configuration examples
   - [x] Add inline directive documentation
-- [ ] `docs/requirements/herb-lint.md`
-  - [ ] Update rule list
-  - [ ] Reflect severity changes
+- [x] `docs/requirements/herb-lint.md`
+  - [x] Update rule list
+  - [x] Reflect severity changes
+  - [x] Reorganize by actual categories (ERB, HTML, SVG, Herb Directive, Parser)
+  - [x] Document disabled-by-default rules
 - [x] `docs/tasks/README.md`
   - [x] Add Phase 24
   - [x] Update task counts
