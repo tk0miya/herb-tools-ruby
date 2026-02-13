@@ -142,11 +142,11 @@ This phase establishes the foundational infrastructure for herb-format, includin
 
 **Location:** `herb-format/Rakefile`
 
-- [ ] Create Rakefile with default task running all checks
-- [ ] Add RSpec task
-- [ ] Add RuboCop task
-- [ ] Add Steep task
-- [ ] Default task runs: rspec, rubocop, steep
+- [x] Create Rakefile with default task running all checks
+- [x] Add RSpec task
+- [x] Add RuboCop task
+- [x] Add Steep task
+- [x] Default task runs: rspec, rubocop, steep
 
 **Verification:**
 - `cd herb-format && ./bin/rake` runs all tasks
@@ -195,11 +195,11 @@ herb-format:
 
 **Location:** `herb-format/.rspec`, `herb-format/spec/spec_helper.rb`
 
-- [ ] Create .rspec with format and color settings
-- [ ] Create spec_helper.rb based on herb-lint template
-- [ ] Configure RSpec to require spec_helper
-- [ ] Add FactoryBot configuration
-- [ ] Create spec/support/factory_bot.rb
+- [x] Create .rspec with format and color settings
+- [x] Create spec_helper.rb based on herb-lint template
+- [x] Configure RSpec to require spec_helper
+- [x] Add FactoryBot configuration
+- [x] Create spec/support/factory_bot.rb
 
 **Verification:**
 - `cd herb-format && ./bin/rspec` runs (no specs yet)
@@ -211,11 +211,11 @@ herb-format:
 
 **Location:** `herb-format/Steepfile`, `herb-format/rbs_collection.yaml`
 
-- [ ] Create Steepfile based on herb-lint template
-- [ ] Configure target "lib" pointing to lib/
-- [ ] Configure signature and library paths
-- [ ] Create rbs_collection.yaml
-- [ ] Run `rbs collection install`
+- [x] Create Steepfile based on herb-lint template
+- [x] Configure target "lib" pointing to lib/
+- [x] Configure signature and library paths
+- [x] Create rbs_collection.yaml
+- [x] Run `rbs collection install`
 
 **Verification:**
 - `cd herb-format && ./bin/steep check` runs (no files yet)
@@ -227,9 +227,9 @@ herb-format:
 
 **Location:** `herb-format/lib/herb/format/version.rb`
 
-- [ ] Create version.rb defining VERSION constant
-- [ ] Set VERSION = "0.1.0"
-- [ ] Add module structure:
+- [x] Create version.rb defining VERSION constant
+- [x] Set VERSION = "0.1.0"
+- [x] Add module structure:
   ```ruby
   # rbs_inline: enabled
 
@@ -250,10 +250,10 @@ herb-format:
 
 **Location:** `herb-format/lib/herb/format.rb`
 
-- [ ] Create lib/herb/format.rb as gem entry point
-- [ ] Require version file
-- [ ] Require herb dependencies (herb, herb-config, herb-core, herb-printer)
-- [ ] Define Herb::Format module structure
+- [x] Create lib/herb/format.rb as gem entry point
+- [x] Require version file
+- [x] Require herb dependencies (herb, herb-config, herb-core, herb-printer)
+- [x] Define Herb::Format module structure
 
 **Template:**
 ```ruby
