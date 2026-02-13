@@ -28,7 +28,8 @@ RSpec.describe Herb::Lint::Rules::Html::AriaRoleMustBeValid do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when element has a valid role" do
+    # Good examples from documentation
+    context "when element has role='button'" do
       let(:source) { '<div role="button">Click me</div>' }
 
       it "does not report an offense" do
@@ -36,14 +37,49 @@ RSpec.describe Herb::Lint::Rules::Html::AriaRoleMustBeValid do
       end
     end
 
-    context "when element has an invalid role" do
-      let(:source) { '<div role="invalid-role">Content</div>' }
+    context "when element has role='navigation'" do
+      let(:source) { '<nav role="navigation">...</nav>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when element has role='region'" do
+      let(:source) { '<section role="region">...</section>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "when element has role='buton' (typo)" do
+      let(:source) { '<div role="buton">Click me</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-aria-role-must-be-valid")
-        expect(subject.first.message).to eq("'invalid-role' is not a valid WAI-ARIA role")
+        expect(subject.first.message).to eq("'buton' is not a valid WAI-ARIA role")
         expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when element has role='nav' (not a valid role)" do
+      let(:source) { '<nav role="nav">...</nav>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to eq("'nav' is not a valid WAI-ARIA role")
+      end
+    end
+
+    context "when element has role='header' (not in the ARIA spec)" do
+      let(:source) { '<section role="header">...</section>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to eq("'header' is not a valid WAI-ARIA role")
       end
     end
 
