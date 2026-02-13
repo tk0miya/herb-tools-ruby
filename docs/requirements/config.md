@@ -413,18 +413,6 @@ Error: Invalid configuration in .herb.yml
 See documentation for valid configuration options.
 ```
 
-## Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `HERB_CONFIG` | Path to configuration file (overrides default search) |
-| `HERB_NO_CONFIG` | If set, ignore all configuration files |
-
-```bash
-HERB_CONFIG=/path/to/.herb.yml herb-lint
-HERB_NO_CONFIG=1 herb-lint  # Use defaults only
-```
-
 ## Related Documents
 
 - [herb-lint Specification](./herb-lint.md)
