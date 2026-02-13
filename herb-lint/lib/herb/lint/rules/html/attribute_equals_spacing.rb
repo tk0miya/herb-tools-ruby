@@ -7,18 +7,23 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows spaces around `=` in attribute assignments.
-        #
-        # Spaces around the equals sign in HTML attributes are valid but
-        # unconventional. Removing them improves readability and consistency.
+        # Description:
+        #   Disallow whitespace before or after the equals sign (=) for attribute values in HTML. Attributes must
+        #   follow the canonical format (name="value") with no spaces between the attribute name, the equals sign, or
+        #   the opening quote.
         #
         # Good:
-        #   <div class="foo">
+        #   <div class="container"></div>
+        #   <img src="/logo.png" alt="Logo">
+        #   <input type="text" value="<%= @value %>" autocomplete="off">
         #
         # Bad:
-        #   <div class = "foo">
-        #   <div class ="foo">
-        #   <div class= "foo">
+        #   <div class ="container"></div>
+        #
+        #   <img src= "/logo.png" alt="Logo">
+        #
+        #   <input type = "text" autocomplete="off">
+        #
         class AttributeEqualsSpacing < VisitorRule
           def self.rule_name = "html-attribute-equals-spacing" #: String
           def self.description = "Disallow spaces around `=` in attribute assignments" #: String
@@ -28,15 +33,14 @@ module Herb
 
           # @rbs override
           def visit_html_attribute_node(node)
-            check_spacing(node) if node.equals
+            check_spacing(node) if node.equals && node.name && node.value
             super
           end
 
           # @rbs node: Herb::AST::HTMLAttributeNode
           # @rbs parse_result: Herb::ParseResult
           def autofix(node, parse_result) #: bool
-            # Remove spaces from equals token value
-            equals = copy_token(node.equals, content: node.equals.value.gsub(/[\s\t]+/, ""))
+            equals = copy_token(node.equals, content: "=")
             new_node = copy_html_attribute_node(node, equals:)
             replace_node(parse_result, node, new_node)
           end
@@ -45,34 +49,21 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLAttributeNode
           def check_spacing(node) #: void
-            message = spacing_message(node)
-            add_offense_with_autofix(message:, location: node.location, node:) if message
-          end
-
-          # @rbs node: Herb::AST::HTMLAttributeNode
-          def spacing_message(node) #: String?
-            before = space_before_equals?(node)
-            after = space_after_equals?(node)
-
-            if before && after
-              "Unexpected spaces around `=` in attribute assignment"
-            elsif before
-              "Unexpected space before `=` in attribute assignment"
-            elsif after
-              "Unexpected space after `=` in attribute assignment"
+            if node.equals.value.start_with?(" ")
+              add_offense_with_autofix(
+                message: "Remove whitespace before `=` in HTML attribute",
+                location: node.equals.location,
+                node:
+              )
             end
-          end
 
-          # @rbs node: Herb::AST::HTMLAttributeNode
-          def space_before_equals?(node) #: bool
-            node.equals.value.start_with?(" ", "\t")
-          end
+            return unless node.equals.value.end_with?(" ")
 
-          # @rbs node: Herb::AST::HTMLAttributeNode
-          def space_after_equals?(node) #: bool
-            return false unless node.value
-
-            node.equals.value.end_with?(" ", "\t")
+            add_offense_with_autofix(
+              message: "Remove whitespace after `=` in HTML attribute",
+              location: node.equals.location,
+              node:
+            )
           end
         end
       end
