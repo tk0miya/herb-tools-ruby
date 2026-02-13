@@ -21,15 +21,13 @@ The MVP provides core linting functionality:
 
 Features described in this specification but not yet implemented:
 
-- **Configuration**: Full validation, schema checking, environment variables, upward directory search
-- **CLI**: `--init`, `--fix`, `--fix-unsafely`, `--format`, `--github`, `--fail-level`, `--config-file` options
-- **Reporters**: DetailedReporter, JsonReporter, GithubReporter
-- **Rules**: Complete rule set (50+ rules across ERB, HTML, and A11y categories)
+- **Configuration**: Full validation, schema checking
+- **CLI**: `--init`, `--config-file`, `--force`, `--theme`, `--no-wrap-lines`, `--truncate-lines`, `--no-custom-rules`, `--no-timing` options
+- **Reporters**: DetailedReporter (default output format with syntax highlighting)
 - **Custom Rules**: Dynamic loading from `.herb/rules/` directory
-- **Autofix**: Safe and unsafe automatic fixes
-- **Advanced Features**: Parallel processing, caching, plugin system
+- **Timing**: Performance metrics display in output
 
-Refer to `docs/tasks/README.md` for the detailed implementation roadmap.
+Refer to `docs/tasks/README.md` and `docs/tasks/phase-25-linter-missing-features.md` for the detailed implementation roadmap.
 
 ## CLI Interface
 
