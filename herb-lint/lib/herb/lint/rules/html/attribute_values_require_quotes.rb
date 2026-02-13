@@ -7,19 +7,24 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that requires attribute values to be quoted.
-        #
-        # Unquoted attribute values are valid HTML5, but quoting them improves
-        # readability and prevents issues with special characters.
+        # Description:
+        #   Always wrap HTML attribute values in quotes, even when they are technically optional according to the
+        #   HTML specification.
         #
         # Good:
-        #   <div class="container">
-        #   <input type='text'>
-        #   <input disabled>
+        #   <div id="hello"></div>
+        #
+        #   <input type="text" autocomplete="off">
+        #
+        #   <a href="/profile">Profile</a>
         #
         # Bad:
-        #   <div class=container>
-        #   <input type=text>
+        #   <div id=hello></div>
+        #
+        #   <input type=text autocomplete="off">
+        #
+        #   <a href=profile></a>
+        #
         class AttributeValuesRequireQuotes < VisitorRule
           def self.rule_name = "html-attribute-values-require-quotes" #: String
           def self.description = "Require quotes around attribute values" #: String
