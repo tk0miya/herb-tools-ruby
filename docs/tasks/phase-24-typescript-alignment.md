@@ -533,9 +533,9 @@ grep -r "html-no-space-in-tag" docs/
 ### Part D: Documentation & Alignment (3 tasks)
 - [x] 24.22: Create analysis documents
 - [x] 24.23: Align default enabled status (5 rules)
-- [ ] 24.24: Update README etc.
+- [x] 24.24: Update README etc.
 
-**Total: 24 tasks** (22 complete, 2 pending)
+**Total: 24 tasks** (24 complete, 0 pending)
 
 ---
 
