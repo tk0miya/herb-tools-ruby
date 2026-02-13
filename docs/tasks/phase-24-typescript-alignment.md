@@ -489,9 +489,13 @@ Update related documentation to reflect Phase 24 changes.
 
 **Files to Update:**
 
-- [ ] `herb-lint/README.md`
-  - [ ] Document newly added rules
-  - [ ] Update rule count (51 → 52+)
+- [x] `herb-lint/README.md`
+  - [x] Document newly added rules
+  - [x] Update rule count (50 built-in rules)
+  - [x] Add comprehensive feature list
+  - [x] Document autofix support
+  - [x] Update configuration examples
+  - [x] Add inline directive documentation
 - [ ] `docs/requirements/herb-lint.md`
   - [ ] Update rule list
   - [ ] Reflect severity changes
