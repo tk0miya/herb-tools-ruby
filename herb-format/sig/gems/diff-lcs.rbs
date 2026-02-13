@@ -1,0 +1,16 @@
+# Type definitions for diff-lcs gem
+# Only includes types for methods used in this project
+
+module Diff
+  module LCS
+    # Represents a single change in a diff
+    class Change
+      attr_reader action: String
+      attr_reader position: Integer
+      attr_reader element: String
+    end
+
+    # Returns an array of hunks, where each hunk is an array of changes
+    def self.diff: (Array[String], Array[String]) -> Array[Array[Change]]
+  end
+end
