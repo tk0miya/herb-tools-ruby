@@ -13,7 +13,7 @@ The MVP (Minimum Viable Product) has been completed with:
 - ✅ SimpleReporter (text output only)
 - ✅ Inline directives (`herb:disable`, `herb:linter ignore`)
 
-Phases 1-14, 19, and 20 have been completed and their task files have been removed from this directory. The completed work is documented in the git history and reflected in the current implementation.
+Phases 1-14, 19, 20, and 23 have been completed and their task files have been removed from this directory. The completed work is documented in the git history and reflected in the current implementation.
 
 ## herb-lint Implementation Phases
 
@@ -26,10 +26,9 @@ Phases 1-14, 19, and 20 have been completed and their task files have been remov
 | Phase 17 | [phase-17-advanced-config.md](./phase-17-advanced-config.md) | 6 | Advanced configuration features | 📋 |
 | Phase 18 | [phase-18-source-rule.md](./phase-18-source-rule.md) | 7 | SourceRule base class, autofix, NoExtraNewline migration | 📋 |
 | Phase 21 | [phase-21-review-linter-rules.md](./phase-21-review-linter-rules.md) | 408 | Review and update all linter rules | 🚧 |
-| Phase 23 | [phase-23-json-reporter-completion.md](./phase-23-json-reporter-completion.md) | 6 | Complete JSON reporter summary fields | 📋 |
 | Phase 24 | [phase-24-typescript-alignment.md](./phase-24-typescript-alignment.md) | 24 | TypeScript implementation alignment | 🚧 23/24 |
 
-**Remaining Total: ~475 tasks**
+**Remaining Total: ~469 tasks**
 
 Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
@@ -79,17 +78,6 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 | SVG | 1 | 8 steps each |
 | Parser | 1 | 8 steps each |
 
-### Phase 23: JSON Reporter Completion (6 tasks)
-
-| Task | Description |
-|------|-------------|
-| 23.1 | Add info/hint severity level support |
-| 23.2 | Track ignored offenses count |
-| 23.3 | Report active rule count |
-| 23.4 | Update RBS type signatures |
-| 23.5 | Integration testing |
-| 23.6 | Update documentation |
-
 ### Phase 24: TypeScript Alignment (24 tasks)
 
 | Part | Tasks | Description |
@@ -127,6 +115,7 @@ The following phases have been completed and their task files removed:
 - **Phase 14**: herb-printer gem
 - **Phase 19**: Rule naming alignment
 - **Phase 20**: factory_bot introduction
+- **Phase 23**: JSON reporter completion (info/hint severities, ignored offenses, rule count)
 
 All completed work is documented in the git history and reflected in the current implementation.
 
