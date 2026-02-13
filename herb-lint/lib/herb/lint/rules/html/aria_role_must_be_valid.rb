@@ -7,18 +7,25 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that validates WAI-ARIA role attribute values.
-        #
-        # The role attribute must contain a valid WAI-ARIA role.
-        # Empty or invalid role values are disallowed.
+        # Description:
+        #   Disallow invalid or unknown values for the role attribute. The role attribute must match one of the
+        #   recognized ARIA role values as defined by the WAI-ARIA specification.
         #
         # Good:
-        #   <div role="button">
-        #   <div role="navigation">
+        #   <div role="button">Click me</div>
+        #   <nav role="navigation">...</nav>
+        #   <section role="region">...</section>
         #
         # Bad:
-        #   <div role="invalid-role">
-        #   <div role="">
+        #   <!-- typo -->
+        #   <div role="buton">Click me</div>
+        #
+        #   <!-- not a valid role -->
+        #   <nav role="nav">...</nav>
+        #
+        #   <!-- not in the ARIA spec -->
+        #   <section role="header">...</section>
+        #
         # rubocop:disable Metrics/ClassLength
         class AriaRoleMustBeValid < VisitorRule
           # Valid WAI-ARIA roles from the WAI-ARIA 1.2 specification.
