@@ -362,13 +362,13 @@ end
 
 **Location:** `herb-format/lib/herb/format/aggregated_result.rb`
 
-- [ ] Create AggregatedResult as Data.define class
-- [ ] Add field: results (Array[FormatResult])
-- [ ] Implement aggregation methods: file_count, changed_count, ignored_count, error_count
-- [ ] Implement all_formatted? predicate
-- [ ] Implement to_h for serialization
-- [ ] Add RBS inline type annotations
-- [ ] Create spec file with comprehensive tests
+- [x] Create AggregatedResult as Data.define class
+- [x] Add field: results (Array[FormatResult])
+- [x] Implement aggregation methods: file_count, changed_count, ignored_count, error_count
+- [x] Implement all_formatted? predicate
+- [x] Implement to_h for serialization
+- [x] Add RBS inline type annotations
+- [x] Create spec file with comprehensive tests
 
 **Interface:**
 ```ruby

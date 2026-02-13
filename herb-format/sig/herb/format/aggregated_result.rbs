@@ -1,0 +1,32 @@
+# Generated from lib/herb/format/aggregated_result.rb with RBS::Inline
+
+module Herb
+  module Format
+    # Aggregates formatting results across multiple files.
+    class AggregatedResult < Data
+      attr_reader results(): Array[FormatResult]
+
+      def self.new: (Array[FormatResult] results) -> instance
+                  | (results: Array[FormatResult]) -> instance
+
+      def self.members: () -> [ :results ]
+
+      def members: () -> [ :results ]
+    end
+
+    # :nodoc:
+    class AggregatedResult
+      def file_count: () -> Integer
+
+      def changed_count: () -> Integer
+
+      def ignored_count: () -> Integer
+
+      def error_count: () -> Integer
+
+      def all_formatted?: () -> bool
+
+      def to_h: () -> Hash[Symbol, untyped]
+    end
+  end
+end
