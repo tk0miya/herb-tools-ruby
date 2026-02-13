@@ -273,79 +273,22 @@ Annotations for GitHub Actions workflows:
 
 ## Rule Categories
 
-### ERB Rules (13 rules)
+The Ruby implementation provides **50 built-in rules** organized into 5 categories:
 
-Rules specific to ERB syntax and conventions.
+- **ERB Rules** (13 rules): ERB syntax, tag formatting, and strict locals validation
+- **HTML Rules** (30+ rules): HTML validation, attribute formatting, tag nesting, and accessibility
+- **SVG Rules** (1 rule): SVG element validation
+- **Herb Directive Rules** (6 rules): `herb:disable` comment syntax validation
+- **Parser Rules** (1 rule): ERB parsing error detection
 
-| Rule | Description | Fixable |
-|------|-------------|---------|
-| `erb-comment-syntax` | Enforce ERB comment style | Yes |
-| `erb-tag-spacing` | Consistent spacing inside ERB tags | Yes |
-| `erb-no-trailing-whitespace` | No trailing whitespace in ERB output | Yes |
-| `erb-output-safety` | Warn about potentially unsafe output | No |
-| `erb-strict-locals` | Validate strict_locals magic comment | No |
-| `erb-no-multiline-output` | Avoid multiline expressions in output tags | No |
-| `erb-indent` | Consistent indentation in ERB blocks | Yes |
-| `erb-no-space-before-close` | No space before closing `%>` | Yes |
-| `erb-space-after-open` | Space after opening `<%` | Yes |
-| `erb-no-do-end` | Prefer `{ }` over `do end` in single-line ERB | Yes |
-| `erb-simple-output` | Simplify unnecessary `.to_s` calls | Yes |
-| `erb-no-inline-styles` | Discourage inline styles | No |
-| `erb-consistent-quotes` | Consistent quote style in ERB | Yes |
+**Key Highlights:**
+- Most rules use `error` severity by default (aligned with TypeScript implementation)
+- 16 rules support safe autofix
+- 5 rules are disabled by default (opt-in): `erb-strict-locals-required`, `html-navigation-has-label`, `html-no-block-inside-inline`, `html-no-space-in-tag`, `html-no-title-attribute`
 
-### HTML Rules (25+ rules)
-
-General HTML validation and best practices.
-
-| Rule | Description | Fixable |
-|------|-------------|---------|
-| `html-attribute-double-quotes` | Require quotes around attribute values | Yes |
-| `attribute-spacing` | No spaces around `=` in attributes | Yes |
-| `no-duplicate-attributes` | Disallow duplicate attributes | No |
-| `no-duplicate-id` | Disallow duplicate id values | No |
-| `valid-tag-nesting` | Validate tag nesting rules | No |
-| `void-element-style` | Consistent self-closing style for void elements | Yes |
-| `lowercase-tags` | Enforce lowercase tag names | Yes |
-| `lowercase-attributes` | Enforce lowercase attribute names | Yes |
-| `no-obsolete-tags` | Disallow obsolete HTML tags | No |
-| `html-no-positive-tab-index` | Disallow positive tabindex values | No |
-| `required-attributes` | Require mandatory attributes | No |
-| `no-inline-event-handlers` | Discourage inline event handlers | No |
-| `doctype` | Require DOCTYPE declaration | No |
-| `html-lang` | Require lang attribute on html element | No |
-| `meta-charset` | Require charset meta tag | No |
-| `meta-viewport` | Require viewport meta tag | No |
-| `title` | Require title element | No |
-| `no-autofocus` | Discourage autofocus attribute | No |
-| `no-target-blank` | Warn about target="_blank" without rel | Yes |
-| `button-type` | Require type attribute on buttons | Yes |
-| `form-action` | Require action attribute on forms | No |
-| `input-name` | Require name attribute on inputs | No |
-| `label-for` | Require for attribute on labels | No |
-| `script-type` | Omit type for JavaScript | Yes |
-| `style-type` | Omit type for CSS | Yes |
-
-### Accessibility Rules (15+ rules)
-
-ARIA and accessibility validation.
-
-| Rule | Description | Fixable |
-|------|-------------|---------|
-| `html-img-require-alt` | Require alt attribute on img tags | No |
-| `aria-valid-attr` | Valid ARIA attributes | No |
-| `aria-valid-attr-value` | Valid ARIA attribute values | No |
-| `aria-role` | Valid ARIA roles | No |
-| `aria-labelledby` | Validate aria-labelledby references | No |
-| `aria-describedby` | Validate aria-describedby references | No |
-| `role-supports-aria` | ARIA attributes supported by role | No |
-| `no-redundant-role` | Avoid redundant roles | Yes |
-| `heading-order` | Headings should not skip levels | No |
-| `iframe-has-title` | Require title on iframes | No |
-| `interactive-supports-focus` | Interactive elements must be focusable | No |
-| `click-events-have-key-events` | Click handlers need keyboard handlers | No |
-| `mouse-events-have-key-events` | Mouse events need keyboard events | No |
-| `no-access-key` | Avoid accesskey attribute | No |
-| `scope-valid` | Valid scope attribute on th elements | No |
+**For a complete list of all rules with detailed descriptions, severity levels, and autofix support, see:**
+- [Rule Design Document](../design/herb-lint-rules.md) - Complete rule reference with metadata
+- Run `herb-lint --help` for available rules
 
 ## Severity Levels
 
