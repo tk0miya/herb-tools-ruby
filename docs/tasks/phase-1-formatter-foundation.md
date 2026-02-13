@@ -101,15 +101,15 @@ This phase establishes the foundational infrastructure for herb-format, includin
 
 **Location:** `herb-format/bin/`
 
-- [ ] Create binstubs following herb-lint pattern:
+- [x] Create binstubs following herb-lint pattern:
   - bin/rake
   - bin/rspec
   - bin/rubocop
   - bin/rbs
   - bin/rbs-inline
   - bin/steep
-- [ ] Make all binstubs executable (chmod +x)
-- [ ] Each binstub uses herb-format/Gemfile
+- [x] Make all binstubs executable (chmod +x)
+- [x] Each binstub uses herb-format/Gemfile
 
 **Verification:**
 - `cd herb-format && ./bin/rake --version` works
