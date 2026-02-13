@@ -11,7 +11,7 @@ RSpec.describe Herb::Lint::Rules::Html::AriaLevelMustBeValid do
 
   describe ".description" do
     it "returns description" do
-      expect(described_class.description).to eq("aria-level attribute must have a valid integer value (1-6)")
+      expect(described_class.description).to eq("The `aria-level` attribute must be an integer between 1 and 6")
     end
   end
 
@@ -28,8 +28,9 @@ RSpec.describe Herb::Lint::Rules::Html::AriaLevelMustBeValid do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
+    # Good examples from documentation
     context "when aria-level is 1" do
-      let(:source) { '<div role="heading" aria-level="1">Heading</div>' }
+      let(:source) { '<div role="heading" aria-level="1">Main</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -37,42 +38,55 @@ RSpec.describe Herb::Lint::Rules::Html::AriaLevelMustBeValid do
     end
 
     context "when aria-level is 6" do
-      let(:source) { '<div role="heading" aria-level="6">Heading</div>' }
+      let(:source) { '<div role="heading" aria-level="6">Footnote</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when aria-level is 0" do
-      let(:source) { '<div role="heading" aria-level="0">Heading</div>' }
+    # Bad examples from documentation
+    context "when aria-level is -1" do
+      let(:source) { '<div role="heading" aria-level="-1">Negative</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-aria-level-must-be-valid")
-        expect(subject.first.message).to eq("aria-level must be a valid integer between 1 and 6, got '0'")
+        expect(subject.first.message).to eq("The `aria-level` attribute must be an integer between 1 and 6, got `-1`.")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when aria-level is 0" do
+      let(:source) { '<div role="heading" aria-level="0">Main</div>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-aria-level-must-be-valid")
+        expect(subject.first.message).to eq("The `aria-level` attribute must be an integer between 1 and 6, got `0`.")
         expect(subject.first.severity).to eq("error")
       end
     end
 
     context "when aria-level is 7" do
-      let(:source) { '<div role="heading" aria-level="7">Heading</div>' }
+      let(:source) { '<div role="heading" aria-level="7">Too deep</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("aria-level must be a valid integer between 1 and 6, got '7'")
+        expect(subject.first.message).to eq("The `aria-level` attribute must be an integer between 1 and 6, got `7`.")
       end
     end
 
     context "when aria-level is a non-numeric string" do
-      let(:source) { '<div role="heading" aria-level="abc">Heading</div>' }
+      let(:source) { '<div role="heading" aria-level="foo">Invalid</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("aria-level must be a valid integer between 1 and 6, got 'abc'")
+        expect(subject.first.message).to eq("The `aria-level` attribute must be an integer between 1 and 6, got `foo`.")
       end
     end
 
+    # Additional edge case tests
     context "when there is no aria-level attribute" do
       let(:source) { '<div role="heading">Heading</div>' }
 
@@ -105,7 +119,7 @@ RSpec.describe Herb::Lint::Rules::Html::AriaLevelMustBeValid do
 
       it "reports an offense only for the invalid value" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("aria-level must be a valid integer between 1 and 6, got '0'")
+        expect(subject.first.message).to eq("The `aria-level` attribute must be an integer between 1 and 6, got `0`.")
       end
     end
 
@@ -137,7 +151,7 @@ RSpec.describe Herb::Lint::Rules::Html::AriaLevelMustBeValid do
 
       it "reports an offense for the invalid aria-level" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("aria-level must be a valid integer between 1 and 6, got '0'")
+        expect(subject.first.message).to eq("The `aria-level` attribute must be an integer between 1 and 6, got `0`.")
       end
     end
   end
