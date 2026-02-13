@@ -21,52 +21,14 @@ Phases 1-14, 19, 20, and 23 have been completed and their task files have been r
 
 | Phase | File | Tasks | Description | Status |
 |-------|------|-------|-------------|--------|
-| Phase 15 | [phase-15-autofix.md](./phase-15-autofix.md) | 9 | Autofix (`--fix` / `--fix-unsafely`) | 🚧 |
-| Phase 16 | [phase-16-rule-autofix-expansion.md](./phase-16-rule-autofix-expansion.md) | 15 | Rule autofix expansion | 🚧 |
-| Phase 17 | [phase-17-advanced-config.md](./phase-17-advanced-config.md) | 6 | Advanced configuration features | 📋 |
-| Phase 18 | [phase-18-source-rule.md](./phase-18-source-rule.md) | 7 | SourceRule base class, autofix, NoExtraNewline migration | 📋 |
 | Phase 21 | [phase-21-review-linter-rules.md](./phase-21-review-linter-rules.md) | 408 | Review and update all linter rules | 🚧 |
 | Phase 24 | [phase-24-typescript-alignment.md](./phase-24-typescript-alignment.md) | 24 | TypeScript implementation alignment | 🚧 23/24 |
 
-**Remaining Total: ~469 tasks**
+**Remaining Total: ~432 tasks**
 
 Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
 ### Phase Overview (herb-lint)
-
-#### Phase 15: Autofix (9 tasks)
-
-| Part | Tasks | Description |
-|------|-------|-------------|
-| Part A | 3 | AutofixContext, RuleMethods extensions, NodeLocator |
-| Part B | 3 | AutoFixResult, Autofixer, Runner/CLI integration |
-| Part C | 3 | Autofix reporting |
-
-### Phase 16: Rule Autofix Expansion (15 tasks)
-
-| Part | Tasks | Description |
-|------|-------|-------------|
-| Part A | 1 | Complete autofix infrastructure |
-| Part B | 6 | ERB rules autofix |
-| Part C | 7 | HTML rules autofix |
-| Part E | 1 | SVG rules autofix |
-
-### Phase 17: Advanced Configuration (6 tasks)
-
-| Part | Tasks | Description |
-|------|-------|-------------|
-| Part A | 1 | failLevel exit code control |
-| Part B | 1 | Top-level files section |
-| Part C | 2 | Per-rule configuration |
-| Part D | 2 | Formatter configuration (deferred) |
-
-### Phase 18: Source Rule Introduction (7 tasks)
-
-| Part | Tasks | Description |
-|------|-------|-------------|
-| Part A | 3 | AutofixContext extension, SourceRule base class, Autofixer source phase |
-| Part B | 2 | NoExtraNewline and RequireTrailingNewline migration |
-| Part C | 2 | Type annotations, full verification |
 
 ### Phase 21: Review Linter Rules (408 tasks)
 
@@ -113,6 +75,8 @@ The following phases have been completed and their task files removed:
 - **Phase 12**: ERB rule expansion (12 rules)
 - **Phase 13**: SVG & parser rules (2 rules)
 - **Phase 14**: herb-printer gem
+- **Phase 16**: Rule autofix expansion (12 fixable rules with autofix implementation)
+- **Phase 18**: Source Rule introduction (SourceRule base class, autofix source phase, rule migrations)
 - **Phase 19**: Rule naming alignment
 - **Phase 20**: factory_bot introduction
 - **Phase 23**: JSON reporter completion (info/hint severities, ignored offenses, rule count)
