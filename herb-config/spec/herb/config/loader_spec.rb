@@ -156,59 +156,6 @@ RSpec.describe Herb::Config::Loader do
     end
   end
 
-  context "with HERB_CONFIG environment variable" do
-    context "when points to existing file" do
-      let(:env_config_path) { File.join(tmp_dir, "env-config.yml") }
-
-      before do
-        File.write(env_config_path, <<~YAML)
-          linter:
-            rules:
-              alt-text:
-                severity: warning
-        YAML
-        stub_const("ENV", ENV.to_h.merge("HERB_CONFIG" => env_config_path))
-      end
-
-      it "loads configuration from HERB_CONFIG path" do
-        config = described_class.load
-        expect(config["linter"]["rules"]).to eq({ "alt-text" => { "severity" => "warning" } })
-      end
-    end
-
-    context "when points to nonexistent file" do
-      before do
-        stub_const("ENV", ENV.to_h.merge("HERB_CONFIG" => File.join(tmp_dir, "nonexistent.yml")))
-      end
-
-      it "raises Herb::Config::Error" do
-        expect do
-          described_class.load
-        end.to raise_error(Herb::Config::Error, /Configuration file not found.*HERB_CONFIG/)
-      end
-    end
-  end
-
-  context "with HERB_NO_CONFIG environment variable" do
-    before do
-      stub_const("ENV", ENV.to_h.merge("HERB_NO_CONFIG" => "1"))
-    end
-
-    it "returns default configuration without searching for files" do
-      # Create a config file that should be ignored
-      File.write(config_path, <<~YAML)
-        linter:
-          rules:
-            alt-text:
-              severity: error
-      YAML
-
-      config = described_class.load
-      expect(config).to eq(Herb::Config::Defaults.config)
-      expect(config["linter"]["rules"]).to eq({})
-    end
-  end
-
   context "with upward directory traversal" do
     let(:nested_dir) { File.join(tmp_dir, "a", "b", "c") }
 

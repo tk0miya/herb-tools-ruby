@@ -10,10 +10,9 @@ module Herb
       CONFIG_FILE_NAME = ".herb.yml"
 
       # Loads configuration from .herb.yml using the following search order:
-      # 1. Explicit path: parameter (error if not found) - mapped from --config-file CLI option
-      # 2. HERB_CONFIG environment variable
-      # 3. Upward directory traversal from Dir.pwd
-      # 4. Default configuration (if HERB_NO_CONFIG not set)
+      # 1. Explicit path parameter (error if not found) - mapped from --config-file CLI option
+      # 2. Upward directory traversal from Dir.pwd (returns nil if not found)
+      # 3. Default configuration (when nil is returned from step 2)
       #
       # @rbs path: String? -- explicit path to configuration file (from --config-file)
       # @rbs validate: bool -- whether to validate configuration (default: true)
@@ -44,18 +43,7 @@ module Herb
           raise Error, "Configuration file not found: #{path}"
         end
 
-        # 2. HERB_CONFIG environment variable
-        herb_config = ENV.fetch("HERB_CONFIG", nil)
-        if herb_config
-          return herb_config if File.exist?(herb_config)
-
-          raise Error, "Configuration file not found: #{herb_config} (from HERB_CONFIG)"
-        end
-
-        # 3. HERB_NO_CONFIG environment variable - skip search, use defaults
-        return nil if ENV.fetch("HERB_NO_CONFIG", nil)
-
-        # 4. Upward directory traversal from current directory
+        # 2. Upward directory traversal from current directory
         search_upward(Dir.pwd)
       end
 

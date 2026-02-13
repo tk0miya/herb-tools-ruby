@@ -96,9 +96,12 @@ end
 
 **Configuration Search Order:**
 1. Explicit path parameter (raises error if not found)
-2. `HERB_CONFIG` environment variable
-3. Upward directory traversal from working directory
-4. Returns default configuration if no file found
+2. Upward directory traversal from working directory
+3. Returns default configuration if no file found
+
+**Note:** This matches the TypeScript reference implementation. Environment variables
+(HERB_CONFIG, HERB_NO_CONFIG) and XDG Base Directory support are NOT implemented
+to maintain cross-platform compatibility.
 
 ### Herb::Config::Validator
 
@@ -407,19 +410,12 @@ formatter.pre_rewriters            # => []
 formatter.post_rewriters           # => []
 ```
 
-### Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `HERB_CONFIG` | Override config file location |
-| `HERB_NO_CONFIG` | Ignore config file, use defaults only |
-
 ## Testing Strategy
 
 ### Test Coverage Areas
 
 **Herb::Config::Loader**
-- Configuration file search (explicit path, env var, upward traversal)
+- Configuration file search (explicit path, upward traversal)
 - YAML parsing and error handling
 - Default configuration fallback
 - File not found error scenarios

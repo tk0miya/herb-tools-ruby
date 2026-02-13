@@ -6,24 +6,7 @@ This document lists feature enhancements to consider implementing after MVP comp
 
 These features are implemented as simplified versions in the MVP. Consider expanding to full-spec versions in the future.
 
-### 1. herb-config: Loader Search Path Extension
-
-**Current State (MVP):**
-- Search only `.herb.yml` in current directory
-- Use default configuration if not found
-
-**Future Enhancements:**
-- [ ] Environment variable support (`HERB_CONFIG`, `HERB_NO_CONFIG`)
-- [ ] Upward directory search (search for `.herb.yml` up to project root)
-- [ ] XDG Base Directory specification support
-
-**Priority:** Medium
-
-**Implementation Complexity:** Low
-
----
-
-### 2. herb-config: Validator Implementation
+### 1. herb-config: Validator Implementation
 
 **Current State (MVP):**
 - Validation omitted
@@ -44,7 +27,7 @@ These features are implemented as simplified versions in the MVP. Consider expan
 
 ---
 
-### 3. herb-core: PatternMatcher Separation
+### 2. herb-core: PatternMatcher Separation
 
 **Current State (MVP):**
 - PatternMatcher functionality integrated within FileDiscovery
@@ -62,7 +45,7 @@ These features are implemented as simplified versions in the MVP. Consider expan
 
 ---
 
-### 4. herb-lint: DirectiveParser & herb-disable-comment Meta-Rules
+### 3. herb-lint: DirectiveParser & herb-disable-comment Meta-Rules
 
 **Status:** ✅ Implemented in [Phase 9](./phase-9-inline-directives.md)
 
@@ -77,7 +60,7 @@ These features are implemented as simplified versions in the MVP. Consider expan
 
 ---
 
-### 5. herb-lint: LinterFactory Implementation
+### 4. herb-lint: LinterFactory Implementation
 
 **Current State (MVP):**
 - Runner directly generates Linter
@@ -97,7 +80,7 @@ These features are implemented as simplified versions in the MVP. Consider expan
 
 ---
 
-### 6. herb-lint: RuleRegistry Dynamic Discovery
+### 5. herb-lint: RuleRegistry Dynamic Discovery
 
 **Current State (MVP):**
 - Hard-coded rule registration
@@ -117,7 +100,7 @@ These features are implemented as simplified versions in the MVP. Consider expan
 
 ---
 
-### 7. Multiple Reporter Implementations
+### 6. Multiple Reporter Implementations
 
 **Current State (MVP):**
 - Only SimpleReporter implemented
@@ -136,7 +119,7 @@ These features are implemented as simplified versions in the MVP. Consider expan
 
 ---
 
-### 8. Auto-fix Functionality (`--fix` / `--fix-unsafely` options)
+### 7. Auto-fix Functionality (`--fix` / `--fix-unsafely` options)
 
 **Status:** 📋 Scheduled as [Phase 15: Autofix](./phase-15-autofix.md)
 
@@ -158,7 +141,7 @@ Detailed design available: [herb-lint-autofix-design.md](../design/herb-lint-aut
 
 ---
 
-### 9. Custom Rule Loading
+### 8. Custom Rule Loading
 
 **Current State (MVP):**
 - Custom rules not supported
@@ -176,7 +159,7 @@ Detailed design available: [herb-lint-autofix-design.md](../design/herb-lint-aut
 
 ---
 
-### 10. Parallel Processing
+### 9. Parallel Processing
 
 **Current State (MVP):**
 - Each file processed sequentially
@@ -191,7 +174,7 @@ Detailed design available: [herb-lint-autofix-design.md](../design/herb-lint-aut
 
 ---
 
-### 11. Formatter include/exclude Patterns
+### 10. Formatter include/exclude Patterns
 
 **Status:** ⏸️ Blocked by herb-format gem implementation
 
@@ -228,7 +211,7 @@ formatter:
 
 ---
 
-### 12. Formatter Rewriter Hooks
+### 11. Formatter Rewriter Hooks
 
 **Status:** ⏸️ Blocked by herb-format gem implementation
 
@@ -290,11 +273,10 @@ end
 
 ### Medium Priority (As needed)
 1. Validator implementation (configuration file validation)
-2. Loader search path extension (environment variables, upward search)
-3. RuleRegistry dynamic discovery
-4. Multiple Reporter implementations
-5. Custom rule loading
-6. Formatter include/exclude patterns (requires herb-format)
+2. RuleRegistry dynamic discovery
+3. Multiple Reporter implementations
+4. Custom rule loading
+5. Formatter include/exclude patterns (requires herb-format)
 
 ### Low Priority (When needed)
 1. PatternMatcher separation

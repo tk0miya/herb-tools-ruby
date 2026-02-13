@@ -8,10 +8,9 @@ module Herb
       CONFIG_FILE_NAME: ::String
 
       # Loads configuration from .herb.yml using the following search order:
-      # 1. Explicit path: parameter (error if not found) - mapped from --config-file CLI option
-      # 2. HERB_CONFIG environment variable
-      # 3. Upward directory traversal from Dir.pwd
-      # 4. Default configuration (if HERB_NO_CONFIG not set)
+      # 1. Explicit path parameter (error if not found) - mapped from --config-file CLI option
+      # 2. Upward directory traversal from Dir.pwd (returns nil if not found)
+      # 3. Default configuration (when nil is returned from step 2)
       #
       # @rbs path: String? -- explicit path to configuration file (from --config-file)
       # @rbs validate: bool -- whether to validate configuration (default: true)
