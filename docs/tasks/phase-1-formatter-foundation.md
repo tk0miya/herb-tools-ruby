@@ -121,16 +121,16 @@ This phase establishes the foundational infrastructure for herb-format, includin
 
 **Location:** `herb-format/Gemfile`
 
-- [ ] Create Gemfile sourcing rubygems.org
-- [ ] Add `gemspec` directive
-- [ ] Add path dependencies for local gems:
+- [x] Create Gemfile sourcing rubygems.org
+- [x] Add `gemspec` directive
+- [x] Add path dependencies for local gems:
   ```ruby
   gem "herb-config", path: "../herb-config"
   gem "herb-core", path: "../herb-core"
   gem "herb-printer", path: "../herb-printer"
   ```
-- [ ] Run `bundle install`
-- [ ] Commit Gemfile.lock
+- [x] Run `bundle install`
+- [x] Commit Gemfile.lock
 
 **Verification:**
 - `bundle install` succeeds
