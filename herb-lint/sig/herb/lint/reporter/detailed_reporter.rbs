@@ -1,0 +1,131 @@
+# Generated from lib/herb/lint/reporter/detailed_reporter.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Reporter
+      # Detailed reporter that outputs linting results with code context and syntax highlighting.
+      class DetailedReporter
+        include StringUtils
+
+        attr_reader io: IO
+
+        attr_reader context_lines: Integer
+
+        attr_reader show_progress: bool
+
+        # @rbs io: IO
+        # @rbs context_lines: Integer -- number of lines to show before/after offense
+        # @rbs show_progress: bool -- whether to show progress counters
+        def initialize: (?io: IO, ?context_lines: Integer, ?show_progress: bool) -> void
+
+        # Reports the aggregated linting result with detailed context.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def report: (AggregatedResult aggregated_result) -> void
+
+        private
+
+        # Prints offenses for a single file (multi-file mode).
+        #
+        # @rbs result: LintResult
+        # @rbs current: Integer
+        # @rbs total: Integer
+        def print_file_offenses: (LintResult result, Integer current, Integer total) -> void
+
+        # Prints offenses for a single file (single-file mode).
+        #
+        # @rbs result: LintResult
+        def print_file_offenses_single: (LintResult result) -> void
+
+        # Prints a detailed offense with code context and progress.
+        #
+        # @rbs offense: Offense
+        # @rbs file_path: String
+        # @rbs current_file: Integer
+        # @rbs total_files: Integer
+        # @rbs current_offense: Integer
+        # @rbs total_offenses: Integer
+        def print_offense_detailed: (Offense offense, String file_path, Integer current_file, Integer total_files, Integer current_offense, Integer total_offenses) -> void
+
+        # Prints a single offense with surrounding code context.
+        #
+        # @rbs offense: Offense
+        # @rbs file_path: String
+        def print_offense_with_context: (Offense offense, String file_path) -> void
+
+        # Prints the code context around an offense.
+        #
+        # @rbs file_path: String
+        # @rbs offense: Offense
+        def print_code_context: (String file_path, Offense offense) -> void
+
+        # Prints a single line of code with line number and optional marker.
+        #
+        # @rbs line_num: Integer
+        # @rbs line_content: String
+        # @rbs is_offense_line: bool
+        # @rbs width: Integer
+        # @rbs column: Integer
+        def print_code_line: (Integer line_num, String line_content, bool is_offense_line, Integer width, Integer column) -> void
+
+        # Prints a caret marker pointing to the offense column.
+        #
+        # @rbs line_num_width: Integer
+        # @rbs column: Integer
+        def print_column_marker: (Integer line_num_width, Integer column) -> void
+
+        # Prints a separator line between offenses.
+        def print_separator: () -> void
+
+        # Returns the colored symbol for a severity level.
+        #
+        # @rbs severity: String
+        def severity_symbol: (String severity) -> String
+
+        # Prints the summary of all offenses.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_summary: (AggregatedResult aggregated_result) -> void
+
+        # Prints the "Checked" line showing total files processed.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_checked_line: (AggregatedResult aggregated_result) -> void
+
+        # Prints the "Files" line showing clean vs files with offenses.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_files_line: (AggregatedResult aggregated_result) -> void
+
+        # Prints the "Offenses" line showing error/warning breakdown.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_offenses_line: (AggregatedResult aggregated_result) -> void
+
+        # Prints the "Fixable" line showing autocorrectable offenses.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_fixable_line: (AggregatedResult aggregated_result) -> void
+
+        # Prints success message if all files are clean.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_success_message: (AggregatedResult aggregated_result) -> void
+
+        # Pads a label to a consistent width.
+        #
+        # @rbs label: String
+        def pad_label: (String label) -> String
+
+        # Applies color and styling to text.
+        # Simplified version - only applies colors when TTY is supported.
+        #
+        # @rbs text: String
+        # @rbs color: Symbol? -- :red, :green, :yellow, :cyan, :gray
+        # @rbs bold: bool -- make text bold
+        # @rbs dim: bool -- make text dimmed
+        def colorize: (String text, ?color: Symbol?, ?bold: bool, ?dim: bool) -> String
+      end
+    end
+  end
+end

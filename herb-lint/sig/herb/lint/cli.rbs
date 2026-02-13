@@ -40,7 +40,7 @@ module Herb
       def parse_options: () -> void
 
       # Creates the appropriate reporter based on command-line options.
-      def create_reporter: () -> (Reporter::SimpleReporter | Reporter::JsonReporter | Reporter::GithubReporter)
+      def create_reporter: () -> (Reporter::SimpleReporter | Reporter::DetailedReporter | Reporter::JsonReporter | Reporter::GithubReporter)
     end
   end
 end

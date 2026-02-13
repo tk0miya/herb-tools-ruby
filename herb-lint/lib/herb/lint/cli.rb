@@ -25,7 +25,7 @@ module Herb
       rescue SystemExit => e
         e.status
       rescue OptionParser::InvalidArgument => e
-        handle_error("Invalid format: #{e.args.first}. Valid formats are: simple, json")
+        handle_error("Invalid format: #{e.args.first}. Valid formats are: simple, detailed, json")
       rescue Herb::Config::Error => e
         handle_error("Configuration error: #{e.message}")
       rescue StandardError => e
@@ -93,6 +93,7 @@ module Herb
             stdout.puts "  herb-lint app/views                # Lint files in app/views"
             stdout.puts "  herb-lint app/views/users/*.erb    # Lint specific files"
             stdout.puts "  herb-lint --format json .          # Output as JSON"
+            stdout.puts "  herb-lint --format detailed .      # Output with code context"
             stdout.puts "  herb-lint --github .               # Output GitHub Actions annotations"
             stdout.puts "  herb-lint --fail-level warning .   # Exit with error on warnings or errors"
             stdout.puts
@@ -103,7 +104,7 @@ module Herb
             exit EXIT_SUCCESS
           end
 
-          opts.on("--format TYPE", %w[simple json], "Output format (simple, json)") do |format|
+          opts.on("--format TYPE", %w[simple detailed json], "Output format (simple, detailed, json)") do |format|
             options[:format] = format
           end
 
@@ -134,12 +135,14 @@ module Herb
       end
 
       # Creates the appropriate reporter based on command-line options.
-      def create_reporter #: Reporter::SimpleReporter | Reporter::JsonReporter | Reporter::GithubReporter
+      def create_reporter #: Reporter::SimpleReporter | Reporter::DetailedReporter | Reporter::JsonReporter | Reporter::GithubReporter
         return Reporter::GithubReporter.new(io: stdout) if options[:github]
 
         case options[:format]
         when "json"
           Reporter::JsonReporter.new(io: stdout)
+        when "detailed"
+          Reporter::DetailedReporter.new(io: stdout)
         else
           Reporter::SimpleReporter.new(io: stdout)
         end
