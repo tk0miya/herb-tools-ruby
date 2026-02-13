@@ -595,13 +595,13 @@ end
 
 **Location:** `herb-format/lib/herb/format/errors.rb`
 
-- [ ] Create Errors module with custom exception classes
-- [ ] Define base Error class
-- [ ] Define ConfigurationError
-- [ ] Define ParseError
-- [ ] Define RewriterError
-- [ ] Define FileNotFoundError
-- [ ] Add RBS inline type annotations
+- [x] Create Errors module with custom exception classes
+- [x] Define base Error class
+- [x] Define ConfigurationError
+- [x] Define ParseError
+- [x] Define RewriterError
+- [x] Define FileNotFoundError
+- [x] Add RBS inline type annotations
 
 **Interface:**
 ```ruby
