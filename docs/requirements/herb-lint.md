@@ -171,7 +171,57 @@ app/views/posts/show.html.erb:8:10: error: Invalid tag nesting: <p> inside <span
 
 ### JSON
 
-Machine-readable format matching TypeScript herb linter:
+Machine-readable format matching TypeScript herb linter.
+
+#### Output Structure
+
+The JSON output follows this schema:
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `offenses` | Array | Yes | List of all detected offenses |
+| `summary` | Object | Yes | Aggregate statistics about the linting run |
+| `timing` | Number \| null | Yes | Execution time in milliseconds (currently always `null`) |
+| `completed` | Boolean | Yes | Whether the linting process completed successfully |
+| `clean` | Boolean | Yes | `true` if no offenses were found, `false` otherwise |
+| `message` | String \| null | Yes | Optional message (e.g., error description if not completed) |
+
+#### Offense Object
+
+Each offense in the `offenses` array has the following structure:
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `filename` | String | Yes | Path to the file containing the offense |
+| `message` | String | Yes | Human-readable description of the issue |
+| `location` | Object | Yes | Source location of the offense |
+| `location.start` | Object | Yes | Starting position of the offense |
+| `location.start.line` | Integer | Yes | Starting line number (1-indexed) |
+| `location.start.column` | Integer | Yes | Starting column number (1-indexed) |
+| `location.end` | Object | Yes | Ending position of the offense |
+| `location.end.line` | Integer | Yes | Ending line number (1-indexed) |
+| `location.end.column` | Integer | Yes | Ending column number (1-indexed) |
+| `severity` | String | Yes | Severity level: `"error"`, `"warning"`, `"info"`, or `"hint"` |
+| `code` | String | Yes | Rule identifier (e.g., `"html-img-require-alt"`) |
+| `source` | String | Yes | Tool name (always `"Herb Linter"`) |
+
+#### Summary Object
+
+The `summary` object provides aggregate statistics:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `filesChecked` | Integer | Total number of files that were linted |
+| `filesWithOffenses` | Integer | Number of files containing at least one offense |
+| `totalErrors` | Integer | Count of offenses with `error` severity |
+| `totalWarnings` | Integer | Count of offenses with `warning` severity |
+| `totalInfo` | Integer | Count of offenses with `info` severity |
+| `totalHints` | Integer | Count of offenses with `hint` severity |
+| `totalIgnored` | Integer | Count of offenses suppressed by `herb:disable` directives |
+| `totalOffenses` | Integer | Total count of active offenses (sum of all severity levels, excluding ignored) |
+| `ruleCount` | Integer | Number of rules that were active during linting |
+
+#### Example
 
 ```json
 {
