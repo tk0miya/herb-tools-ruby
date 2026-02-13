@@ -45,6 +45,7 @@ module Herb
         # @rbs total_files: Integer
         # @rbs current_offense: Integer
         # @rbs total_offenses: Integer
+        # rubocop:disable Layout/LineLength, Metrics/ParameterLists
         def print_offense_detailed: (Offense offense, String file_path, Integer current_file, Integer total_files, Integer current_offense, Integer total_offenses) -> void
 
         # Prints a single offense with surrounding code context.
