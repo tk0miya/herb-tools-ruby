@@ -146,17 +146,22 @@ class Herb::Lint::LintResult
   attr_reader offenses: Array[Offense]
   attr_reader source: String
   attr_reader ignored: bool
+  attr_reader ignored_offenses: Array[Offense]
 
   def initialize: (
     file_path: String,
     offenses: Array[Offense],
     source: String,
-    ?ignored: bool
+    ?ignored: bool,
+    ?ignored_offenses: Array[Offense]
   ) -> void
 
   def ignored?: () -> bool
   def error_count: () -> Integer
   def warning_count: () -> Integer
+  def info_count: () -> Integer
+  def hint_count: () -> Integer
+  def ignored_count: () -> Integer
   def fixable_count: () -> Integer
   def to_h: () -> Hash[Symbol, untyped]
 end
@@ -169,8 +174,12 @@ Aggregates results across multiple files.
 ```rbs
 class Herb::Lint::AggregatedResult
   attr_reader results: Array[LintResult]
+  attr_reader rule_count: Integer
 
-  def initialize: (Array[LintResult] results) -> void
+  def initialize: (
+    Array[LintResult] results,
+    ?rule_count: Integer
+  ) -> void
 
   def all_offenses: () -> Array[Offense]
   def file_count: () -> Integer
@@ -178,6 +187,9 @@ class Herb::Lint::AggregatedResult
   def offense_count: () -> Integer
   def error_count: () -> Integer
   def warning_count: () -> Integer
+  def info_count: () -> Integer
+  def hint_count: () -> Integer
+  def ignored_count: () -> Integer
   def fixable_count: () -> Integer
   def has_offenses_at_or_above?: (Symbol level) -> bool
   def to_h: () -> Hash[Symbol, untyped]
@@ -1090,6 +1102,7 @@ class Herb::Lint::Reporter::JsonReporter < BaseReporter
 
   private
 
+  def build_summary: (AggregatedResult result) -> Hash[String, Integer]
   def to_json: (Hash[Symbol, untyped] data) -> String
 end
 ```
@@ -1097,6 +1110,13 @@ end
 Features:
 - Serializes AggregatedResult.to_h
 - Pretty-printed JSON format
+- Summary includes all severity counts:
+  - `totalErrors`: count of error-level offenses
+  - `totalWarnings`: count of warning-level offenses
+  - `totalInfo`: count of info-level offenses
+  - `totalHints`: count of hint-level offenses
+  - `totalIgnored`: count of suppressed offenses via herb:disable
+  - `ruleCount`: number of active rules
 
 #### GithubReporter
 
