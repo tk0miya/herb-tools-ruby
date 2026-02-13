@@ -504,8 +504,8 @@ Update related documentation to reflect Phase 24 changes.
 - [x] `docs/tasks/README.md`
   - [x] Add Phase 24
   - [x] Update task counts
-- [ ] `docs/tasks/phase-16-rule-autofix-expansion.md`
-  - [ ] Update Task 16.13 completion status
+- [x] `docs/tasks/phase-16-rule-autofix-expansion.md`
+  - [x] Update Task 16.13 completion status
 
 **Verification:**
 ```bash
