@@ -161,16 +161,23 @@ Detailed design available: [herb-lint-autofix-design.md](../design/herb-lint-aut
 
 ### 9. Parallel Processing
 
-**Current State (MVP):**
-- Each file processed sequentially
+**⚠️ NOT IN TYPESCRIPT REFERENCE - DO NOT IMPLEMENT**
 
-**Future Enhancements:**
-- [ ] Parallel processing with multi-threading/multi-processing
-- [ ] Performance improvement for large projects
+**Current State:**
+- Each file processed sequentially in both Ruby and TypeScript implementations
 
-**Priority:** Low
+**Investigation Result:**
+After reviewing the TypeScript reference implementation (https://github.com/marcoroth/herb), parallel processing is **not implemented**. Files are processed sequentially.
 
-**Implementation Complexity:** Medium
+**Decision:**
+This feature should **not** be implemented in the Ruby version to maintain parity with the TypeScript reference.
+
+**Reason for Original Inclusion:**
+This was listed as a potential future enhancement without verifying the TypeScript implementation.
+
+**Priority:** N/A (not implementing)
+
+**Implementation Complexity:** N/A
 
 ---
 
