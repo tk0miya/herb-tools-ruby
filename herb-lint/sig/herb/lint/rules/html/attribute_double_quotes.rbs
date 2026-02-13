@@ -4,19 +4,29 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that requires attribute values to be quoted.
+        # Description:
+        #   Prefer using double quotes (") around HTML attribute values instead of single quotes (').
         #
-        # Unquoted attribute values are valid HTML5, but quoting them improves
-        # readability and prevents issues with special characters.
+        #   Exception:
+        #   Single quotes are allowed when the attribute value contains double quotes, as this avoids the need for
+        #   escaping.
         #
         # Good:
-        #   <div class="container">
-        #   <input type='text'>
-        #   <input disabled>
+        #   <input type="text" autocomplete="off">
+        #
+        #   <a href="/profile">Profile</a>
+        #
+        #   <div data-action="click->dropdown#toggle"></div>
+        #
+        #   <!-- Exception: Single quotes allowed when value contains double quotes -->
+        #   <div id='"hello"' title='Say "Hello" to the world'></div>
         #
         # Bad:
-        #   <div class=container>
-        #   <input type=text>
+        #   <input type='text' autocomplete="off">
+        #
+        #   <a href='/profile'>Profile</a>
+        #
+        #   <div data-action='click->dropdown#toggle'></div>
         class AttributeDoubleQuotes < VisitorRule
           def self.rule_name: () -> String
 
@@ -38,7 +48,10 @@ module Herb
           private
 
           # @rbs node: Herb::AST::HTMLAttributeNode
-          def unquoted_value?: (Herb::AST::HTMLAttributeNode node) -> bool
+          def single_quoted_value?: (Herb::AST::HTMLAttributeNode node) -> bool
+
+          # @rbs value: Herb::AST::HTMLAttributeValueNode
+          def value_contains_double_quotes?: (Herb::AST::HTMLAttributeValueNode value) -> bool
         end
       end
     end
