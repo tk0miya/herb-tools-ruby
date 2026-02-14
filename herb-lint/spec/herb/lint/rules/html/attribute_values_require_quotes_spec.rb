@@ -34,30 +34,65 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeValuesRequireQuotes do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when attribute has double-quoted value" do
-      let(:source) { '<div class="foo">text</div>' }
+    # Good examples from documentation
+    context "with <div id=\"hello\"></div>" do
+      let(:source) { '<div id="hello"></div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when attribute has single-quoted value" do
-      let(:source) { "<div class='foo'>text</div>" }
+    context "with <input type=\"text\" autocomplete=\"off\">" do
+      let(:source) { '<input type="text" autocomplete="off">' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when attribute has unquoted value" do
-      let(:source) { "<div class=foo>text</div>" }
+    context "with <a href=\"/profile\">Profile</a>" do
+      let(:source) { '<a href="/profile">Profile</a>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with <div id=hello></div>" do
+      let(:source) { "<div id=hello></div>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-attribute-values-require-quotes")
         expect(subject.first.message).to eq("Attribute value should be quoted")
         expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "with <input type=text autocomplete=\"off\">" do
+      let(:source) { '<input type=text autocomplete="off">' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+      end
+    end
+
+    context "with <a href=profile></a>" do
+      let(:source) { "<a href=profile></a>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+      end
+    end
+
+    # Additional edge cases
+    context "when attribute has single-quoted value" do
+      let(:source) { "<div class='foo'>text</div>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
       end
     end
 
