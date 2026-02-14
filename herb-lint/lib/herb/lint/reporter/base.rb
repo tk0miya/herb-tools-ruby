@@ -16,8 +16,7 @@ module Herb
         # Subclasses must implement this method.
         #
         # @rbs aggregated_result: AggregatedResult
-        # @rbs return: void
-        def report(aggregated_result)
+        def report(aggregated_result) #: void
           raise NotImplementedError, "#{self.class}#report must be implemented"
         end
       end
