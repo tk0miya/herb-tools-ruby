@@ -56,43 +56,13 @@ Herb::Config
 
 ### Herb::Config::Loader
 
-Responsible for locating and loading `.herb.yml` configuration files from the filesystem.
+**Interface:** See [`sig/herb/config/loader.rbs`](../../herb-config/sig/herb/config/loader.rbs)
 
 **Key Responsibilities:**
 - Search for configuration files using multiple strategies (explicit path, environment variable, directory traversal)
 - Parse YAML configuration files safely
 - Merge user configuration with default values
 - Handle file not found and parse errors gracefully
-
-**Public Interface:**
-
-```rbs
-module Herb
-  module Config
-    class Loader
-      CONFIG_FILENAME: String
-
-      @explicit_path: String?
-      @working_dir: String
-
-      def initialize: (?path: String?, ?working_dir: String) -> void
-
-      # Load and return merged configuration
-      # @raise [FileNotFoundError] When explicit path is not found
-      # @raise [ParseError] When YAML parsing fails
-      def load: () -> Hash[String, untyped]
-
-      # Locate configuration file path
-      def find_config_path: () -> String?
-
-      private
-
-      def load_from_file: (String path) -> Hash[String, untyped]
-      def parse_yaml: (String content) -> Hash[String, untyped]
-    end
-  end
-end
-```
 
 **Configuration Search Order:**
 1. Explicit path parameter (raises error if not found)
@@ -102,7 +72,7 @@ end
 
 ### Herb::Config::Validator
 
-Validates configuration structure and values using JSON Schema.
+**Interface:** See [`sig/herb/config/validator.rbs`](../../herb-config/sig/herb/config/validator.rbs)
 
 **Key Responsibilities:**
 - Validate configuration against JSON Schema (schema.json)
@@ -114,39 +84,6 @@ Validates configuration structure and values using JSON Schema.
 - Uses `json-schema` gem (~> 6.0) for declarative validation
 - Schema file: `lib/herb/config/schema.json`
 - Validates structure only by default; rule name validation is optional
-
-**Public Interface:**
-
-```rbs
-module Herb
-  module Config
-    class Validator
-      SCHEMA_PATH: String
-
-      @config: Hash[String, untyped]
-      @errors: Array[String]?
-
-      def initialize: (Hash[String, untyped] config) -> void
-
-      # Check if configuration is valid
-      def valid?: () -> bool
-
-      # Validate and raise exception if invalid
-      # @raise [ValidationError] With formatted error messages
-      def validate!: () -> void
-
-      # Get validation errors
-      def errors: () -> Array[String]
-
-      private
-
-      def validate_config: () -> void
-      def load_schema: () -> Hash[String, untyped]
-      def format_schema_error_object: (Hash[Symbol, untyped] error) -> String
-    end
-  end
-end
-```
 
 **Validation Rules:**
 - **Structure validation**: Enforced by JSON Schema (Draft 6)
@@ -192,34 +129,12 @@ JSON Schema file defining the structure and constraints of valid configuration.
 
 ### Herb::Config::Defaults
 
-Provides default configuration values and merging behavior.
+**Interface:** See [`sig/herb/config/defaults.rbs`](../../herb-config/sig/herb/config/defaults.rbs)
 
 **Key Responsibilities:**
 - Define default include/exclude patterns for ERB files
 - Provide complete default configuration structure
 - Merge user configuration with defaults (user values override defaults)
-
-**Public Interface:**
-
-```rbs
-module Herb
-  module Config
-    module Defaults
-      DEFAULT_INCLUDE: Array[String]
-
-      DEFAULT_EXCLUDE: Array[String]
-
-      def self.config: () -> Hash[String, untyped]
-
-      def self.merge: (Hash[String, untyped] user_config) -> Hash[String, untyped]
-
-      private
-
-      def self.deep_merge: (Hash[String, untyped] base, Hash[String, untyped] override) -> Hash[String, untyped]
-    end
-  end
-end
-```
 
 **Merge Behavior:**
 - Deep merge strategy: nested hashes are merged recursively
@@ -228,58 +143,13 @@ end
 
 ### Herb::Config::LinterConfig
 
-Provides convenient access to linter-specific configuration.
+**Interface:** See [`sig/herb/config/linter_config.rbs`](../../herb-config/sig/herb/config/linter_config.rbs)
 
 **Key Responsibilities:**
 - Extract linter section from complete configuration
 - Provide accessor methods for linter settings
 - Handle rule-specific configuration (enabled status, severity, options)
 - Support both string and symbol keys for rule lookup
-
-**Public Interface:**
-
-```rbs
-module Herb
-  module Config
-    class LinterConfig
-      @config: Hash[String, untyped]
-      @linter_config: Hash[String, untyped]
-
-      def initialize: (Hash[String, untyped] config) -> void
-
-      def enabled?: () -> bool
-
-      # Returns file patterns to include in linting
-      # Merges patterns from both 'files.include' and 'linter.include' (additive)
-      def include_patterns: () -> Array[String]
-
-      # Returns file patterns to exclude from linting
-      # Uses 'linter.exclude' if present (override), otherwise 'files.exclude' (fallback)
-      def exclude_patterns: () -> Array[String]
-
-      def rules: () -> Hash[String, untyped]
-
-      def rule_enabled?: (String rule_name) -> bool
-
-      def rule_severity: (String rule_name, ?default: Symbol) -> Symbol
-
-      # Returns the fail level for the linter (CI/CD exit code control)
-      # Determines which severity levels cause non-zero exit codes
-      # Defaults to "error" if not configured
-      def fail_level: () -> String
-
-      # Builds a PatternMatcher for rule-specific file patterns
-      # Returns a matcher configured with rule's include, exclude, and only patterns
-      def build_pattern_matcher: (String rule_name) -> Herb::Core::PatternMatcher
-
-      private
-
-      def normalize_rule_name: (String | Symbol rule_name) -> String
-      def extract_severity: (String | Symbol | Hash[String, untyped] rule_config) -> Symbol
-    end
-  end
-end
-```
 
 **Rule Configuration Format:**
 - Object form only: `"html-img-require-alt": { severity: "error", enabled: true }`
@@ -289,45 +159,12 @@ end
 
 ### Herb::Config::FormatterConfig
 
-Provides convenient access to formatter-specific configuration.
+**Interface:** See [`sig/herb/config/formatter_config.rbs`](../../herb-config/sig/herb/config/formatter_config.rbs)
 
 **Key Responsibilities:**
 - Extract formatter section from complete configuration
 - Provide accessor methods for formatter settings
 - Handle rewriter configuration (pre and post rewriters)
-
-**Public Interface:**
-
-```rbs
-module Herb
-  module Config
-    class FormatterConfig
-      @config: Hash[String, untyped]
-      @formatter_config: Hash[String, untyped]
-
-      def initialize: (Hash[String, untyped] config) -> void
-
-      def enabled?: () -> bool
-
-      def indent_width: () -> Integer
-
-      def max_line_length: () -> Integer
-
-      def include_patterns: () -> Array[String]
-
-      def exclude_patterns: () -> Array[String]
-
-      def pre_rewriters: () -> Array[String]
-
-      def post_rewriters: () -> Array[String]
-
-      private
-
-      def rewriter_config: () -> Hash[String, untyped]
-    end
-  end
-end
-```
 
 ### Herb::Config::Errors
 
@@ -374,12 +211,10 @@ end
 require "herb/config"
 
 # Automatic configuration search
-loader = Herb::Config::Loader.new
-config = loader.load
+config = Herb::Config::Loader.load
 
 # Explicit path
-loader = Herb::Config::Loader.new(path: "/path/to/.herb.yml")
-config = loader.load
+config = Herb::Config::Loader.load(path: "/path/to/.herb.yml")
 
 # Validate configuration
 validator = Herb::Config::Validator.new(config)
@@ -390,10 +225,9 @@ validator.validate!  # Raises ValidationError if invalid
 
 ```ruby
 linter = Herb::Config::LinterConfig.new(config)
-linter.enabled?                    # => true
 linter.include_patterns            # => ["**/*.html.erb", ...]
-linter.rule_enabled?("html-img-require-alt")   # => true
-linter.rule_severity("html-img-require-alt")   # => :error
+linter.enabled_rule?("html-img-require-alt")   # => true
+linter.rule_severity("html-img-require-alt")   # => "error"
 ```
 
 **Access formatter configuration:**

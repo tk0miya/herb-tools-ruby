@@ -200,47 +200,14 @@ end
 
 ### Herb::Lint::CLI
 
+**Interface:** See [`sig/herb/lint/cli.rbs`](../../herb-lint/sig/herb/lint/cli.rbs)
+
 **Responsibility:** Command-line interface orchestration.
 
 **Exit Codes:**
 - `EXIT_SUCCESS = 0` - No offenses found
 - `EXIT_LINT_ERROR = 1` - Offenses detected
 - `EXIT_RUNTIME_ERROR = 2` - Configuration or runtime error
-
-```rbs
-class Herb::Lint::CLI
-  EXIT_SUCCESS: Integer
-  EXIT_LINT_ERROR: Integer
-  EXIT_RUNTIME_ERROR: Integer
-
-  @argv: Array[String]
-  @stdout: IO
-  @stderr: IO
-  @options: Hash[Symbol, untyped]
-
-  attr_reader argv: Array[String]
-  attr_reader stdout: IO
-  attr_reader stderr: IO
-
-  def initialize: (
-    ?Array[String] argv,
-    ?stdout: IO,
-    ?stderr: IO
-  ) -> void
-
-  def run: () -> Integer
-
-  private
-
-  def parse_options: () -> Hash[Symbol, untyped]
-  def handle_init: () -> Integer
-  def handle_version: () -> Integer
-  def handle_help: () -> Integer
-  def load_config: () -> Herb::Config::LinterConfig
-  def create_reporter: (String format, bool github) -> Reporter::BaseReporter
-  def determine_exit_code: (AggregatedResult result) -> Integer
-end
-```
 
 **Processing Flow:**
 1. Parse command-line options (including --fail-level override)
@@ -264,36 +231,9 @@ end
 
 ### Herb::Lint::Runner
 
+**Interface:** See [`sig/herb/lint/runner.rbs`](../../herb-lint/sig/herb/lint/runner.rbs)
+
 **Responsibility:** Orchestrates the linting process across multiple files.
-
-```rbs
-class Herb::Lint::Runner
-  @config: Herb::Config::LinterConfig
-  @fix: bool
-  @fix_unsafely: bool
-  @rule_registry: RuleRegistry
-  @linter: Linter
-
-  attr_reader config: Herb::Config::LinterConfig
-  attr_reader fix: bool
-  attr_reader fix_unsafely: bool
-
-  def initialize: (
-    config: Herb::Config::LinterConfig,
-    ?fix: bool,
-    ?fix_unsafely: bool
-  ) -> void
-
-  def run: (?Array[String] files) -> AggregatedResult
-
-  private
-
-  def setup_rules: () -> void
-  def discover_files: (Array[String]? files) -> Array[String]
-  def lint_file: (String file_path) -> LintResult
-  def apply_fixes: (LintResult result) -> void
-end
-```
 
 **Processing Flow:**
 1. Setup: Load built-in and custom rules via RuleRegistry
@@ -316,38 +256,9 @@ end
 
 ### Herb::Lint::Linter
 
+**Interface:** See [`sig/herb/lint/linter.rbs`](../../herb-lint/sig/herb/lint/linter.rbs)
+
 **Responsibility:** Core single-file linting implementation. Uses `DirectiveParser` for directive processing and offense filtering.
-
-```rbs
-class Herb::Lint::Linter
-  @rules: Array[Rules::Base]
-  @config: Herb::Config::LinterConfig
-  @rule_registry: RuleRegistry?
-  @ignore_disable_comments: bool
-
-  attr_reader rules: Array[Rules::Base]
-  attr_reader config: Herb::Config::LinterConfig
-  attr_reader rule_registry: RuleRegistry?
-  attr_reader ignore_disable_comments: bool
-
-  def initialize: (
-    Array[Rules::Base] rules,
-    Herb::Config::LinterConfig config,
-    ?rule_registry: RuleRegistry?,
-    ?ignore_disable_comments: bool
-  ) -> void
-
-  def lint: (file_path: String, source: String) -> LintResult
-
-  private
-
-  def build_context: (String file_path, String source) -> Context
-  def collect_offenses: (Herb::ParseResult document, Context context) -> Array[Offense]
-  def build_lint_result: (String file_path, String source, DirectiveParser::Directives directives, Array[Offense] offenses) -> LintResult
-  def parse_error_result: (String file_path, String source, Array[untyped] errors) -> LintResult
-  def parse_error_offense: (untyped error) -> Offense
-end
-```
 
 **Processing Flow:**
 1. Parse ERB template into AST via `Herb.parse`

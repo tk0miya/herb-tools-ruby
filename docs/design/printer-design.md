@@ -93,54 +93,9 @@ Herb::Visitor
 
 ### Herb::Printer::PrintContext
 
-Output accumulator with infrastructure for indent/column tracking. The `IdentityPrinter` uses only `write`, `get_output`, and `reset`. The remaining methods provide infrastructure for future formatting printers.
+**Interface:** See [`sig/herb/printer/print_context.rbs`](../../herb-printer/sig/herb/printer/print_context.rbs)
 
-```rbs
-class Herb::Printer::PrintContext
-  @output: String
-  @indent_level: Integer
-  @current_column: Integer
-  @tag_stack: Array[String]
-
-  def initialize: () -> void
-
-  # Append text to the output buffer
-  def write: (String text) -> void
-
-  # Append text and track column position across newlines
-  def write_with_column_tracking: (String text) -> void
-
-  # Increment indent level
-  def indent: () -> void
-
-  # Decrement indent level
-  def dedent: () -> void
-
-  # Push tag name onto the preserve stack (for tracking nesting)
-  def enter_tag: (String tag_name) -> void
-
-  # Pop tag name from the preserve stack
-  def exit_tag: () -> void
-
-  # Whether the cursor is at column 0
-  def at_start_of_line?: () -> bool
-
-  # Current indent depth
-  def current_indent_level: () -> Integer
-
-  # Current column position (0-based)
-  def current_column: () -> Integer
-
-  # Copy of the current tag stack
-  def tag_stack: () -> Array[String]
-
-  # Return accumulated output string
-  def get_output: () -> String
-
-  # Clear all state (output, indent, column, tag stack)
-  def reset: () -> void
-end
-```
+Output accumulator with infrastructure for indent/column tracking. The `IdentityPrinter` uses only `write`, `output`, and `reset`. The remaining methods provide infrastructure for future formatting printers.
 
 **Responsibilities:**
 - Accumulate output text via `write`
@@ -150,49 +105,11 @@ end
 
 ### Herb::Printer::Base
 
+**Interface:** See [`sig/herb/printer/base.rbs`](../../herb-printer/sig/herb/printer/base.rbs)
+
 Abstract base class that extends `Herb::Visitor` and adds the `print` API. Subclasses override `visit_*_node` methods to define how each node type is serialized.
 
 A `Base` subclass with no overridden visit methods produces empty output (the default `visit_*_node` methods only traverse children without writing).
-
-```rbs
-class Herb::Printer::Base < Herb::Visitor
-  @context: Herb::Printer::PrintContext
-
-  def initialize: () -> void
-
-  # Class-level convenience method
-  def self.print: (
-    Herb::ParseResult | Herb::AST::Node | Herb::Token | Array[Herb::AST::Node] | nil input,
-    ?ignore_errors: bool
-  ) -> String
-
-  # Instance-level print method (allows reuse of printer instance)
-  def print: (
-    Herb::ParseResult | Herb::AST::Node | Herb::Token | Array[Herb::AST::Node] | nil input,
-    ?ignore_errors: bool
-  ) -> String
-
-  private
-
-  # Write text to the output context
-  def write: (String text) -> void
-
-  # Print from a ParseResult (extracts root node)
-  def print_parse_result: (Herb::ParseResult result, ignore_errors: bool) -> String
-
-  # Print a single AST node
-  def print_node: (Herb::AST::Node node, ignore_errors: bool) -> String
-
-  # Print an array of AST nodes
-  def print_nodes: (Array[Herb::AST::Node] nodes, ignore_errors: bool) -> String
-
-  # Raise PrintError if node tree contains parse errors
-  def validate_no_errors!: (Herb::AST::Node node) -> void
-end
-
-class Herb::Printer::PrintError < StandardError
-end
-```
 
 **Responsibilities:**
 - Accept multiple input types (`ParseResult`, `Node`, `Token`, `Array`, `nil`)
@@ -216,65 +133,9 @@ When `ignore_errors` is `false` (default) and the AST contains parse errors (che
 
 ### Herb::Printer::IdentityPrinter
 
+**Interface:** See [`sig/herb/printer/identity_printer.rbs`](../../herb-printer/sig/herb/printer/identity_printer.rbs)
+
 Lossless round-trip printer. Overrides all 28 `visit_*_node` methods to reconstruct the original source code exactly.
-
-```rbs
-class Herb::Printer::IdentityPrinter < Herb::Printer::Base
-  # --- Document ---
-  def visit_document_node: (Herb::AST::DocumentNode node) -> void
-
-  # --- HTML Leaf Nodes ---
-  def visit_literal_node: (Herb::AST::LiteralNode node) -> void
-  def visit_html_text_node: (Herb::AST::HTMLTextNode node) -> void
-  def visit_whitespace_node: (Herb::AST::WhitespaceNode node) -> void
-
-  # --- HTML Structure ---
-  def visit_html_element_node: (Herb::AST::HTMLElementNode node) -> void
-  def visit_html_open_tag_node: (Herb::AST::HTMLOpenTagNode node) -> void
-  def visit_html_close_tag_node: (Herb::AST::HTMLCloseTagNode node) -> void
-
-  # --- HTML Attributes ---
-  def visit_html_attribute_node: (Herb::AST::HTMLAttributeNode node) -> void
-  def visit_html_attribute_name_node: (Herb::AST::HTMLAttributeNameNode node) -> void
-  def visit_html_attribute_value_node: (Herb::AST::HTMLAttributeValueNode node) -> void
-
-  # --- HTML Comment / Doctype / XML / CDATA ---
-  def visit_html_comment_node: (Herb::AST::HTMLCommentNode node) -> void
-  def visit_html_doctype_node: (Herb::AST::HTMLDoctypeNode node) -> void
-  def visit_xml_declaration_node: (Herb::AST::XMLDeclarationNode node) -> void
-  def visit_cdata_node: (Herb::AST::CDATANode node) -> void
-
-  # --- ERB Nodes ---
-  def visit_erb_content_node: (Herb::AST::ERBContentNode node) -> void
-  def visit_erb_end_node: (Herb::AST::ERBEndNode node) -> void
-  def visit_erb_yield_node: (Herb::AST::ERBYieldNode node) -> void
-  def visit_erb_block_node: (Herb::AST::ERBBlockNode node) -> void
-  def visit_erb_if_node: (Herb::AST::ERBIfNode node) -> void
-  def visit_erb_else_node: (Herb::AST::ERBElseNode node) -> void
-  def visit_erb_unless_node: (Herb::AST::ERBUnlessNode node) -> void
-  def visit_erb_case_node: (Herb::AST::ERBCaseNode node) -> void
-  def visit_erb_case_match_node: (Herb::AST::ERBCaseMatchNode node) -> void
-  def visit_erb_when_node: (Herb::AST::ERBWhenNode node) -> void
-  def visit_erb_in_node: (Herb::AST::ERBInNode node) -> void
-  def visit_erb_while_node: (Herb::AST::ERBWhileNode node) -> void
-  def visit_erb_until_node: (Herb::AST::ERBUntilNode node) -> void
-  def visit_erb_for_node: (Herb::AST::ERBForNode node) -> void
-  def visit_erb_begin_node: (Herb::AST::ERBBeginNode node) -> void
-  def visit_erb_rescue_node: (Herb::AST::ERBRescueNode node) -> void
-  def visit_erb_ensure_node: (Herb::AST::ERBEnsureNode node) -> void
-
-  private
-
-  # Shared helper: write tag_opening + content + tag_closing tokens for ERB nodes
-  def print_erb_tag: (Herb::AST::Node node) -> void
-
-  # Split child nodes around a token's position (used for HTMLCloseTagNode)
-  def split_children_around_token: (
-    Array[Herb::AST::Node] children,
-    Herb::Token token
-  ) -> [Array[Herb::AST::Node], Array[Herb::AST::Node]]
-end
-```
 
 **Responsibilities:**
 - Reconstruct source code losslessly from AST
@@ -321,13 +182,6 @@ output = Herb::Printer::IdentityPrinter.print(result)
 
 # Print a single node
 output = Herb::Printer::IdentityPrinter.print(some_node)
-
-# Print a token directly
-output = Herb::Printer::IdentityPrinter.print(some_token)
-# => token.value
-
-# Print node array
-output = Herb::Printer::IdentityPrinter.print(node_array)
 ```
 
 ### Error Handling
@@ -340,14 +194,6 @@ Herb::Printer::IdentityPrinter.print(result)
 
 # Opt-in: ignore errors
 output = Herb::Printer::IdentityPrinter.print(result, ignore_errors: true)
-```
-
-### Instance Reuse
-
-```ruby
-printer = Herb::Printer::IdentityPrinter.new
-output1 = printer.print(result1)
-output2 = printer.print(result2)
 ```
 
 ### Custom Printer (Extension Point)
