@@ -2,11 +2,11 @@
 
 require "json"
 
-RSpec.describe Herb::Lint::Reporter::JsonReporter do
+RSpec.describe Herb::Lint::Formatter::JsonFormatter do
   describe "#report" do
-    subject { reporter.report(aggregated_result) }
+    subject { formatter.report(aggregated_result) }
 
-    let(:reporter) { described_class.new(io: output) }
+    let(:formatter) { described_class.new(io: output) }
     let(:output) { StringIO.new }
     let(:aggregated_result) { Herb::Lint::AggregatedResult.new(results) }
     let(:parsed_output) { JSON.parse(output.string) }

@@ -1,10 +1,10 @@
-# Generated from lib/herb/lint/reporter/github_reporter.rb with RBS::Inline
+# Generated from lib/herb/lint/formatter/github_actions_formatter.rb with RBS::Inline
 
 module Herb
   module Lint
-    module Reporter
-      # Reporter that outputs linting results as GitHub Actions workflow commands.
-      class GithubReporter
+    module Formatter
+      # Formatter that outputs linting results as GitHub Actions workflow commands.
+      class GitHubActionsFormatter
         attr_reader io: IO
 
         # @rbs io: IO

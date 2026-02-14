@@ -1,10 +1,10 @@
-# Generated from lib/herb/lint/reporter/simple_reporter.rb with RBS::Inline
+# Generated from lib/herb/lint/formatter/simple_formatter.rb with RBS::Inline
 
 module Herb
   module Lint
-    module Reporter
-      # Simple reporter that outputs linting results in a human-readable format.
-      class SimpleReporter
+    module Formatter
+      # Simple formatter that outputs linting results in a human-readable format.
+      class SimpleFormatter
         include ConsoleUtils
 
         include StringUtils

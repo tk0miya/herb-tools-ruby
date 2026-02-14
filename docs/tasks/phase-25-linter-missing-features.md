@@ -15,9 +15,9 @@ After reviewing the TypeScript implementation (https://github.com/marcoroth/herb
 
 ### Phase 25.1: High Priority (Required for Feature Parity)
 
-#### 1. DetailedReporter (Default Output Format)
+#### 1. DetailedFormatter (Default Output Format)
 
-The TypeScript implementation has a `DetailedFormatter` that is the **default** output format. The Ruby implementation currently uses `SimpleReporter` as the default.
+The TypeScript implementation has a `DetailedFormatter` that is the **default** output format. The Ruby implementation currently uses `SimpleFormatter` as the default.
 
 **Features of TypeScript DetailedFormatter:**
 - Syntax highlighting with configurable themes
@@ -28,13 +28,13 @@ The TypeScript implementation has a `DetailedFormatter` that is the **default** 
 - Summary statistics with top violated rules
 
 **Current Ruby Status:**
-- ✅ SimpleReporter implemented
-- ✅ JsonReporter implemented
-- ✅ GithubReporter implemented
-- ❌ DetailedReporter **not implemented**
+- ✅ SimpleFormatter implemented
+- ✅ JsonFormatter implemented
+- ✅ GithubFormatter implemented
+- ❌ DetailedFormatter **not implemented**
 
 **Implementation Tasks:**
-- [ ] Create `Herb::Lint::Reporter::DetailedReporter` class
+- [ ] Create `Herb::Lint::Formatter::DetailedFormatter` class
 - [ ] Integrate syntax highlighting library (Rouge recommended)
   - [ ] Add Rouge dependency to gemspec
   - [ ] Implement theme loading/selection
@@ -47,13 +47,13 @@ The TypeScript implementation has a `DetailedFormatter` that is the **default** 
   - [ ] Track offense counts per rule in AggregatedResult
   - [ ] Display top 5 rules by count
   - [ ] Make count configurable
-- [ ] Make DetailedReporter the **default** when `--format` is not specified
-  - [ ] Update CLI#create_reporter to use DetailedReporter by default
-  - [ ] Update tests to expect DetailedReporter output
+- [ ] Make DetailedFormatter the **default** when `--format` is not specified
+  - [ ] Update CLI#create_reporter to use DetailedFormatter by default
+  - [ ] Update tests to expect DetailedFormatter output
 - [ ] Add `--theme` CLI option for theme customization
 - [ ] Add `--no-wrap-lines` CLI option
 - [ ] Add `--truncate-lines` CLI option
-- [ ] Write unit tests for DetailedReporter
+- [ ] Write unit tests for DetailedFormatter
 - [ ] Write integration tests via CLI
 
 #### 2. CustomRuleLoader (.herb/rules/ Support)
@@ -192,8 +192,8 @@ Display performance metrics in output.
   - [ ] Add timing field (currently always null)
   - [ ] Populate from Runner
 - [ ] Display timing in reporters
-  - [ ] Add to SimpleReporter summary
-  - [ ] Add to DetailedReporter summary
+  - [ ] Add to SimpleFormatter summary
+  - [ ] Add to DetailedFormatter summary
   - [ ] Include in JSON output (already has field)
 - [ ] Add `--no-timing` CLI flag to disable display
   - [ ] Parse option
@@ -215,7 +215,7 @@ Show most common violations in summary.
 - [ ] Add method to retrieve top N rules by count
   - [ ] Sort rules by offense count descending
   - [ ] Return top N (default: 5)
-- [ ] Display in DetailedReporter summary
+- [ ] Display in DetailedFormatter summary
   - [ ] Format as list with rule name and count
   - [ ] Only show if violations exist
 - [ ] Make count configurable (optional)
@@ -227,18 +227,18 @@ Show most common violations in summary.
 Remaining CLI options from TypeScript implementation:
 
 **Implementation Tasks:**
-- [ ] `--theme` option (requires DetailedReporter)
+- [ ] `--theme` option (requires DetailedFormatter)
   - [ ] Add CLI option
-  - [ ] Pass to DetailedReporter
+  - [ ] Pass to DetailedFormatter
   - [ ] Update help text
-- [ ] `--no-wrap-lines` option (requires DetailedReporter)
+- [ ] `--no-wrap-lines` option (requires DetailedFormatter)
   - [ ] Add CLI option
-  - [ ] Pass to DetailedReporter
+  - [ ] Pass to DetailedFormatter
   - [ ] Disable line wrapping in output
   - [ ] Update help text
-- [ ] `--truncate-lines` option (requires DetailedReporter)
+- [ ] `--truncate-lines` option (requires DetailedFormatter)
   - [ ] Add CLI option
-  - [ ] Pass to DetailedReporter
+  - [ ] Pass to DetailedFormatter
   - [ ] Enable line truncation in output
   - [ ] Update help text
 
@@ -253,7 +253,7 @@ The following features are mentioned in requirements/design documents but **do N
 ## Testing Requirements
 
 - [ ] Unit tests for all new classes/methods
-  - [ ] DetailedReporter
+  - [ ] DetailedFormatter
   - [ ] CustomRuleLoader
   - [ ] Config path resolution
   - [ ] Timing tracking
@@ -277,12 +277,12 @@ The following features are mentioned in requirements/design documents but **do N
   - [ ] Update CLI options table
   - [ ] Update output format examples
 - [ ] Update `docs/design/herb-lint-design.md`
-  - [ ] Add DetailedReporter design
+  - [ ] Add DetailedFormatter design
   - [ ] Add CustomRuleLoader design
   - [ ] Update component diagrams
 - [ ] Update `README.md`
   - [ ] Add examples with new CLI options
-  - [ ] Show DetailedReporter output
+  - [ ] Show DetailedFormatter output
   - [ ] Document custom rule creation
 - [ ] Create custom rule guide
   - [ ] Document rule base class
@@ -292,7 +292,7 @@ The following features are mentioned in requirements/design documents but **do N
 ## Acceptance Criteria
 
 - [ ] All high-priority features implemented and tested
-- [ ] DetailedReporter is the default output format
+- [ ] DetailedFormatter is the default output format
 - [ ] CustomRuleLoader automatically loads rules from `.herb/rules/`
 - [ ] --init generates a working `.herb.yml` configuration
 - [ ] --config-file allows specifying custom configuration path

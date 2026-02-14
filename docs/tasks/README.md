@@ -10,7 +10,7 @@ The MVP (Minimum Viable Product) has been completed with:
 - ✅ Simple file discovery (`**/*.html.erb` patterns only)
 - ✅ Initial rule implementations (html-img-require-alt, html-attribute-double-quotes, html-no-duplicate-ids)
 - ✅ Basic CLI (`herb-lint <path>`, `--version`, `--help`)
-- ✅ SimpleReporter (text output only)
+- ✅ SimpleFormatter (text output only)
 - ✅ Inline directives (`herb:disable`, `herb:linter ignore`)
 
 Phases 1-14, 19, 20, and 23 have been completed and their task files have been removed from this directory. The completed work is documented in the git history and reflected in the current implementation.
@@ -70,7 +70,7 @@ The following phases have been completed and their task files removed:
 
 - **Phases 1-9**: MVP implementation (basic linter, config, file discovery, inline directives)
 - **Phase 8**: Rule expansion (6 rules)
-- **Phase 10**: Reporters & validation
+- **Phase 10**: Formatters & validation
 - **Phase 11**: HTML rule expansion (23 rules)
 - **Phase 12**: ERB rule expansion (12 rules)
 - **Phase 13**: SVG & parser rules (2 rules)
@@ -79,7 +79,7 @@ The following phases have been completed and their task files removed:
 - **Phase 18**: Source Rule introduction (SourceRule base class, autofix source phase, rule migrations)
 - **Phase 19**: Rule naming alignment
 - **Phase 20**: factory_bot introduction
-- **Phase 23**: JSON reporter completion (info/hint severities, ignored offenses, rule count)
+- **Phase 23**: JSON formatter completion (info/hint severities, ignored offenses, rule count)
 
 All completed work is documented in the git history and reflected in the current implementation.
 

@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-RSpec.describe Herb::Lint::Reporter::GithubReporter do
+RSpec.describe Herb::Lint::Formatter::GitHubActionsFormatter do
   describe "#report" do
-    subject { reporter.report(aggregated_result) }
+    subject { formatter.report(aggregated_result) }
 
-    let(:reporter) { described_class.new(io: output) }
+    let(:formatter) { described_class.new(io: output) }
     let(:output) { StringIO.new }
     let(:aggregated_result) { Herb::Lint::AggregatedResult.new(results) }
     let(:output_lines) { output.string.split("\n") }

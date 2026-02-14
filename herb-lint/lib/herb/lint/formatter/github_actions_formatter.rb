@@ -1,17 +1,12 @@
 # frozen_string_literal: true
 
+require_relative "base"
+
 module Herb
   module Lint
-    module Reporter
-      # Reporter that outputs linting results as GitHub Actions workflow commands.
-      class GithubReporter
-        attr_reader :io #: IO
-
-        # @rbs io: IO
-        def initialize(io: $stdout) #: void
-          @io = io
-        end
-
+    module Formatter
+      # Formatter that outputs linting results as GitHub Actions workflow commands.
+      class GitHubActionsFormatter < Base
         # Reports the aggregated linting result as GitHub Actions annotations.
         #
         # @rbs aggregated_result: AggregatedResult

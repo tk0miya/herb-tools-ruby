@@ -69,8 +69,8 @@ module Herb
         runner = Runner.new(config, ignore_disable_comments:, autofix:, unsafe:)
         result = runner.run(argv)
 
-        reporter = create_reporter
-        reporter.report(result)
+        formatter = create_formatter
+        formatter.report(result)
 
         exit_code_for(result, config:)
       end
@@ -133,15 +133,15 @@ module Herb
         parser.parse!(argv)
       end
 
-      # Creates the appropriate reporter based on command-line options.
-      def create_reporter #: Reporter::SimpleReporter | Reporter::JsonReporter | Reporter::GithubReporter
-        return Reporter::GithubReporter.new(io: stdout) if options[:github]
+      # Creates the appropriate formatter based on command-line options.
+      def create_formatter #: Formatter::Base
+        return Formatter::GitHubActionsFormatter.new(io: stdout) if options[:github]
 
         case options[:format]
         when "json"
-          Reporter::JsonReporter.new(io: stdout)
+          Formatter::JsonFormatter.new(io: stdout)
         else
-          Reporter::SimpleReporter.new(io: stdout)
+          Formatter::SimpleFormatter.new(io: stdout)
         end
       end
     end
