@@ -12,6 +12,7 @@ module Herb
     # @rbs @context: Context
     # @rbs @output: String
     class Engine
+      # rubocop:disable Metrics/ClassLength
       VOID_ELEMENTS: untyped
 
       PRESERVED_ELEMENTS: untyped
@@ -94,6 +95,47 @@ module Herb
       # @rbs node: Herb::AST::LiteralNode
       # @rbs _depth: Integer
       def visit_literal: (Herb::AST::LiteralNode node, untyped _depth) -> void
+
+      # Visit HTML element node.
+      #
+      # @rbs node: Herb::AST::HTMLElementNode
+      # @rbs depth: Integer
+      def visit_html_element: (Herb::AST::HTMLElementNode node, Integer depth) -> void
+
+      # Visit HTML open tag node.
+      #
+      # @rbs node: Herb::AST::HTMLOpenTagNode
+      # @rbs depth: Integer
+      def visit_html_open_tag: (Herb::AST::HTMLOpenTagNode node, Integer depth) -> void
+
+      # Visit HTML close tag node.
+      #
+      # @rbs node: Herb::AST::HTMLCloseTagNode
+      # @rbs depth: Integer
+      def visit_html_close_tag: (Herb::AST::HTMLCloseTagNode node, Integer depth) -> void
+
+      # Determine if node should be indented.
+      #
+      # @rbs node: Herb::AST::Node
+      def should_indent?: (untyped _node) -> bool
+
+      # Visit HTML attribute node.
+      #
+      # @rbs node: Herb::AST::HTMLAttributeNode
+      # @rbs depth: Integer
+      def visit_html_attribute: (Herb::AST::HTMLAttributeNode node, Integer depth) -> void
+
+      # Visit HTML attribute name node.
+      #
+      # @rbs node: Herb::AST::HTMLAttributeNameNode
+      # @rbs depth: Integer
+      def visit_html_attribute_name: (Herb::AST::HTMLAttributeNameNode node, Integer depth) -> void
+
+      # Visit HTML attribute value node.
+      #
+      # @rbs node: Herb::AST::HTMLAttributeValueNode
+      # @rbs depth: Integer
+      def visit_html_attribute_value: (Herb::AST::HTMLAttributeValueNode node, Integer depth) -> void
     end
   end
 end

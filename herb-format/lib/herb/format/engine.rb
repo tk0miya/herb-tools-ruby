@@ -11,7 +11,7 @@ module Herb
     # @rbs max_line_length: Integer
     # @rbs @context: Context
     # @rbs @output: String
-    class Engine
+    class Engine # rubocop:disable Metrics/ClassLength
       VOID_ELEMENTS = %w[
         area base br col embed hr img input link meta param source track wbr
       ].freeze
@@ -142,6 +142,118 @@ module Herb
       # @rbs _depth: Integer
       def visit_literal(node, _depth) #: void
         @output << node.content
+      end
+
+      # Visit HTML element node.
+      #
+      # @rbs node: Herb::AST::HTMLElementNode
+      # @rbs depth: Integer
+      def visit_html_element(node, depth) #: void # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+        tag_name = node.tag_name&.value || ""
+        preserved = preserved_element?(tag_name)
+
+        # Format opening tag
+        visit(node.open_tag, depth:)
+
+        # Format body (skip if void element)
+        return if void_element?(tag_name)
+
+        if preserved
+          # Preserve content as-is for <pre>, <code>, etc.
+          node.body.each do |child|
+            @output << Herb::Printer::IdentityPrinter.print(child)
+          end
+        else
+          # Format body with increased depth
+          node.body.each do |child|
+            visit(child, depth: depth + 1)
+          end
+        end
+
+        # Format closing tag
+        visit(node.close_tag, depth:) if node.close_tag
+      end
+
+      # Visit HTML open tag node.
+      #
+      # @rbs node: Herb::AST::HTMLOpenTagNode
+      # @rbs depth: Integer
+      def visit_html_open_tag(node, depth) #: void
+        @output << indent(depth) if should_indent?(node)
+        @output << "<"
+        @output << node.tag_name.value if node.tag_name
+
+        # Visit child nodes (which include whitespace and attributes)
+        node.child_nodes.each do |child|
+          if normalize_node_type(child.type) == :whitespace
+            # Output single space for attributes
+            @output << " " if @output[-1] != "<"
+          else
+            visit(child, depth:)
+          end
+        end
+
+        @output << ">"
+      end
+
+      # Visit HTML close tag node.
+      #
+      # @rbs node: Herb::AST::HTMLCloseTagNode
+      # @rbs depth: Integer
+      def visit_html_close_tag(node, depth) #: void
+        @output << indent(depth) if should_indent?(node)
+        @output << "</"
+        @output << node.tag_name.value if node.tag_name
+        @output << ">"
+      end
+
+      # Determine if node should be indented.
+      #
+      # @rbs node: Herb::AST::Node
+      def should_indent?(_node) #: bool
+        # For now, always indent tags
+        # Future: track context like "previous was newline"
+        true
+      end
+
+      # Visit HTML attribute node.
+      #
+      # @rbs node: Herb::AST::HTMLAttributeNode
+      # @rbs depth: Integer
+      def visit_html_attribute(node, depth) #: void
+        # Visit attribute name
+        visit(node.name, depth:) if node.name
+
+        # Visit equals and value if present
+        return unless node.value
+
+        @output << "="
+        visit(node.value, depth:)
+      end
+
+      # Visit HTML attribute name node.
+      #
+      # @rbs node: Herb::AST::HTMLAttributeNameNode
+      # @rbs depth: Integer
+      def visit_html_attribute_name(node, depth) #: void
+        node.child_nodes.each do |child|
+          visit(child, depth:)
+        end
+      end
+
+      # Visit HTML attribute value node.
+      #
+      # @rbs node: Herb::AST::HTMLAttributeValueNode
+      # @rbs depth: Integer
+      def visit_html_attribute_value(node, depth) #: void
+        # Always use double quotes
+        @output << '"'
+
+        node.child_nodes.each do |child|
+          visit(child, depth:)
+        end
+
+        @output << '"'
       end
     end
   end

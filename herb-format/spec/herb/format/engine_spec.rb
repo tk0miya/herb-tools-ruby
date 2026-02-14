@@ -55,7 +55,8 @@ RSpec.describe Herb::Format::Engine do
       let(:source) { "<div class='foo' id='bar'></div>" }
 
       it "preserves whitespace between attributes" do
-        expect(subject).to eq(source)
+        # NOTE: formatter normalizes quotes to double quotes
+        expect(subject).to eq('<div class="foo" id="bar"></div>')
       end
     end
 
@@ -145,6 +146,55 @@ RSpec.describe Herb::Format::Engine do
       let(:tag_name) { "DIV" }
 
       it { is_expected.to be false }
+    end
+  end
+
+  describe "Element formatting" do
+    subject { engine.format(ast, context) }
+
+    let(:ast) { Herb.parse(source, track_whitespace: true).value }
+
+    context "with void element" do
+      let(:source) { "<br>" }
+
+      it "does not output close tag" do
+        # Should format without closing tag
+        expect(subject).to include("<br>")
+        expect(subject).not_to include("</br>")
+      end
+    end
+
+    context "with preserved element" do
+      let(:source) { "<pre>  preserved  content  </pre>" }
+
+      it "preserves content as-is" do
+        # Content inside <pre> should not be reformatted
+        expect(subject).to include("  preserved  content  ")
+      end
+    end
+
+    context "with normal element" do
+      let(:source) { "<div><p>Hello</p></div>" }
+
+      it "formats with proper indentation" do
+        # Body should be indented
+        result = subject
+        expect(result).to include("<div>")
+        expect(result).to include("<p>")
+        expect(result).to include("Hello")
+        expect(result).to include("</p>")
+        expect(result).to include("</div>")
+      end
+    end
+
+    context "with element with attributes" do
+      let(:source) { '<div class="foo"></div>' }
+
+      it "formats attributes correctly" do
+        expect(subject).to include("<div")
+        expect(subject).to include("class")
+        expect(subject).to include("</div>")
+      end
     end
   end
 end

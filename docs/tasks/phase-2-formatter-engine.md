@@ -266,12 +266,12 @@ end
 
 **Location:** `herb-format/lib/herb/format/engine.rb`
 
-- [ ] Implement visit_html_element(node, depth)
-- [ ] Implement visit_html_open_tag(node, depth)
-- [ ] Implement visit_html_close_tag(node, depth)
-- [ ] Handle void elements (no close tag)
-- [ ] Handle preserved elements (no indentation changes)
-- [ ] Add test cases
+- [x] Implement visit_html_element(node, depth)
+- [x] Implement visit_html_open_tag(node, depth)
+- [x] Implement visit_html_close_tag(node, depth)
+- [x] Handle void elements (no close tag)
+- [x] Handle preserved elements (no indentation changes)
+- [x] Add test cases
 
 **Implementation:**
 ```ruby
@@ -375,12 +375,12 @@ end
 
 **Location:** `herb-format/lib/herb/format/engine.rb`
 
-- [ ] Implement format_attribute(node, depth)
-- [ ] Implement format_attribute_name(node, depth)
-- [ ] Implement format_attribute_value(node, depth)
-- [ ] Handle boolean attributes (no value)
-- [ ] Handle quoted values (preserve double quotes)
-- [ ] Add test cases
+- [x] Implement format_attribute(node, depth)
+- [x] Implement format_attribute_name(node, depth)
+- [x] Implement format_attribute_value(node, depth)
+- [x] Handle boolean attributes (no value)
+- [x] Handle quoted values (preserve double quotes)
+- [x] Add test cases
 
 **Implementation:**
 ```ruby
