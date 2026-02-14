@@ -1,0 +1,65 @@
+# Generated from lib/herb/lint/reporter/summary_reporter.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Reporter
+      # Summary reporter that outputs aggregated linting results.
+      # This class is used by formatters to display summary information.
+      class SummaryReporter
+        include ConsoleUtils
+
+        include StringUtils
+
+        attr_reader io: IO
+
+        # @rbs io: IO
+        def initialize: (?io: IO) -> void
+
+        # Displays a summary of the aggregated linting result.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def display_summary: (AggregatedResult aggregated_result) -> void
+
+        private
+
+        # Prints the "Checked" line showing total files processed.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_checked_line: (AggregatedResult aggregated_result) -> void
+
+        # Prints the "Files" line showing clean vs files with offenses.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_files_line: (AggregatedResult aggregated_result) -> void
+
+        # Prints the "Offenses" line showing error/warning breakdown.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_offenses_line: (AggregatedResult aggregated_result) -> void
+
+        # Prints the "Fixable" line showing autocorrectable offenses.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_fixable_line: (AggregatedResult aggregated_result) -> void
+
+        # Prints success message if all files are clean.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_success_message: (AggregatedResult aggregated_result) -> void
+
+        # Pads a label to a consistent width.
+        #
+        # @rbs label: String
+        def pad_label: (String label) -> String
+
+        # Wraps ConsoleUtils#colorize to automatically use io.tty?
+        #
+        # @rbs text: String
+        # @rbs color: color?
+        # @rbs bold: bool
+        # @rbs dim: bool
+        def colorize: (String text, ?color: color?, ?bold: bool, ?dim: bool) -> String
+      end
+    end
+  end
+end
