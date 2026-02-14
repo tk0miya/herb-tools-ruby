@@ -7,5 +7,6 @@ require "herb/printer"
 
 require_relative "format/aggregated_result"
 require_relative "format/context"
+require_relative "format/errors"
 require_relative "format/format_result"
 require_relative "format/version"
