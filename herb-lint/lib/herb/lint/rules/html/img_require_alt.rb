@@ -7,24 +7,25 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Validates that HTML <img> elements include the required alt attribute for accessibility compliance.
-        #
-        # The alt attribute provides a text alternative for images, which is essential for:
-        # - Screen readers to describe images to visually impaired users
-        # - Displaying fallback text when images fail to load
-        # - Search engine optimization
-        #
-        # Use alt="" for decorative images that don't convey meaningful information.
-        # Use alt="description" for informative images with a clear, concise description.
+        # Description:
+        #   Enforce that all `<img>` elements include an `alt` attribute.
         #
         # Good:
         #   <img src="/logo.png" alt="Company logo">
-        #   <img src="/divider.png" alt="">
+        #
         #   <img src="/avatar.jpg" alt="<%= user.name %>'s profile picture">
+        #
+        #   <img src="/divider.png" alt="">
+        #
+        #   <%= image_tag image_path("logo.png"), alt: "Company logo" %>
         #
         # Bad:
         #   <img src="/logo.png">
-        #   <img src="/logo.png" />
+        #
+        #   <img src="/avatar.jpg" alt> <!-- TODO -->
+        #
+        #   <%= image_tag image_path("logo.png") %> <!-- TODO -->
+        #
         class ImgRequireAlt < VisitorRule
           def self.rule_name = "html-img-require-alt" #: String
           def self.description = "Require alt attribute on img tags" #: String

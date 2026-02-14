@@ -28,8 +28,17 @@ RSpec.describe Herb::Lint::Rules::Html::ImgRequireAlt do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
+    # Good examples from documentation
     context "when img tag has alt attribute" do
       let(:source) { '<img src="/logo.png" alt="Company logo">' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when img tag has alt attribute with ERB tag" do
+      let(:source) { '<img src="/avatar.jpg" alt="<%= user.name %>\'s profile picture">' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
@@ -39,11 +48,21 @@ RSpec.describe Herb::Lint::Rules::Html::ImgRequireAlt do
     context "when img tag has empty alt attribute" do
       let(:source) { '<img src="/divider.png" alt="">' }
 
-      it "does not report an offense (empty alt is valid for decorative images)" do
+      it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
+    context "when using image_tag helper with alt" do
+      let(:source) { '<%= image_tag image_path("logo.png"), alt: "Company logo" %>' }
+
+      # NOTE: Rails helpers are not checked (ERBContentNode), so no offense is reported
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
     context "when img tag is missing alt attribute" do
       let(:source) { '<img src="/logo.png">' }
 
@@ -58,6 +77,27 @@ RSpec.describe Herb::Lint::Rules::Html::ImgRequireAlt do
       end
     end
 
+    context "when img tag has alt attribute without value" do
+      let(:source) { '<img src="/avatar.jpg" alt>' }
+
+      # TODO: Current implementation only checks attribute presence, not value
+      # Future enhancement may require non-empty alt values
+      it "reports an offense (alt attribute should have a value)",
+         skip: "Current implementation only checks attribute presence, not value" do
+        expect(subject.size).to eq(1)
+      end
+    end
+
+    context "when using image_tag helper without alt" do
+      let(:source) { '<%= image_tag image_path("logo.png") %>' }
+
+      # TODO: Rails helpers (ERB output tags) are not currently checked by this rule
+      it "reports an offense", skip: "Rails helpers (ERB output tags) are not currently checked" do
+        expect(subject.size).to eq(1)
+      end
+    end
+
+    # Additional edge cases
     context "when multiple img tags are missing alt attribute" do
       let(:source) { '<img src="/logo.png"><img src="/banner.jpg">' }
 
