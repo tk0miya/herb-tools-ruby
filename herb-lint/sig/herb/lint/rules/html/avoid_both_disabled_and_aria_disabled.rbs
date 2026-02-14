@@ -4,18 +4,33 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows using both `disabled` and `aria-disabled` on the same element.
-        #
-        # Using both attributes is redundant and potentially confusing.
-        # Use one or the other, but not both.
+        # Description:
+        #   Prevent using both the native `disabled` attribute and the `aria-disabled` attribute on the same HTML
+        #   element. Elements should use either the native `disabled` attribute or `aria-disabled`, but not both.
         #
         # Good:
+        #   <!-- Use only the native disabled attribute -->
         #   <button disabled>Submit</button>
+        #   <input type="text" autocomplete="off" disabled>
+        #
+        #   <!-- Use only aria-disabled for custom elements -->
+        #   <div role="button" aria-disabled="true">Custom Button</div>
+        #
+        #   <!-- Use only aria-disabled -->
         #   <button aria-disabled="true">Submit</button>
         #
         # Bad:
+        #   <!-- Both disabled and aria-disabled -->
         #   <button disabled aria-disabled="true">Submit</button>
+        #
+        #   <input type="text" autocomplete="off" disabled aria-disabled="true">
+        #
+        #   <select disabled aria-disabled="true">
+        #    <option>Option 1</option>
+        #   </select>
         class AvoidBothDisabledAndAriaDisabled < VisitorRule
+          ELEMENTS_WITH_NATIVE_DISABLED_SUPPORT: Array[String]
+
           def self.rule_name: () -> String
 
           def self.description: () -> String
@@ -28,6 +43,28 @@ module Herb
 
           # @rbs override
           def visit_html_element_node: ...
+
+          private
+
+          # @rbs node: Herb::HtmlElementNode -- Check if element has both disabled and aria-disabled
+          # @rbs return: void
+          def check_element: (Herb::HtmlElementNode node) -> void
+
+          # @rbs node: Herb::HtmlElementNode
+          # @rbs return: bool
+          def element_supports_native_disabled?: (Herb::HtmlElementNode node) -> bool
+
+          # @rbs node: Herb::HtmlElementNode
+          # @rbs return: bool
+          def both_disabled_attributes?: (Herb::HtmlElementNode node) -> bool
+
+          # @rbs node: Herb::HtmlElementNode
+          # @rbs return: bool
+          def dynamic_disabled_attributes?: (Herb::HtmlElementNode node) -> bool
+
+          # @rbs node: Herb::HtmlElementNode, attribute_name: String -- Check if attribute value contains ERB
+          # @rbs return: bool
+          def attribute_has_erb_content?: (Herb::HtmlElementNode node, untyped attribute_name) -> bool
         end
       end
     end

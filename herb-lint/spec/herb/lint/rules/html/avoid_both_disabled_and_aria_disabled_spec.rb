@@ -30,6 +30,7 @@ RSpec.describe Herb::Lint::Rules::Html::AvoidBothDisabledAndAriaDisabled do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
+    # Good examples from documentation
     context "when element has only disabled attribute" do
       let(:source) { "<button disabled>Submit</button>" }
 
@@ -38,7 +39,23 @@ RSpec.describe Herb::Lint::Rules::Html::AvoidBothDisabledAndAriaDisabled do
       end
     end
 
-    context "when element has only aria-disabled attribute" do
+    context "when input has only disabled attribute with autocomplete" do
+      let(:source) { '<input type="text" autocomplete="off" disabled>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when custom element has only aria-disabled" do
+      let(:source) { '<div role="button" aria-disabled="true">Custom Button</div>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when button has only aria-disabled attribute" do
       let(:source) { '<button aria-disabled="true">Submit</button>' }
 
       it "does not report an offense" do
@@ -46,16 +63,74 @@ RSpec.describe Herb::Lint::Rules::Html::AvoidBothDisabledAndAriaDisabled do
       end
     end
 
-    context "when element has both disabled and aria-disabled" do
+    # Bad examples from documentation
+    context "when button has both disabled and aria-disabled" do
       let(:source) { '<button disabled aria-disabled="true">Submit</button>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-avoid-both-disabled-and-aria-disabled")
         expect(subject.first.message).to eq(
-          "Avoid using both 'disabled' and 'aria-disabled' on the same element; they are redundant"
+          "aria-disabled may be used in place of native HTML disabled to allow tab-focus on an otherwise " \
+          "ignored element. Setting both attributes is contradictory and confusing. Choose either disabled " \
+          "or aria-disabled, not both."
         )
         expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when input has both disabled and aria-disabled with autocomplete" do
+      let(:source) { '<input type="text" autocomplete="off" disabled aria-disabled="true">' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+      end
+    end
+
+    context "when select has both disabled and aria-disabled" do
+      let(:source) do
+        <<~HTML.chomp
+          <select disabled aria-disabled="true">
+           <option>Option 1</option>
+          </select>
+        HTML
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+      end
+    end
+
+    # Additional edge case tests
+    context "when element does not support native disabled attribute" do
+      let(:source) { '<div disabled aria-disabled="true">Content</div>' }
+
+      it "does not report an offense (div doesn't support native disabled)" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when disabled attribute has ERB content" do
+      let(:source) { '<button disabled="<%= @value %>" aria-disabled="true">Submit</button>' }
+
+      it "does not report an offense (ERB content makes it dynamic)" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when aria-disabled attribute has ERB content" do
+      let(:source) { '<button disabled aria-disabled="<%= @value %>">Submit</button>' }
+
+      it "does not report an offense (ERB content makes it dynamic)" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when both attributes have ERB content" do
+      let(:source) { '<button disabled="<%= @d %>" aria-disabled="<%= @a %>">Submit</button>' }
+
+      it "does not report an offense (both have ERB content)" do
+        expect(subject).to be_empty
       end
     end
 
@@ -124,23 +199,6 @@ RSpec.describe Herb::Lint::Rules::Html::AvoidBothDisabledAndAriaDisabled do
 
       it "does not report an offense" do
         expect(subject).to be_empty
-      end
-    end
-
-    context "when input element has only disabled" do
-      let(:source) { '<input type="text" disabled>' }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when select element has both disabled and aria-disabled" do
-      let(:source) { '<select disabled aria-disabled="true"><option>A</option></select>' }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html-avoid-both-disabled-and-aria-disabled")
       end
     end
   end
