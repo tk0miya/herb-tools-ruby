@@ -1,19 +1,13 @@
 # frozen_string_literal: true
 
 require "json"
+require_relative "base"
 
 module Herb
   module Lint
-    module Reporter
-      # Reporter that outputs linting results in JSON format.
-      class JsonReporter
-        attr_reader :io #: IO
-
-        # @rbs io: IO
-        def initialize(io: $stdout) #: void
-          @io = io
-        end
-
+    module Formatter
+      # Formatter that outputs linting results in JSON format.
+      class JsonFormatter < Base
         # Reports the aggregated linting result as JSON.
         #
         # @rbs aggregated_result: AggregatedResult

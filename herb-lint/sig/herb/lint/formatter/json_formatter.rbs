@@ -1,10 +1,10 @@
-# Generated from lib/herb/lint/reporter/json_reporter.rb with RBS::Inline
+# Generated from lib/herb/lint/formatter/json_formatter.rb with RBS::Inline
 
 module Herb
   module Lint
-    module Reporter
-      # Reporter that outputs linting results in JSON format.
-      class JsonReporter
+    module Formatter
+      # Formatter that outputs linting results in JSON format.
+      class JsonFormatter
         attr_reader io: IO
 
         # @rbs io: IO

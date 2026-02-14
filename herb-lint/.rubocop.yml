@@ -8,3 +8,4 @@ RSpec/SpecFilePathFormat:
     - "spec/herb/lint/rules/autofix_helpers_spec.rb"
     - "spec/herb/lint/rules/herb/**/*"
     - "spec/herb/lint/rules/node_locator_spec.rb"
+    - "spec/herb/lint/formatter/github_actions_formatter_spec.rb"

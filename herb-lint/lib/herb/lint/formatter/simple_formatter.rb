@@ -1,23 +1,24 @@
 # frozen_string_literal: true
 
+require_relative "base"
 require_relative "../console_utils"
 require_relative "../string_utils"
-require_relative "summary_reporter"
+require_relative "../reporter/summary_reporter"
 
 module Herb
   module Lint
-    module Reporter
-      # Simple reporter that outputs linting results in a human-readable format.
-      class SimpleReporter
+    module Formatter
+      # Simple formatter that outputs linting results in a human-readable format.
+      #
+      # This formatter displays offenses for each file with severity symbols and colors.
+      class SimpleFormatter < Base
         include ConsoleUtils
         include StringUtils
 
-        attr_reader :io #: IO
-
         # @rbs io: IO
         def initialize(io: $stdout) #: void
-          @io = io
-          @summary_reporter = SummaryReporter.new(io:)
+          super
+          @summary_reporter = Herb::Lint::Reporter::SummaryReporter.new(io:)
         end
 
         # Reports the aggregated linting result.
