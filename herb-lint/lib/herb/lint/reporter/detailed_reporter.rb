@@ -26,12 +26,14 @@ module Herb
         #
         # @rbs aggregated_result: AggregatedResult
         def report(aggregated_result) #: void
-          results_with_offenses = aggregated_result.results.select { |r| r.offense_count.positive? }
-          is_single_file = results_with_offenses.size == 1
+          results_with_offenses = aggregated_result.results.select { _1.offense_count.positive? }
 
-          results_with_offenses.each_with_index do |result, index|
-            print_file_offenses(result, index + 1, results_with_offenses.size) unless is_single_file
-            print_file_offenses_single(result) if is_single_file
+          if results_with_offenses.size == 1
+            print_file_offenses_single(results_with_offenses.first)
+          else
+            results_with_offenses.each_with_index do |result, index|
+              print_file_offenses(result, index + 1, results_with_offenses.size)
+            end
           end
 
           print_summary(aggregated_result)
