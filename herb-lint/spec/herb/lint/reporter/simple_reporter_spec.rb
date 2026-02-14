@@ -8,7 +8,7 @@ RSpec.describe Herb::Lint::Reporter::SimpleReporter do
     let(:output) { StringIO.new }
     let(:aggregated_result) { Herb::Lint::AggregatedResult.new(results) }
 
-    context "when there are offenses in multiple files" do
+    context "with offenses in multiple files" do
       let(:results) do
         [
           build(:lint_result,
@@ -40,72 +40,26 @@ RSpec.describe Herb::Lint::Reporter::SimpleReporter do
         ]
       end
 
-      it "displays offenses for each file and summary" do
+      it "displays offenses for each file" do
         subject
 
-        # Remove ANSI color codes for comparison
         actual = output.string.gsub(/\e\[.*?m/, "")
-
         expect(actual).to include("app/views/users/show.html.erb")
         expect(actual).to include("5:10   ✗ img tag should have an alt attribute (html-img-require-alt)")
         expect(actual).to include("12:3   ⚠ Attribute value should be quoted (html-attribute-double-quotes)")
         expect(actual).to include("app/views/posts/index.html.erb")
         expect(actual).to include("8:15   ✗ img tag should have an alt attribute (html-img-require-alt)")
-
-        expect(actual).to include("Summary:")
-        expect(actual).to include("Checked")
-        expect(actual).to include("2 files")
-        expect(actual).to include("Files")
-        expect(actual).to include("2 with offenses")
-        expect(actual).to include("0 clean")
-        expect(actual).to include("Offenses")
-        expect(actual).to include("2 errors")
-        expect(actual).to include("1 warning")
-        expect(actual).to include("3 offenses across 2 files")
-        expect(actual).to include("Fixable")
-        expect(actual).to include("3 offenses")
-      end
-    end
-
-    context "when there are no offenses" do
-      let(:results) do
-        [
-          build(:lint_result, file_path: "app/views/users/show.html.erb"),
-          build(:lint_result, file_path: "app/views/posts/index.html.erb")
-        ]
       end
 
-      it "displays only the summary with zero problems" do
+      it "delegates summary display to SummaryReporter" do
         subject
 
         actual = output.string.gsub(/\e\[.*?m/, "")
         expect(actual).to include("Summary:")
-        expect(actual).to include("Checked")
-        expect(actual).to include("2 files")
-        expect(actual).to include("Files")
-        expect(actual).to include("2 clean")
-        expect(actual).to include("Offenses")
-        expect(actual).to include("0 offenses")
-        expect(actual).to include("All files are clean!")
       end
     end
 
-    context "when there are no files" do
-      let(:results) { [] }
-
-      it "displays summary with zero files" do
-        subject
-
-        actual = output.string.gsub(/\e\[.*?m/, "")
-        expect(actual).to include("Summary:")
-        expect(actual).to include("Checked")
-        expect(actual).to include("0 files")
-        expect(actual).to include("Offenses")
-        expect(actual).to include("0 offenses")
-      end
-    end
-
-    context "when there are only errors" do
+    context "with different severity levels" do
       let(:results) do
         [
           build(:lint_result, unfixed_offenses: [
@@ -116,139 +70,55 @@ RSpec.describe Herb::Lint::Reporter::SimpleReporter do
                         start_line: 1,
                         start_column: 0),
                   build(:offense,
-                        severity: "error",
+                        severity: "warning",
                         rule_name: "test-rule",
-                        message: "Another error",
+                        message: "Warning message",
                         start_line: 2,
                         start_column: 5)
                 ])
         ]
       end
 
-      it "displays correct counts in summary" do
+      it "displays appropriate symbols for each severity" do
         subject
 
         actual = output.string.gsub(/\e\[.*?m/, "")
-        expect(actual).to include("test.html.erb")
         expect(actual).to include("1:0    ✗ Error message (test-rule)")
-        expect(actual).to include("2:5    ✗ Another error (test-rule)")
-        expect(actual).to include("Summary:")
-        expect(actual).to include("Checked")
-        expect(actual).to include("1 file")
-        expect(actual).to include("Offenses")
-        expect(actual).to include("2 errors")
-        expect(actual).to include("0 warnings")
-        expect(actual).to include("Fixable")
-        expect(actual).to include("2 offenses")
+        expect(actual).to include("2:5    ⚠ Warning message (test-rule)")
       end
     end
 
-    context "when there are only warnings" do
+    context "with autofixable offenses" do
       let(:results) do
         [
-          build(:lint_result, unfixed_offenses: [
-                  build(:offense,
-                        severity: "warning",
-                        rule_name: "test-rule",
-                        message: "Warning message",
-                        start_line: 1,
-                        start_column: 0)
-                ])
+          build(:lint_result,
+                file_path: "test.html.erb",
+                autofixable_count: 1)
         ]
       end
 
-      it "displays correct counts in summary" do
+      it "displays [Correctable] label for autofixable offenses" do
         subject
 
         actual = output.string.gsub(/\e\[.*?m/, "")
         expect(actual).to include("test.html.erb")
-        expect(actual).to include("1:0    ⚠ Warning message (test-rule)")
-        expect(actual).to include("Summary:")
-        expect(actual).to include("Checked")
-        expect(actual).to include("1 file")
-        expect(actual).to include("Offenses")
-        expect(actual).to include("1 warning")
-        expect(actual).not_to include("0 errors")
-        expect(actual).to include("Fixable")
-        expect(actual).to include("1 offense")
-      end
-    end
-
-    context "with autofixable offenses (no fixes applied)" do
-      let(:results) do
-        [
-          build(:lint_result,
-                file_path: "app/views/users/show.html.erb",
-                autofixable_count: 2,
-                error_count: 1)
-        ]
-      end
-
-      it "displays [Correctable] label and fixable count in summary" do
-        subject
-
-        # Remove ANSI color codes for comparison
-        actual = output.string.gsub(/\e\[.*?m/, "")
-        expect(actual).to include("app/views/users/show.html.erb")
         expect(actual).to include("1:0    ✗ Test message (test-rule) [Correctable]")
-        expect(actual).to include("Summary:")
-        expect(actual).to include("Checked")
-        expect(actual).to include("1 file")
-        expect(actual).to include("Offenses")
-        expect(actual).to include("3 errors")
-        expect(actual).to include("Fixable")
-        expect(actual).to include("3 offenses")
-        expect(actual).to include("2 autocorrectable using `--fix`")
       end
     end
 
-    context "with autofixed offenses" do
+    context "with no offenses" do
       let(:results) do
         [
-          build(:lint_result,
-                file_path: "app/views/users/show.html.erb",
-                autofixed_count: 1,
-                autofixable_count: 1,
-                error_count: 1)
+          build(:lint_result, file_path: "app/views/users/show.html.erb")
         ]
       end
 
-      it "displays corrected and fixable counts in summary" do
-        subject
-
-        # Remove ANSI color codes for comparison
-        actual = output.string.gsub(/\e\[.*?m/, "")
-        expect(actual).to include("app/views/users/show.html.erb")
-        expect(actual).to include("1:0    ✗ Test message (test-rule) [Correctable]")
-        expect(actual).to include("Summary:")
-        expect(actual).to include("Checked")
-        expect(actual).to include("1 file")
-        expect(actual).to include("Offenses")
-        expect(actual).to include("2 errors")
-        expect(actual).to include("Fixable")
-        expect(actual).to include("2 offenses")
-        expect(actual).to include("1 autocorrectable using `--fix`")
-      end
-    end
-
-    context "with all offenses autofixed" do
-      let(:results) do
-        [
-          build(:lint_result,
-                file_path: "app/views/users/show.html.erb",
-                autofixed_count: 2)
-        ]
-      end
-
-      it "displays only corrected count in summary" do
+      it "does not display offense details but delegates to SummaryReporter" do
         subject
 
         actual = output.string.gsub(/\e\[.*?m/, "")
+        expect(actual).not_to include("app/views/users/show.html.erb")
         expect(actual).to include("Summary:")
-        expect(actual).to include("Checked")
-        expect(actual).to include("1 file")
-        expect(actual).to include("Offenses")
-        expect(actual).to include("0 offenses")
       end
     end
 
@@ -262,20 +132,11 @@ RSpec.describe Herb::Lint::Reporter::SimpleReporter do
         ]
       end
 
-      it "does not add color codes to [Correctable] label" do
+      it "does not add ANSI color codes" do
         subject
 
         expect(output.string).to include("test.html.erb")
         expect(output.string).to include("1:0    ✗ Test message (test-rule) [Correctable]")
-        expect(output.string).to include("Summary:")
-        expect(output.string).to include("Checked")
-        expect(output.string).to include("1 file")
-        expect(output.string).to include("Offenses")
-        expect(output.string).to include("1 error")
-        expect(output.string).to include("Fixable")
-        expect(output.string).to include("1 offense")
-        expect(output.string).to include("1 autocorrectable using `--fix`")
-        # Verify no ANSI codes
         expect(output.string).not_to match(/\e\[.*?m/)
       end
     end
