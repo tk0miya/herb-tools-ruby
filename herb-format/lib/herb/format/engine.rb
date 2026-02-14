@@ -106,6 +106,43 @@ module Herb
       def preserved_element?(tag_name) #: bool
         PRESERVED_ELEMENTS.include?(tag_name.downcase)
       end
+
+      # Visit document node (root of AST).
+      #
+      # @rbs node: Herb::AST::DocumentNode
+      # @rbs depth: Integer
+      def visit_document(node, depth) #: void
+        node.child_nodes.each do |child|
+          visit(child, depth:)
+        end
+      end
+
+      # Visit HTML text node.
+      #
+      # @rbs node: Herb::AST::HTMLTextNode
+      # @rbs _depth: Integer
+      def visit_html_text(node, _depth) #: void
+        # Preserve text content as-is
+        @output << node.content
+      end
+
+      # Visit whitespace node.
+      #
+      # @rbs node: Herb::AST::WhitespaceNode
+      # @rbs _depth: Integer
+      def visit_whitespace(node, _depth) #: void
+        # Preserve whitespace as-is for now
+        # (Future: normalize whitespace based on context)
+        @output << node.value.value
+      end
+
+      # Visit literal node.
+      #
+      # @rbs node: Herb::AST::LiteralNode
+      # @rbs _depth: Integer
+      def visit_literal(node, _depth) #: void
+        @output << node.content
+      end
     end
   end
 end

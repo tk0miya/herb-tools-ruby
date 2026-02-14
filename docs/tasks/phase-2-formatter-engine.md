@@ -198,11 +198,11 @@ end
 
 **Location:** `herb-format/lib/herb/format/engine.rb`
 
-- [ ] Implement visit_document(node, depth)
-- [ ] Implement visit_html_text(node, depth)
-- [ ] Implement visit_whitespace(node, depth)
-- [ ] Implement visit_literal(node, depth)
-- [ ] Add test cases for each method
+- [x] Implement visit_document(node, depth)
+- [x] Implement visit_html_text(node, depth)
+- [x] Implement visit_whitespace(node, depth)
+- [x] Implement visit_literal(node, depth)
+- [x] Add test cases for each method
 
 **Implementation:**
 ```ruby

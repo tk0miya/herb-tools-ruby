@@ -70,6 +70,30 @@ module Herb
       #
       # @rbs tag_name: String
       def preserved_element?: (String tag_name) -> bool
+
+      # Visit document node (root of AST).
+      #
+      # @rbs node: Herb::AST::DocumentNode
+      # @rbs depth: Integer
+      def visit_document: (Herb::AST::DocumentNode node, Integer depth) -> void
+
+      # Visit HTML text node.
+      #
+      # @rbs node: Herb::AST::HTMLTextNode
+      # @rbs _depth: Integer
+      def visit_html_text: (Herb::AST::HTMLTextNode node, untyped _depth) -> void
+
+      # Visit whitespace node.
+      #
+      # @rbs node: Herb::AST::WhitespaceNode
+      # @rbs _depth: Integer
+      def visit_whitespace: (Herb::AST::WhitespaceNode node, untyped _depth) -> void
+
+      # Visit literal node.
+      #
+      # @rbs node: Herb::AST::LiteralNode
+      # @rbs _depth: Integer
+      def visit_literal: (Herb::AST::LiteralNode node, untyped _depth) -> void
     end
   end
 end
