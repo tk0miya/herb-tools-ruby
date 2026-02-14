@@ -432,13 +432,13 @@ end
 
 **Location:** `herb-format/lib/herb/format/context.rb`
 
-- [ ] Create Context as Data.define class
-- [ ] Add fields: file_path, source, config
-- [ ] Add cached source_lines field
-- [ ] Implement convenience methods: indent_width, max_line_length
-- [ ] Implement source_line(line) and line_count methods
-- [ ] Add RBS inline type annotations
-- [ ] Create spec file with comprehensive tests
+- [x] Create Context as Data.define class
+- [x] Add fields: file_path, source, config
+- [x] Add cached source_lines field
+- [x] Implement convenience methods: indent_width, max_line_length
+- [x] Implement source_line(line) and line_count methods
+- [x] Add RBS inline type annotations
+- [x] Create spec file with comprehensive tests
 
 **Interface:**
 ```ruby
@@ -506,14 +506,14 @@ end
 
 **Location:** `herb-config/lib/herb/config/formatter_config.rb`
 
-- [ ] Add indent_width field (Integer, default: 2)
-- [ ] Add max_line_length field (Integer, default: 80)
-- [ ] Add rewriter_pre field (Array[String], default: [])
-- [ ] Add rewriter_post field (Array[String], default: [])
-- [ ] Update validation to check indent_width > 0
-- [ ] Update validation to check max_line_length > 0
-- [ ] Update RBS type annotations
-- [ ] Create/update spec file
+- [x] Add indent_width field (Integer, default: 2)
+- [x] Add max_line_length field (Integer, default: 80)
+- [x] Add rewriter_pre field (Array[String], default: [])
+- [x] Add rewriter_post field (Array[String], default: [])
+- [x] Update validation to check indent_width > 0
+- [x] Update validation to check max_line_length > 0
+- [x] Update RBS type annotations
+- [x] Create/update spec file
 
 **Interface:**
 ```ruby
