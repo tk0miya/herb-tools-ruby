@@ -7,19 +7,24 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows values on boolean HTML attributes.
-        #
-        # Boolean attributes are attributes that represent true/false values.
-        # In HTML, the presence of the attribute represents true, and
-        # absence represents false. They should not have a value assigned.
+        # Description:
+        #   Omit attribute values for boolean HTML attributes. For boolean attributes, their presence alone
+        #   represents true, and their absence represents false. There is no need to assign a value or use quotes.
         #
         # Good:
-        #   <input disabled>
-        #   <input checked readonly>
+        #   <input type="checkbox" checked>
+        #
+        #   <button disabled>Submit</button>
+        #
+        #   <select multiple></select>
         #
         # Bad:
-        #   <input disabled="disabled">
-        #   <input disabled="true">
+        #   <input type="checkbox" checked="checked">
+        #
+        #   <button disabled="true">Submit</button>
+        #
+        #   <select multiple="multiple"></select>
+        #
         class BooleanAttributesNoValue < VisitorRule
           # Standard HTML boolean attributes.
           BOOLEAN_ATTRIBUTES = Set.new(
@@ -70,8 +75,13 @@ module Herb
             name = attribute_name(node)
 
             if name && boolean_attribute?(name) && node.value
+              # Build the full attribute string for the error message
+              value = attribute_value(node)
+              full_attribute = "#{name}=\"#{value}\""
+
               add_offense_with_autofix(
-                message: "Boolean attribute '#{name}' should not have a value",
+                message: "Boolean attribute `#{name}` should not have a value. " \
+                         "Use `#{name.downcase}` instead of `#{full_attribute}`.",
                 location: node.location,
                 node:
               )
