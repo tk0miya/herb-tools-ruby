@@ -651,10 +651,10 @@ end
 
 **Location:** `herb-format/spec/factories/`
 
-- [ ] Create factories/format_results.rb
-- [ ] Create factory for FormatResult with sensible defaults
-- [ ] Create factory for AggregatedResult
-- [ ] Create factory for Context (requires FormatterConfig)
+- [x] Create factories/format_results.rb
+- [x] Create factory for FormatResult with sensible defaults
+- [x] Create factory for AggregatedResult
+- [x] Create factory for Context (requires FormatterConfig)
 
 **Example:**
 ```ruby
