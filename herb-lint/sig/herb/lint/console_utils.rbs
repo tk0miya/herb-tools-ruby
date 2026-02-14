@@ -1,0 +1,20 @@
+# Generated from lib/herb/lint/console_utils.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # Utilities for console output formatting and colorization.
+    module ConsoleUtils
+      type color = :red | :green | :yellow | :cyan | :gray
+
+      # Applies color and styling to text.
+      # Only applies colors when tty is true.
+      #
+      # @rbs text: String
+      # @rbs color: color? -- :red, :green, :yellow, :cyan, :gray
+      # @rbs bold: bool -- make text bold
+      # @rbs dim: bool -- make text dimmed
+      # @rbs tty: bool -- whether the output is a TTY
+      def colorize: (String text, ?color: color?, ?bold: bool, ?dim: bool, ?tty: bool) -> String
+    end
+  end
+end
