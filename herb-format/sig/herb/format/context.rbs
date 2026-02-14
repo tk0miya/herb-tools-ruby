@@ -1,0 +1,40 @@
+# Generated from lib/herb/format/context.rb with RBS::Inline
+
+module Herb
+  module Format
+    # Provides contextual information during formatting and rewriting.
+    class Context < Data
+      attr_reader file_path(): String
+
+      attr_reader source(): String
+
+      attr_reader config(): Herb::Config::FormatterConfig
+
+      def self.new: (String file_path, String source, Herb::Config::FormatterConfig config) -> instance
+                  | (file_path: String, source: String, config: Herb::Config::FormatterConfig) -> instance
+
+      def self.members: () -> [ :file_path, :source, :config ]
+
+      def members: () -> [ :file_path, :source, :config ]
+    end
+
+    # :nodoc:
+    class Context
+      attr_reader source_lines: Array[String]
+
+      # @rbs file_path: String
+      # @rbs source: String
+      # @rbs config: Herb::Config::FormatterConfig
+      def initialize: (file_path: String, source: String, config: Herb::Config::FormatterConfig) -> void
+
+      def indent_width: () -> Integer
+
+      def max_line_length: () -> Integer
+
+      # @rbs line: Integer
+      def source_line: (Integer line) -> String
+
+      def line_count: () -> Integer
+    end
+  end
+end
