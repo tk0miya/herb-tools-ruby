@@ -28,14 +28,68 @@ RSpec.describe Herb::Lint::Rules::Html::BooleanAttributesNoValue do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when boolean attribute has no value" do
-      let(:source) { "<input disabled>" }
+    # Good examples from documentation
+    context "with checked attribute without value" do
+      let(:source) { '<input type="checkbox" checked>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
+    context "with disabled attribute without value" do
+      let(:source) { "<button disabled>Submit</button>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with multiple attribute without value" do
+      let(:source) { "<select multiple></select>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with checked attribute with self-referencing value" do
+      let(:source) { '<input type="checkbox" checked="checked">' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-boolean-attributes-no-value")
+        expect(subject.first.message).to eq(
+          'Boolean attribute `checked` should not have a value. Use `checked` instead of `checked="checked"`.'
+        )
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "with disabled attribute with value 'true'" do
+      let(:source) { '<button disabled="true">Submit</button>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to eq(
+          'Boolean attribute `disabled` should not have a value. Use `disabled` instead of `disabled="true"`.'
+        )
+      end
+    end
+
+    context "with multiple attribute with self-referencing value" do
+      let(:source) { '<select multiple="multiple"></select>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to eq(
+          'Boolean attribute `multiple` should not have a value. Use `multiple` instead of `multiple="multiple"`.'
+        )
+      end
+    end
+
+    # Additional edge cases
     context "when multiple boolean attributes have no values" do
       let(:source) { "<input disabled checked readonly>" }
 
@@ -52,34 +106,14 @@ RSpec.describe Herb::Lint::Rules::Html::BooleanAttributesNoValue do
       end
     end
 
-    context "when boolean attribute has a self-referencing value" do
-      let(:source) { '<input disabled="disabled">' }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html-boolean-attributes-no-value")
-        expect(subject.first.message).to eq("Boolean attribute 'disabled' should not have a value")
-        expect(subject.first.severity).to eq("error")
-      end
-    end
-
-    context "when boolean attribute has value 'true'" do
-      let(:source) { '<button disabled="true">Submit</button>' }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Boolean attribute 'disabled' should not have a value")
-      end
-    end
-
     context "when multiple boolean attributes have values" do
       let(:source) { '<input checked="checked" disabled="disabled">' }
 
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
         expect(subject.map(&:message)).to contain_exactly(
-          "Boolean attribute 'checked' should not have a value",
-          "Boolean attribute 'disabled' should not have a value"
+          'Boolean attribute `checked` should not have a value. Use `checked` instead of `checked="checked"`.',
+          'Boolean attribute `disabled` should not have a value. Use `disabled` instead of `disabled="disabled"`.'
         )
       end
     end
@@ -89,7 +123,9 @@ RSpec.describe Herb::Lint::Rules::Html::BooleanAttributesNoValue do
 
       it "reports an offense (case-insensitive check)" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Boolean attribute 'DISABLED' should not have a value")
+        expect(subject.first.message).to eq(
+          'Boolean attribute `DISABLED` should not have a value. Use `disabled` instead of `DISABLED="disabled"`.'
+        )
       end
     end
 
@@ -98,7 +134,9 @@ RSpec.describe Herb::Lint::Rules::Html::BooleanAttributesNoValue do
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Boolean attribute 'controls' should not have a value")
+        expect(subject.first.message).to eq(
+          'Boolean attribute `controls` should not have a value. Use `controls` instead of `controls="something-else"`.'
+        )
       end
     end
 
@@ -107,7 +145,10 @@ RSpec.describe Herb::Lint::Rules::Html::BooleanAttributesNoValue do
 
       it "reports offense only for the boolean attribute" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Boolean attribute 'novalidate' should not have a value")
+        expect(subject.first.message).to eq(
+          "Boolean attribute `novalidate` should not have a value. " \
+          "Use `novalidate` instead of `novalidate=\"novalidate\"`."
+        )
       end
     end
 
@@ -131,7 +172,9 @@ RSpec.describe Herb::Lint::Rules::Html::BooleanAttributesNoValue do
 
       it "reports offense only for boolean attribute with value" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Boolean attribute 'disabled' should not have a value")
+        expect(subject.first.message).to eq(
+          'Boolean attribute `disabled` should not have a value. Use `disabled` instead of `disabled="disabled"`.'
+        )
         expect(subject.first.line).to eq(2)
       end
     end
