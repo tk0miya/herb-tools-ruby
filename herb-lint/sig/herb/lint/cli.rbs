@@ -39,8 +39,8 @@ module Herb
       # Parses command-line options using OptionParser.
       def parse_options: () -> void
 
-      # Creates the appropriate reporter based on command-line options.
-      def create_reporter: () -> (Reporter::SimpleReporter | Reporter::JsonReporter | Reporter::GithubReporter)
+      # Creates the appropriate formatter based on command-line options.
+      def create_formatter: () -> Formatter::Base
     end
   end
 end
