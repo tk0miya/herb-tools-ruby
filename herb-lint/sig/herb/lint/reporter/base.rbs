@@ -1,0 +1,22 @@
+# Generated from lib/herb/lint/reporter/base.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Reporter
+      # Base class for all reporters.
+      class Base
+        attr_reader io: IO
+
+        # @rbs io: IO
+        def initialize: (?io: IO) -> void
+
+        # Reports the aggregated linting result.
+        # Subclasses must implement this method.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        # @rbs return: void
+        def report: (AggregatedResult aggregated_result) -> void
+      end
+    end
+  end
+end

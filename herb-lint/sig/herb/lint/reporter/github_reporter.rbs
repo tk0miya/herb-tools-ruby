@@ -4,12 +4,7 @@ module Herb
   module Lint
     module Reporter
       # Reporter that outputs linting results as GitHub Actions workflow commands.
-      class GithubReporter
-        attr_reader io: IO
-
-        # @rbs io: IO
-        def initialize: (?io: IO) -> void
-
+      class GithubReporter < Base
         # Reports the aggregated linting result as GitHub Actions annotations.
         #
         # @rbs aggregated_result: AggregatedResult

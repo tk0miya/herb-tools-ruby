@@ -1,0 +1,73 @@
+# Generated from lib/herb/lint/reporter/console_base.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Reporter
+      # Base class for console-based reporters (detailed, simple).
+      # Provides common functionality for formatting and displaying results to the console.
+      class ConsoleBase < Base
+        include StringUtils
+
+        attr_reader show_progress: bool
+
+        # @rbs io: IO
+        # @rbs show_progress: bool -- whether to show progress counters
+        def initialize: (?io: IO, ?show_progress: bool) -> void
+
+        private
+
+        # Prints a separator line between offenses.
+        def print_separator: () -> void
+
+        # Returns the colored symbol for a severity level.
+        #
+        # @rbs severity: String
+        def severity_symbol: (String severity) -> String
+
+        # Prints the summary of all offenses.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_summary: (AggregatedResult aggregated_result) -> void
+
+        # Prints the "Checked" line showing total files processed.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_checked_line: (AggregatedResult aggregated_result) -> void
+
+        # Prints the "Files" line showing clean vs files with offenses.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_files_line: (AggregatedResult aggregated_result) -> void
+
+        # Prints the "Offenses" line showing error/warning breakdown.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_offenses_line: (AggregatedResult aggregated_result) -> void
+
+        # Prints the "Fixable" line showing autocorrectable offenses.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_fixable_line: (AggregatedResult aggregated_result) -> void
+
+        # Prints success message if all files are clean.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_success_message: (AggregatedResult aggregated_result) -> void
+
+        # Pads a label to a consistent width.
+        #
+        # @rbs label: String
+        def pad_label: (String label) -> String
+
+        # Applies color and styling to text.
+        # Simplified version - only applies colors when TTY is supported.
+        #
+        # @rbs text: String
+        # @rbs color: Symbol? -- :red, :green, :yellow, :cyan, :gray
+        # @rbs bold: bool -- make text bold
+        # @rbs dim: bool -- make text dimmed
+        def colorize: (String text, ?color: Symbol?, ?bold: bool, ?dim: bool) -> String
+      end
+    end
+  end
+end

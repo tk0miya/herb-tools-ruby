@@ -4,12 +4,7 @@ module Herb
   module Lint
     module Reporter
       # Reporter that outputs linting results in JSON format.
-      class JsonReporter
-        attr_reader io: IO
-
-        # @rbs io: IO
-        def initialize: (?io: IO) -> void
-
+      class JsonReporter < Base
         # Reports the aggregated linting result as JSON.
         #
         # @rbs aggregated_result: AggregatedResult

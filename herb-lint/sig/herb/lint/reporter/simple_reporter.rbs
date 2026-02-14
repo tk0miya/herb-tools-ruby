@@ -4,11 +4,7 @@ module Herb
   module Lint
     module Reporter
       # Simple reporter that outputs linting results in a human-readable format.
-      class SimpleReporter
-        include StringUtils
-
-        attr_reader io: IO
-
+      class SimpleReporter < ConsoleBase
         # @rbs io: IO
         def initialize: (?io: IO) -> void
 
@@ -28,55 +24,6 @@ module Herb
         #
         # @rbs offense: Offense
         def print_offense: (Offense offense) -> void
-
-        # Returns the colored symbol for a severity level.
-        #
-        # @rbs severity: String
-        def severity_symbol: (String severity) -> String
-
-        # Prints the summary of all offenses.
-        #
-        # @rbs aggregated_result: AggregatedResult
-        def print_summary: (AggregatedResult aggregated_result) -> void
-
-        # Prints the "Checked" line showing total files processed.
-        #
-        # @rbs aggregated_result: AggregatedResult
-        def print_checked_line: (AggregatedResult aggregated_result) -> void
-
-        # Prints the "Files" line showing clean vs files with offenses.
-        #
-        # @rbs aggregated_result: AggregatedResult
-        def print_files_line: (AggregatedResult aggregated_result) -> void
-
-        # Prints the "Offenses" line showing error/warning breakdown.
-        #
-        # @rbs aggregated_result: AggregatedResult
-        def print_offenses_line: (AggregatedResult aggregated_result) -> void
-
-        # Prints the "Fixable" line showing autocorrectable offenses.
-        #
-        # @rbs aggregated_result: AggregatedResult
-        def print_fixable_line: (AggregatedResult aggregated_result) -> void
-
-        # Prints success message if all files are clean.
-        #
-        # @rbs aggregated_result: AggregatedResult
-        def print_success_message: (AggregatedResult aggregated_result) -> void
-
-        # Pads a label to a consistent width.
-        #
-        # @rbs label: String
-        def pad_label: (String label) -> String
-
-        # Applies color and styling to text.
-        # Simplified version - only applies colors when TTY is supported.
-        #
-        # @rbs text: String
-        # @rbs color: Symbol? -- :red, :green, :yellow, :cyan, :gray
-        # @rbs bold: bool -- make text bold
-        # @rbs dim: bool -- make text dimmed
-        def colorize: (String text, ?color: Symbol?, ?bold: bool, ?dim: bool) -> String
       end
     end
   end
