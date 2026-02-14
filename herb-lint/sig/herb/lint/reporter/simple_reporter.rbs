@@ -5,6 +5,8 @@ module Herb
     module Reporter
       # Simple reporter that outputs linting results in a human-readable format.
       class SimpleReporter
+        include ConsoleUtils
+
         include StringUtils
 
         attr_reader io: IO
@@ -69,14 +71,13 @@ module Herb
         # @rbs label: String
         def pad_label: (String label) -> String
 
-        # Applies color and styling to text.
-        # Simplified version - only applies colors when TTY is supported.
+        # Wraps ConsoleUtils#colorize to automatically use io.tty?
         #
         # @rbs text: String
-        # @rbs color: Symbol? -- :red, :green, :yellow, :cyan, :gray
-        # @rbs bold: bool -- make text bold
-        # @rbs dim: bool -- make text dimmed
-        def colorize: (String text, ?color: Symbol?, ?bold: bool, ?dim: bool) -> String
+        # @rbs color: color?
+        # @rbs bold: bool
+        # @rbs dim: bool
+        def colorize: (String text, ?color: color?, ?bold: bool, ?dim: bool) -> String
       end
     end
   end

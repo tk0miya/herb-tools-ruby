@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "../console_utils"
 require_relative "../string_utils"
 
 module Herb
@@ -7,6 +8,7 @@ module Herb
     module Reporter
       # Simple reporter that outputs linting results in a human-readable format.
       class SimpleReporter # rubocop:disable Metrics/ClassLength
+        include ConsoleUtils
         include StringUtils
 
         attr_reader :io #: IO
@@ -187,36 +189,14 @@ module Herb
           colorize(label.ljust(12), color: :gray)
         end
 
-        # Applies color and styling to text.
-        # Simplified version - only applies colors when TTY is supported.
+        # Wraps ConsoleUtils#colorize to automatically use io.tty?
         #
         # @rbs text: String
-        # @rbs color: Symbol? -- :red, :green, :yellow, :cyan, :gray
-        # @rbs bold: bool -- make text bold
-        # @rbs dim: bool -- make text dimmed
-        def colorize(text, color: nil, bold: false, dim: false) #: String # rubocop:disable Metrics/CyclomaticComplexity
-          return text unless io.tty?
-
-          codes = []
-          codes << 1 if bold
-          codes << 2 if dim
-
-          case color
-          when :red
-            codes << 31
-          when :green
-            codes << 32
-          when :yellow
-            codes << 33
-          when :cyan
-            codes << 36
-          when :gray
-            codes << 90
-          end
-
-          return text if codes.empty?
-
-          "\e[#{codes.join(';')}m#{text}\e[0m"
+        # @rbs color: color?
+        # @rbs bold: bool
+        # @rbs dim: bool
+        def colorize(text, color: nil, bold: false, dim: false) #: String
+          super(text, color:, bold:, dim:, tty: io.tty?)
         end
       end
     end
