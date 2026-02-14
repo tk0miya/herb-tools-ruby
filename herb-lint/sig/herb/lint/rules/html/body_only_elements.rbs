@@ -4,20 +4,74 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that ensures body-only elements are not placed inside `<head>`.
-        #
-        # Certain HTML elements (e.g., `<div>`, `<p>`, `<main>`) are only valid
-        # inside `<body>`. Placing them inside `<head>` is invalid HTML.
+        # Description:
+        #   Enforce that specific HTML elements are only placed within the `<body>` tag.
         #
         # Good:
-        #   <body>
-        #     <div>Content in body</div>
-        #   </body>
+        #   <html>
+        #     <head>
+        #       <title>Page Title</title>
+        #       <meta charset="utf-8">
+        #     </head>
+        #
+        #     <body>
+        #       <header>
+        #         <h1>Welcome</h1>
+        #         <nav>
+        #           <ul>
+        #             <li>Home</li>
+        #           </ul>
+        #         </nav>
+        #       </header>
+        #
+        #       <main>
+        #         <article>
+        #           <section>
+        #             <p>This is valid content.</p>
+        #             <table>
+        #               <tr><td>Data</td></tr>
+        #             </table>
+        #           </section>
+        #         </article>
+        #         <aside>
+        #           <form>
+        #             <input type="text" autocomplete="on">
+        #           </form>
+        #         </aside>
+        #       </main>
+        #
+        #       <footer>
+        #         <h2>Footer</h2>
+        #       </footer>
+        #     </body>
+        #   </html>
         #
         # Bad:
-        #   <head>
-        #     <div>Content in head</div>
-        #   </head>
+        #   <html>
+        #     <head>
+        #       <title>Page Title</title>
+        #       <h1>Welcome</h1>
+        #
+        #       <p>This should not be here.</p>
+        #
+        #     </head>
+        #
+        #     <body>
+        #       <main>Valid content</main>
+        #     </body>
+        #   </html>
+        #
+        #   <html>
+        #     <head>
+        #       <nav>Navigation</nav>
+        #
+        #       <form>Form</form>
+        #
+        #     </head>
+        #
+        #     <body>
+        #     </body>
+        #   </html>
         class BodyOnlyElements < VisitorRule
           DOCUMENT_ONLY_TAGS: Array[String]
 
@@ -34,6 +88,10 @@ module Herb
           def self.description: () -> String
 
           def self.default_severity: () -> String
+
+          def self.safe_autofixable?: () -> bool
+
+          def self.unsafe_autofixable?: () -> bool
 
           @element_stack: Array[String]
 

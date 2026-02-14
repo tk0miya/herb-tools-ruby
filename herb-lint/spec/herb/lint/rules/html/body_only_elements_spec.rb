@@ -28,12 +28,47 @@ RSpec.describe Herb::Lint::Rules::Html::BodyOnlyElements do
     let(:document) { Herb.parse(source) }
     let(:context) { build(:context) }
 
-    context "when body-only element is inside body" do
+    # Good examples from documentation
+    context "when body-only elements are properly placed inside body" do
       let(:source) do
         <<~HTML
-          <body>
-            <div>Content in body</div>
-          </body>
+          <html>
+            <head>
+              <title>Page Title</title>
+              <meta charset="utf-8">
+            </head>
+
+            <body>
+              <header>
+                <h1>Welcome</h1>
+                <nav>
+                  <ul>
+                    <li>Home</li>
+                  </ul>
+                </nav>
+              </header>
+
+              <main>
+                <article>
+                  <section>
+                    <p>This is valid content.</p>
+                    <table>
+                      <tr><td>Data</td></tr>
+                    </table>
+                  </section>
+                </article>
+                <aside>
+                  <form>
+                    <input type="text" autocomplete="on">
+                  </form>
+                </aside>
+              </main>
+
+              <footer>
+                <h2>Footer</h2>
+              </footer>
+            </body>
+          </html>
         HTML
       end
 
@@ -42,20 +77,62 @@ RSpec.describe Herb::Lint::Rules::Html::BodyOnlyElements do
       end
     end
 
-    context "when body-only element is inside head" do
+    # Bad examples from documentation
+    context "when h1 and p elements are inside head" do
       let(:source) do
         <<~HTML
-          <head>
-            <div>Content in head</div>
-          </head>
+          <html>
+            <head>
+              <title>Page Title</title>
+              <h1>Welcome</h1>
+
+              <p>This should not be here.</p>
+
+            </head>
+
+            <body>
+              <main>Valid content</main>
+            </body>
+          </html>
         HTML
       end
 
       it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html-body-only-elements")
-        expect(subject.first.message).to eq("Element `<div>` must be placed inside the `<body>` tag.")
-        expect(subject.first.severity).to eq("error")
+        expect(subject.size).to eq(2)
+        expect(subject[0].rule_name).to eq("html-body-only-elements")
+        expect(subject[0].message).to eq("Element `<h1>` must be placed inside the `<body>` tag.")
+        expect(subject[0].severity).to eq("error")
+        expect(subject[1].rule_name).to eq("html-body-only-elements")
+        expect(subject[1].message).to eq("Element `<p>` must be placed inside the `<body>` tag.")
+        expect(subject[1].severity).to eq("error")
+      end
+    end
+
+    context "when nav and form elements are inside head" do
+      let(:source) do
+        <<~HTML
+          <html>
+            <head>
+              <nav>Navigation</nav>
+
+              <form>Form</form>
+
+            </head>
+
+            <body>
+            </body>
+          </html>
+        HTML
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(2)
+        expect(subject[0].rule_name).to eq("html-body-only-elements")
+        expect(subject[0].message).to eq("Element `<nav>` must be placed inside the `<body>` tag.")
+        expect(subject[0].severity).to eq("error")
+        expect(subject[1].rule_name).to eq("html-body-only-elements")
+        expect(subject[1].message).to eq("Element `<form>` must be placed inside the `<body>` tag.")
+        expect(subject[1].severity).to eq("error")
       end
     end
 
