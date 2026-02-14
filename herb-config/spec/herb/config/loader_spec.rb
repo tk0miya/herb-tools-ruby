@@ -69,6 +69,46 @@ RSpec.describe Herb::Config::Loader do
         end
       end
 
+      context "when .herb.yml contains formatter configuration" do
+        before do
+          File.write(config_path, <<~YAML)
+            formatter:
+              enabled: true
+              indentWidth: 4
+              maxLineLength: 120
+              rewriter:
+                pre:
+                  - normalize-attributes
+                post:
+                  - tailwind-class-sorter
+          YAML
+        end
+
+        it "loads formatter configuration with camelCase fields" do
+          expect(subject["formatter"]["enabled"]).to be true
+          expect(subject["formatter"]["indentWidth"]).to eq(4)
+          expect(subject["formatter"]["maxLineLength"]).to eq(120)
+          expect(subject["formatter"]["rewriter"]["pre"]).to eq(["normalize-attributes"])
+          expect(subject["formatter"]["rewriter"]["post"]).to eq(["tailwind-class-sorter"])
+        end
+      end
+
+      context "when .herb.yml omits formatter fields" do
+        before do
+          File.write(config_path, <<~YAML)
+            formatter:
+              enabled: true
+          YAML
+        end
+
+        it "applies defaults for omitted fields" do
+          expect(subject["formatter"]["indentWidth"]).to eq(2)
+          expect(subject["formatter"]["maxLineLength"]).to eq(80)
+          expect(subject["formatter"]["rewriter"]["pre"]).to eq([])
+          expect(subject["formatter"]["rewriter"]["post"]).to eq([])
+        end
+      end
+
       context "when .herb.yml contains invalid YAML" do
         before do
           File.write(config_path, "invalid: yaml: content:")

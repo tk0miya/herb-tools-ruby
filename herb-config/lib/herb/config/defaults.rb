@@ -17,6 +17,17 @@ module Herb
             "include" => DEFAULT_INCLUDE.dup,
             "exclude" => DEFAULT_EXCLUDE.dup,
             "rules" => {}
+          },
+          "formatter" => {
+            "enabled" => false,
+            "include" => [],
+            "exclude" => [],
+            "indentWidth" => 2,
+            "maxLineLength" => 80,
+            "rewriter" => {
+              "pre" => [],
+              "post" => []
+            }
           }
         }
       end

@@ -571,12 +571,12 @@ end
 
 **Location:** `herb-config/lib/herb/config/loader.rb`
 
-- [ ] Update YAML loading to parse formatter.indentWidth
-- [ ] Update YAML loading to parse formatter.maxLineLength
-- [ ] Update YAML loading to parse formatter.rewriter.pre (array)
-- [ ] Update YAML loading to parse formatter.rewriter.post (array)
-- [ ] Handle camelCase → snake_case conversion
-- [ ] Update spec file with new fields
+- [x] Update YAML loading to parse formatter.indentWidth
+- [x] Update YAML loading to parse formatter.maxLineLength
+- [x] Update YAML loading to parse formatter.rewriter.pre (array)
+- [x] Update YAML loading to parse formatter.rewriter.post (array)
+- [x] Handle camelCase → snake_case conversion
+- [x] Update spec file with new fields
 
 **Test Cases:**
 - Load .herb.yml with formatter.indentWidth: 4
@@ -689,12 +689,12 @@ end
 
 ### Task 1.19: Full Verification
 
-- [ ] Run `cd herb-format && ./bin/rake` -- all checks pass
-- [ ] Run `cd herb-config && ./bin/rake` -- all checks pass (after formatter config changes)
-- [ ] Verify gem can be built: `gem build herb-format.gemspec`
-- [ ] Verify all data structures work together
-- [ ] Verify type checking passes
-- [ ] Verify CI runs successfully on GitHub Actions (after pushing to branch)
+- [x] Run `cd herb-format && ./bin/rake` -- all checks pass
+- [x] Run `cd herb-config && ./bin/rake` -- all checks pass (after formatter config changes)
+- [x] Verify gem can be built: `gem build herb-format.gemspec`
+- [x] Verify all data structures work together
+- [x] Verify type checking passes
+- [x] Verify CI runs successfully on GitHub Actions (after pushing to branch)
 
 ---
 
