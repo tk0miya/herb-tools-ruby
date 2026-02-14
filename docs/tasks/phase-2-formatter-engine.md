@@ -36,24 +36,36 @@ This phase implements the core formatting engine that traverses the AST and appl
 
 **Location:** `herb-format/lib/herb/format/engine.rb`
 
-- [ ] Create Engine class
-- [ ] Add initialize with indent_width and max_line_length parameters
-- [ ] Add format(ast, context) method returning String
-- [ ] Add private visit(node, depth) recursive traversal method
-- [ ] Add helper methods: indent(depth), is_void_element?, is_preserved_element?
-- [ ] Add RBS inline type annotations
-- [ ] Create spec file
+- [x] Create Engine class
+- [x] Add initialize with indent_width and max_line_length parameters
+- [x] Add format(ast, context) method returning String
+- [x] Add private visit(node, depth) recursive traversal method with dynamic dispatch
+- [x] Add normalize_node_type helper to convert AST node types to symbol format
+- [x] Add visit_unknown fallback method for unknown node types
+- [x] Add helper methods: indent(depth), void_element?, preserved_element?
+- [x] Add RBS inline type annotations
+- [x] Create spec file
+
+**Design Decisions:**
+- Use **dynamic dispatch** (via `send`) instead of `case` statement for extensibility
+- Use **`visit_*` method naming** (e.g., `visit_document`, `visit_html_element`)
+- Method names follow Ruby naming conventions (e.g., `void_element?` not `is_void_element?`)
 
 **Interface:**
 ```ruby
-# rbs_inline: enabled
+# frozen_string_literal: true
 
 module Herb
   module Format
     # Core formatting engine that traverses AST and applies formatting rules.
     #
+    # Uses a visitor pattern with dynamic dispatch to handle different node types.
+    # Each node type is handled by a visit_<node_type> method.
+    #
     # @rbs indent_width: Integer
     # @rbs max_line_length: Integer
+    # @rbs @context: Context
+    # @rbs @output: String
     class Engine
       VOID_ELEMENTS = %w[
         area base br col embed hr img input link meta param source track wbr
@@ -85,39 +97,75 @@ module Herb
 
       private
 
+      # Visit a node using dynamic dispatch to the appropriate visit_* method.
+      #
+      # This implements the visitor pattern by dispatching to visit_<node_type> methods.
+      # If no specific handler exists, falls back to visit_unknown.
+      #
       # @rbs node: Herb::AST::Node
       # @rbs depth: Integer
       # @rbs return: void
       def visit(node, depth:)
-        case node.type
-        when :document
-          format_document(node, depth)
-        when :html_element
-          format_element(node, depth)
-        when :html_text
-          format_text(node, depth)
-        # ... other node types will be added in subsequent tasks
+        # Normalize node type from "AST_DOCUMENT_NODE" to :document
+        normalized_type = normalize_node_type(node.type)
+        method_name = :"visit_#{normalized_type}"
+
+        if respond_to?(method_name, true)
+          send(method_name, node, depth)
         else
-          # Fallback: use IdentityPrinter for unknown nodes
-          @output << Herb::Printer::IdentityPrinter.print(node)
+          visit_unknown(node, depth)
         end
       end
 
+      # Normalize node type from AST constant format to symbol format.
+      # "AST_DOCUMENT_NODE" => :document
+      # "AST_HTML_ELEMENT_NODE" => :html_element
+      # :unknown_type => :unknown_type (already a symbol, pass through)
+      #
+      # @rbs type: String | Symbol
+      # @rbs return: Symbol
+      def normalize_node_type(type)
+        # If already a symbol, return as-is
+        return type if type.is_a?(Symbol)
+
+        type
+          .sub(/^AST_/, "")           # Remove AST_ prefix
+          .sub(/_NODE$/, "")          # Remove _NODE suffix
+          .downcase                   # Convert to lowercase
+          .to_sym                     # Convert to symbol
+      end
+
+      # Fallback handler for unknown node types.
+      # Uses IdentityPrinter to preserve the original source.
+      #
+      # @rbs node: Herb::AST::Node
+      # @rbs depth: Integer
+      # @rbs return: void
+      def visit_unknown(node, _depth)
+        @output << Herb::Printer::IdentityPrinter.print(node)
+      end
+
+      # Generate indentation string for the given depth.
+      #
       # @rbs depth: Integer
       # @rbs return: String
       def indent(depth)
         " " * (indent_width * depth)
       end
 
+      # Check if tag is a void element (self-closing, no closing tag).
+      #
       # @rbs tag_name: String
       # @rbs return: bool
-      def is_void_element?(tag_name)
+      def void_element?(tag_name)
         VOID_ELEMENTS.include?(tag_name.downcase)
       end
 
+      # Check if tag content should be preserved (not reformatted).
+      #
       # @rbs tag_name: String
       # @rbs return: bool
-      def is_preserved_element?(tag_name)
+      def preserved_element?(tag_name)
         PRESERVED_ELEMENTS.include?(tag_name.downcase)
       end
     end
@@ -128,14 +176,19 @@ end
 **Test Cases:**
 - Engine initializes with indent_width and max_line_length
 - format() returns a String
+- format() uses IdentityPrinter as fallback for nodes without specific visit_* methods
 - indent(0) returns ""
 - indent(1) returns correct number of spaces
-- is_void_element?("br") returns true
-- is_void_element?("div") returns false
-- is_preserved_element?("pre") returns true
+- void_element?("br") returns true
+- void_element?("div") returns false
+- preserved_element?("pre") returns true
+- normalize_node_type converts AST constants to symbols correctly
+- visit_unknown falls back to IdentityPrinter
 
 **Verification:**
 - `cd herb-format && ./bin/rspec spec/herb/format/engine_spec.rb`
+
+**Note:** Task 2.1 establishes the foundation only. Specific `visit_*` methods for different node types (e.g., `visit_document`, `visit_html_element`) will be implemented in subsequent tasks (2.2, 2.3, etc.).
 
 ---
 
@@ -145,55 +198,63 @@ end
 
 **Location:** `herb-format/lib/herb/format/engine.rb`
 
-- [ ] Implement format_document(node, depth)
-- [ ] Implement format_text(node, depth)
-- [ ] Implement format_whitespace(node, depth)
-- [ ] Implement format_literal(node, depth)
+- [ ] Implement visit_document(node, depth)
+- [ ] Implement visit_html_text(node, depth)
+- [ ] Implement visit_whitespace(node, depth)
+- [ ] Implement visit_literal(node, depth)
 - [ ] Add test cases for each method
 
 **Implementation:**
 ```ruby
 private
 
+# Visit document node (root of AST).
+#
 # @rbs node: Herb::AST::DocumentNode
 # @rbs depth: Integer
 # @rbs return: void
-def format_document(node, depth)
+def visit_document(node, depth)
   node.child_nodes.each do |child|
-    visit(child, depth: depth)
+    visit(child, depth:)
   end
 end
 
+# Visit HTML text node.
+#
 # @rbs node: Herb::AST::HTMLTextNode
 # @rbs depth: Integer
 # @rbs return: void
-def format_text(node, depth)
+def visit_html_text(node, _depth)
   # Preserve text content as-is
   @output << node.content
 end
 
+# Visit whitespace node.
+#
 # @rbs node: Herb::AST::WhitespaceNode
 # @rbs depth: Integer
 # @rbs return: void
-def format_whitespace(node, depth)
+def visit_whitespace(node, _depth)
   # Preserve whitespace as-is for now
   # (Future: normalize whitespace based on context)
   @output << node.value.value
 end
 
+# Visit literal node.
+#
 # @rbs node: Herb::AST::LiteralNode
 # @rbs depth: Integer
 # @rbs return: void
-def format_literal(node, depth)
+def visit_literal(node, _depth)
   @output << node.content
 end
 ```
 
 **Test Cases:**
-- format_document visits all children
-- format_text preserves text content
-- format_whitespace preserves whitespace
-- format_literal preserves literal content
+- visit_document visits all children
+- visit_html_text preserves text content
+- visit_whitespace preserves whitespace
+- visit_literal preserves literal content
 
 **Verification:**
 - `cd herb-format && ./bin/rspec spec/herb/format/engine_spec.rb`
@@ -205,9 +266,9 @@ end
 
 **Location:** `herb-format/lib/herb/format/engine.rb`
 
-- [ ] Implement format_element(node, depth)
-- [ ] Implement format_open_tag(node, depth)
-- [ ] Implement format_close_tag(node, depth)
+- [ ] Implement visit_html_element(node, depth)
+- [ ] Implement visit_html_open_tag(node, depth)
+- [ ] Implement visit_html_close_tag(node, depth)
 - [ ] Handle void elements (no close tag)
 - [ ] Handle preserved elements (no indentation changes)
 - [ ] Add test cases
@@ -216,39 +277,43 @@ end
 ```ruby
 private
 
+# Visit HTML element node.
+#
 # @rbs node: Herb::AST::HTMLElementNode
 # @rbs depth: Integer
 # @rbs return: void
-def format_element(node, depth)
+def visit_html_element(node, depth)
   tag_name = node.tag_name&.value || ""
-  preserved = is_preserved_element?(tag_name)
+  preserved = preserved_element?(tag_name)
 
   # Format opening tag
-  visit(node.open_tag, depth: depth)
+  visit(node.open_tag, depth:)
 
   # Format body (skip if void element)
-  unless is_void_element?(tag_name)
-    if preserved
-      # Preserve content as-is for <pre>, <code>, etc.
-      node.body.each do |child|
-        @output << Herb::Printer::IdentityPrinter.print(child)
-      end
-    else
-      # Format body with increased depth
-      node.body.each do |child|
-        visit(child, depth: depth + 1)
-      end
-    end
+  return if void_element?(tag_name)
 
-    # Format closing tag
-    visit(node.close_tag, depth: depth) if node.close_tag
+  if preserved
+    # Preserve content as-is for <pre>, <code>, etc.
+    node.body.each do |child|
+      @output << Herb::Printer::IdentityPrinter.print(child)
+    end
+  else
+    # Format body with increased depth
+    node.body.each do |child|
+      visit(child, depth: depth + 1)
+    end
   end
+
+  # Format closing tag
+  visit(node.close_tag, depth:) if node.close_tag
 end
 
+# Visit HTML open tag node.
+#
 # @rbs node: Herb::AST::HTMLOpenTagNode
 # @rbs depth: Integer
 # @rbs return: void
-def format_open_tag(node, depth)
+def visit_html_open_tag(node, depth)
   @output << indent(depth) if should_indent?(node)
   @output << "<"
 
@@ -259,27 +324,31 @@ def format_open_tag(node, depth)
       @output << node.tag_name.value if node.tag_name
     when :html_attribute
       @output << " "
-      visit(child, depth: depth)
+      visit(child, depth:)
     when :whitespace
       # Skip whitespace in attributes for now
     else
-      visit(child, depth: depth)
+      visit(child, depth:)
     end
   end
 
   @output << ">"
 end
 
+# Visit HTML close tag node.
+#
 # @rbs node: Herb::AST::HTMLCloseTagNode
 # @rbs depth: Integer
 # @rbs return: void
-def format_close_tag(node, depth)
+def visit_html_close_tag(node, depth)
   @output << indent(depth) if should_indent?(node)
   @output << "</"
   @output << node.tag_name.value if node.tag_name
   @output << ">"
 end
 
+# Determine if node should be indented.
+#
 # @rbs node: Herb::AST::Node
 # @rbs return: bool
 def should_indent?(node)
@@ -290,11 +359,11 @@ end
 ```
 
 **Test Cases:**
-- format_element with void element (no close tag)
-- format_element with preserved element (content unchanged)
-- format_element with normal element (body indented)
-- format_open_tag outputs correct structure
-- format_close_tag outputs correct structure
+- visit_html_element with void element (no close tag)
+- visit_html_element with preserved element (content unchanged)
+- visit_html_element with normal element (body indented)
+- visit_html_open_tag outputs correct structure
+- visit_html_close_tag outputs correct structure
 
 **Verification:**
 - `cd herb-format && ./bin/rspec spec/herb/format/engine_spec.rb`
