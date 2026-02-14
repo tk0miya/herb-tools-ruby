@@ -7,17 +7,44 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that requires navigation elements to have an accessible label.
-        #
-        # `<nav>` elements should have an `aria-label` or `aria-labelledby`
-        # attribute to provide an accessible name for screen reader users.
+        # Description:
+        #   Ensure that navigation landmarks have a unique accessible name via `aria-label` or `aria-labelledby`
+        #   attributes. This applies to both `<nav>` elements and elements with `role="navigation"`.
         #
         # Good:
-        #   <nav aria-label="Main navigation"><a href="/">Home</a></nav>
-        #   <nav aria-labelledby="nav-heading"><a href="/">Home</a></nav>
+        #   <nav aria-label="Main navigation">
+        #     <ul>
+        #       <li><a href="/">Home</a></li>
+        #       <li><a href="/about">About</a></li>
+        #     </ul>
+        #   </nav>
+        #
+        #   <nav aria-labelledby="breadcrumb-title">
+        #     <h2 id="breadcrumb-title">Breadcrumb</h2>
+        #     <ol>
+        #       <li><a href="/">Home</a></li>
+        #       <li>Current Page</li>
+        #     </ol>
+        #   </nav>
+        #
+        #   <div role="navigation" aria-label="Footer links">
+        #     <a href="/privacy">Privacy</a>
+        #     <a href="/terms">Terms</a>
+        #   </div>
         #
         # Bad:
-        #   <nav><a href="/">Home</a></nav>
+        #   <nav>
+        #     <ul>
+        #       <li><a href="/">Home</a></li>
+        #       <li><a href="/about">About</a></li>
+        #     </ul>
+        #   </nav>
+        #
+        #   <div role="navigation">
+        #     <a href="/privacy">Privacy</a>
+        #     <a href="/terms">Terms</a>
+        #   </div>
+        #
         class NavigationHasLabel < VisitorRule
           def self.rule_name = "html-navigation-has-label" #: String
           def self.description = "Require accessible label on nav elements" #: String
@@ -28,9 +55,9 @@ module Herb
 
           # @rbs override
           def visit_html_element_node(node)
-            if nav_element?(node) && !label?(node)
+            if navigation_element?(node) && !label?(node)
               add_offense(
-                message: "Missing accessible label (`aria-label` or `aria-labelledby`) on nav element",
+                message: navigation_message(node),
                 location: node.location
               )
             end
@@ -40,8 +67,25 @@ module Herb
           private
 
           # @rbs node: Herb::AST::HTMLElementNode
-          def nav_element?(node) #: bool
-            tag_name(node) == "nav"
+          def navigation_element?(node) #: bool
+            tag_name(node) == "nav" || role_navigation?(node)
+          end
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def role_navigation?(node) #: bool
+            role = attribute_value(find_attribute(node, "role"))
+            role == "navigation"
+          end
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def navigation_message(node) #: String
+            base_message = "The navigation landmark should have a unique accessible name via " \
+                           "`aria-label` or `aria-labelledby`"
+            if role_navigation?(node)
+              "#{base_message}. Consider replacing `role=\"navigation\"` with a native `<nav>` element."
+            else
+              base_message
+            end
           end
 
           # @rbs node: Herb::AST::HTMLElementNode

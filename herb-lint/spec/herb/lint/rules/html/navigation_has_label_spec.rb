@@ -28,30 +28,96 @@ RSpec.describe Herb::Lint::Rules::Html::NavigationHasLabel do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when nav has aria-label attribute" do
-      let(:source) { '<nav aria-label="Main navigation"><a href="/">Home</a></nav>' }
+    # Good examples from documentation
+    context "when nav has aria-label (documentation example)" do
+      let(:source) do
+        <<~HTML
+          <nav aria-label="Main navigation">
+            <ul>
+              <li><a href="/">Home</a></li>
+              <li><a href="/about">About</a></li>
+            </ul>
+          </nav>
+        HTML
+      end
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when nav has aria-labelledby attribute" do
-      let(:source) { '<nav aria-labelledby="nav-heading"><a href="/">Home</a></nav>' }
+    context "when nav has aria-labelledby (documentation example)" do
+      let(:source) do
+        <<~HTML
+          <nav aria-labelledby="breadcrumb-title">
+            <h2 id="breadcrumb-title">Breadcrumb</h2>
+            <ol>
+              <li><a href="/">Home</a></li>
+              <li>Current Page</li>
+            </ol>
+          </nav>
+        HTML
+      end
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when nav is missing both aria-label and aria-labelledby" do
-      let(:source) { '<nav><a href="/">Home</a></nav>' }
+    context "when div with role=navigation has aria-label (documentation example)" do
+      let(:source) do
+        <<~HTML
+          <div role="navigation" aria-label="Footer links">
+            <a href="/privacy">Privacy</a>
+            <a href="/terms">Terms</a>
+          </div>
+        HTML
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "when nav is missing label (documentation example)" do
+      let(:source) do
+        <<~HTML
+          <nav>
+            <ul>
+              <li><a href="/">Home</a></li>
+              <li><a href="/about">About</a></li>
+            </ul>
+          </nav>
+        HTML
+      end
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-navigation-has-label")
         expect(subject.first.message)
-          .to eq("Missing accessible label (`aria-label` or `aria-labelledby`) on nav element")
+          .to eq("The navigation landmark should have a unique accessible name via `aria-label` or `aria-labelledby`")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when div with role=navigation is missing label (documentation example)" do
+      let(:source) do
+        <<~HTML
+          <div role="navigation">
+            <a href="/privacy">Privacy</a>
+            <a href="/terms">Terms</a>
+          </div>
+        HTML
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-navigation-has-label")
+        expect(subject.first.message).to eq(
+          "The navigation landmark should have a unique accessible name via `aria-label` or `aria-labelledby`. " \
+          "Consider replacing `role=\"navigation\"` with a native `<nav>` element."
+        )
         expect(subject.first.severity).to eq("error")
       end
     end
