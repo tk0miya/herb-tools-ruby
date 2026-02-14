@@ -4,18 +4,22 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows spaces around `=` in attribute assignments.
-        #
-        # Spaces around the equals sign in HTML attributes are valid but
-        # unconventional. Removing them improves readability and consistency.
+        # Description:
+        #   Disallow whitespace before or after the equals sign (=) for attribute values in HTML. Attributes must
+        #   follow the canonical format (name="value") with no spaces between the attribute name, the equals sign, or
+        #   the opening quote.
         #
         # Good:
-        #   <div class="foo">
+        #   <div class="container"></div>
+        #   <img src="/logo.png" alt="Logo">
+        #   <input type="text" value="<%= @value %>" autocomplete="off">
         #
         # Bad:
-        #   <div class = "foo">
-        #   <div class ="foo">
-        #   <div class= "foo">
+        #   <div class ="container"></div>
+        #
+        #   <img src= "/logo.png" alt="Logo">
+        #
+        #   <input type = "text" autocomplete="off">
         class AttributeEqualsSpacing < VisitorRule
           def self.rule_name: () -> String
 
@@ -38,15 +42,6 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLAttributeNode
           def check_spacing: (Herb::AST::HTMLAttributeNode node) -> void
-
-          # @rbs node: Herb::AST::HTMLAttributeNode
-          def spacing_message: (Herb::AST::HTMLAttributeNode node) -> String?
-
-          # @rbs node: Herb::AST::HTMLAttributeNode
-          def space_before_equals?: (Herb::AST::HTMLAttributeNode node) -> bool
-
-          # @rbs node: Herb::AST::HTMLAttributeNode
-          def space_after_equals?: (Herb::AST::HTMLAttributeNode node) -> bool
         end
       end
     end

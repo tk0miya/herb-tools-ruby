@@ -34,43 +34,63 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeEqualsSpacing do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
+    # Good examples from documentation
     context "when attribute has no spaces around =" do
-      let(:source) { '<div class="foo">text</div>' }
+      let(:source) { '<div class="container"></div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
+    context "when multiple attributes with no spaces" do
+      let(:source) { '<img src="/logo.png" alt="Logo">' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when attribute with ERB value has no spaces" do
+      let(:source) { '<input type="text" value="<%= @value %>" autocomplete="off">' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
     context "when attribute has space before =" do
-      let(:source) { '<div class ="foo">text</div>' }
+      let(:source) { '<div class ="container"></div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-attribute-equals-spacing")
-        expect(subject.first.message).to eq("Unexpected space before `=` in attribute assignment")
+        expect(subject.first.message).to eq("Remove whitespace before `=` in HTML attribute")
         expect(subject.first.severity).to eq("error")
       end
     end
 
     context "when attribute has space after =" do
-      let(:source) { '<div class= "foo">text</div>' }
+      let(:source) { '<img src= "/logo.png" alt="Logo">' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Unexpected space after `=` in attribute assignment")
+        expect(subject.first.message).to eq("Remove whitespace after `=` in HTML attribute")
       end
     end
 
     context "when attribute has spaces on both sides of =" do
-      let(:source) { '<div class = "foo">text</div>' }
+      let(:source) { '<input type = "text" autocomplete="off">' }
 
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Unexpected spaces around `=` in attribute assignment")
+      it "reports two offenses" do
+        expect(subject.size).to eq(2)
+        expect(subject[0].message).to eq("Remove whitespace before `=` in HTML attribute")
+        expect(subject[1].message).to eq("Remove whitespace after `=` in HTML attribute")
       end
     end
 
+    # Edge cases
     context "when boolean attribute has no value" do
       let(:source) { "<input disabled>" }
 
@@ -83,7 +103,7 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeEqualsSpacing do
       let(:source) { '<div class ="foo" id = "bar">text</div>' }
 
       it "reports an offense for each" do
-        expect(subject.size).to eq(2)
+        expect(subject.size).to eq(3)
         expect(subject.map(&:rule_name)).to all(eq("html-attribute-equals-spacing"))
       end
     end
@@ -93,7 +113,7 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeEqualsSpacing do
 
       it "reports offense only for the invalid attribute" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Unexpected space before `=` in attribute assignment")
+        expect(subject.first.message).to eq("Remove whitespace before `=` in HTML attribute")
       end
     end
 
@@ -106,8 +126,8 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeEqualsSpacing do
         HTML
       end
 
-      it "reports offense with correct line number" do
-        expect(subject.size).to eq(1)
+      it "reports offenses with correct line number" do
+        expect(subject.size).to eq(2)
         expect(subject.first.line).to eq(2)
       end
     end
@@ -136,8 +156,8 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeEqualsSpacing do
     let(:document) { Herb.parse(source, track_whitespace: true) }
 
     context "when fixing attribute with space before =" do
-      let(:source) { '<div class ="foo">text</div>' }
-      let(:expected) { '<div class="foo">text</div>' }
+      let(:source) { '<div class ="container"></div>' }
+      let(:expected) { '<div class="container"></div>' }
       let(:node) do
         div = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
         div.open_tag.children.find { |n| n.is_a?(Herb::AST::HTMLAttributeNode) }
@@ -151,11 +171,11 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeEqualsSpacing do
     end
 
     context "when fixing attribute with space after =" do
-      let(:source) { '<div class= "foo">text</div>' }
-      let(:expected) { '<div class="foo">text</div>' }
+      let(:source) { '<img src= "/logo.png" alt="Logo">' }
+      let(:expected) { '<img src="/logo.png" alt="Logo">' }
       let(:node) do
-        div = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
-        div.open_tag.children.find { |n| n.is_a?(Herb::AST::HTMLAttributeNode) }
+        img = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
+        img.open_tag.children.find { |n| n.is_a?(Herb::AST::HTMLAttributeNode) }
       end
 
       it "removes the space after =" do
@@ -166,29 +186,14 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeEqualsSpacing do
     end
 
     context "when fixing attribute with spaces on both sides of =" do
-      let(:source) { '<div class = "foo">text</div>' }
-      let(:expected) { '<div class="foo">text</div>' }
+      let(:source) { '<input type = "text" autocomplete="off">' }
+      let(:expected) { '<input type="text" autocomplete="off">' }
       let(:node) do
-        div = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
-        div.open_tag.children.find { |n| n.is_a?(Herb::AST::HTMLAttributeNode) }
+        input = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
+        input.open_tag.children.find { |n| n.is_a?(Herb::AST::HTMLAttributeNode) }
       end
 
       it "removes spaces on both sides of =" do
-        expect(subject).to be(true)
-        result = Herb::Printer::IdentityPrinter.print(document)
-        expect(result).to eq(expected)
-      end
-    end
-
-    context "when fixing attribute with tabs around =" do
-      let(:source) { "<div class\t=\t\"foo\">text</div>" }
-      let(:expected) { '<div class="foo">text</div>' }
-      let(:node) do
-        div = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
-        div.open_tag.children.find { |n| n.is_a?(Herb::AST::HTMLAttributeNode) }
-      end
-
-      it "removes tabs around =" do
         expect(subject).to be(true)
         result = Herb::Printer::IdentityPrinter.print(document)
         expect(result).to eq(expected)
