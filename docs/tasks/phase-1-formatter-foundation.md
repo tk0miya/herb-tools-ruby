@@ -631,12 +631,12 @@ end
 
 **Location:** `herb-format/lib/herb/format.rb`
 
-- [ ] Add require_relative for format_result
-- [ ] Add require_relative for aggregated_result
-- [ ] Add require_relative for context
-- [ ] Add require_relative for errors
-- [ ] Run rbs-inline to generate signatures
-- [ ] Run steep check
+- [x] Add require_relative for format_result
+- [x] Add require_relative for aggregated_result
+- [x] Add require_relative for context
+- [x] Add require_relative for errors
+- [x] Run rbs-inline to generate signatures
+- [x] Run steep check
 
 **Verification:**
 - `ruby -Ilib -rherbformat -e 'puts Herb::Format::FormatResult'` works
