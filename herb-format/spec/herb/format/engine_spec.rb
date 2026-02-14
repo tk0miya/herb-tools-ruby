@@ -26,12 +26,44 @@ RSpec.describe Herb::Format::Engine do
     subject { engine.format(ast, context) }
 
     let(:source) { "<div></div>" }
-    let(:ast) { Herb.parse(source).value }
+    let(:ast) { Herb.parse(source, track_whitespace: true).value }
 
     context "with unknown nodes" do
       it "uses IdentityPrinter as fallback" do
         # Without specific visit_* methods, should fall back to IdentityPrinter
         expect(subject).to eq(source)
+      end
+    end
+
+    context "with document node" do
+      let(:source) { "Hello World" }
+
+      it "visits all children" do
+        expect(subject).to eq("Hello World")
+      end
+    end
+
+    context "with HTML text nodes" do
+      let(:source) { "<div>Hello</div>" }
+
+      it "preserves text content" do
+        expect(subject).to eq(source)
+      end
+    end
+
+    context "with whitespace nodes" do
+      let(:source) { "<div class='foo' id='bar'></div>" }
+
+      it "preserves whitespace between attributes" do
+        expect(subject).to eq(source)
+      end
+    end
+
+    context "with literal nodes" do
+      let(:source) { "Plain text" }
+
+      it "preserves literal content" do
+        expect(subject).to eq("Plain text")
       end
     end
   end
