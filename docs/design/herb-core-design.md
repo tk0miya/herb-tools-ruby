@@ -39,26 +39,9 @@ Herb::Core
 
 ### Herb::Core::FileDiscovery
 
+**Interface:** See [`sig/herb/core/file_discovery.rbs`](../../herb-core/sig/herb/core/file_discovery.rbs)
+
 Responsible for discovering files to process based on glob patterns and paths. Handles both pattern-based discovery (using include patterns) and path-based discovery (from CLI arguments).
-
-```rbs
-class Herb::Core::FileDiscovery
-  @base_dir: String
-  @include_patterns: Array[String]
-  @exclude_patterns: Array[String]
-
-  attr_reader base_dir: String
-  attr_reader include_patterns: Array[String]
-  attr_reader exclude_patterns: Array[String]
-
-  def initialize: (base_dir: String, include_patterns: Array[String], exclude_patterns: Array[String]) -> void
-
-  # Discover files based on provided paths or include patterns
-  # Paths specified via CLI (uses include patterns if empty)
-  # Returns list of matched file paths
-  def discover: (?Array[String] paths) -> Array[String]
-end
-```
 
 **Responsibilities:**
 - Expand glob patterns from include list
@@ -76,32 +59,9 @@ end
 
 ### Herb::Core::PatternMatcher
 
-> **MVP Note:** In the MVP implementation, PatternMatcher functionality is integrated within FileDiscovery (`excluded?` method). This class may be separated in a future enhancement for improved reusability.
+**Interface:** See [`sig/herb/core/pattern_matcher.rbs`](../../herb-core/sig/herb/core/pattern_matcher.rbs)
 
-Responsible for determining if a file path matches include/exclude patterns using glob pattern matching.
-
-```rbs
-class Herb::Core::PatternMatcher
-  @include_patterns: Array[String]
-  @exclude_patterns: Array[String]
-  @base_dir: String
-
-  attr_reader include_patterns: Array[String]
-  attr_reader exclude_patterns: Array[String]
-  attr_reader base_dir: String
-
-  def initialize: (include_patterns: Array[String], exclude_patterns: Array[String], base_dir: String) -> void
-
-  # Check if path matches patterns (included and not excluded)
-  def match?: (String path) -> bool
-
-  # Check if path matches any include pattern
-  def included?: (String relative_path) -> bool
-
-  # Check if path matches any exclude pattern
-  def excluded?: (String relative_path) -> bool
-end
-```
+Responsible for determining if a file path matches include/exclude/only patterns using glob pattern matching.
 
 **Responsibilities:**
 - Convert absolute paths to relative paths (from base directory)
@@ -137,13 +97,13 @@ files = discovery.discover(["app/views/users"])
 require "herb/core"
 
 matcher = Herb::Core::PatternMatcher.new(
-  include_patterns: ["**/*.html.erb"],
-  exclude_patterns: ["vendor/**"],
-  base_dir: "/path/to/project"
+  includes: ["**/*.html.erb"],
+  excludes: ["vendor/**"],
+  only: []
 )
 
-matcher.match?("/path/to/project/app/views/index.html.erb")  # => true
-matcher.match?("/path/to/project/vendor/gems/template.html.erb")  # => false
+matcher.match?("app/views/index.html.erb")  # => true
+matcher.match?("vendor/gems/template.html.erb")  # => false
 ```
 
 ## Glob Pattern Support
