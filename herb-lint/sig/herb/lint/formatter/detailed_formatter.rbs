@@ -1,0 +1,85 @@
+# Generated from lib/herb/lint/formatter/detailed_formatter.rb with RBS::Inline
+
+module Herb
+  module Lint
+    module Formatter
+      # Detailed formatter that outputs linting results with source code context.
+      #
+      # This formatter displays offenses for each file with severity symbols, colors,
+      # and surrounding source code lines for better context.
+      class DetailedFormatter < Base
+        include ConsoleUtils
+
+        include StringUtils
+
+        CONTEXT_LINES: ::Integer
+
+        # @rbs io: IO
+        def initialize: (?io: IO) -> void
+
+        # Reports the aggregated linting result.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def report: (AggregatedResult aggregated_result) -> void
+
+        private
+
+        # Prints the file header with progress indicator for multiple files.
+        #
+        # @rbs result: LintResult
+        # @rbs current: Integer
+        # @rbs total: Integer
+        def print_file_header: (LintResult result, Integer current, Integer total) -> void
+
+        # Prints offenses with surrounding source code.
+        #
+        # @rbs result: LintResult
+        def print_offenses: (LintResult result) -> void
+
+        # Prints a single offense with source code.
+        #
+        # @rbs offense: Offense
+        # @rbs source_lines: Array[String]
+        def print_offense: (Offense offense, Array[String] source_lines) -> void
+
+        # Prints the offense header line.
+        #
+        # @rbs offense: Offense
+        def print_offense_header: (Offense offense) -> void
+
+        # Prints source code lines around the offense.
+        #
+        # @rbs offense: Offense
+        # @rbs source_lines: Array[String]
+        def print_source_lines: (Offense offense, Array[String] source_lines) -> void
+
+        # Prints a single source code line with line number and highlighting.
+        #
+        # @rbs line_num: Integer
+        # @rbs content: String
+        # @rbs offense: Offense
+        # @rbs width: Integer
+        def print_source_line: (Integer line_num, String content, Offense offense, Integer width) -> void
+
+        # Prints the column indicator (caret) pointing to the offense location.
+        #
+        # @rbs offense: Offense
+        # @rbs line_num_width: Integer
+        def print_column_indicator: (Offense offense, Integer line_num_width) -> void
+
+        # Returns the colored symbol for a severity level.
+        #
+        # @rbs severity: String
+        def severity_symbol: (String severity) -> String
+
+        # Wraps ConsoleUtils#colorize to automatically use io.tty?
+        #
+        # @rbs text: String
+        # @rbs color: color?
+        # @rbs bold: bool
+        # @rbs dim: bool
+        def colorize: (String text, ?color: color?, ?bold: bool, ?dim: bool) -> String
+      end
+    end
+  end
+end

@@ -4,12 +4,12 @@ module Herb
   module Lint
     module Formatter
       # Simple formatter that outputs linting results in a human-readable format.
-      class SimpleFormatter
+      #
+      # This formatter displays offenses for each file with severity symbols and colors.
+      class SimpleFormatter < Base
         include ConsoleUtils
 
         include StringUtils
-
-        attr_reader io: IO
 
         # @rbs io: IO
         def initialize: (?io: IO) -> void

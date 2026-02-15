@@ -106,10 +106,9 @@ These features are implemented as simplified versions in the MVP. Consider expan
 - Only SimpleReporter implemented
 
 **Future Enhancements:**
-- [ ] DetailedReporter (with detailed information)
-- [ ] JsonReporter (JSON format output)
-- [ ] GithubReporter (GitHub Actions format)
-- [ ] Other CI/CD tool support
+- [x] DetailedFormatter (with detailed information and source code context)
+- [x] JsonFormatter (JSON format output) - Already implemented
+- [x] GitHubActionsFormatter (GitHub Actions format) - Already implemented
 
 **Priority:** Medium
 

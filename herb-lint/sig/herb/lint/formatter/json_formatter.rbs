@@ -4,12 +4,7 @@ module Herb
   module Lint
     module Formatter
       # Formatter that outputs linting results in JSON format.
-      class JsonFormatter
-        attr_reader io: IO
-
-        # @rbs io: IO
-        def initialize: (?io: IO) -> void
-
+      class JsonFormatter < Base
         # Reports the aggregated linting result as JSON.
         #
         # @rbs aggregated_result: AggregatedResult
