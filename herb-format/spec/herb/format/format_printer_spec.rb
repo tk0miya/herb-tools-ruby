@@ -39,24 +39,40 @@ RSpec.describe Herb::Format::FormatPrinter do
     context "with HTML text nodes" do
       let(:source) { "<div>Hello</div>" }
 
-      it "outputs text content" do
-        expect(subject).to eq("Hello")
+      it "outputs opening tag and text content" do
+        expect(subject).to eq("<div>Hello")
       end
     end
 
     context "with whitespace nodes" do
       let(:source) { "<div class='foo'></div>" }
 
-      it "outputs whitespace between attributes" do
-        expect(subject).to eq(" classfoo")
+      it "outputs opening tag with attribute" do
+        expect(subject).to eq("<div classfoo>")
       end
     end
 
     context "with void element" do
       let(:source) { "<br>" }
 
-      it "does not output closing tag" do
-        expect(subject).not_to include("</br>")
+      it "outputs void element without closing tag" do
+        expect(subject).to eq("<br>")
+      end
+    end
+
+    context "with simple HTML element" do
+      let(:source) { "<div>content</div>" }
+
+      it "outputs opening tag and content" do
+        expect(subject).to eq("<div>content")
+      end
+    end
+
+    context "with HTML element with attributes" do
+      let(:source) { "<div class=\"foo\" id=\"bar\">content</div>" }
+
+      it "outputs opening tag with attributes and content" do
+        expect(subject).to eq("<div classfoo idbar>content")
       end
     end
 

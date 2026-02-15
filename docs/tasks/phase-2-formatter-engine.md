@@ -267,7 +267,7 @@ end
 **Location:** `herb-format/lib/herb/format/format_printer.rb`
 
 - [x] Implement visit_html_element(node, depth)
-- [ ] Implement visit_html_open_tag(node, depth)
+- [x] Implement visit_html_open_tag(node, depth)
 - [ ] Implement visit_html_close_tag(node, depth)
 - [ ] Handle void elements (no close tag)
 - [ ] Handle preserved elements (no indentation changes)
