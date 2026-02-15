@@ -4,28 +4,38 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows `aria-hidden="true"` on focusable elements.
-        #
-        # Applying `aria-hidden="true"` to a focusable element hides it from
-        # assistive technologies while it remains reachable via keyboard,
-        # causing confusion for screen reader users.
-        #
-        # An element is considered focusable when:
-        # - It is a natively interactive element (`button`, `input`, `select`,
-        #   `textarea`, `summary`, or `<a>` with `href`) and does not have a
-        #   negative `tabindex`.
-        # - It is a non-interactive element (or `<a>` without `href`) that has
-        #   an explicit `tabindex` of 0 or greater.
+        # Description:
+        #   Prevent using `aria-hidden="true"` on elements that can receive keyboard focus. When an element is
+        #   focusable but hidden from screen readers, it creates a confusing experience where keyboard users can tab to
+        #   "invisible" elements.
         #
         # Good:
-        #   <div aria-hidden="true">Decorative</div>
-        #   <button>Click</button>
-        #   <button tabindex="-1" aria-hidden="true">Removed from tab order</button>
+        #   <button>Submit</button>
+        #   <a href="/link">Link</a>
+        #   <input type="text" autocomplete="off">
+        #   <textarea></textarea>
+        #
+        #   <div aria-hidden="true">Decorative content</div>
+        #   <span aria-hidden="true">🎉</span>
+        #
+        #   <button tabindex="-1" aria-hidden="true">Hidden button</button>
         #
         # Bad:
-        #   <button aria-hidden="true">Click</button>
-        #   <a href="/page" aria-hidden="true">Link</a>
+        #   <button aria-hidden="true">Submit</button>
+        #
+        #   <a href="/link" aria-hidden="true">Link</a>
+        #
+        #   <input type="text" autocomplete="off" aria-hidden="true">
+        #
+        #   <textarea aria-hidden="true"></textarea>
+        #
+        #   <select aria-hidden="true">
+        #     <option>Option</option>
+        #   </select>
+        #
         #   <div tabindex="0" aria-hidden="true">Focusable div</div>
+        #
+        #   <a href="/link" aria-hidden="true">Hidden link</a>
         class NoAriaHiddenOnFocusable < VisitorRule
           # Elements that are natively interactive/focusable.
           INTERACTIVE_ELEMENTS: Set[String]
@@ -35,6 +45,10 @@ module Herb
           def self.description: () -> String
 
           def self.default_severity: () -> String
+
+          def self.safe_autofixable?: () -> bool
+
+          def self.unsafe_autofixable?: () -> bool
 
           # @rbs override
           def visit_html_element_node: ...
