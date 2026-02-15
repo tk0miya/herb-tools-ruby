@@ -17,7 +17,7 @@ This phase implements the FormatIgnore directive detection, the core Formatter c
 ## Prerequisites
 
 - Phase 1 complete (Foundation)
-- Phase 2 complete (Engine)
+- Phase 2 complete (FormatPrinter)
 - herb gem available (Herb.parse, Herb::Visitor)
 
 ## Design Principles
@@ -216,20 +216,17 @@ module Herb
   module Format
     # Core single-file formatting implementation.
     #
-    # @rbs engine: Engine
     # @rbs pre_rewriters: Array[Rewriters::Base]
     # @rbs post_rewriters: Array[Rewriters::Base]
     # @rbs config: Herb::Config::FormatterConfig
     class Formatter
-      attr_reader :engine, :pre_rewriters, :post_rewriters, :config
+      attr_reader :pre_rewriters, :post_rewriters, :config
 
-      # @rbs engine: Engine
       # @rbs pre_rewriters: Array[Rewriters::Base]
       # @rbs post_rewriters: Array[Rewriters::Base]
       # @rbs config: Herb::Config::FormatterConfig
       # @rbs return: void
-      def initialize(engine, pre_rewriters, post_rewriters, config)
-        @engine = engine
+      def initialize(pre_rewriters, post_rewriters, config)
         @pre_rewriters = pre_rewriters
         @post_rewriters = post_rewriters
         @config = config
@@ -244,7 +241,7 @@ module Herb
       # 4. If ignored, return source unchanged with ignored flag
       # 5. Create Context with source and configuration
       # 6. Execute pre-rewriters (in order)
-      # 7. Apply formatting rules via Engine
+      # 7. Apply formatting via FormatPrinter.format(ast, format_context:)
       # 8. Execute post-rewriters (in order)
       # 9. Return FormatResult with original and formatted content
       #
@@ -288,13 +285,8 @@ module Herb
           # Apply pre-rewriters
           ast = apply_rewriters(ast, pre_rewriters, context)
 
-          # Apply formatting engine
-          formatted = engine.format(ast, context)
-
-          # TODO: Apply post-rewriters on AST after engine?
-          # Note: Engine returns String, not AST, so post-rewriters
-          # would need to re-parse. This needs design clarification.
-          # For now, skip post-rewriters in engine phase.
+          # Apply formatting via FormatPrinter
+          formatted = FormatPrinter.format(ast, format_context: context)
 
           FormatResult.new(
             file_path: file_path,
@@ -331,23 +323,15 @@ end
 
 **Design Note:**
 
-The current design has a challenge: the Engine returns a String (formatted source), but post-rewriters need an AST to transform. There are two options:
-
-1. **Re-parse after engine** - Parse the formatted string back to AST, apply post-rewriters, serialize again
-2. **Engine returns AST** - Engine modifies AST in place, serialize at the end
-
-The TypeScript reference uses option 2: rewriters transform the AST, and serialization happens once at the end. We should update the Engine design to return AST instead of String.
-
-For now, we'll note this as a TODO and implement post-rewriters after clarifying the design.
+With FormatPrinter replacing Engine, the formatting step uses `FormatPrinter.format(ast, format_context:)` which returns a String. Post-rewriters that need to transform AST would need to operate before the final serialization step. This can be addressed in a future refinement phase or as part of Phase 4 (Rewriters).
 
 **Test Cases:**
 ```ruby
 RSpec.describe Herb::Format::Formatter do
-  let(:engine) { build(:engine) }
   let(:pre_rewriters) { [] }
   let(:post_rewriters) { [] }
   let(:config) { build(:formatter_config) }
-  let(:formatter) { described_class.new(engine, pre_rewriters, post_rewriters, config) }
+  let(:formatter) { described_class.new(pre_rewriters, post_rewriters, config) }
 
   describe "#format" do
     it "returns FormatResult with formatted content" do
@@ -383,12 +367,12 @@ RSpec.describe Herb::Format::Formatter do
       # Should be formatted
     end
 
-    it "applies pre-rewriters before engine" do
+    it "applies pre-rewriters before formatting" do
       # Test with mock rewriter
       rewriter = instance_double(Herb::Format::Rewriters::Base)
       allow(rewriter).to receive(:rewrite) { |ast, _ctx| ast }
 
-      formatter_with_rewriter = described_class.new(engine, [rewriter], [], config)
+      formatter_with_rewriter = described_class.new([rewriter], [], config)
       source = "<div>test</div>"
       formatter_with_rewriter.format("test.erb", source)
 
@@ -396,7 +380,7 @@ RSpec.describe Herb::Format::Formatter do
     end
 
     it "handles formatter errors gracefully" do
-      allow(engine).to receive(:format).and_raise(StandardError.new("Engine error"))
+      allow(Herb::Format::FormatPrinter).to receive(:format).and_raise(StandardError.new("Formatting error"))
 
       source = "<div>test</div>"
       result = formatter.format("test.erb", source)
@@ -423,7 +407,6 @@ end
 - [ ] Create FormatterFactory class
 - [ ] Add initialize with config and rewriter_registry
 - [ ] Implement create() method returning configured Formatter
-- [ ] Implement private build_engine() method
 - [ ] Implement private build_pre_rewriters() method
 - [ ] Implement private build_post_rewriters() method
 - [ ] Add RBS inline type annotations
@@ -453,30 +436,20 @@ module Herb
       # Create a configured Formatter instance.
       #
       # Processing:
-      # 1. Create Engine with indent_width and max_line_length configuration
-      # 2. Query RewriterRegistry for configured pre-rewriters
-      # 3. Query RewriterRegistry for configured post-rewriters
-      # 4. Instantiate each rewriter
-      # 5. Create Formatter with engine and rewriters
+      # 1. Query RewriterRegistry for configured pre-rewriters
+      # 2. Query RewriterRegistry for configured post-rewriters
+      # 3. Instantiate each rewriter
+      # 4. Create Formatter with rewriters
       #
       # @rbs return: Formatter
       def create
-        engine = build_engine
         pre_rewriters = build_pre_rewriters
         post_rewriters = build_post_rewriters
 
-        Formatter.new(engine, pre_rewriters, post_rewriters, config)
+        Formatter.new(pre_rewriters, post_rewriters, config)
       end
 
       private
-
-      # @rbs return: Engine
-      def build_engine
-        Engine.new(
-          indent_width: config.indent_width,
-          max_line_length: config.max_line_length
-        )
-      end
 
       # @rbs return: Array[Rewriters::Base]
       def build_pre_rewriters
@@ -681,35 +654,13 @@ end
 
 ## Design Notes
 
-### Engine Output Type Issue
+### FormatPrinter Output Type
 
-The current Engine implementation returns a String, but post-rewriters need an AST to transform. We have two options:
-
-1. **Re-parse after engine** - Not ideal (performance, potential parse errors)
-2. **Engine returns modified AST** - Better design, matches TypeScript reference
-
-**Recommendation:** Update Engine in Phase 2 to modify AST in place and return AST. Add a separate serialization step in Formatter using herb-printer's IdentityPrinter.
-
-This would change the Formatter flow to:
-```ruby
-# Apply pre-rewriters (AST → AST)
-ast = apply_rewriters(ast, pre_rewriters, context)
-
-# Apply formatting engine (AST → AST)
-ast = engine.format(ast, context)
-
-# Apply post-rewriters (AST → AST)
-ast = apply_rewriters(ast, post_rewriters, context)
-
-# Serialize AST to string
-formatted = Herb::Printer::IdentityPrinter.print(ast)
-```
-
-This can be addressed in a future refinement phase or as part of Phase 4 (Rewriters).
+FormatPrinter.format returns a String (formatted source). Post-rewriters that need to transform AST would need to operate before the final serialization step. This can be addressed in a future refinement phase or as part of Phase 4 (Rewriters).
 
 ## Related Documents
 
 - [herb-format Design](../design/herb-format-design.md)
 - [Phase 1: Foundation](./phase-1-formatter-foundation.md)
-- [Phase 2: Engine](./phase-2-formatter-engine.md)
+- [Phase 2: FormatPrinter](./phase-2-formatter-engine.md)
 - [Phase 4: Rewriters](./phase-4-formatter-rewriters.md)

@@ -339,7 +339,7 @@ end
           ▼                 ▼                 ▼
 ┌─────────────────┐ ┌──────────────┐ ┌─────────────────┐
 │  Pre-Rewriters  │ │  Formatting  │ │  Post-Rewriters │
-│                 │ │    Engine    │ │                 │
+│                 │ │ FormatPrinter│ │                 │
 └─────────────────┘ └──────────────┘ └─────────────────┘
 ```
 
@@ -361,44 +361,37 @@ end
 5. Report results
 6. Return appropriate exit code
 
-### Formatting Engine
+### FormatPrinter
 
-The formatting engine traverses the AST and applies formatting rules:
+The FormatPrinter extends `Herb::Printer::Base` (which extends `Herb::Visitor`) to traverse the AST and produce formatted output using the visitor pattern with double-dispatch:
 
 ```ruby
 module Herb
   module Format
-    class Engine
-      def initialize(config)
-        @config = config
-        @indent_width = config.indent_width
-        @max_line_length = config.max_line_length
+    class FormatPrinter < ::Herb::Printer::Base
+      def self.format(input, format_context:, ignore_errors: false)
+        node = input.is_a?(::Herb::ParseResult) ? input.value : input
+        validate_no_errors!(node) unless ignore_errors
+
+        printer = new(
+          indent_width: format_context.indent_width,
+          max_line_length: format_context.max_line_length,
+          format_context:
+        )
+        printer.visit(node)
+        printer.context.output
       end
 
-      def format(ast)
-        visit(ast, depth: 0)
+      # Visitor method overrides for each node type
+      def visit_literal_node(node)
+        write(node.content)
       end
 
-      private
-
-      def visit(node, depth:)
-        case node.type
-        when :document
-          format_document(node, depth)
-        when :element
-          format_element(node, depth)
-        when :erb_output
-          format_erb_output(node, depth)
-        # ... other node types
-        end
+      def visit_html_text_node(node)
+        write(node.content)
       end
 
-      def format_element(node, depth)
-        # Apply indentation
-        # Handle attributes
-        # Process children
-        # Handle line length
-      end
+      # ... other visitor methods
     end
   end
 end

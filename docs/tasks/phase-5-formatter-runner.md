@@ -18,7 +18,7 @@ This phase implements the Runner class that orchestrates formatting across multi
 ## Prerequisites
 
 - Phase 1 complete (Foundation)
-- Phase 2 complete (Engine)
+- Phase 2 complete (FormatPrinter)
 - Phase 3 complete (Formatter Core)
 - Phase 4 complete (Rewriters)
 - herb-core gem available (FileDiscovery)
