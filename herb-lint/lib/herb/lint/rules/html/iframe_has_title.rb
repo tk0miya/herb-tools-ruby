@@ -7,17 +7,24 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that requires title attribute on iframe elements.
-        #
-        # Iframes must have a title attribute to provide an accessible name
-        # for screen reader users to understand the content of the iframe.
+        # Description:
+        #   Ensure that all `iframe` elements have a meaningful `title` attribute that describes the content of the
+        #   frame. The title should not be empty or contain only whitespace.
         #
         # Good:
-        #   <iframe src="content.html" title="Embedded content"></iframe>
+        #   <iframe src="https://youtube.com/embed/123" title="Product demonstration video"></iframe>
+        #   <iframe src="https://example.com" title="Example website content"></iframe>
+        #
+        #   <!-- Hidden from screen readers -->
+        #   <iframe aria-hidden="true"></iframe>
         #
         # Bad:
-        #   <iframe src="content.html"></iframe>
-        #   <iframe src="content.html" title=""></iframe>
+        #   <iframe src="https://example.com"></iframe>
+        #
+        #   <iframe src="https://example.com" title=""></iframe>
+        #
+        #   <iframe src="https://example.com" title=" "></iframe>
+        #
         class IframeHasTitle < VisitorRule
           def self.rule_name = "html-iframe-has-title" #: String
           def self.description = "Require title attribute on iframe elements" #: String
@@ -27,7 +34,7 @@ module Herb
 
           # @rbs override
           def visit_html_element_node(node)
-            if iframe_element?(node) && !valid_title?(node)
+            if iframe_element?(node) && !aria_hidden?(node) && !valid_title?(node)
               add_offense(
                 message: "Missing or empty title attribute on iframe element",
                 location: node.location
@@ -41,6 +48,12 @@ module Herb
           # @rbs node: Herb::AST::HTMLElementNode
           def iframe_element?(node) #: bool
             tag_name(node) == "iframe"
+          end
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def aria_hidden?(node) #: bool
+            value = attribute_value(find_attribute(node, "aria-hidden"))
+            value == "true"
           end
 
           # @rbs node: Herb::AST::HTMLElementNode

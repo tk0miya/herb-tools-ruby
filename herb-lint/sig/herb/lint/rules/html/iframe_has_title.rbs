@@ -4,23 +4,33 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that requires title attribute on iframe elements.
-        #
-        # Iframes must have a title attribute to provide an accessible name
-        # for screen reader users to understand the content of the iframe.
+        # Description:
+        #   Ensure that all `iframe` elements have a meaningful `title` attribute that describes the content of the
+        #   frame. The title should not be empty or contain only whitespace.
         #
         # Good:
-        #   <iframe src="content.html" title="Embedded content"></iframe>
+        #   <iframe src="https://youtube.com/embed/123" title="Product demonstration video"></iframe>
+        #   <iframe src="https://example.com" title="Example website content"></iframe>
+        #
+        #   <!-- Hidden from screen readers -->
+        #   <iframe aria-hidden="true"></iframe>
         #
         # Bad:
-        #   <iframe src="content.html"></iframe>
-        #   <iframe src="content.html" title=""></iframe>
+        #   <iframe src="https://example.com"></iframe>
+        #
+        #   <iframe src="https://example.com" title=""></iframe>
+        #
+        #   <iframe src="https://example.com" title=" "></iframe>
         class IframeHasTitle < VisitorRule
           def self.rule_name: () -> String
 
           def self.description: () -> String
 
           def self.default_severity: () -> String
+
+          def self.safe_autofixable?: () -> bool
+
+          def self.unsafe_autofixable?: () -> bool
 
           # @rbs override
           def visit_html_element_node: ...
@@ -29,6 +39,9 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLElementNode
           def iframe_element?: (Herb::AST::HTMLElementNode node) -> bool
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def aria_hidden?: (Herb::AST::HTMLElementNode node) -> bool
 
           # @rbs node: Herb::AST::HTMLElementNode
           def valid_title?: (Herb::AST::HTMLElementNode node) -> bool
