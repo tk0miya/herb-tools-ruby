@@ -98,6 +98,16 @@ module Herb
         write(node.tag_closing.value)
       end
 
+      # Visit HTML close tag node.
+      # Outputs the closing tag structure: </tag_name>
+      #
+      # @rbs override
+      def visit_html_close_tag_node(node)
+        write(node.tag_opening.value)
+        write(node.tag_name.value) if node.tag_name
+        write(node.tag_closing.value)
+      end
+
       private
 
       # Visit the body of an HTML element. For preserved elements (script,
