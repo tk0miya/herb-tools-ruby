@@ -288,25 +288,3 @@ end
 1. PatternMatcher separation
 2. LinterFactory implementation
 3. Parallel processing
-
----
-
-## Add MVP Notes to Design Documents (TODO)
-
-Consider adding notes about MVP simplified implementations to the following design documents:
-
-- [ ] `docs/design/herb-config-design.md` - Loader, Validator sections
-- [ ] `docs/design/herb-core-design.md` - PatternMatcher, DirectiveParser sections
-- [ ] `docs/design/herb-lint-design.md` - LinterFactory, RuleRegistry sections
-
-**Format Example:**
-```markdown
-## MVP Implementation Note
-
-In the MVP release:
-- [Simplified implementation details]
-- [Omitted features]
-
-Full implementation will include:
-- [Features to be added in full version]
-```
