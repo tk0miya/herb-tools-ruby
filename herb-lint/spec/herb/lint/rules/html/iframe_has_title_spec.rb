@@ -28,16 +28,34 @@ RSpec.describe Herb::Lint::Rules::Html::IframeHasTitle do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when iframe has title attribute" do
-      let(:source) { '<iframe src="content.html" title="Embedded content"></iframe>' }
+    # Good examples from documentation
+    context "when iframe has product demonstration title (documentation example)" do
+      let(:source) { '<iframe src="https://youtube.com/embed/123" title="Product demonstration video"></iframe>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when iframe is missing title attribute" do
-      let(:source) { '<iframe src="content.html"></iframe>' }
+    context "when iframe has example website title (documentation example)" do
+      let(:source) { '<iframe src="https://example.com" title="Example website content"></iframe>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when iframe is hidden from screen readers (documentation example)" do
+      let(:source) { '<iframe aria-hidden="true"></iframe>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "when iframe is missing title attribute (documentation example)" do
+      let(:source) { '<iframe src="https://example.com"></iframe>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -47,8 +65,8 @@ RSpec.describe Herb::Lint::Rules::Html::IframeHasTitle do
       end
     end
 
-    context "when iframe has empty title attribute" do
-      let(:source) { '<iframe src="content.html" title=""></iframe>' }
+    context "when iframe has empty title attribute (documentation example)" do
+      let(:source) { '<iframe src="https://example.com" title=""></iframe>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -57,14 +75,15 @@ RSpec.describe Herb::Lint::Rules::Html::IframeHasTitle do
       end
     end
 
-    context "when iframe has whitespace-only title attribute" do
-      let(:source) { '<iframe src="content.html" title="   "></iframe>' }
+    context "when iframe has whitespace-only title (documentation example)" do
+      let(:source) { '<iframe src="https://example.com" title=" "></iframe>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
       end
     end
 
+    # Additional edge cases not covered by documentation
     context "when iframe has uppercase TITLE attribute" do
       let(:source) { '<iframe src="content.html" TITLE="Embedded content"></iframe>' }
 
@@ -87,6 +106,14 @@ RSpec.describe Herb::Lint::Rules::Html::IframeHasTitle do
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
         expect(subject.map(&:rule_name)).to all(eq("html-iframe-has-title"))
+      end
+    end
+
+    context "when iframe has aria-hidden with false value" do
+      let(:source) { '<iframe aria-hidden="false"></iframe>' }
+
+      it "reports an offense (aria-hidden must be true to skip)" do
+        expect(subject.size).to eq(1)
       end
     end
 
