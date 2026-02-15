@@ -28,8 +28,66 @@ RSpec.describe Herb::Lint::Rules::Html::NoAriaHiddenOnFocusable do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { instance_double(Herb::Lint::Context) }
 
-    context "when aria-hidden=\"true\" is on a button" do
-      let(:source) { '<button aria-hidden="true">Click</button>' }
+    # Good examples from documentation
+    context "when button without aria-hidden" do
+      let(:source) { "<button>Submit</button>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when anchor with href without aria-hidden" do
+      let(:source) { '<a href="/link">Link</a>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when input without aria-hidden" do
+      let(:source) { '<input type="text" autocomplete="off">' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when textarea without aria-hidden" do
+      let(:source) { "<textarea></textarea>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when div with aria-hidden (non-focusable)" do
+      let(:source) { '<div aria-hidden="true">Decorative content</div>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when span with aria-hidden (non-focusable)" do
+      let(:source) { '<span aria-hidden="true">🎉</span>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when button with tabindex=\"-1\" and aria-hidden (removed from tab order)" do
+      let(:source) { '<button tabindex="-1" aria-hidden="true">Hidden button</button>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "when button with aria-hidden=\"true\"" do
+      let(:source) { '<button aria-hidden="true">Submit</button>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -39,8 +97,8 @@ RSpec.describe Herb::Lint::Rules::Html::NoAriaHiddenOnFocusable do
       end
     end
 
-    context "when aria-hidden=\"true\" is on an anchor with href" do
-      let(:source) { '<a href="/page" aria-hidden="true">Link</a>' }
+    context "when anchor with href and aria-hidden=\"true\"" do
+      let(:source) { '<a href="/link" aria-hidden="true">Link</a>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -48,22 +106,45 @@ RSpec.describe Herb::Lint::Rules::Html::NoAriaHiddenOnFocusable do
       end
     end
 
-    context "when aria-hidden=\"true\" is on a non-focusable div" do
-      let(:source) { '<div aria-hidden="true">Decorative</div>' }
+    context "when input with aria-hidden=\"true\"" do
+      let(:source) { '<input type="text" autocomplete="off" aria-hidden="true">' }
 
-      it "does not report an offense" do
-        expect(subject).to be_empty
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
       end
     end
 
-    context "when button does not have aria-hidden" do
-      let(:source) { "<button>Click</button>" }
+    context "when textarea with aria-hidden=\"true\"" do
+      let(:source) { '<textarea aria-hidden="true"></textarea>' }
 
-      it "does not report an offense" do
-        expect(subject).to be_empty
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
       end
     end
 
+    context "when select with aria-hidden=\"true\"" do
+      let(:source) do
+        <<~HTML
+          <select aria-hidden="true">
+            <option>Option</option>
+          </select>
+        HTML
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+      end
+    end
+
+    context "when div with tabindex=\"0\" and aria-hidden=\"true\"" do
+      let(:source) { '<div tabindex="0" aria-hidden="true">Focusable div</div>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+      end
+    end
+
+    # Edge cases not covered by documentation
     context "when aria-hidden is \"false\" on a button" do
       let(:source) { '<button aria-hidden="false">Click</button>' }
 
@@ -82,22 +163,6 @@ RSpec.describe Herb::Lint::Rules::Html::NoAriaHiddenOnFocusable do
 
     context "when anchor without href has tabindex=\"0\" and aria-hidden=\"true\"" do
       let(:source) { '<a tabindex="0" aria-hidden="true">Focusable link</a>' }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-      end
-    end
-
-    context "when button has tabindex=\"-1\" and aria-hidden=\"true\"" do
-      let(:source) { '<button tabindex="-1" aria-hidden="true">Not focusable</button>' }
-
-      it "does not report an offense (negative tabindex removes focusability)" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when div has tabindex=\"0\" and aria-hidden=\"true\"" do
-      let(:source) { '<div tabindex="0" aria-hidden="true">Focusable div</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
