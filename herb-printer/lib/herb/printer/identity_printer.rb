@@ -112,9 +112,9 @@ module Herb
 
       # @rbs override
       def visit_html_element_node(node)
-        context.enter_tag(node.tag_name&.value || "")
-        super
-        context.exit_tag
+        context.enter_tag(node.tag_name&.value || "") do
+          super
+        end
       end
 
       # @rbs override

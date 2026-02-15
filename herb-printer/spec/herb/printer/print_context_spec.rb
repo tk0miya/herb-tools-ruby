@@ -64,6 +64,53 @@ RSpec.describe Herb::Printer::PrintContext do
       context.dedent
       expect(context.current_indent_level).to eq(0)
     end
+
+    context "with block" do
+      it "automatically calls dedent after block completes" do
+        context.indent do
+          expect(context.current_indent_level).to eq(1)
+        end
+
+        expect(context.current_indent_level).to eq(0)
+      end
+
+      it "supports nested blocks" do
+        context.indent do
+          expect(context.current_indent_level).to eq(1)
+
+          context.indent do
+            expect(context.current_indent_level).to eq(2)
+          end
+
+          expect(context.current_indent_level).to eq(1)
+        end
+
+        expect(context.current_indent_level).to eq(0)
+      end
+
+      it "calls dedent even if block raises an exception" do
+        expect do
+          context.indent do
+            raise "error"
+          end
+        end.to raise_error("error")
+
+        expect(context.current_indent_level).to eq(0)
+      end
+
+      it "can be used with manual indent/dedent calls" do
+        context.indent
+
+        context.indent do
+          expect(context.current_indent_level).to eq(2)
+        end
+
+        expect(context.current_indent_level).to eq(1)
+
+        context.dedent
+        expect(context.current_indent_level).to eq(0)
+      end
+    end
   end
 
   describe "#write_with_column_tracking" do
@@ -139,6 +186,53 @@ RSpec.describe Herb::Printer::PrintContext do
       stack.push("modified")
 
       expect(context.tag_stack).to eq(["div"])
+    end
+
+    context "with block" do
+      it "automatically calls exit_tag after block completes" do
+        context.enter_tag("div") do
+          expect(context.tag_stack).to eq(["div"])
+        end
+
+        expect(context.tag_stack).to be_empty
+      end
+
+      it "supports nested blocks" do
+        context.enter_tag("div") do
+          expect(context.tag_stack).to eq(["div"])
+
+          context.enter_tag("span") do
+            expect(context.tag_stack).to eq(%w[div span])
+          end
+
+          expect(context.tag_stack).to eq(["div"])
+        end
+
+        expect(context.tag_stack).to be_empty
+      end
+
+      it "calls exit_tag even if block raises an exception" do
+        expect do
+          context.enter_tag("div") do
+            raise "error"
+          end
+        end.to raise_error("error")
+
+        expect(context.tag_stack).to be_empty
+      end
+
+      it "can be used with manual enter_tag/exit_tag calls" do
+        context.enter_tag("div")
+
+        context.enter_tag("span") do
+          expect(context.tag_stack).to eq(%w[div span])
+        end
+
+        expect(context.tag_stack).to eq(["div"])
+
+        context.exit_tag
+        expect(context.tag_stack).to be_empty
+      end
     end
   end
 

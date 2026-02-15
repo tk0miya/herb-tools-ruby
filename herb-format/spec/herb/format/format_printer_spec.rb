@@ -51,6 +51,48 @@ RSpec.describe Herb::Format::FormatPrinter do
         expect(subject).to eq(" classfoo")
       end
     end
+
+    context "with void element" do
+      let(:source) { "<br>" }
+
+      it "does not output closing tag" do
+        expect(subject).not_to include("</br>")
+      end
+    end
+
+    context "with preserved element" do
+      context "with multi-line pre element" do
+        let(:source) { "<pre>\n  def hello\n    puts 'world'\n  end\n</pre>" }
+
+        it "preserves all newlines and indentation" do
+          expect(subject).to include("\n  def hello\n    puts 'world'\n  end\n")
+        end
+      end
+
+      context "with textarea element" do
+        let(:source) { "<textarea>\n  User input\n    with indents\n</textarea>" }
+
+        it "preserves content as-is" do
+          expect(subject).to include("\n  User input\n    with indents\n")
+        end
+      end
+
+      context "with script element" do
+        let(:source) { "<script>\n  console.log('test');\n</script>" }
+
+        it "preserves script content with original formatting" do
+          expect(subject).to include("\n  console.log('test');\n")
+        end
+      end
+
+      context "with style element" do
+        let(:source) { "<style>\n  .foo { color: red; }\n</style>" }
+
+        it "preserves style content with original formatting" do
+          expect(subject).to include("\n  .foo { color: red; }\n")
+        end
+      end
+    end
   end
 
   describe "#indent_string" do
@@ -119,8 +161,26 @@ RSpec.describe Herb::Format::FormatPrinter do
       described_class.new(indent_width:, max_line_length:, format_context:)
     end
 
-    context "with preserved element" do
+    context "with script tag" do
+      let(:tag_name) { "script" }
+
+      it { is_expected.to be true }
+    end
+
+    context "with style tag" do
+      let(:tag_name) { "style" }
+
+      it { is_expected.to be true }
+    end
+
+    context "with pre tag" do
       let(:tag_name) { "pre" }
+
+      it { is_expected.to be true }
+    end
+
+    context "with textarea tag" do
+      let(:tag_name) { "textarea" }
 
       it { is_expected.to be true }
     end

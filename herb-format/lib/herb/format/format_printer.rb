@@ -17,7 +17,7 @@ module Herb
         area base br col embed hr img input link meta param source track wbr
       ].freeze
 
-      PRESERVED_ELEMENTS = %w[pre code script style].freeze
+      PRESERVED_ELEMENTS = %w[script style pre textarea].freeze
 
       attr_reader :indent_width #: Integer
       attr_reader :max_line_length #: Integer
@@ -68,7 +68,47 @@ module Herb
         write(node.value.value) if node.value
       end
 
+      # -- HTML element nodes --
+
+      # Visit HTML element node. Handles void elements (no close tag) and
+      # preserved elements (content unchanged) specially.
+      #
+      # @rbs override
+      def visit_html_element_node(node)
+        tag_name = node.tag_name&.value || ""
+
+        context.enter_tag(tag_name) do
+          visit(node.open_tag)
+
+          unless node.is_void
+            visit_element_body(node)
+            visit(node.close_tag) if node.close_tag
+          end
+        end
+      end
+
       private
+
+      # Visit the body of an HTML element. For preserved elements (script,
+      # style, pre, textarea), content is output as-is using IdentityPrinter.
+      # For normal elements, content is formatted with increased indentation.
+      #
+      # @rbs node: Herb::AST::HTMLElementNode
+      def visit_element_body(node) #: void
+        tag_name = node.tag_name&.value || ""
+
+        if preserved_element?(tag_name)
+          # Preserve content as-is for script, style, pre, textarea
+          node.body.each do |child|
+            write(::Herb::Printer::IdentityPrinter.print(child))
+          end
+        else
+          # Format body with increased indent
+          context.indent do
+            node.body.each { visit(_1) }
+          end
+        end
+      end
 
       # Generate indentation string for the current indent level.
       #
