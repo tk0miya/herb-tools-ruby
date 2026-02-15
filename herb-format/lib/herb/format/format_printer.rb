@@ -87,6 +87,17 @@ module Herb
         end
       end
 
+      # Visit HTML open tag node.
+      # Outputs the opening tag structure: <tag_name attributes>
+      #
+      # @rbs override
+      def visit_html_open_tag_node(node)
+        write(node.tag_opening.value)
+        write(node.tag_name.value)
+        visit_child_nodes(node)
+        write(node.tag_closing.value)
+      end
+
       private
 
       # Visit the body of an HTML element. For preserved elements (script,
