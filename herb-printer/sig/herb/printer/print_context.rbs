@@ -24,16 +24,21 @@ module Herb
       # @rbs text: String
       def write_with_column_tracking: (String text) -> void
 
-      # Increment indent level
-      def indent: () -> void
+      # Increment indent level. If a block is given, automatically
+      # calls dedent after the block completes (even if an exception occurs).
+      #
+      # @rbs &block: () -> void
+      def indent: () { () -> void } -> void
 
       # Decrement indent level
       def dedent: () -> void
 
-      # Push tag name onto the tag stack
+      # Push tag name onto the tag stack. If a block is given, automatically
+      # calls exit_tag after the block completes (even if an exception occurs).
       #
       # @rbs tag_name: String
-      def enter_tag: (String tag_name) -> void
+      # @rbs &block: () -> void
+      def enter_tag: (String tag_name) { () -> void } -> void
 
       # Pop tag name from the tag stack
       def exit_tag: () -> void

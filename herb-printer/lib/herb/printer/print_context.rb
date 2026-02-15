@@ -38,9 +38,19 @@ module Herb
         end
       end
 
-      # Increment indent level
-      def indent #: void
+      # Increment indent level. If a block is given, automatically
+      # calls dedent after the block completes (even if an exception occurs).
+      #
+      # @rbs &block: () -> void
+      def indent(&block) #: void
         @indent_level += 1
+        return unless block
+
+        begin
+          yield
+        ensure
+          dedent
+        end
       end
 
       # Decrement indent level
@@ -48,11 +58,20 @@ module Herb
         @indent_level -= 1
       end
 
-      # Push tag name onto the tag stack
+      # Push tag name onto the tag stack. If a block is given, automatically
+      # calls exit_tag after the block completes (even if an exception occurs).
       #
       # @rbs tag_name: String
-      def enter_tag(tag_name) #: void
+      # @rbs &block: () -> void
+      def enter_tag(tag_name, &block) #: void
         @tag_stack.push(tag_name)
+        return unless block
+
+        begin
+          yield
+        ensure
+          exit_tag
+        end
       end
 
       # Pop tag name from the tag stack

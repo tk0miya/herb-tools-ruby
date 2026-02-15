@@ -44,7 +44,20 @@ module Herb
       # @rbs override
       def visit_whitespace_node: ...
 
+      # Visit HTML element node. Handles void elements (no close tag) and
+      # preserved elements (content unchanged) specially.
+      #
+      # @rbs override
+      def visit_html_element_node: ...
+
       private
+
+      # Visit the body of an HTML element. For preserved elements (script,
+      # style, pre, textarea), content is output as-is using IdentityPrinter.
+      # For normal elements, content is formatted with increased indentation.
+      #
+      # @rbs node: Herb::AST::HTMLElementNode
+      def visit_element_body: (Herb::AST::HTMLElementNode node) -> void
 
       # Generate indentation string for the current indent level.
       #
