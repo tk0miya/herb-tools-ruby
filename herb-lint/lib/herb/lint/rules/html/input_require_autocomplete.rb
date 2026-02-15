@@ -7,17 +7,24 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that requires autocomplete attribute on input elements that accept text input.
-        #
-        # Input elements with text-accepting types should have an autocomplete
-        # attribute to improve form accessibility and user experience.
+        # Description:
+        #   Require an `autocomplete` attribute on `<input>` elements with types that support autocomplete
+        #   functionality. This rule ensures that developers explicitly declare autocomplete behavior for form inputs.
         #
         # Good:
-        #   <input type="text" name="email" autocomplete="email">
-        #   <input type="checkbox" name="agree">
+        #   <input type="email" autocomplete="email">
+        #
+        #   <input type="url" autocomplete="off">
+        #
+        #   <input type="password" autocomplete="on">
         #
         # Bad:
-        #   <input type="text" name="email">
+        #   <input type="email">
+        #
+        #   <input type="url">
+        #
+        #   <input type="password">
+        #
         class InputRequireAutocomplete < VisitorRule
           TYPES_REQUIRING_AUTOCOMPLETE = Set.new(
             %w[
