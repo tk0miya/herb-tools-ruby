@@ -29,16 +29,56 @@ RSpec.describe Herb::Lint::Rules::Html::InputRequireAutocomplete do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when input has autocomplete attribute" do
-      let(:source) { '<input type="text" name="email" autocomplete="email">' }
+    # Good examples from documentation
+    context "when input type='email' has autocomplete attribute" do
+      let(:source) { '<input type="email" autocomplete="email">' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when input type='text' is missing autocomplete" do
-      let(:source) { '<input type="text" name="email">' }
+    context "when input type='url' has autocomplete='off'" do
+      let(:source) { '<input type="url" autocomplete="off">' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when input type='password' has autocomplete='on'" do
+      let(:source) { '<input type="password" autocomplete="on">' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "when input type='email' is missing autocomplete" do
+      let(:source) { '<input type="email">' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-input-require-autocomplete")
+        expect(subject.first.message).to include("autocomplete")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when input type='url' is missing autocomplete" do
+      let(:source) { '<input type="url">' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-input-require-autocomplete")
+        expect(subject.first.message).to include("autocomplete")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when input type='password' is missing autocomplete" do
+      let(:source) { '<input type="password">' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
