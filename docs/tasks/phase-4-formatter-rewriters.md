@@ -18,7 +18,7 @@ This phase implements the rewriter system for transforming ASTs before and after
 ## Prerequisites
 
 - Phase 1 complete (Foundation)
-- Phase 2 complete (Engine)
+- Phase 2 complete (FormatPrinter)
 - Phase 3 complete (Formatter Core)
 - herb gem available (Herb::Visitor for AST traversal)
 

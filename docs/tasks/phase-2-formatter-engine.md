@@ -1,16 +1,16 @@
-# Phase 2: Formatter Engine
+# Phase 2: Formatter FormatPrinter
 
-This phase implements the core formatting engine that traverses the AST and applies formatting rules.
+This phase implements the core formatting printer that traverses the AST and applies formatting rules.
 
-**Design document:** [herb-format-design.md](../design/herb-format-design.md) (Engine section)
+**Design document:** [herb-format-design.md](../design/herb-format-design.md) (FormatPrinter section)
 
-**Reference:** TypeScript `@herb-tools/formatter` Engine implementation
+**Reference:** TypeScript `@herb-tools/formatter` FormatPrinter implementation
 
 ## Overview
 
 | Feature | Description | Impact |
 |---------|-------------|--------|
-| Engine class | Core AST formatting logic | Central formatting implementation |
+| FormatPrinter class | Core AST formatting logic | Central formatting implementation |
 | HTML formatting | Format HTML elements, attributes, text | Core HTML support |
 | ERB formatting | Format ERB tags and control structures | ERB template support |
 | Whitespace handling | Normalize indentation and whitespace | Clean, consistent output |
@@ -23,20 +23,20 @@ This phase implements the core formatting engine that traverses the AST and appl
 
 ## Design Principles
 
-1. **AST traversal** - Engine extends or uses visitor pattern for traversal
+1. **AST traversal** - FormatPrinter extends or uses visitor pattern for traversal
 2. **Stateless formatting** - Each format() call is independent
 3. **Preserved content** - Do not reformat `<pre>`, `<code>`, `<script>`, `<style>`
 4. **Lossless transformation** - Maintain semantic meaning of source
 
 ---
 
-## Part A: Engine Foundation
+## Part A: FormatPrinter Foundation
 
-### Task 2.1: Create Engine Class
+### Task 2.1: Create FormatPrinter Class
 
-**Location:** `herb-format/lib/herb/format/engine.rb`
+**Location:** `herb-format/lib/herb/format/format_printer.rb`
 
-- [x] Create Engine class
+- [x] Create FormatPrinter class
 - [x] Add initialize with indent_width and max_line_length parameters
 - [x] Add format(ast, context) method returning String
 - [x] Add private visit(node, depth) recursive traversal method with dynamic dispatch
@@ -57,7 +57,7 @@ This phase implements the core formatting engine that traverses the AST and appl
 
 module Herb
   module Format
-    # Core formatting engine that traverses AST and applies formatting rules.
+    # Core formatting printer that traverses AST and applies formatting rules.
     #
     # Uses a visitor pattern with dynamic dispatch to handle different node types.
     # Each node type is handled by a visit_<node_type> method.
@@ -66,7 +66,7 @@ module Herb
     # @rbs max_line_length: Integer
     # @rbs @context: Context
     # @rbs @output: String
-    class Engine
+    class FormatPrinter
       VOID_ELEMENTS = %w[
         area base br col embed hr img input link meta param source track wbr
       ].freeze
@@ -174,7 +174,7 @@ end
 ```
 
 **Test Cases:**
-- Engine initializes with indent_width and max_line_length
+- FormatPrinter initializes with indent_width and max_line_length
 - format() returns a String
 - format() uses IdentityPrinter as fallback for nodes without specific visit_* methods
 - indent(0) returns ""
@@ -186,7 +186,7 @@ end
 - visit_unknown falls back to IdentityPrinter
 
 **Verification:**
-- `cd herb-format && ./bin/rspec spec/herb/format/engine_spec.rb`
+- `cd herb-format && ./bin/rspec spec/herb/format/format_printer_spec.rb`
 
 **Note:** Task 2.1 establishes the foundation only. Specific `visit_*` methods for different node types (e.g., `visit_document`, `visit_html_element`) will be implemented in subsequent tasks (2.2, 2.3, etc.).
 
@@ -196,7 +196,7 @@ end
 
 ### Task 2.2: Implement Document and Text Formatting
 
-**Location:** `herb-format/lib/herb/format/engine.rb`
+**Location:** `herb-format/lib/herb/format/format_printer.rb`
 
 - [x] Implement visit_document(node, depth)
 - [x] Implement visit_html_text(node, depth)
@@ -257,14 +257,14 @@ end
 - visit_literal preserves literal content
 
 **Verification:**
-- `cd herb-format && ./bin/rspec spec/herb/format/engine_spec.rb`
+- `cd herb-format && ./bin/rspec spec/herb/format/format_printer_spec.rb`
 - Basic document with text formats correctly
 
 ---
 
 ### Task 2.3: Implement Element Formatting
 
-**Location:** `herb-format/lib/herb/format/engine.rb`
+**Location:** `herb-format/lib/herb/format/format_printer.rb`
 
 - [ ] Implement visit_html_element(node, depth)
 - [ ] Implement visit_html_open_tag(node, depth)
@@ -366,14 +366,14 @@ end
 - visit_html_close_tag outputs correct structure
 
 **Verification:**
-- `cd herb-format && ./bin/rspec spec/herb/format/engine_spec.rb`
+- `cd herb-format && ./bin/rspec spec/herb/format/format_printer_spec.rb`
 - Basic HTML elements format correctly
 
 ---
 
 ### Task 2.4: Implement Attribute Formatting
 
-**Location:** `herb-format/lib/herb/format/engine.rb`
+**Location:** `herb-format/lib/herb/format/format_printer.rb`
 
 - [ ] Implement format_attribute(node, depth)
 - [ ] Implement format_attribute_name(node, depth)
@@ -429,14 +429,14 @@ end
 - Attributes with ERB expressions format correctly
 
 **Verification:**
-- `cd herb-format && ./bin/rspec spec/herb/format/engine_spec.rb`
+- `cd herb-format && ./bin/rspec spec/herb/format/format_printer_spec.rb`
 - Attributes format correctly
 
 ---
 
 ### Task 2.5: Implement Comment and Special Node Formatting
 
-**Location:** `herb-format/lib/herb/format/engine.rb`
+**Location:** `herb-format/lib/herb/format/format_printer.rb`
 
 - [ ] Implement format_comment(node, depth)
 - [ ] Implement format_doctype(node, depth)
@@ -494,7 +494,7 @@ end
 - format_cdata preserves content
 
 **Verification:**
-- `cd herb-format && ./bin/rspec spec/herb/format/engine_spec.rb`
+- `cd herb-format && ./bin/rspec spec/herb/format/format_printer_spec.rb`
 - Special nodes format correctly
 
 ---
@@ -503,7 +503,7 @@ end
 
 ### Task 2.6: Implement ERB Content Formatting
 
-**Location:** `herb-format/lib/herb/format/engine.rb`
+**Location:** `herb-format/lib/herb/format/format_printer.rb`
 
 - [ ] Implement format_erb_content(node, depth)
 - [ ] Implement format_erb_yield(node, depth)
@@ -561,14 +561,14 @@ end
 - format_erb_end formats correctly
 
 **Verification:**
-- `cd herb-format && ./bin/rspec spec/herb/format/engine_spec.rb`
+- `cd herb-format && ./bin/rspec spec/herb/format/format_printer_spec.rb`
 - ERB expressions format correctly
 
 ---
 
 ### Task 2.7: Implement ERB Block Formatting
 
-**Location:** `herb-format/lib/herb/format/engine.rb`
+**Location:** `herb-format/lib/herb/format/format_printer.rb`
 
 - [ ] Implement format_erb_block(node, depth)
 - [ ] Format block opening tag
@@ -608,14 +608,14 @@ end
 - Nested blocks increase depth correctly
 
 **Verification:**
-- `cd herb-format && ./bin/rspec spec/herb/format/engine_spec.rb`
+- `cd herb-format && ./bin/rspec spec/herb/format/format_printer_spec.rb`
 - ERB blocks format correctly
 
 ---
 
 ### Task 2.8: Implement ERB Control Flow Formatting
 
-**Location:** `herb-format/lib/herb/format/engine.rb`
+**Location:** `herb-format/lib/herb/format/format_printer.rb`
 
 - [ ] Implement format_erb_if(node, depth)
 - [ ] Implement format_erb_else(node, depth)
@@ -685,14 +685,14 @@ end
 - Nested control flow maintains correct indentation
 
 **Verification:**
-- `cd herb-format && ./bin/rspec spec/herb/format/engine_spec.rb`
+- `cd herb-format && ./bin/rspec spec/herb/format/format_printer_spec.rb`
 - ERB control flow formats correctly
 
 ---
 
 ### Task 2.9: Implement ERB Exception Handling Formatting
 
-**Location:** `herb-format/lib/herb/format/engine.rb`
+**Location:** `herb-format/lib/herb/format/format_printer.rb`
 
 - [ ] Implement format_erb_begin(node, depth)
 - [ ] Implement format_erb_rescue(node, depth)
@@ -751,16 +751,16 @@ end
 - Nested exception handling maintains correct indentation
 
 **Verification:**
-- `cd herb-format && ./bin/rspec spec/herb/format/engine_spec.rb`
+- `cd herb-format && ./bin/rspec spec/herb/format/format_printer_spec.rb`
 - ERB exception handling formats correctly
 
 ---
 
 ## Part D: Integration and Refinement
 
-### Task 2.10: Update Engine#visit with All Node Types
+### Task 2.10: Update FormatPrinter#visit with All Node Types
 
-**Location:** `herb-format/lib/herb/format/engine.rb`
+**Location:** `herb-format/lib/herb/format/format_printer.rb`
 
 - [ ] Update visit() case statement to include all implemented node types
 - [ ] Ensure every node type has a handler
@@ -821,24 +821,24 @@ end
 
 ---
 
-### Task 2.11: Wire Up Engine
+### Task 2.11: Wire Up FormatPrinter
 
 **Location:** `herb-format/lib/herb/format.rb`
 
-- [ ] Add require_relative for engine
+- [ ] Add require_relative for format_printer
 - [ ] Run rbs-inline to generate signatures
 - [ ] Run steep check
 
 **Verification:**
 - `cd herb-format && ./bin/steep check` passes
-- Engine can be instantiated and used
+- FormatPrinter can be instantiated and used
 
 ---
 
 ### Task 2.12: Full Verification
 
 - [ ] Run `cd herb-format && ./bin/rake` -- all checks pass
-- [ ] Test Engine with various AST inputs
+- [ ] Test FormatPrinter with various AST inputs
 - [ ] Verify preserved elements (<pre>, <code>) are not reformatted
 - [ ] Verify void elements have no close tag
 - [ ] Verify ERB spacing is normalized
@@ -846,8 +846,8 @@ end
 
 **Integration Test:**
 ```ruby
-RSpec.describe Herb::Format::Engine do
-  let(:engine) { described_class.new(indent_width: 2, max_line_length: 80) }
+RSpec.describe Herb::Format::FormatPrinter do
+  let(:printer) { described_class.new(indent_width: 2, max_line_length: 80) }
   let(:config) { build(:formatter_config, indent_width: 2, max_line_length: 80) }
   let(:context) { build(:context, config: config, source: source) }
 
@@ -855,7 +855,7 @@ RSpec.describe Herb::Format::Engine do
     source = "<div><p>Hello</p></div>"
     ast = Herb.parse(source).value
 
-    formatted = engine.format(ast, context)
+    formatted = described_class.format(ast, format_context: context)
 
     expect(formatted).to eq(<<~HTML.chomp)
       <div>
@@ -870,7 +870,7 @@ RSpec.describe Herb::Format::Engine do
     source = "<pre>  preserved  </pre>"
     ast = Herb.parse(source).value
 
-    formatted = engine.format(ast, context)
+    formatted = described_class.format(ast, format_context: context)
 
     expect(formatted).to include("  preserved  ")
   end
@@ -879,7 +879,7 @@ RSpec.describe Herb::Format::Engine do
     source = "<%=@user.name%>"
     ast = Herb.parse(source).value
 
-    formatted = engine.format(ast, context)
+    formatted = described_class.format(ast, format_context: context)
 
     expect(formatted).to eq("<%= @user.name %>")
   end
@@ -892,7 +892,7 @@ end
 
 | Task | Part | Description |
 |------|------|-------------|
-| 2.1 | A | Create Engine class foundation |
+| 2.1 | A | Create FormatPrinter class foundation |
 | 2.2 | B | Document and text formatting |
 | 2.3 | B | Element formatting |
 | 2.4 | B | Attribute formatting |

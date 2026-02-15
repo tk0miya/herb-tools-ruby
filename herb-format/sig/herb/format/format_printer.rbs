@@ -1,0 +1,65 @@
+# Generated from lib/herb/format/format_printer.rb with RBS::Inline
+
+module Herb
+  module Format
+    # Core formatting printer that traverses AST and produces formatted output.
+    #
+    # Extends Printer::Base (which extends Herb::Visitor) to leverage the
+    # standard visitor pattern with double-dispatch via node.accept(self).
+    # This mirrors the TypeScript FormatPrinter extends Printer extends Visitor
+    # architecture.
+    #
+    # Leaf nodes are handled with identity-like output for now. As formatting
+    # rules are added, visitor methods will be overridden to apply indentation,
+    # line wrapping, attribute formatting, and other transformations.
+    class FormatPrinter < ::Herb::Printer::Base
+      VOID_ELEMENTS: untyped
+
+      PRESERVED_ELEMENTS: untyped
+
+      attr_reader indent_width: Integer
+
+      attr_reader max_line_length: Integer
+
+      attr_reader format_context: Context
+
+      # Format the given input and return a formatted string.
+      #
+      # @rbs input: Herb::ParseResult | Herb::AST::Node
+      # @rbs format_context: Context
+      # @rbs ignore_errors: bool
+      def self.format: (Herb::ParseResult | Herb::AST::Node input, format_context: Context, ?ignore_errors: bool) -> String
+
+      # @rbs indent_width: Integer
+      # @rbs max_line_length: Integer
+      # @rbs format_context: Context
+      def initialize: (indent_width: Integer, max_line_length: Integer, format_context: Context) -> void
+
+      # @rbs override
+      def visit_literal_node: ...
+
+      # @rbs override
+      def visit_html_text_node: ...
+
+      # @rbs override
+      def visit_whitespace_node: ...
+
+      private
+
+      # Generate indentation string for the current indent level.
+      #
+      # @rbs level: Integer
+      def indent_string: (?Integer level) -> String
+
+      # Check if tag is a void element (self-closing, no closing tag).
+      #
+      # @rbs tag_name: String
+      def void_element?: (String tag_name) -> bool
+
+      # Check if tag content should be preserved (not reformatted).
+      #
+      # @rbs tag_name: String
+      def preserved_element?: (String tag_name) -> bool
+    end
+  end
+end

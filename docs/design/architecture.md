@@ -200,7 +200,7 @@ For detailed design, see [herb-lint Design](./herb-lint-design.md).
 Herb::Format
 ├── CLI              # Command-line interface
 ├── Formatter        # Format workflow orchestration
-├── Engine           # AST rewriting logic
+├── FormatPrinter    # AST formatting (extends Printer::Base)
 ├── Context          # Formatting execution context
 ├── RewriterRegistry # Rewriter registration and lookup
 ├── Rewriters        # Rewriter implementations
@@ -302,7 +302,7 @@ The system is open for extension but closed for modification:
 
 - **Custom rules**: New rules can be added by implementing the Rules::Base interface without modifying existing code
 - **Custom reporters**: New output formats can be added by implementing the reporter interface
-- **Custom rewriters**: New formatters can be added without changing the core engine
+- **Custom rewriters**: New formatters can be added without changing the core printer
 - **Plugin architecture**: Custom rules and rewriters are loaded dynamically through the registry
 
 Users can extend functionality without forking or modifying the core gems.

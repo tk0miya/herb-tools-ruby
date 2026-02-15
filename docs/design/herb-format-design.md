@@ -22,7 +22,7 @@ herb-format/
 │           ├── context.rb
 │           ├── format_result.rb
 │           ├── aggregated_result.rb
-│           ├── engine.rb
+│           ├── format_printer.rb
 │           ├── rewriter_registry.rb
 │           ├── custom_rewriter_loader.rb
 │           ├── errors.rb
@@ -42,7 +42,7 @@ herb-format/
 │           ├── format_ignore_spec.rb
 │           ├── context_spec.rb
 │           ├── format_result_spec.rb
-│           ├── engine_spec.rb
+│           ├── format_printer_spec.rb
 │           ├── rewriter_registry_spec.rb
 │           └── rewriters/
 │               └── ...
@@ -64,7 +64,7 @@ Herb::Format
 ├── Context              # Format execution context
 ├── FormatResult         # Format result for a single file
 ├── AggregatedResult     # Aggregated result for multiple files
-├── Engine               # AST rewriting and serialization
+├── FormatPrinter        # AST formatting (extends Printer::Base)
 ├── RewriterRegistry     # Rewriter registration and lookup (Registry Pattern)
 ├── CustomRewriterLoader # Custom rewriter loading
 ├── Errors               # Custom exceptions
@@ -253,18 +253,15 @@ end
 
 ```rbs
 class Herb::Format::Formatter
-  @engine: Engine
   @pre_rewriters: Array[Rewriters::Base]
   @post_rewriters: Array[Rewriters::Base]
   @config: Herb::Config::FormatterConfig
 
-  attr_reader engine: Engine
   attr_reader pre_rewriters: Array[Rewriters::Base]
   attr_reader post_rewriters: Array[Rewriters::Base]
   attr_reader config: Herb::Config::FormatterConfig
 
   def initialize: (
-    Engine engine,
     Array[Rewriters::Base] pre_rewriters,
     Array[Rewriters::Base] post_rewriters,
     Herb::Config::FormatterConfig config
@@ -285,7 +282,7 @@ end
 4. If ignored, return source unchanged
 5. Create Context with source and configuration
 6. Execute pre-rewriters (in order)
-7. Apply formatting rules via Engine
+7. Apply formatting via `FormatPrinter.format(ast, format_context:)`
 8. Execute post-rewriters (in order)
 9. Return FormatResult with original and formatted content
 
@@ -295,7 +292,7 @@ end
 - `FormatIgnore` - Detect ignore directives in AST
 - `Herb.parse` - AST parsing (from herb gem)
 - `Context` - Execution context
-- `Engine` - Formatting engine
+- `FormatPrinter` - AST formatting (extends Printer::Base)
 - `Rewriters::Base` subclasses - Rewriter implementations
 
 ### Herb::Format::FormatterFactory
@@ -319,7 +316,6 @@ class Herb::Format::FormatterFactory
 
   private
 
-  def build_engine: () -> Engine
   def build_pre_rewriters: () -> Array[Rewriters::Base]
   def build_post_rewriters: () -> Array[Rewriters::Base]
   def instantiate_rewriter: (singleton(Rewriters::Base) rewriter_class) -> Rewriters::Base
@@ -327,11 +323,10 @@ end
 ```
 
 **Processing:**
-1. Create Engine with indent_width and max_line_length configuration
-2. Query RewriterRegistry for configured pre-rewriters
-3. Query RewriterRegistry for configured post-rewriters
-4. Instantiate each rewriter
-5. Create Formatter with engine and rewriters
+1. Query RewriterRegistry for configured pre-rewriters
+2. Query RewriterRegistry for configured post-rewriters
+3. Instantiate each rewriter
+4. Create Formatter with rewriters
 
 ### Herb::Format::FormatIgnore
 
@@ -406,41 +401,63 @@ class Herb::Format::Context
 end
 ```
 
-### Herb::Format::Engine
+### Herb::Format::FormatPrinter
 
-**Responsibility:** Core formatting logic - traverses AST and applies formatting rules.
+**Responsibility:** Core formatting logic - traverses AST and produces formatted output.
+
+Extends `Herb::Printer::Base` (which extends `Herb::Visitor`) to leverage the standard visitor pattern with double-dispatch via `node.accept(self)`. This mirrors the TypeScript `FormatPrinter extends Printer extends Visitor` architecture.
 
 ```rbs
-class Herb::Format::Engine
-  @indent_width: Integer
-  @max_line_length: Integer
+class Herb::Format::FormatPrinter < Herb::Printer::Base
+  VOID_ELEMENTS: Array[String]
+  PRESERVED_ELEMENTS: Array[String]
 
   attr_reader indent_width: Integer
   attr_reader max_line_length: Integer
+  attr_reader format_context: Context
 
-  def initialize: (indent_width: Integer, max_line_length: Integer) -> void
+  def self.format: (
+    Herb::ParseResult | Herb::AST::Node input,
+    format_context: Context,
+    ?ignore_errors: bool
+  ) -> String
 
-  # Format AST and return formatted string
-  def format: (Herb::AST::Document ast, Context context) -> String
+  def initialize: (
+    indent_width: Integer,
+    max_line_length: Integer,
+    format_context: Context
+  ) -> void
+
+  # Visitor method overrides for each node type
+  def visit_literal_node: ...
+  def visit_html_text_node: ...
+  def visit_whitespace_node: ...
+  def visit_html_attribute_node: ...
+  def visit_html_element_node: ...
+  def visit_html_open_tag_node: ...
+  def visit_html_close_tag_node: ...
+  def visit_html_comment_node: ...
+  def visit_html_doctype_node: ...
+  def visit_erb_*_node: ...
 
   private
 
-  def visit: (Herb::AST::Node node, Integer depth) -> String
-  def format_document: (Herb::AST::DocumentNode node, Integer depth) -> String
-  def format_element: (Herb::AST::HTMLElementNode node, Integer depth) -> String
-  def format_attributes: (Array[Herb::AST::HTMLAttributeNode] attributes, Integer depth) -> String
-  def format_text: (Herb::AST::HTMLTextNode node, Integer depth) -> String
-  def format_erb_content: (Herb::AST::ERBContentNode node, Integer depth) -> String
-  def format_erb_block: (Herb::AST::ERBBlockNode node, Integer depth) -> String
-  def format_comment: (Herb::AST::HTMLCommentNode node, Integer depth) -> String
-  def indent: (Integer depth) -> String
-  def should_wrap_attributes?: (Array[Herb::AST::HTMLAttributeNode] attributes, Integer current_length) -> bool
-  def is_preserved_element?: (String tag_name) -> bool
-  def is_void_element?: (String tag_name) -> bool
+  def indent_string: (?Integer level) -> String
+  def void_element?: (String tag_name) -> bool
+  def preserved_element?: (String tag_name) -> bool
+  def print_erb_tag: (Herb::AST::Node node) -> void
+  def nodes_before_token: (Array[Herb::AST::Node] children, Herb::Token token) -> Array[Herb::AST::Node]
+  def nodes_after_token: (Array[Herb::AST::Node] children, Herb::Token token) -> Array[Herb::AST::Node]
 end
 ```
 
-**Formatting Rules:**
+**Design Notes:**
+- Inherits `Printer::Base` which provides `visit(node)`, `write(text)`, and `context` (PrintContext)
+- PrintContext manages output accumulation, indent level, column tracking, and tag stack
+- All AST node types have visitor methods; unoverridden nodes default to `visit_child_nodes`
+- ERB node visitors are generated dynamically via `define_method`
+
+**Formatting Rules (to be implemented):**
 - **Indentation**: Uses spaces (configurable width), indents nested elements
 - **Line Length**: Wraps long lines at max_line_length, wraps attributes to separate lines when exceeded
 - **Attributes**: Single attribute on same line, multiple attributes with overflow get one per line
@@ -657,7 +674,7 @@ CLI#run
   │           ├── (ignored?) return source unchanged
   │           ├── Context.new
   │           ├── pre_rewriters.each { |r| r.rewrite(ast, context) }
-  │           ├── Engine#format(ast, context)
+  │           ├── FormatPrinter.format(ast, format_context:)
   │           ├── post_rewriters.each { |r| r.rewrite(ast, context) }
   │           └── return FormatResult
   │
@@ -717,14 +734,14 @@ end
 
 ## Testing Strategy
 
-### Unit Tests - Engine
+### Unit Tests - FormatPrinter
 
 **Focus:** Core formatting logic in isolation
 
 **Test Structure:**
 - Parse sample ERB into AST using `Herb.parse`
-- Create Engine with test configuration
-- Execute engine's `format` method
+- Create FormatPrinter with test configuration (via format_context)
+- Execute `FormatPrinter.format` class method
 - Verify formatted output
 
 **Key Test Cases:**

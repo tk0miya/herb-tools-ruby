@@ -111,11 +111,11 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 | Part C | 4 | Configuration and error handling |
 | Part D | 2 | Integration testing |
 
-#### Phase 2: Engine (12 tasks)
+#### Phase 2: FormatPrinter (12 tasks)
 
 | Part | Tasks | Description |
 |------|-------|-------------|
-| Part A | 1 | Engine foundation |
+| Part A | 1 | FormatPrinter foundation |
 | Part B | 4 | HTML formatting (document, text, elements, attributes, comments) |
 | Part C | 4 | ERB formatting (content, blocks, control flow, exception handling) |
 | Part D | 3 | Integration and refinement |

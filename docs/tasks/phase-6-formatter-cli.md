@@ -20,7 +20,7 @@ This phase implements the command-line interface for herb-format.
 ## Prerequisites
 
 - Phase 1 complete (Foundation)
-- Phase 2 complete (Engine)
+- Phase 2 complete (FormatPrinter)
 - Phase 3 complete (Formatter Core)
 - Phase 4 complete (Rewriters)
 - Phase 5 complete (Runner)

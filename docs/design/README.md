@@ -86,11 +86,11 @@ Detailed design for the herb-lint `--fix` / `--fix-unsafely` autofix feature.
 Detailed design for the ERB template formatter.
 
 **Contents:**
-- Component structure (CLI, Runner, Formatter, RewriterRegistry, Engine, Rewriters)
+- Component structure (CLI, Runner, Formatter, RewriterRegistry, FormatPrinter, Rewriters)
 - Data structures (FormatResult, AggregatedResult)
 - RBS interface definitions for all classes
 - Rewriter implementation patterns (pre/post phases)
-- Engine formatting rules and serialization
+- FormatPrinter formatting rules and serialization
 - Processing flow and component interactions
 
 **Audience:** Developers implementing formatter features, custom rewriters, or formatting rules.
