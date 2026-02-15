@@ -268,10 +268,10 @@ end
 
 - [x] Implement visit_html_element(node, depth)
 - [x] Implement visit_html_open_tag(node, depth)
-- [ ] Implement visit_html_close_tag(node, depth)
-- [ ] Handle void elements (no close tag)
-- [ ] Handle preserved elements (no indentation changes)
-- [ ] Add test cases
+- [x] Implement visit_html_close_tag(node, depth)
+- [x] Handle void elements (no close tag)
+- [x] Handle preserved elements (no indentation changes)
+- [x] Add test cases
 
 **Implementation:**
 ```ruby

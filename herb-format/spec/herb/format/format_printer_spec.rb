@@ -39,16 +39,16 @@ RSpec.describe Herb::Format::FormatPrinter do
     context "with HTML text nodes" do
       let(:source) { "<div>Hello</div>" }
 
-      it "outputs opening tag and text content" do
-        expect(subject).to eq("<div>Hello")
+      it "outputs opening tag, text content, and closing tag" do
+        expect(subject).to eq("<div>Hello</div>")
       end
     end
 
     context "with whitespace nodes" do
       let(:source) { "<div class='foo'></div>" }
 
-      it "outputs opening tag with attribute" do
-        expect(subject).to eq("<div classfoo>")
+      it "outputs opening tag with attribute and closing tag" do
+        expect(subject).to eq("<div classfoo></div>")
       end
     end
 
@@ -63,16 +63,24 @@ RSpec.describe Herb::Format::FormatPrinter do
     context "with simple HTML element" do
       let(:source) { "<div>content</div>" }
 
-      it "outputs opening tag and content" do
-        expect(subject).to eq("<div>content")
+      it "outputs opening tag, content, and closing tag" do
+        expect(subject).to eq("<div>content</div>")
       end
     end
 
     context "with HTML element with attributes" do
       let(:source) { "<div class=\"foo\" id=\"bar\">content</div>" }
 
-      it "outputs opening tag with attributes and content" do
-        expect(subject).to eq("<div classfoo idbar>content")
+      it "outputs opening tag with attributes, content, and closing tag" do
+        expect(subject).to eq("<div classfoo idbar>content</div>")
+      end
+    end
+
+    context "with nested elements" do
+      let(:source) { "<div><p>nested</p></div>" }
+
+      it "outputs both opening and closing tags for nested elements" do
+        expect(subject).to eq("<div><p>nested</p></div>")
       end
     end
 
