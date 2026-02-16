@@ -159,12 +159,14 @@ Herb::Lint
 ├── Context                   # Execution context passed to rules
 ├── Offense                   # Violation representation
 ├── DirectiveParser           # Directive parsing (herb:disable, herb:linter ignore)
-├── Reporter                  # Output formatting strategy
-│   ├── BaseReporter
-│   ├── DetailedReporter
-│   ├── SimpleReporter
-│   ├── JsonReporter
-│   └── GithubReporter
+├── Formatter                 # Output formatters
+│   ├── Base
+│   ├── SimpleFormatter
+│   ├── DetailedFormatter
+│   ├── JsonFormatter
+│   └── GitHubActionsFormatter
+├── Reporter                  # Summary display helper
+│   └── SummaryReporter
 ├── CustomRuleLoader          # Custom rule discovery and loading
 ├── Rules                     # Rule implementations
 │   ├── Base                  # Rule interface definition
