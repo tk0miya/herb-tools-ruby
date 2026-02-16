@@ -85,12 +85,14 @@ Herb::Lint
 ├── Errors                    # Custom exceptions
 ├── DirectiveParser           # Directive parsing (herb:disable, herb:linter ignore)
 ├── UnnecessaryDirectiveDetector  # Detect unused herb:disable directives
-├── Reporter                  # Output formatter
-│   ├── BaseReporter
-│   ├── DetailedReporter
-│   ├── SimpleReporter
-│   ├── JsonReporter
-│   └── GithubReporter
+├── Formatter                 # Output formatters
+│   ├── Base
+│   ├── SimpleFormatter
+│   ├── DetailedFormatter
+│   ├── JsonFormatter
+│   └── GitHubActionsFormatter
+├── Reporter                  # Summary display helper
+│   └── SummaryReporter
 └── Rules                     # Rule implementations
     ├── Base
     ├── VisitorRule
@@ -951,15 +953,15 @@ class Herb::Lint::Reporter::BaseReporter
 end
 ```
 
-### Reporter Implementations
+### Formatter Implementations
 
-#### DetailedReporter
+#### DetailedFormatter
 
 Human-readable format with color-coded severity.
 
 ```rbs
-class Herb::Lint::Reporter::DetailedReporter < BaseReporter
-  include _Reporter
+class Herb::Lint::Formatter::DetailedFormatter < Base
+  include _Formatter
 
   def initialize: (?output: IO) -> void
   def report: (AggregatedResult result) -> void
@@ -979,13 +981,13 @@ Features:
 - Color codes severity levels (red=error, yellow=warning, etc.)
 - Displays summary statistics
 
-#### SimpleReporter
+#### SimpleFormatter
 
 Compact text format.
 
 ```rbs
-class Herb::Lint::Reporter::SimpleReporter < BaseReporter
-  include _Reporter
+class Herb::Lint::Formatter::SimpleFormatter < Base
+  include _Formatter
 
   def initialize: (?output: IO) -> void
   def report: (AggregatedResult result) -> void
@@ -1000,13 +1002,13 @@ Features:
 - One line per offense
 - Minimal formatting
 
-#### JsonReporter
+#### JsonFormatter
 
 Machine-readable JSON output.
 
 ```rbs
-class Herb::Lint::Reporter::JsonReporter < BaseReporter
-  include _Reporter
+class Herb::Lint::Formatter::JsonFormatter < Base
+  include _Formatter
 
   def initialize: (?output: IO) -> void
   def report: (AggregatedResult result) -> void
@@ -1029,13 +1031,13 @@ Features:
   - `totalIgnored`: count of suppressed offenses via herb:disable
   - `ruleCount`: number of active rules
 
-#### GithubReporter
+#### GitHubActionsFormatter
 
 GitHub Actions annotations.
 
 ```rbs
-class Herb::Lint::Reporter::GithubReporter < BaseReporter
-  include _Reporter
+class Herb::Lint::Formatter::GitHubActionsFormatter < Base
+  include _Formatter
 
   def initialize: (?output: IO) -> void
   def report: (AggregatedResult result) -> void
@@ -1051,6 +1053,43 @@ Features:
 - Outputs workflow commands
 - Format: `::error file=path,line=N,col=M::message`
 - Maps severities: error→error, warning→warning, info/hint→notice
+
+### Reporter (Summary Display)
+
+#### SummaryReporter
+
+Helper class for displaying summary statistics. Used by formatters to show aggregated results.
+
+**Location:** `lib/herb/lint/reporter/summary_reporter.rb`
+
+```rbs
+class Herb::Lint::Reporter::SummaryReporter
+  attr_reader io: IO
+
+  def initialize: (?io: IO) -> void
+  def display_summary: (AggregatedResult aggregated_result) -> void
+
+  private
+
+  def print_checked_line: (AggregatedResult) -> void
+  def print_files_line: (AggregatedResult) -> void
+  def print_offenses_line: (AggregatedResult) -> void
+  def print_fixable_line: (AggregatedResult) -> void
+  def print_success_message: (AggregatedResult) -> void
+end
+```
+
+**Features:**
+- Displays total files checked
+- Shows offense counts by severity
+- Displays fixable offense count
+- Color-coded output
+
+**Usage:**
+```ruby
+reporter = SummaryReporter.new(io: $stdout)
+reporter.display_summary(aggregated_result)
+```
 
 ## Processing Flow
 

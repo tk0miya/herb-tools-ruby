@@ -14,7 +14,11 @@ The MVP provides core linting functionality:
 - **File Discovery**: Simple pattern matching (`**/*.html.erb` patterns)
 - **Rules**: Initial 3 rules implemented (html-img-require-alt, html-attribute-double-quotes, html-no-duplicate-ids)
 - **CLI**: Basic options (`--version`, `--help`, file/directory arguments)
-- **Reporter**: SimpleReporter (text output only)
+- **Output Formatters**: All formatters implemented
+  - SimpleFormatter (simple text output)
+  - DetailedFormatter (detailed output with syntax highlighting)
+  - JsonFormatter (JSON output)
+  - GitHubActionsFormatter (GitHub Actions format)
 - **Inline Directives**: Support for `herb:disable` and `herb:linter ignore` comments
 
 ### Post-MVP Features
@@ -23,7 +27,6 @@ Features described in this specification but not yet implemented:
 
 - **Configuration**: Full validation, schema checking
 - **CLI**: `--init`, `--config-file`, `--force`, `--theme`, `--no-wrap-lines`, `--truncate-lines`, `--no-custom-rules`, `--no-timing` options
-- **Reporters**: DetailedReporter (default output format with syntax highlighting)
 - **Custom Rules**: Dynamic loading from `.herb/rules/` directory
 - **Timing**: Performance metrics display in output
 
