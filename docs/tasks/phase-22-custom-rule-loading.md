@@ -24,6 +24,17 @@ Implement complete custom rule loading to match TypeScript reference implementat
 
 ---
 
+## 📋 Task Checklist
+
+- [ ] Task 22.1: Implement Custom Rule Discovery
+- [ ] Task 22.2: Integrate CustomRuleLoader with Runner
+- [ ] Task 22.3: Add CLI Option for Custom Rules
+- [ ] Task 22.4: Documentation
+
+**Progress: 0/4 tasks completed**
+
+---
+
 ## Part A: Enhanced Discovery
 
 ### Task 22.1: Implement Custom Rule Discovery

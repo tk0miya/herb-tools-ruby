@@ -41,6 +41,41 @@ Part G: Integration & Testing                         ← Integration
 
 ---
 
+## 📋 Task Checklist (Part 1)
+
+### Part A: FormatHelpers Module (8 tasks)
+- [x] Task 2.1: Constants Definition
+- [x] Task 2.2: Basic Node Classification (6 functions)
+- [ ] Task 2.3: Sibling & Child Analysis (4 functions)
+- [ ] Task 2.4: Content Analysis (4 functions)
+- [ ] Task 2.5: Positioning & Spacing (2 functions)
+- [ ] Task 2.6: Text & Punctuation Helpers (5 functions)
+- [ ] Task 2.7: ERB Helpers (3 functions)
+- [ ] Task 2.8: Utility Functions (dedent, get_tag_name)
+
+### Part B: Core Patterns (5 tasks)
+- [ ] Task 2.9: State Management Fields
+- [ ] Task 2.10: capture Pattern
+- [ ] Task 2.11: trackBoundary Pattern
+- [ ] Task 2.12: withIndent Pattern
+- [ ] Task 2.13: Output Helper Methods
+
+### Part C: ElementAnalyzer (4 tasks)
+- [ ] Task 2.14: ElementAnalysis Data Structure
+- [ ] Task 2.15: ElementAnalyzer - shouldRenderOpenTagInline
+- [ ] Task 2.16: ElementAnalyzer - shouldRenderElementContentInline
+- [ ] Task 2.17: ElementAnalyzer - Complete Implementation
+
+### Part D: Attribute Formatting (4 tasks)
+- [ ] Task 2.18: Attribute Inline Rendering
+- [ ] Task 2.19: Attribute Multiline Rendering
+- [ ] Task 2.20: Class Attribute Formatting
+- [ ] Task 2.21: Quote Normalization
+
+**Progress: 2/21 tasks completed**
+
+---
+
 ## Part A: FormatHelpers Module
 
 ### Task 2.1: Constants Definition
