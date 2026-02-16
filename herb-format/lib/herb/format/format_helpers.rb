@@ -41,6 +41,61 @@ module Herb
       # Regular expression matching ASCII whitespace characters.
       # Used for normalizing whitespace in text content.
       ASCII_WHITESPACE = /[ \t\n\r]+/ #: Regexp
+
+      # Check if a node is pure whitespace (HTMLTextNode or LiteralNode with only whitespace).
+      #
+      # @rbs node: Herb::AST::Node
+      def pure_whitespace_node?(node) #: bool
+        return true if node.is_a?(Herb::AST::HTMLTextNode) && node.content.strip.empty?
+        return true if node.is_a?(Herb::AST::LiteralNode) && node.content.strip.empty?
+
+        false
+      end
+
+      # Check if a node is non-whitespace (has meaningful content).
+      #
+      # @rbs node: Herb::AST::Node
+      def non_whitespace_node?(node) #: bool
+        return false if node.is_a?(Herb::AST::WhitespaceNode)
+        return node.content.strip != "" if node.is_a?(Herb::AST::HTMLTextNode)
+        return node.content.strip != "" if node.is_a?(Herb::AST::LiteralNode)
+
+        true
+      end
+
+      # Check if a tag name is an inline element.
+      #
+      # @rbs tag_name: String
+      def inline_element?(tag_name) #: bool
+        INLINE_ELEMENTS.include?(tag_name.downcase)
+      end
+
+      # Check if a tag name is content-preserving.
+      #
+      # @rbs tag_name: String
+      def content_preserving?(tag_name) #: bool
+        CONTENT_PRESERVING_ELEMENTS.include?(tag_name.downcase)
+      end
+
+      # Check if a node is block-level (not inline).
+      #
+      # @rbs node: Herb::AST::Node
+      def block_level_node?(node) #: bool
+        return false unless node.is_a?(Herb::AST::HTMLElementNode)
+
+        tag_name = node.tag_name&.value || ""
+        !inline_element?(tag_name)
+      end
+
+      # Check if a node is a line-breaking element (br or hr).
+      #
+      # @rbs node: Herb::AST::Node
+      def line_breaking_element?(node) #: bool
+        return false unless node.is_a?(Herb::AST::HTMLElementNode)
+
+        tag_name = node.tag_name&.value || ""
+        %w[br hr].include?(tag_name.downcase)
+      end
     end
   end
 end
