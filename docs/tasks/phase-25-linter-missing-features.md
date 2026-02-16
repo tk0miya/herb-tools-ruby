@@ -115,25 +115,25 @@ TypeScript implementation provides `--init` to generate a default `.herb.yml` co
 - Error if file already exists
 
 **Implementation Tasks:**
-- [ ] Create default `.herb.yml` template
-  - [ ] Include commonly-used linter rules with recommended severity
-  - [ ] Include file patterns (include/exclude)
-  - [ ] Add helpful comments explaining each section
-- [ ] Add `--init` CLI option
-  - [ ] Parse option in CLI
-  - [ ] Call initialization handler
-  - [ ] Exit with status 0 after generation
-- [ ] Implement initialization logic
-  - [ ] Check if `.herb.yml` already exists
-  - [ ] Prevent overwriting (or prompt for confirmation)
-  - [ ] Write template to `.herb.yml`
-  - [ ] Display success message
-- [ ] Update CLI help text
-- [ ] Write unit tests
-  - [ ] Test file generation
-  - [ ] Test overwrite prevention
-  - [ ] Test exit code
-- [ ] Write integration tests via CLI
+- [x] Create default `.herb.yml` template
+  - [x] Include commonly-used linter rules with recommended severity
+  - [x] Include file patterns (include/exclude)
+  - [x] Add helpful comments explaining each section
+- [x] Add `--init` CLI option
+  - [x] Parse option in CLI
+  - [x] Call initialization handler
+  - [x] Exit with status 0 after generation
+- [x] Implement initialization logic
+  - [x] Check if `.herb.yml` already exists
+  - [x] Prevent overwriting (or prompt for confirmation)
+  - [x] Write template to `.herb.yml`
+  - [x] Display success message
+- [x] Update CLI help text
+- [x] Write unit tests
+  - [x] Test file generation
+  - [x] Test overwrite prevention
+  - [x] Test exit code
+- [x] Write integration tests via CLI
 
 #### 4. --config-file / -c Option (Configuration File Path)
 

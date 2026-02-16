@@ -11,6 +11,43 @@ module Herb
       EXIT_LINT_ERROR = 1    #: Integer
       EXIT_RUNTIME_ERROR = 2 #: Integer
 
+      # Default configuration template for --init
+      DEFAULT_CONFIG_TEMPLATE = <<~YAML
+        # Herb Tools Configuration
+        # https://github.com/marcoroth/herb
+
+        linter:
+          enabled: true
+          include:
+            - "**/*.html.erb"
+            - "**/*.turbo_stream.erb"
+          exclude:
+            - "vendor/**"
+            - "node_modules/**"
+          rules:
+            # Uncomment to customize rules
+            # html-attribute-quotes:
+            #   severity: error
+            # html-img-require-alt:
+            #   severity: warning
+            # html-no-positive-tabindex:
+            #   enabled: false
+
+        formatter:
+          enabled: true
+          indentWidth: 2
+          maxLineLength: 80
+          include:
+            - "**/*.html.erb"
+            - "**/*.turbo_stream.erb"
+          exclude:
+            - "vendor/**"
+            - "node_modules/**"
+          rewriter:
+            pre: []
+            post: []
+      YAML
+
       # @rbs argv: Array[String]
       def initialize(argv) #: void
         @argv = argv
@@ -21,6 +58,8 @@ module Herb
 
       def run #: Integer
         parse_options
+        return initialize_config if options[:init]
+
         execute_lint
       rescue SystemExit => e
         e.status
@@ -45,6 +84,20 @@ module Herb
         stderr.puts message
         stderr.puts backtrace if backtrace && ENV["DEBUG"]
         EXIT_RUNTIME_ERROR
+      end
+
+      # Initializes a new .herb.yml configuration file
+      def initialize_config #: Integer
+        config_path = File.join(Dir.pwd, ".herb.yml")
+
+        if File.exist?(config_path)
+          stderr.puts "Error: .herb.yml already exists"
+          return EXIT_RUNTIME_ERROR
+        end
+
+        File.write(config_path, DEFAULT_CONFIG_TEMPLATE)
+        stdout.puts "Created .herb.yml"
+        EXIT_SUCCESS
       end
 
       # Calculate the exit code based on failLevel configuration.
@@ -85,10 +138,15 @@ module Herb
             exit EXIT_SUCCESS
           end
 
+          opts.on("--init", "Generate a default .herb.yml configuration file") do
+            options[:init] = true
+          end
+
           opts.on("--help", "Show this help") do
             stdout.puts opts
             stdout.puts
             stdout.puts "Examples:"
+            stdout.puts "  herb-lint --init                   # Generate a default .herb.yml configuration"
             stdout.puts "  herb-lint                          # Lint all files in current directory"
             stdout.puts "  herb-lint app/views                # Lint files in app/views"
             stdout.puts "  herb-lint app/views/users/*.erb    # Lint specific files"

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "json"
+require "yaml"
 require "tmpdir"
 require "fileutils"
 require "stringio"
@@ -31,6 +32,66 @@ RSpec.describe Herb::Lint::CLI do
         expect(output).to include("Examples:")
         expect(output).to include("Exit codes:")
         expect(subject).to eq(described_class::EXIT_SUCCESS)
+      end
+    end
+
+    describe "--init option" do
+      around do |example|
+        Dir.mktmpdir do |temp_dir|
+          Dir.chdir(temp_dir) do
+            example.run
+          end
+        end
+      end
+
+      let(:argv) { ["--init"] }
+      let(:config_path) { ".herb.yml" }
+
+      context "when .herb.yml does not exist" do
+        it "creates .herb.yml and returns EXIT_SUCCESS" do
+          output = capture_stdout { subject }
+          expect(subject).to eq(described_class::EXIT_SUCCESS)
+          expect(output).to include("Created .herb.yml")
+          expect(File.exist?(config_path)).to be true
+        end
+
+        it "creates .herb.yml with valid YAML content" do
+          subject
+          content = File.read(config_path)
+          expect { YAML.safe_load(content, permitted_classes: [Symbol]) }.not_to raise_error
+        end
+
+        it "creates .herb.yml with linter configuration" do
+          subject
+          config = YAML.safe_load_file(config_path, permitted_classes: [Symbol])
+          expect(config).to have_key("linter")
+          expect(config["linter"]).to have_key("enabled")
+          expect(config["linter"]).to have_key("include")
+          expect(config["linter"]).to have_key("exclude")
+          expect(config["linter"]).to have_key("rules")
+        end
+
+        it "creates .herb.yml with formatter configuration" do
+          subject
+          config = YAML.safe_load_file(config_path, permitted_classes: [Symbol])
+          expect(config).to have_key("formatter")
+          expect(config["formatter"]).to have_key("enabled")
+          expect(config["formatter"]).to have_key("indentWidth")
+          expect(config["formatter"]).to have_key("maxLineLength")
+        end
+      end
+
+      context "when .herb.yml already exists" do
+        before do
+          File.write(config_path, "existing: config")
+        end
+
+        it "returns EXIT_RUNTIME_ERROR without overwriting" do
+          output = capture_stderr { subject }
+          expect(subject).to eq(described_class::EXIT_RUNTIME_ERROR)
+          expect(output).to include("Error: .herb.yml already exists")
+          expect(File.read(config_path)).to eq("existing: config")
+        end
       end
     end
 

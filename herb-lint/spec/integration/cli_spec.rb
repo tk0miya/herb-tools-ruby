@@ -2,6 +2,9 @@
 
 require "spec_helper"
 require "open3"
+require "tmpdir"
+require "fileutils"
+require "yaml"
 
 RSpec.describe "CLI integration" do # rubocop:disable RSpec/DescribeClass
   let(:fixtures_path) { File.expand_path("../fixtures/templates", __dir__) }
@@ -21,6 +24,66 @@ RSpec.describe "CLI integration" do # rubocop:disable RSpec/DescribeClass
     it "outputs help text and exits with success code" do
       expect(subject[:stdout]).to include("Usage:")
       expect(subject[:status].exitstatus).to eq(Herb::Lint::CLI::EXIT_SUCCESS)
+    end
+  end
+
+  describe "--init flag" do
+    let(:temp_dir) { Dir.mktmpdir }
+
+    around do |example|
+      Dir.chdir(temp_dir) do
+        example.run
+      end
+    ensure
+      FileUtils.remove_entry(temp_dir) if temp_dir && File.exist?(temp_dir)
+    end
+
+    def run_init_in_tempdir(temp_directory, *args)
+      herb_lint_path = File.expand_path("../../exe/herb-lint", __dir__)
+      root_dir = File.expand_path("../..", __dir__)
+      # Run in the temp directory, not the root
+      Dir.chdir(temp_directory) do
+        stdout, stderr, status = Open3.capture3(
+          { "BUNDLE_GEMFILE" => File.join(root_dir, "Gemfile") },
+          "bundle", "exec", herb_lint_path, *args
+        )
+        { stdout:, stderr:, status: }
+      end
+    end
+
+    context "when .herb.yml does not exist" do
+      it "creates .herb.yml and exits with success code" do
+        result = run_init_in_tempdir(temp_dir, "--init")
+        expect(result[:stdout]).to include("Created .herb.yml")
+        expect(result[:status].exitstatus).to eq(Herb::Lint::CLI::EXIT_SUCCESS)
+        expect(File.exist?(File.join(temp_dir, ".herb.yml"))).to be true
+      end
+
+      it "creates valid YAML configuration" do
+        run_init_in_tempdir(temp_dir, "--init")
+        config_path = File.join(temp_dir, ".herb.yml")
+        config = YAML.safe_load_file(config_path, permitted_classes: [Symbol])
+        expect(config).to have_key("linter")
+        expect(config).to have_key("formatter")
+      end
+    end
+
+    context "when .herb.yml already exists" do
+      before do
+        File.write(File.join(temp_dir, ".herb.yml"), "existing: config")
+      end
+
+      it "reports error and exits with runtime error code" do
+        result = run_init_in_tempdir(temp_dir, "--init")
+        expect(result[:stderr]).to include("Error: .herb.yml already exists")
+        expect(result[:status].exitstatus).to eq(Herb::Lint::CLI::EXIT_RUNTIME_ERROR)
+      end
+
+      it "does not overwrite existing file" do
+        run_init_in_tempdir(temp_dir, "--init")
+        config_path = File.join(temp_dir, ".herb.yml")
+        expect(File.read(config_path)).to eq("existing: config")
+      end
     end
   end
 

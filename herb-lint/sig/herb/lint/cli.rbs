@@ -11,6 +11,9 @@ module Herb
 
       EXIT_RUNTIME_ERROR: Integer
 
+      # Default configuration template for --init
+      DEFAULT_CONFIG_TEMPLATE: ::String
+
       # @rbs argv: Array[String]
       def initialize: (Array[String] argv) -> void
 
@@ -29,6 +32,9 @@ module Herb
       # @rbs message: String
       # @rbs backtrace: Array[String]?
       def handle_error: (String message, ?Array[String]? backtrace) -> Integer
+
+      # Initializes a new .herb.yml configuration file
+      def initialize_config: () -> Integer
 
       # Calculate the exit code based on failLevel configuration.
       # Returns EXIT_LINT_ERROR if any offense meets or exceeds the failLevel threshold.
