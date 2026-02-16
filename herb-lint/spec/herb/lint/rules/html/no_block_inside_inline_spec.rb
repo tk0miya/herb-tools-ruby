@@ -28,37 +28,122 @@ RSpec.describe Herb::Lint::Rules::Html::NoBlockInsideInline do
     let(:document) { Herb.parse(source) }
     let(:context) { build(:context) }
 
-    context "when block element is inside block element" do
-      let(:source) { "<div><p>Hello</p></div>" }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "when inline element is inside block element" do
-      let(:source) { "<div><span>Hello</span></div>" }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
+    # Good examples from documentation
     context "when inline element is inside inline element" do
-      let(:source) { "<span><strong>Hello</strong></span>" }
+      let(:source) do
+        <<~HTML
+          <span>
+            Hello <strong>World</strong>
+          </span>
+        HTML
+      end
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when block element is nested inside inline element" do
-      let(:source) { "<span><div>Block in inline</div></span>" }
+    context "when block element is inside block element" do
+      let(:source) do
+        <<~HTML
+          <div>
+            <p>Paragraph inside div (valid)</p>
+          </div>
+        HTML
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when inline elements and images are inside anchor" do
+      let(:source) do
+        <<~HTML
+          <a href="#">
+            <img src="icon.png" alt="Icon">
+            <span>Link text</span>
+          </a>
+        HTML
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "when div is inside span" do
+      let(:source) do
+        <<~HTML
+          <span>
+            <div>Invalid block inside span</div>
+          </span>
+        HTML
+      end
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-no-block-inside-inline")
-        expect(subject.first.message).to eq("Block-level element `<div>` must not be nested inside an inline element")
+        expect(subject.first.message)
+          .to eq("Block-level element `<div>` cannot be placed inside inline element `<span>`.")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when paragraph is inside span" do
+      let(:source) do
+        <<~HTML
+          <span>
+            <p>Paragraph inside span (invalid)</p>
+          </span>
+        HTML
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-block-inside-inline")
+        expect(subject.first.message)
+          .to eq("Block-level element `<p>` cannot be placed inside inline element `<span>`.")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when div with multiple block elements is inside anchor" do
+      let(:source) do
+        <<~HTML
+          <a href="#">
+            <div class="card">
+              <h2>Card title</h2>
+              <p>Card content</p>
+            </div>
+          </a>
+        HTML
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-block-inside-inline")
+        expect(subject.first.message)
+          .to eq("Block-level element `<div>` cannot be placed inside inline element `<a>`.")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when section is inside strong" do
+      let(:source) do
+        <<~HTML
+          <strong>
+            <section>Section inside strong</section>
+          </strong>
+        HTML
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-block-inside-inline")
+        expect(subject.first.message)
+          .to eq("Block-level element `<section>` cannot be placed inside inline element `<strong>`.")
         expect(subject.first.severity).to eq("error")
       end
     end
@@ -77,7 +162,8 @@ RSpec.describe Herb::Lint::Rules::Html::NoBlockInsideInline do
       it "reports an offense for the block element" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-no-block-inside-inline")
-        expect(subject.first.message).to eq("Block-level element `<div>` must not be nested inside an inline element")
+        expect(subject.first.message)
+          .to eq("Block-level element `<div>` cannot be placed inside inline element `<em>`.")
       end
     end
 
@@ -102,7 +188,8 @@ RSpec.describe Herb::Lint::Rules::Html::NoBlockInsideInline do
 
       it "reports an offense for the list" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Block-level element `<ul>` must not be nested inside an inline element")
+        expect(subject.first.message)
+          .to eq("Block-level element `<ul>` cannot be placed inside inline element `<span>`.")
       end
     end
 
@@ -136,7 +223,8 @@ RSpec.describe Herb::Lint::Rules::Html::NoBlockInsideInline do
 
       it "reports an offense for the inner block element" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Block-level element `<p>` must not be nested inside an inline element")
+        expect(subject.first.message)
+          .to eq("Block-level element `<p>` cannot be placed inside inline element `<span>`.")
       end
     end
 

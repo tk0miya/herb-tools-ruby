@@ -7,34 +7,59 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows block-level elements nested inside inline elements.
-        #
-        # Block-level elements like `<div>`, `<p>`, `<blockquote>` must not be
-        # placed inside inline elements like `<span>`, `<a>`, `<em>`. This
-        # violates HTML nesting rules and causes unpredictable rendering.
+        # Description:
+        #   Prevent block-level elements from being placed inside inline elements.
         #
         # Good:
-        #   <div><span>Inline in block</span></div>
+        #   <span>
+        #     Hello <strong>World</strong>
+        #   </span>
+        #
+        #   <div>
+        #     <p>Paragraph inside div (valid)</p>
+        #   </div>
+        #
+        #   <a href="#">
+        #     <img src="icon.png" alt="Icon">
+        #     <span>Link text</span>
+        #   </a>
         #
         # Bad:
-        #   <span><div>Block in inline</div></span>
-        #   <a href="/"><p>Paragraph in anchor</p></a>
+        #   <span>
+        #     <div>Invalid block inside span</div>
+        #   </span>
+        #
+        #   <span>
+        #     <p>Paragraph inside span (invalid)</p>
+        #   </span>
+        #
+        #   <a href="#">
+        #     <div class="card">
+        #       <h2>Card title</h2>
+        #       <p>Card content</p>
+        #     </div>
+        #   </a>
+        #
+        #   <strong>
+        #     <section>Section inside strong</section>
+        #   </strong>
+        #
         class NoBlockInsideInline < VisitorRule
           # @see https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements
           INLINE_ELEMENTS = Set.new(
             %w[
-              a abbr acronym b bdi bdo big br cite code data dfn em i kbd label
-              mark output q rb rp rt rtc ruby s samp small span strong sub sup
-              time tt u var wbr
+              a abbr acronym b bdo big br button cite code dfn em i img input
+              kbd label map object output q samp script select small span strong
+              sub sup textarea time tt var
             ]
           ).freeze #: Set[String]
 
           # @see https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements
           BLOCK_ELEMENTS = Set.new(
             %w[
-              address article aside blockquote dd details dialog div dl dt
-              fieldset figcaption figure footer form h1 h2 h3 h4 h5 h6 header
-              hgroup hr li main nav ol p pre section summary table ul
+              address article aside blockquote canvas dd div dl dt fieldset
+              figcaption figure footer form h1 h2 h3 h4 h5 h6 header hr li main
+              nav noscript ol p pre section table tfoot ul video
             ]
           ).freeze #: Set[String]
 
@@ -45,33 +70,46 @@ module Herb
           def self.unsafe_autofixable? = false #: bool
           def self.enabled_by_default? = false #: bool
 
-          # @rbs @inline_depth: Integer
+          # @rbs @inline_stack: Array[String]
 
           # @rbs override
           def on_new_investigation #: void
             super
-            @inline_depth = 0
+            @inline_stack = []
           end
 
           # @rbs override
-          def visit_html_element_node(node)
+          def visit_html_element_node(node) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
             tag = tag_name(node)
+            return super unless tag
 
-            if inline_element?(tag)
-              @inline_depth += 1
-              super
-              @inline_depth -= 1
-            elsif block_element?(tag) && @inline_depth.positive?
+            is_inline = inline_element?(tag)
+            is_block = block_element?(tag)
+            is_unknown = !is_inline && !is_block
+
+            # Report if block or unknown element is inside inline element
+            if (is_block || is_unknown) && !@inline_stack.empty?
+              parent_inline = @inline_stack.last
+              element_type = is_block ? "Block-level" : "Unknown"
               add_offense(
-                message: "Block-level element `<#{raw_tag_name(node)}>` must not be nested inside an inline element",
+                message:
+                  "#{element_type} element `<#{raw_tag_name(node)}>` cannot be placed " \
+                  "inside inline element `<#{parent_inline}>`.",
                 location: node.location
               )
-              saved_depth = @inline_depth
-              @inline_depth = 0
+            end
+
+            if is_inline
+              # Visit inline element and track it on stack
+              @inline_stack.push(tag)
               super
-              @inline_depth = saved_depth
+              @inline_stack.pop
             else
+              # Visit block element: save and reset stack, then restore
+              saved_stack = @inline_stack.dup
+              @inline_stack = []
               super
+              @inline_stack = saved_stack
             end
           end
 
