@@ -4,18 +4,42 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows block-level elements nested inside inline elements.
-        #
-        # Block-level elements like `<div>`, `<p>`, `<blockquote>` must not be
-        # placed inside inline elements like `<span>`, `<a>`, `<em>`. This
-        # violates HTML nesting rules and causes unpredictable rendering.
+        # Description:
+        #   Prevent block-level elements from being placed inside inline elements.
         #
         # Good:
-        #   <div><span>Inline in block</span></div>
+        #   <span>
+        #     Hello <strong>World</strong>
+        #   </span>
+        #
+        #   <div>
+        #     <p>Paragraph inside div (valid)</p>
+        #   </div>
+        #
+        #   <a href="#">
+        #     <img src="icon.png" alt="Icon">
+        #     <span>Link text</span>
+        #   </a>
         #
         # Bad:
-        #   <span><div>Block in inline</div></span>
-        #   <a href="/"><p>Paragraph in anchor</p></a>
+        #   <span>
+        #     <div>Invalid block inside span</div>
+        #   </span>
+        #
+        #   <span>
+        #     <p>Paragraph inside span (invalid)</p>
+        #   </span>
+        #
+        #   <a href="#">
+        #     <div class="card">
+        #       <h2>Card title</h2>
+        #       <p>Card content</p>
+        #     </div>
+        #   </a>
+        #
+        #   <strong>
+        #     <section>Section inside strong</section>
+        #   </strong>
         class NoBlockInsideInline < VisitorRule
           # @see https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements
           INLINE_ELEMENTS: Set[String]
@@ -35,7 +59,7 @@ module Herb
 
           def self.enabled_by_default?: () -> bool
 
-          @inline_depth: Integer
+          @inline_stack: Array[String]
 
           # @rbs override
           def on_new_investigation: ...
