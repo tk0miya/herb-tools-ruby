@@ -1,0 +1,198 @@
+# Generated from lib/herb/lint/custom_rule_loader.rb with RBS::Inline
+
+module Herb
+  module Lint
+    # Loads custom linter rules from user's project.
+    #
+    # Auto-discovers rule files in `.herb/rules/` by default
+    # and dynamically loads them into the RuleRegistry.
+    #
+    # Based on TypeScript reference: `javascript/packages/linter/src/custom-rule-loader.ts`
+    #
+    # @rbs!
+    #   class CustomRuleLoader
+    #     attr_reader base_dir: String
+    #     attr_reader patterns: Array[String]
+    #     attr_reader registry: RuleRegistry
+    #     attr_reader silent: bool
+    #
+    #     def initialize: (
+    #       RuleRegistry registry,
+    #       ?base_dir: String,
+    #       ?patterns: Array[String],
+    #       ?silent: bool
+    #     ) -> void
+    #
+    #     def discover_rule_files: () -> Array[String]
+    #     def load_rule_file: (String file_path) -> Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+    #     def load_rules: () -> Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+    #     def load_rules_with_info: () -> LoadResult
+    #     def self.has_custom_rules?: (?base_dir: String) -> bool
+    #
+    #     private
+    #     def valid_rule_class?: (untyped value) -> bool
+    #     def scan_constants_for_rules: () -> Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+    #   end
+    #
+    #   class LoadResult < Data
+    #     attr_reader rules: Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+    #     attr_reader rule_info: Array[RuleInfo]
+    #     attr_reader duplicate_warnings: Array[String]
+    #   end
+    #
+    #   class RuleInfo < Data
+    #     attr_reader name: String
+    #     attr_reader path: String
+    #   end
+    class CustomRuleLoader
+      # rubocop:disable Metrics/ClassLength
+      DEFAULT_PATTERNS: untyped
+
+      attr_reader base_dir: untyped
+
+      attr_reader patterns: untyped
+
+      attr_reader registry: untyped
+
+      attr_reader silent: untyped
+
+      # @rbs registry: RuleRegistry
+      # @rbs base_dir: String
+      # @rbs patterns: Array[String]
+      # @rbs silent: bool
+      def initialize: (RuleRegistry registry, ?base_dir: String, ?patterns: Array[String], ?silent: bool) -> untyped
+
+      # Discover custom rule files in the project.
+      #
+      # @rbs return: Array[String]
+      def discover_rule_files: () -> Array[String]
+
+      # Load a single rule file.
+      #
+      # @rbs file_path: String
+      # @rbs return: Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+      def load_rule_file: (String file_path) -> Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+
+      # Load all custom rules from the project.
+      #
+      # @rbs return: Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+      def load_rules: () -> Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+
+      # Load all custom rules and return detailed information.
+      #
+      # @rbs return: LoadResult
+      def load_rules_with_info: () -> LoadResult
+
+      # Check if custom rules exist in a project.
+      #
+      # @rbs base_dir: String
+      # @rbs return: bool
+      def self.has_custom_rules?: (?base_dir: String) -> bool
+
+      private
+
+      # Return an empty LoadResult.
+      # @rbs return: LoadResult
+      def empty_load_result: () -> LoadResult
+
+      # Process a single rule file and update collections.
+      # @rbs file_path: String
+      # @rbs all_rules: Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+      # @rbs rule_info: Array[RuleInfo]
+      # @rbs duplicate_warnings: Array[String]
+      # @rbs seen_names: Hash[String, String]
+      # @rbs return: void
+      def process_rule_file: (String file_path, Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)] all_rules, Array[RuleInfo] rule_info, Array[String] duplicate_warnings, Hash[String, String] seen_names) -> void
+
+      # Process a single rule class and update collections.
+      # @rbs rule_class: singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)
+      # @rbs file_path: String
+      # @rbs all_rules: Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+      # @rbs rule_info: Array[RuleInfo]
+      # @rbs duplicate_warnings: Array[String]
+      # @rbs seen_names: Hash[String, String]
+      # @rbs return: void
+      # rubocop:disable Metrics/ParameterLists
+      def process_rule_class: (singleton(Rules::VisitorRule) | singleton(Rules::SourceRule) rule_class, String file_path, Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)] all_rules, Array[RuleInfo] rule_info, Array[String] duplicate_warnings, Hash[String, String] seen_names) -> void
+
+      # Add a duplicate rule warning message.
+      # @rbs rule_name: String
+      # @rbs first_path: String
+      # @rbs second_path: String
+      # @rbs warnings: Array[String]
+      # @rbs return: void
+      def add_duplicate_warning: (String rule_name, String first_path, String second_path, Array[String] warnings) -> void
+
+      # Scan all constant names in Herb::Lint::Rules module.
+      # Returns fully qualified constant names as strings.
+      #
+      # @rbs return: Array[String]
+      def scan_constant_names: () -> Array[String]
+
+      # Recursively scan a module for constant names.
+      #
+      # @rbs mod: Module
+      # @rbs prefix: String
+      # @rbs names: Array[String]
+      def scan_module_for_constant_names: (Module mod, String prefix, Array[String] names) -> untyped
+
+      # Scan all constants for valid rule classes.
+      # This method is used to detect newly loaded rules after require.
+      #
+      # @rbs return: Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+      def scan_constants_for_rules: () -> Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+
+      # Recursively scan a module for rule classes.
+      #
+      # @rbs mod: Module
+      # @rbs rules: Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+      def scan_module_for_rules: (Module mod, Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)] rules) -> untyped
+
+      # Type guard to check if a value is a valid rule class.
+      #
+      # @rbs value: untyped
+      # @rbs return: bool
+      def valid_rule_class?: (untyped value) -> bool
+
+      # Check if a class is a subclass of VisitorRule or SourceRule.
+      # @rbs value: Class
+      # @rbs return: bool
+      def subclass_of_rule?: (Class value) -> bool
+
+      # Check if a class has required rule methods.
+      # @rbs value: Class
+      # @rbs return: bool
+      def required_methods?: (Class value) -> bool
+    end
+
+    # Result of loading custom rules with detailed information
+    class LoadResult < Data
+      attr_reader rules(): untyped
+
+      attr_reader rule_info(): untyped
+
+      attr_reader duplicate_warnings(): untyped
+
+      def self.new: (untyped rules, untyped rule_info, untyped duplicate_warnings) -> instance
+                  | (rules: untyped, rule_info: untyped, duplicate_warnings: untyped) -> instance
+
+      def self.members: () -> [ :rules, :rule_info, :duplicate_warnings ]
+
+      def members: () -> [ :rules, :rule_info, :duplicate_warnings ]
+    end
+
+    # Information about a loaded custom rule
+    class RuleInfo < Data
+      attr_reader name(): untyped
+
+      attr_reader path(): untyped
+
+      def self.new: (untyped name, untyped path) -> instance
+                  | (name: untyped, path: untyped) -> instance
+
+      def self.members: () -> [ :name, :path ]
+
+      def members: () -> [ :name, :path ]
+    end
+  end
+end
