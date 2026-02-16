@@ -1,0 +1,36 @@
+# Generated from lib/herb/format/format_helpers.rb with RBS::Inline
+
+module Herb
+  module Format
+    # FormatHelpers module provides constants and helper functions for formatting.
+    #
+    # This module contains all the constants and helper functions used by the
+    # FormatPrinter to make formatting decisions, analyze nodes, and determine
+    # layout strategies.
+    module FormatHelpers
+      # HTML inline elements that should be kept on the same line when possible.
+      # These elements typically don't start on a new line and flow with text.
+      INLINE_ELEMENTS: Set[String]
+
+      # Elements whose content should be preserved as-is without formatting.
+      # These elements contain content where whitespace is significant.
+      CONTENT_PRESERVING_ELEMENTS: Set[String]
+
+      # Container elements that can have blank lines between children.
+      # These are typically structural/semantic containers.
+      SPACEABLE_CONTAINERS: Set[String]
+
+      # Attributes whose values are space-separated token lists.
+      # These require special handling to ensure spaces around dynamic content.
+      TOKEN_LIST_ATTRIBUTES: Set[String]
+
+      # Attributes that can be formatted (wrapped, normalized).
+      # Key '*' applies to all elements, specific element names for element-specific attributes.
+      FORMATTABLE_ATTRIBUTES: Hash[String, Array[String]]
+
+      # Regular expression matching ASCII whitespace characters.
+      # Used for normalizing whitespace in text content.
+      ASCII_WHITESPACE: Regexp
+    end
+  end
+end

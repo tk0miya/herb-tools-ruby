@@ -50,7 +50,7 @@ Part G: Integration & Testing                         ← Integration
 **Location:** `herb-format/lib/herb/format/format_helpers.rb`
 
 **Implementation Items:**
-- [ ] `INLINE_ELEMENTS` (Set[String]) - 26 elements
+- [x] `INLINE_ELEMENTS` (Set[String]) - 26 elements
   ```ruby
   Set.new(%w[
     a abbr acronym b bdo big br cite code dfn em hr i img kbd label
@@ -58,12 +58,12 @@ Part G: Integration & Testing                         ← Integration
   ]).freeze
   ```
 
-- [ ] `CONTENT_PRESERVING_ELEMENTS` (Set[String]) - 4 elements
+- [x] `CONTENT_PRESERVING_ELEMENTS` (Set[String]) - 4 elements
   ```ruby
   Set.new(%w[script style pre textarea]).freeze
   ```
 
-- [ ] `SPACEABLE_CONTAINERS` (Set[String]) - 12 elements
+- [x] `SPACEABLE_CONTAINERS` (Set[String]) - 12 elements
   ```ruby
   Set.new(%w[
     div section article main header footer aside figure
@@ -71,12 +71,12 @@ Part G: Integration & Testing                         ← Integration
   ]).freeze
   ```
 
-- [ ] `TOKEN_LIST_ATTRIBUTES` (Set[String]) - 3 elements
+- [x] `TOKEN_LIST_ATTRIBUTES` (Set[String]) - 3 elements
   ```ruby
   Set.new(%w[class data-controller data-action]).freeze
   ```
 
-- [ ] `FORMATTABLE_ATTRIBUTES` (Hash[String, Array[String]])
+- [x] `FORMATTABLE_ATTRIBUTES` (Hash[String, Array[String]])
   ```ruby
   {
     '*' => ['class'],
@@ -84,7 +84,7 @@ Part G: Integration & Testing                         ← Integration
   }.freeze
   ```
 
-- [ ] `ASCII_WHITESPACE` (Regexp)
+- [x] `ASCII_WHITESPACE` (Regexp)
   ```ruby
   /[ \t\n\r]+/
   ```
