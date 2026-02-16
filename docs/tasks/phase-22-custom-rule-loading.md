@@ -479,14 +479,14 @@ herb-lint --no-custom-rules
 
 ## Summary
 
-| Task | Description | Files |
-|------|-------------|-------|
-| 22.1 | CustomRuleLoader class | `custom_rule_loader.rb` |
-| 22.2 | Integration with Runner | `runner.rb` |
-| 22.3 | CLI option | `cli.rb` |
-| 22.4 | Documentation | `README.md` |
+| Task | Description | Files | Status |
+|------|-------------|-------|--------|
+| 22.1 | CustomRuleLoader class | `custom_rule_loader.rb` | ✅ |
+| 22.2 | Integration with Runner | `runner.rb` | 📋 |
+| 22.3 | CLI option | `cli.rb` | 📋 |
+| 22.4 | Documentation | `README.md` | 📋 |
 
-**Total: 4 tasks**
+**Total: 4 tasks (1 completed, 3 remaining)**
 
 ## Reference
 
