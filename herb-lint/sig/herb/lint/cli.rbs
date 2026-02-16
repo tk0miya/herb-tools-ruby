@@ -11,9 +11,6 @@ module Herb
 
       EXIT_RUNTIME_ERROR: Integer
 
-      # Default configuration template for --init
-      DEFAULT_CONFIG_TEMPLATE: ::String
-
       # @rbs argv: Array[String]
       def initialize: (Array[String] argv) -> void
 

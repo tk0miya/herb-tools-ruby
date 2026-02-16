@@ -11,43 +11,6 @@ module Herb
       EXIT_LINT_ERROR = 1    #: Integer
       EXIT_RUNTIME_ERROR = 2 #: Integer
 
-      # Default configuration template for --init
-      DEFAULT_CONFIG_TEMPLATE = <<~YAML
-        # Herb Tools Configuration
-        # https://github.com/marcoroth/herb
-
-        linter:
-          enabled: true
-          include:
-            - "**/*.html.erb"
-            - "**/*.turbo_stream.erb"
-          exclude:
-            - "vendor/**"
-            - "node_modules/**"
-          rules:
-            # Uncomment to customize rules
-            # html-attribute-quotes:
-            #   severity: error
-            # html-img-require-alt:
-            #   severity: warning
-            # html-no-positive-tabindex:
-            #   enabled: false
-
-        formatter:
-          enabled: true
-          indentWidth: 2
-          maxLineLength: 80
-          include:
-            - "**/*.html.erb"
-            - "**/*.turbo_stream.erb"
-          exclude:
-            - "vendor/**"
-            - "node_modules/**"
-          rewriter:
-            pre: []
-            post: []
-      YAML
-
       # @rbs argv: Array[String]
       def initialize(argv) #: void
         @argv = argv
@@ -88,16 +51,12 @@ module Herb
 
       # Initializes a new .herb.yml configuration file
       def initialize_config #: Integer
-        config_path = File.join(Dir.pwd, ".herb.yml")
-
-        if File.exist?(config_path)
-          stderr.puts "Error: .herb.yml already exists"
-          return EXIT_RUNTIME_ERROR
-        end
-
-        File.write(config_path, DEFAULT_CONFIG_TEMPLATE)
+        Herb::Config::Template.generate
         stdout.puts "Created .herb.yml"
         EXIT_SUCCESS
+      rescue Herb::Config::Error => e
+        stderr.puts "Error: #{e.message}"
+        EXIT_RUNTIME_ERROR
       end
 
       # Calculate the exit code based on failLevel configuration.

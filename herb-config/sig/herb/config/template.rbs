@@ -1,0 +1,19 @@
+# Generated from lib/herb/config/template.rb with RBS::Inline
+
+module Herb
+  module Config
+    # Provides default configuration template for --init command
+    module Template
+      # Default .herb.yml configuration template
+      DEFAULT_TEMPLATE: ::String
+
+      # @rbs return: String
+      def self.default_config: () -> String
+
+      # Generates a .herb.yml file in the specified directory
+      # @rbs path: String
+      # @rbs return: void
+      def self.generate: (?path: String) -> void
+    end
+  end
+end
