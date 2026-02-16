@@ -109,7 +109,7 @@ Part G: Integration & Testing                         ← Integration
 
 **Implementation Items:**
 
-1. **pure_whitespace_node?(node)**
+- [x] 1. **pure_whitespace_node?(node)**
    ```ruby
    # @rbs node: Herb::AST::Node
    # @rbs return: bool
@@ -118,7 +118,7 @@ Part G: Integration & Testing                         ← Integration
    end
    ```
 
-2. **non_whitespace_node?(node)**
+- [x] 2. **non_whitespace_node?(node)**
    ```ruby
    def self.non_whitespace_node?(node)
      return false if node.is_a?(Herb::AST::WhitespaceNode)
@@ -127,21 +127,21 @@ Part G: Integration & Testing                         ← Integration
    end
    ```
 
-3. **inline_element?(tag_name)**
+- [x] 3. **inline_element?(tag_name)**
    ```ruby
    def self.inline_element?(tag_name)
      INLINE_ELEMENTS.include?(tag_name.downcase)
    end
    ```
 
-4. **content_preserving?(tag_name)**
+- [x] 4. **content_preserving?(tag_name)**
    ```ruby
    def self.content_preserving?(tag_name)
      CONTENT_PRESERVING_ELEMENTS.include?(tag_name.downcase)
    end
    ```
 
-5. **block_level_node?(node)**
+- [x] 5. **block_level_node?(node)**
    ```ruby
    def self.block_level_node?(node)
      return false unless node.is_a?(Herb::AST::HTMLElementNode)
@@ -150,12 +150,12 @@ Part G: Integration & Testing                         ← Integration
    end
    ```
 
-6. **line_breaking_element?(node)**
+- [x] 6. **line_breaking_element?(node)**
    ```ruby
    def self.line_breaking_element?(node)
      return false unless node.is_a?(Herb::AST::HTMLElementNode)
      tag_name = node.tag_name&.value || ""
-     tag_name.downcase == "br" || tag_name.downcase == "hr"
+     %w[br hr].include?(tag_name.downcase)
    end
    ```
 
