@@ -6,6 +6,36 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 
 ---
 
+## 📋 Task Checklist (Part 2)
+
+### Part E: ERB Formatting (7 tasks)
+- [ ] Task 2.22: ERB Tag Normalization (formatERBContent, reconstructERBNode)
+- [ ] Task 2.23: ERB Content Node (visitERBContentNode)
+- [ ] Task 2.24: ERB If Node (visitERBIfNode) - Inline Mode
+- [ ] Task 2.25: ERB If Node - Block Mode
+- [ ] Task 2.26: ERB Block Node (visitERBBlockNode)
+- [ ] Task 2.27: ERB Other Control Flow (unless, case, for, while)
+- [ ] Task 2.28: ERB Comment Node (visitERBCommentNode)
+
+### Part F: Text Flow & Spacing (6 tasks)
+- [ ] Task 2.29: ContentUnit Data Structure
+- [ ] Task 2.30: buildContentUnitsWithNodes
+- [ ] Task 2.31: buildAndWrapTextFlow
+- [ ] Task 2.32: flushWords (Word Wrapping)
+- [ ] Task 2.33: Spacing Logic ("Rule of Three")
+- [ ] Task 2.34: visitTextFlowChildren & visitElementChildren
+
+### Part G: Integration & Testing (5 tasks)
+- [ ] Task 2.35: Wire Up All Components
+- [ ] Task 2.36: Integration Tests
+- [ ] Task 2.37: TypeScript Output Comparison
+- [ ] Task 2.38: Performance & Edge Cases
+- [ ] Task 2.39: Full Verification
+
+**Progress: 0/18 tasks completed**
+
+---
+
 ## Part E: ERB Formatting
 
 ### Task 2.22: ERB Tag Normalization (formatERBContent, reconstructERBNode)
