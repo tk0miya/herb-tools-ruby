@@ -7,50 +7,264 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows duplicate attributes on the same element.
-        #
-        # HTML elements should not have multiple attributes with the same name.
-        # Duplicate attributes can cause unexpected behavior as browsers only
-        # use the first occurrence.
+        # Description:
+        #   Disallow having multiple attributes with the same name on a single HTML tag.
         #
         # Good:
-        #   <div class="foo bar">content</div>
+        #   <input type="text" name="username" id="user-id" autocomplete="off">
+        #
+        #   <button type="submit" disabled>Submit</button>
         #
         # Bad:
-        #   <div class="foo" class="bar">content</div>
-        class NoDuplicateAttributes < VisitorRule
+        #   <input type="text" type="password" name="username" autocomplete="off">
+        #
+        #   <button type="submit" type="button" disabled>Submit</button>
+        #
+        class NoDuplicateAttributes < VisitorRule # rubocop:disable Metrics/ClassLength
           def self.rule_name = "html-no-duplicate-attributes" #: String
           def self.description = "Disallow duplicate attributes on the same element" #: String
           def self.default_severity = "error" #: String
           def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
 
+          # Control flow types
+          LOOP = :loop #: Symbol
+          CONDITIONAL = :conditional #: Symbol
+
           # @rbs override
-          def visit_html_element_node(node)
-            check_duplicate_attributes(node)
+          def on_new_investigation #: void
+            @control_flow_stack = [] #: Array[[Symbol, bool]]
+            @tag_attributes = Set.new #: Set[String]
+            @current_branch_attributes = Set.new #: Set[String]
+            @control_flow_attributes = Set.new #: Set[String]
+          end
+
+          # @rbs override
+          def visit_html_open_tag_node(node)
+            @tag_attributes.clear
+            @current_branch_attributes.clear
+            @control_flow_attributes.clear
             super
+          end
+
+          # @rbs override
+          def visit_html_attribute_node(node)
+            check_attribute(node)
+            super
+          end
+
+          # Control flow: loops
+          # @rbs override
+          def visit_erb_block_node(node)
+            with_control_flow(LOOP) { super }
+          end
+
+          # @rbs override
+          def visit_erb_for_node(node)
+            with_control_flow(LOOP) { super }
+          end
+
+          # @rbs override
+          def visit_erb_while_node(node)
+            with_control_flow(LOOP) { super }
+          end
+
+          # @rbs override
+          def visit_erb_until_node(node)
+            with_control_flow(LOOP) { super }
+          end
+
+          # Control flow: conditionals
+          # @rbs override
+          def visit_erb_if_node(node)
+            with_control_flow(CONDITIONAL) { super }
+          end
+
+          # @rbs override
+          def visit_erb_unless_node(node)
+            with_control_flow(CONDITIONAL) { super }
+          end
+
+          # @rbs override
+          def visit_erb_case_node(node)
+            with_control_flow(CONDITIONAL) { super }
+          end
+
+          # @rbs override
+          def visit_erb_case_match_node(node)
+            with_control_flow(CONDITIONAL) { super }
+          end
+
+          # Branches within control flow
+          # @rbs override
+          def visit_erb_else_node(node)
+            with_branch { super }
+          end
+
+          # @rbs override
+          def visit_erb_elsif_node(node)
+            with_branch { super }
+          end
+
+          # @rbs override
+          def visit_erb_when_node(node)
+            with_branch { super }
           end
 
           private
 
-          # @rbs node: Herb::AST::HTMLElementNode
-          def check_duplicate_attributes(node) #: void
-            seen_attributes = {} #: Hash[String, Herb::Location]
+          attr_reader :control_flow_stack #: Array[[Symbol, bool]]
 
-            attributes(node).each do |attr|
-              name = attribute_name(attr)
-              next if name.nil?
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          def check_attribute(node) #: void
+            name = attribute_name(node)
+            return if name.nil?
 
-              normalized_name = name.downcase
-              if seen_attributes.key?(normalized_name)
-                add_offense(
-                  message: "Duplicate attribute '#{name}'",
-                  location: attr.location
-                )
-              else
-                seen_attributes[normalized_name] = attr.location
-              end
+            identifier = name.downcase
+
+            effective_type = in_loop? ? LOOP : current_control_flow_type
+
+            case effective_type
+            when nil
+              handle_html_attribute(identifier, name, node)
+            when LOOP
+              handle_loop_attribute(identifier, name, node)
+            when CONDITIONAL
+              handle_conditional_attribute(identifier, name, node)
             end
+
+            @current_branch_attributes.add(identifier)
+          end
+
+          # @rbs identifier: String
+          # @rbs name: String
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          def handle_html_attribute(identifier, name, node) #: void
+            add_duplicate_attribute_offense(name, node.location) if @tag_attributes.include?(identifier)
+
+            @tag_attributes.add(identifier)
+          end
+
+          # @rbs identifier: String
+          # @rbs name: String
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          def handle_loop_attribute(identifier, name, node) #: void
+            if @current_branch_attributes.include?(identifier)
+              add_same_loop_iteration_offense(name, node.location)
+            elsif @tag_attributes.include?(identifier)
+              add_duplicate_attribute_offense(name, node.location)
+            else
+              add_loop_will_duplicate_offense(name, node.location)
+            end
+          end
+
+          # @rbs identifier: String
+          # @rbs name: String
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          def handle_conditional_attribute(identifier, name, node) #: void
+            if @current_branch_attributes.include?(identifier)
+              add_same_branch_offense(name, node.location)
+            elsif @tag_attributes.include?(identifier)
+              add_duplicate_attribute_offense(name, node.location)
+              @control_flow_attributes.add(identifier)
+            else
+              @control_flow_attributes.add(identifier)
+            end
+          end
+
+          # @rbs name: String
+          # @rbs location: Herb::Location
+          def add_duplicate_attribute_offense(name, location) #: void
+            add_offense(
+              message: "Duplicate attribute `#{name}`. " \
+                       "Browsers only use the first occurrence and ignore duplicate attributes",
+              location:
+            )
+          end
+
+          # @rbs name: String
+          # @rbs location: Herb::Location
+          def add_same_loop_iteration_offense(name, location) #: void
+            add_offense(
+              message: "Duplicate attribute `#{name}` in same loop iteration. " \
+                       "Each iteration will produce an element with duplicate attributes",
+              location:
+            )
+          end
+
+          # @rbs name: String
+          # @rbs location: Herb::Location
+          def add_loop_will_duplicate_offense(name, location) #: void
+            add_offense(
+              message: "Attribute `#{name}` inside loop will appear multiple times on this element. " \
+                       "Use a dynamic attribute name or move the attribute outside the loop",
+              location:
+            )
+          end
+
+          # @rbs name: String
+          # @rbs location: Herb::Location
+          def add_same_branch_offense(name, location) #: void
+            add_offense(
+              message: "Duplicate attribute `#{name}` in same branch. " \
+                       "This branch will produce an element with duplicate attributes",
+              location:
+            )
+          end
+
+          # Control flow tracking
+
+          # @rbs control_flow_type: Symbol
+          def with_control_flow(control_flow_type) #: void
+            was_already_in_control_flow = in_control_flow?
+
+            control_flow_stack.push([control_flow_type, was_already_in_control_flow])
+
+            saved_branch_attributes = @current_branch_attributes
+            @current_branch_attributes = Set.new
+
+            saved_control_flow_attributes = nil
+            unless was_already_in_control_flow
+              saved_control_flow_attributes = @control_flow_attributes
+              @control_flow_attributes = Set.new
+            end
+
+            yield
+          ensure
+            control_flow_stack.pop
+
+            if control_flow_type == CONDITIONAL && !was_already_in_control_flow
+              @control_flow_attributes.each { |attr| @tag_attributes.add(attr) }
+            end
+
+            @current_branch_attributes = saved_branch_attributes
+            @control_flow_attributes = saved_control_flow_attributes if saved_control_flow_attributes
+          end
+
+          def with_branch #: void
+            return yield unless in_control_flow?
+
+            saved_branch_attributes = @current_branch_attributes
+            @current_branch_attributes = Set.new
+
+            yield
+          ensure
+            @current_branch_attributes = saved_branch_attributes if saved_branch_attributes
+          end
+
+          def in_control_flow? #: bool
+            !control_flow_stack.empty?
+          end
+
+          def in_loop? #: bool
+            control_flow_stack.any? { |type, _| type == LOOP }
+          end
+
+          # @rbs return: Symbol?
+          def current_control_flow_type
+            return nil if control_flow_stack.empty?
+
+            control_flow_stack.last[0]
           end
         end
       end

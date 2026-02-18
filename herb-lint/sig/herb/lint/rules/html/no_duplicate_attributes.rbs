@@ -4,17 +4,18 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows duplicate attributes on the same element.
-        #
-        # HTML elements should not have multiple attributes with the same name.
-        # Duplicate attributes can cause unexpected behavior as browsers only
-        # use the first occurrence.
+        # Description:
+        #   Disallow having multiple attributes with the same name on a single HTML tag.
         #
         # Good:
-        #   <div class="foo bar">content</div>
+        #   <input type="text" name="username" id="user-id" autocomplete="off">
+        #
+        #   <button type="submit" disabled>Submit</button>
         #
         # Bad:
-        #   <div class="foo" class="bar">content</div>
+        #   <input type="text" type="password" name="username" autocomplete="off">
+        #
+        #   <button type="submit" type="button" disabled>Submit</button>
         class NoDuplicateAttributes < VisitorRule
           def self.rule_name: () -> String
 
@@ -22,13 +23,109 @@ module Herb
 
           def self.default_severity: () -> String
 
+          def self.safe_autofixable?: () -> bool
+
+          def self.unsafe_autofixable?: () -> bool
+
+          # Control flow types
+          LOOP: Symbol
+
+          CONDITIONAL: Symbol
+
           # @rbs override
-          def visit_html_element_node: ...
+          def on_new_investigation: ...
+
+          # @rbs override
+          def visit_html_open_tag_node: ...
+
+          # @rbs override
+          def visit_html_attribute_node: ...
+
+          # Control flow: loops
+          # @rbs override
+          def visit_erb_block_node: ...
+
+          # @rbs override
+          def visit_erb_for_node: ...
+
+          # @rbs override
+          def visit_erb_while_node: ...
+
+          # @rbs override
+          def visit_erb_until_node: ...
+
+          # Control flow: conditionals
+          # @rbs override
+          def visit_erb_if_node: ...
+
+          # @rbs override
+          def visit_erb_unless_node: ...
+
+          # @rbs override
+          def visit_erb_case_node: ...
+
+          # @rbs override
+          def visit_erb_case_match_node: ...
+
+          # Branches within control flow
+          # @rbs override
+          def visit_erb_else_node: ...
+
+          # @rbs override
+          def visit_erb_elsif_node: ...
+
+          # @rbs override
+          def visit_erb_when_node: ...
 
           private
 
-          # @rbs node: Herb::AST::HTMLElementNode
-          def check_duplicate_attributes: (Herb::AST::HTMLElementNode node) -> void
+          attr_reader control_flow_stack: Array[[ Symbol, bool ]]
+
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          def check_attribute: (Herb::AST::HTMLAttributeNode node) -> void
+
+          # @rbs identifier: String
+          # @rbs name: String
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          def handle_html_attribute: (String identifier, String name, Herb::AST::HTMLAttributeNode node) -> void
+
+          # @rbs identifier: String
+          # @rbs name: String
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          def handle_loop_attribute: (String identifier, String name, Herb::AST::HTMLAttributeNode node) -> void
+
+          # @rbs identifier: String
+          # @rbs name: String
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          def handle_conditional_attribute: (String identifier, String name, Herb::AST::HTMLAttributeNode node) -> void
+
+          # @rbs name: String
+          # @rbs location: Herb::Location
+          def add_duplicate_attribute_offense: (String name, Herb::Location location) -> void
+
+          # @rbs name: String
+          # @rbs location: Herb::Location
+          def add_same_loop_iteration_offense: (String name, Herb::Location location) -> void
+
+          # @rbs name: String
+          # @rbs location: Herb::Location
+          def add_loop_will_duplicate_offense: (String name, Herb::Location location) -> void
+
+          # @rbs name: String
+          # @rbs location: Herb::Location
+          def add_same_branch_offense: (String name, Herb::Location location) -> void
+
+          # @rbs control_flow_type: Symbol
+          def with_control_flow: (Symbol control_flow_type) -> void
+
+          def with_branch: () -> void
+
+          def in_control_flow?: () -> bool
+
+          def in_loop?: () -> bool
+
+          # @rbs return: Symbol?
+          def current_control_flow_type: () -> Symbol?
         end
       end
     end
