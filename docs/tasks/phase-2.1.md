@@ -179,19 +179,19 @@ Part G: Integration & Testing                         ← Integration
 
 **Implementation Items:**
 
-1. **find_previous_meaningful_sibling(siblings, current_index)**
+- [x] 1. **find_previous_meaningful_sibling(siblings, current_index)**
    - Returns index of previous meaningful sibling node
    - Skips whitespace
 
-2. **whitespace_between?(children, start_index, end_index)**
+- [x] 2. **whitespace_between?(children, start_index, end_index)**
    - Check if whitespace exists between two indices
 
-3. **filter_significant_children(body)**
+- [x] 3. **filter_significant_children(body)**
    - **Important:** Preserve single space ` `
    - Exclude empty text nodes
    - Exclude WhitespaceNode
 
-4. **count_adjacent_inline_elements(children)**
+- [x] 4. **count_adjacent_inline_elements(children)**
    - Count consecutive inline elements/ERB from start
    - Stop when interrupted by whitespace
 

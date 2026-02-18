@@ -32,7 +32,8 @@ module Herb
       # Used for normalizing whitespace in text content.
       ASCII_WHITESPACE: Regexp
 
-      # Check if a node is pure whitespace (HTMLTextNode or LiteralNode with only whitespace).
+      # Check if a node is pure whitespace (HTMLTextNode with only whitespace).
+      # Note: WhitespaceNode is NOT considered "pure whitespace".
       #
       # @rbs node: Herb::AST::Node
       def pure_whitespace_node?: (Herb::AST::Node node) -> bool
@@ -61,6 +62,63 @@ module Herb
       #
       # @rbs node: Herb::AST::Node
       def line_breaking_element?: (Herb::AST::Node node) -> bool
+
+      # Check if a child is insignificant (should be filtered out).
+      #
+      # @rbs child: Herb::AST::Node
+      def insignificant_child?: (Herb::AST::Node child) -> bool
+
+      # Check if an HTML element is inline.
+      #
+      # @rbs child: Herb::AST::HTMLElementNode
+      def inline_html_element?: (Herb::AST::HTMLElementNode child) -> bool
+
+      # Check if a text node is non-empty.
+      #
+      # @rbs child: Herb::AST::HTMLTextNode
+      def non_empty_text_node?: (Herb::AST::HTMLTextNode child) -> bool
+
+      # Check if a node is an ERB node.
+      #
+      # @rbs node: Herb::AST::Node
+      def erb_node?: (Herb::AST::Node node) -> bool
+
+      # Check if a node is an ERB control flow node.
+      #
+      # @rbs node: Herb::AST::Node
+      def erb_control_flow_node?: (Herb::AST::Node node) -> bool
+
+      # Find the index of the previous meaningful (non-whitespace) sibling.
+      # Returns nil if no meaningful sibling exists before current_index.
+      #
+      # @rbs siblings: Array[Herb::AST::Node]
+      # @rbs current_index: Integer
+      # @rbs return: Integer?
+      def find_previous_meaningful_sibling: (Array[Herb::AST::Node] siblings, Integer current_index) -> Integer?
+
+      # Check if there is whitespace between two indices in children array.
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      # @rbs start_index: Integer
+      # @rbs end_index: Integer
+      def whitespace_between?: (Array[Herb::AST::Node] children, Integer start_index, Integer end_index) -> bool
+
+      # Filter significant children from body, preserving single spaces.
+      # Excludes empty text nodes and WhitespaceNode, but preserves single space " ".
+      #
+      # @rbs body: Array[Herb::AST::Node]
+      def filter_significant_children: (Array[Herb::AST::Node] body) -> Array[Herb::AST::Node]
+
+      # Count consecutive inline elements/ERB from start of children.
+      # Stops when interrupted by whitespace, block element, or non-inline content.
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      def count_adjacent_inline_elements: (Array[Herb::AST::Node] children) -> Integer
+
+      # Check if a node should be counted as an inline node.
+      #
+      # @rbs child: Herb::AST::Node
+      def countable_inline_node?: (Herb::AST::Node child) -> bool
     end
   end
 end
