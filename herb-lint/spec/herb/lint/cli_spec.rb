@@ -424,6 +424,71 @@ RSpec.describe Herb::Lint::CLI do
       end
     end
 
+    describe "--config-file / -c option" do
+      around do |example|
+        Dir.mktmpdir do |temp_dir|
+          Dir.chdir(temp_dir) do
+            example.run
+          end
+        end
+      end
+
+      def create_file(relative_path, content = "")
+        full_path = File.join(Dir.pwd, relative_path)
+        FileUtils.mkdir_p(File.dirname(full_path))
+        File.write(full_path, content)
+      end
+
+      context "with --config-file pointing to existing file" do
+        let(:config_path) { File.join(Dir.pwd, "custom.herb.yml") }
+        let(:argv) { ["--config-file", config_path] }
+
+        before do
+          File.write(config_path, <<~YAML)
+            linter:
+              failLevel: warning
+          YAML
+          create_file("app/views/test.html.erb", '<div class=""></div>')
+        end
+
+        it "loads configuration from the specified file" do
+          expect(subject).to eq(described_class::EXIT_LINT_ERROR)
+        end
+      end
+
+      context "with --config-file pointing to non-existent file" do
+        let(:argv) { ["--config-file", "/nonexistent/path/.herb.yml"] }
+
+        before do
+          create_file("app/views/test.html.erb", '<img src="test.png">')
+        end
+
+        it "returns EXIT_RUNTIME_ERROR with configuration error message" do
+          output = capture_stderr { subject }
+          expect(subject).to eq(described_class::EXIT_RUNTIME_ERROR)
+          expect(output).to include("Configuration error")
+          expect(output).to include("/nonexistent/path/.herb.yml")
+        end
+      end
+
+      context "with relative --config-file path" do
+        let(:argv) { ["--config-file", "config/custom.herb.yml"] }
+
+        before do
+          FileUtils.mkdir_p("config")
+          File.write("config/custom.herb.yml", <<~YAML)
+            linter:
+              failLevel: error
+          YAML
+          create_file("app/views/test.html.erb", "<div class=\"\"></div>\n")
+        end
+
+        it "loads configuration from the relative path" do
+          expect(subject).to eq(described_class::EXIT_SUCCESS)
+        end
+      end
+    end
+
     describe "error handling" do
       context "when configuration file is invalid" do
         around do |example|

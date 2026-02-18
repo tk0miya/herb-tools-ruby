@@ -146,19 +146,19 @@ TypeScript implementation supports specifying a custom configuration file path.
 - Error if specified file does not exist
 
 **Implementation Tasks:**
-- [ ] Add `--config-file PATH` option to CLI
-- [ ] Add `-c PATH` short form
-- [ ] Modify `Herb::Config::Loader.load` to accept optional path parameter
-  - [ ] When path provided, load from that path only
-  - [ ] Disable upward directory search when path is provided
-  - [ ] Return error if specified file does not exist
-- [ ] Update CLI to pass config path to Loader
-- [ ] Update CLI help text
-- [ ] Write unit tests for Loader path resolution
-- [ ] Write integration tests via CLI
-  - [ ] Test with absolute path
-  - [ ] Test with relative path
-  - [ ] Test error when file does not exist
+- [x] Add `--config-file PATH` option to CLI
+- [x] Add `-c PATH` short form
+- [x] Modify `Herb::Config::Loader.load` to accept optional path parameter
+  - [x] When path provided, load from that path only
+  - [x] Disable upward directory search when path is provided
+  - [x] Return error if specified file does not exist
+- [x] Update CLI to pass config path to Loader
+- [x] Update CLI help text
+- [x] Write unit tests for Loader path resolution
+- [x] Write integration tests via CLI
+  - [x] Test with absolute path
+  - [x] Test with relative path
+  - [x] Test error when file does not exist
 
 ### Phase 25.2: Medium Priority
 

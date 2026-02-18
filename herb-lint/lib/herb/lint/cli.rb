@@ -71,7 +71,7 @@ module Herb
       end
 
       def execute_lint #: Integer
-        config_hash = Herb::Config::Loader.load
+        config_hash = Herb::Config::Loader.load(path: options[:config_file])
         config = Herb::Config::LinterConfig.new(config_hash)
 
         ignore_disable_comments = options[:ignore_disable_comments] || false
@@ -105,20 +105,26 @@ module Herb
             stdout.puts opts
             stdout.puts
             stdout.puts "Examples:"
-            stdout.puts "  herb-lint --init                   # Generate a default .herb.yml configuration"
-            stdout.puts "  herb-lint                          # Lint all files in current directory"
-            stdout.puts "  herb-lint app/views                # Lint files in app/views"
-            stdout.puts "  herb-lint app/views/users/*.erb    # Lint specific files"
-            stdout.puts "  herb-lint --format detailed .      # Output with source code context"
-            stdout.puts "  herb-lint --format json .          # Output as JSON"
-            stdout.puts "  herb-lint --github .               # Output GitHub Actions annotations"
-            stdout.puts "  herb-lint --fail-level warning .   # Exit with error on warnings or errors"
+            stdout.puts "  herb-lint --init                          # Generate a default .herb.yml configuration"
+            stdout.puts "  herb-lint                                 # Lint all files in current directory"
+            stdout.puts "  herb-lint app/views                       # Lint files in app/views"
+            stdout.puts "  herb-lint app/views/users/*.erb           # Lint specific files"
+            stdout.puts "  herb-lint --config-file path/to/.herb.yml # Use specified configuration file"
+            stdout.puts "  herb-lint -c path/to/.herb.yml            # Use specified configuration file (short)"
+            stdout.puts "  herb-lint --format detailed .             # Output with source code context"
+            stdout.puts "  herb-lint --format json .                 # Output as JSON"
+            stdout.puts "  herb-lint --github .                      # Output GitHub Actions annotations"
+            stdout.puts "  herb-lint --fail-level warning .          # Exit with error on warnings or errors"
             stdout.puts
             stdout.puts "Exit codes:"
             stdout.puts "  0  No offenses found (or below fail level)"
             stdout.puts "  1  Offenses found at or above fail level"
             stdout.puts "  2  Runtime error (configuration error, file I/O error, etc.)"
             exit EXIT_SUCCESS
+          end
+
+          opts.on("-c", "--config-file PATH", "Use specified configuration file (disables upward search)") do |path|
+            options[:config_file] = path
           end
 
           opts.on("--format TYPE", %w[simple detailed json], "Output format (simple, detailed, json)") do |format|
