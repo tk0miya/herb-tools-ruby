@@ -46,8 +46,8 @@ Part G: Integration & Testing                         ← Integration
 ### Part A: FormatHelpers Module (8 tasks)
 - [x] Task 2.1: Constants Definition
 - [x] Task 2.2: Basic Node Classification (6 functions)
-- [ ] Task 2.3: Sibling & Child Analysis (4 functions)
-- [ ] Task 2.4: Content Analysis (4 functions)
+- [x] Task 2.3: Sibling & Child Analysis (4 functions)
+- [x] Task 2.4: Content Analysis (4 functions)
 - [ ] Task 2.5: Positioning & Spacing (2 functions)
 - [ ] Task 2.6: Text & Punctuation Helpers (5 functions)
 - [ ] Task 2.7: ERB Helpers (3 functions)
@@ -72,7 +72,7 @@ Part G: Integration & Testing                         ← Integration
 - [ ] Task 2.20: Class Attribute Formatting
 - [ ] Task 2.21: Quote Normalization
 
-**Progress: 2/21 tasks completed**
+**Progress: 4/21 tasks completed**
 
 ---
 
