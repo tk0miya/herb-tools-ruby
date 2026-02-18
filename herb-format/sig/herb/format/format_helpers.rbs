@@ -119,6 +119,43 @@ module Herb
       #
       # @rbs child: Herb::AST::Node
       def countable_inline_node?: (Herb::AST::Node child) -> bool
+
+      # Check if any text nodes in children contain newlines.
+      # Recursively checks nested element bodies.
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      def multiline_text_content?: (Array[Herb::AST::Node] children) -> bool
+
+      # Check if all nested elements are inline.
+      # Recursively checks nested element bodies.
+      # Returns false for DOCTYPE, HTMLComment, and ERB control flow nodes.
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      def all_nested_elements_inline?: (Array[Herb::AST::Node] children) -> bool
+
+      # Check if a single node qualifies as inline for nesting purposes.
+      #
+      # @rbs child: Herb::AST::Node
+      def nested_inline_node?: (Herb::AST::Node child) -> bool
+
+      # Check if children contain a mix of text and inline elements.
+      # Returns true when both text content and inline elements (or ERB) are present.
+      # Example: "Hello <em>world</em>!" has mixed text and inline content.
+      # Returns false if any block-level element is present.
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      def mixed_text_and_inline_content?: (Array[Herb::AST::Node] children) -> bool
+
+      # Check if a node qualifies as an inline element for mixed content detection.
+      #
+      # @rbs child: Herb::AST::Node
+      def mixed_content_inline_node?: (Herb::AST::Node child) -> bool
+
+      # Check if children contain complex ERB control flow that spans multiple lines.
+      # An ERB control flow node is complex if its location spans more than one line.
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      def complex_erb_control_flow?: (Array[Herb::AST::Node] children) -> bool
     end
   end
 end

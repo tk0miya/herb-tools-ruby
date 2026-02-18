@@ -589,4 +589,287 @@ RSpec.describe Herb::Format::FormatHelpers do
       it { is_expected.to be false }
     end
   end
+
+  describe "#multiline_text_content?" do
+    subject { helper.multiline_text_content?(children) }
+
+    context "when text node contains newline" do
+      let(:children) do
+        ast = Herb.parse("<div>text\nmore</div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context "when text node has no newline" do
+      let(:children) do
+        ast = Herb.parse("<div>text</div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "when nested element text contains newline" do
+      let(:children) do
+        ast = Herb.parse("<div><span>text\nmore</span></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context "when nested element text has no newline" do
+      let(:children) do
+        ast = Herb.parse("<div><span>text</span></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "with empty children" do
+      let(:children) { [] }
+
+      it { is_expected.to be false }
+    end
+
+    context "with ERB nodes only" do
+      let(:children) do
+        ast = Herb.parse("<div><%= @user %></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be false }
+    end
+  end
+
+  describe "#all_nested_elements_inline?" do
+    subject { helper.all_nested_elements_inline?(children) }
+
+    context "with all inline elements" do
+      let(:children) do
+        ast = Herb.parse("<div><span>a</span><em>b</em></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context "with block element" do
+      let(:children) do
+        ast = Herb.parse("<div><div>a</div></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "with text nodes only" do
+      let(:children) do
+        ast = Herb.parse("<div>text</div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context "with nested inline elements" do
+      let(:children) do
+        ast = Herb.parse("<div><span><em>text</em></span></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context "with nested block element inside inline" do
+      let(:children) do
+        ast = Herb.parse("<div><span><div>text</div></span></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "with HTML comment" do
+      let(:children) do
+        ast = Herb.parse("<div><!-- comment --></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "with ERB content node" do
+      let(:children) do
+        ast = Herb.parse("<div><%= @user %></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context "with ERB control flow node" do
+      let(:children) do
+        ast = Herb.parse("<div><% if true %><% end %></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "with empty children" do
+      let(:children) { [] }
+
+      it { is_expected.to be true }
+    end
+
+    context "with whitespace nodes" do
+      let(:children) do
+        ast = Herb.parse("<div>  \n  </div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context "with HTML doctype node" do
+      let(:children) do
+        ast = Herb.parse("<div><!DOCTYPE html></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be false }
+    end
+  end
+
+  describe "#mixed_text_and_inline_content?" do
+    subject { helper.mixed_text_and_inline_content?(children) }
+
+    context "with text and inline elements" do
+      let(:children) do
+        ast = Herb.parse("<p>Hello <em>world</em>!</p>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context "with text only" do
+      let(:children) do
+        ast = Herb.parse("<div>text</div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "with inline elements only" do
+      let(:children) do
+        ast = Herb.parse("<div><span>a</span><em>b</em></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "with text and block element" do
+      let(:children) do
+        ast = Herb.parse("<div>text<div>block</div></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "with text and ERB content node" do
+      let(:children) do
+        ast = Herb.parse("<p>Hello <%= @name %>!</p>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context "with empty children" do
+      let(:children) { [] }
+
+      it { is_expected.to be false }
+    end
+
+    context "with whitespace only text and inline element" do
+      let(:children) do
+        ast = Herb.parse("<div>   <span>a</span></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "with text and ERB control flow node" do
+      let(:children) do
+        ast = Herb.parse("<p>text<% if true %><% end %></p>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be false }
+    end
+  end
+
+  describe "#complex_erb_control_flow?" do
+    subject { helper.complex_erb_control_flow?(children) }
+
+    context "with multiline ERB if" do
+      let(:children) do
+        ast = Herb.parse("<div><% if true %>\n<p>hello</p>\n<% end %></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context "with single-line ERB if" do
+      let(:children) do
+        ast = Herb.parse("<div><% if true %><% end %></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "with no ERB control flow" do
+      let(:children) do
+        ast = Herb.parse("<div><span>text</span></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "with ERB content node (not control flow)" do
+      let(:children) do
+        ast = Herb.parse("<div><%= @user %></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "with empty children" do
+      let(:children) { [] }
+
+      it { is_expected.to be false }
+    end
+
+    context "with multiline ERB block" do
+      let(:children) do
+        ast = Herb.parse("<div><% @items.each do |item| %>\n<p>item</p>\n<% end %></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+
+      it { is_expected.to be true }
+    end
+  end
 end

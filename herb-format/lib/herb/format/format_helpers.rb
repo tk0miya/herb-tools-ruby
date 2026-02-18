@@ -8,7 +8,7 @@ module Herb
     # This module contains all the constants and helper functions used by the
     # FormatPrinter to make formatting decisions, analyze nodes, and determine
     # layout strategies.
-    module FormatHelpers
+    module FormatHelpers # rubocop:disable Metrics/ModuleLength
       # ============================================================
       # Constants
       # ============================================================
@@ -215,6 +215,87 @@ module Herb
         return non_empty_text_node?(child) if child.is_a?(Herb::AST::HTMLTextNode)
 
         false
+      end
+
+      # ============================================================
+      # Content Analysis
+      # ============================================================
+
+      # Check if any text nodes in children contain newlines.
+      # Recursively checks nested element bodies.
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      def multiline_text_content?(children) #: bool
+        children.any? do |child|
+          if child.is_a?(Herb::AST::HTMLTextNode)
+            child.content.include?("\n")
+          elsif child.is_a?(Herb::AST::HTMLElementNode)
+            multiline_text_content?(child.body)
+          else
+            false
+          end
+        end
+      end
+
+      # Check if all nested elements are inline.
+      # Recursively checks nested element bodies.
+      # Returns false for DOCTYPE, HTMLComment, and ERB control flow nodes.
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      def all_nested_elements_inline?(children) #: bool
+        children.all? { nested_inline_node?(_1) }
+      end
+
+      # Check if a single node qualifies as inline for nesting purposes.
+      #
+      # @rbs child: Herb::AST::Node
+      def nested_inline_node?(child) #: bool # rubocop:disable Metrics/CyclomaticComplexity
+        case child
+        when Herb::AST::WhitespaceNode, Herb::AST::HTMLTextNode
+          true
+        when Herb::AST::HTMLCommentNode, Herb::AST::HTMLDoctypeNode
+          false
+        when Herb::AST::HTMLElementNode
+          tag_name = child.tag_name&.value || ""
+          inline_element?(tag_name) && all_nested_elements_inline?(child.body)
+        else
+          erb_node?(child) && !erb_control_flow_node?(child)
+        end
+      end
+
+      # Check if children contain a mix of text and inline elements.
+      # Returns true when both text content and inline elements (or ERB) are present.
+      # Example: "Hello <em>world</em>!" has mixed text and inline content.
+      # Returns false if any block-level element is present.
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      def mixed_text_and_inline_content?(children) #: bool
+        return false if children.any? { block_level_node?(_1) }
+
+        has_text = children.any? { _1.is_a?(Herb::AST::HTMLTextNode) && non_empty_text_node?(_1) }
+        has_inline = children.any? { mixed_content_inline_node?(_1) }
+
+        has_text && has_inline
+      end
+
+      # Check if a node qualifies as an inline element for mixed content detection.
+      #
+      # @rbs child: Herb::AST::Node
+      def mixed_content_inline_node?(child) #: bool
+        return true if child.is_a?(Herb::AST::HTMLElementNode) && inline_html_element?(child)
+
+        erb_node?(child) && !erb_control_flow_node?(child)
+      end
+
+      # Check if children contain complex ERB control flow that spans multiple lines.
+      # An ERB control flow node is complex if its location spans more than one line.
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      def complex_erb_control_flow?(children) #: bool
+        children.any? do |child|
+          erb_control_flow_node?(child) &&
+            child.location.start.line != child.location.end.line
+        end
       end
     end
   end
