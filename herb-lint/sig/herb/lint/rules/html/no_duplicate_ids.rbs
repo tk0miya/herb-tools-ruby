@@ -4,25 +4,40 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows duplicate id attribute values.
-        #
-        # The id attribute must be unique within a document. Duplicate ids
-        # cause accessibility issues and break JavaScript functionality
-        # that relies on getElementById.
+        # Description:
+        #   Ensure that `id` attribute is unique within a document.
         #
         # Good:
-        #   <div id="header">...</div>
-        #   <div id="footer">...</div>
+        #   <div id="header">Header</div>
+        #   <div id="main-content">Main Content</div>
+        #   <div id="footer">Footer</div>
+        #
+        #   <div id="<%= dom_id("header") %>">Header</div>
+        #   <div id="<%= dom_id("main_content") %>">Main Content</div>
+        #   <div id="<%= dom_id("footer") %>">Footer</div>
         #
         # Bad:
-        #   <div id="content">...</div>
-        #   <div id="content">...</div>
+        #   <div id="header">Header</div>
+        #
+        #   <div id="header">Duplicate Header</div>
+        #
+        #   <div id="footer">Footer</div>
+        #
+        #   <div id="<%= dom_id("header") %>">Header</div>
+        #
+        #   <div id="<%= dom_id("header") %>">Duplicate Header</div>
+        #
+        #   <div id="<%= dom_id("footer") %>">Footer</div>
         class NoDuplicateIds < VisitorRule
           def self.rule_name: () -> String
 
           def self.description: () -> String
 
           def self.default_severity: () -> String
+
+          def self.safe_autofixable?: () -> bool
+
+          def self.unsafe_autofixable?: () -> bool
 
           @seen_ids: Hash[String, Herb::Location]
 
@@ -36,6 +51,13 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLAttributeNode
           def id_attribute?: (Herb::AST::HTMLAttributeNode node) -> bool
+
+          # Extract the full text value of an id attribute, including ERB expressions.
+          # For static values like `id="header"`, returns "header".
+          # For ERB values like `id="<%= dom_id("header") %>"`, returns the printed source text.
+          #
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          def extract_id_value: (Herb::AST::HTMLAttributeNode node) -> String?
 
           # @rbs id_value: String
           # @rbs node: Herb::AST::HTMLAttributeNode

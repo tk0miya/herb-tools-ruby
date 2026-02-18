@@ -7,19 +7,31 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows duplicate id attribute values.
-        #
-        # The id attribute must be unique within a document. Duplicate ids
-        # cause accessibility issues and break JavaScript functionality
-        # that relies on getElementById.
+        # Description:
+        #   Ensure that `id` attribute is unique within a document.
         #
         # Good:
-        #   <div id="header">...</div>
-        #   <div id="footer">...</div>
+        #   <div id="header">Header</div>
+        #   <div id="main-content">Main Content</div>
+        #   <div id="footer">Footer</div>
+        #
+        #   <div id="<%= dom_id("header") %>">Header</div>
+        #   <div id="<%= dom_id("main_content") %>">Main Content</div>
+        #   <div id="<%= dom_id("footer") %>">Footer</div>
         #
         # Bad:
-        #   <div id="content">...</div>
-        #   <div id="content">...</div>
+        #   <div id="header">Header</div>
+        #
+        #   <div id="header">Duplicate Header</div>
+        #
+        #   <div id="footer">Footer</div>
+        #
+        #   <div id="<%= dom_id("header") %>">Header</div>
+        #
+        #   <div id="<%= dom_id("header") %>">Duplicate Header</div>
+        #
+        #   <div id="<%= dom_id("footer") %>">Footer</div>
+        #
         class NoDuplicateIds < VisitorRule
           def self.rule_name = "html-no-duplicate-ids" #: String
           def self.description = "Disallow duplicate id attribute values" #: String
@@ -38,7 +50,7 @@ module Herb
           # @rbs override
           def visit_html_attribute_node(node)
             if id_attribute?(node)
-              id_value = attribute_value(node)
+              id_value = extract_id_value(node)
               check_duplicate_id(id_value, node) if id_value && !id_value.empty?
             end
             super
@@ -49,6 +61,24 @@ module Herb
           # @rbs node: Herb::AST::HTMLAttributeNode
           def id_attribute?(node) #: bool
             attribute_name(node)&.downcase == "id"
+          end
+
+          # Extract the full text value of an id attribute, including ERB expressions.
+          # For static values like `id="header"`, returns "header".
+          # For ERB values like `id="<%= dom_id("header") %>"`, returns the printed source text.
+          #
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          def extract_id_value(node) #: String?
+            return nil if node.value.nil?
+
+            children = node.value.children
+            return nil if children.empty?
+
+            if children.all? { _1.is_a?(Herb::AST::LiteralNode) }
+              attribute_value(node)
+            else
+              children.map { Herb::Printer::IdentityPrinter.print(_1) }.join
+            end
           end
 
           # @rbs id_value: String

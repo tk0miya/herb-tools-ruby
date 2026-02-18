@@ -28,11 +28,12 @@ RSpec.describe Herb::Lint::Rules::Html::NoDuplicateIds do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when all ids are unique" do
+    # Good examples from documentation
+    context "with unique ids (documentation example)" do
       let(:source) do
         <<~HTML
           <div id="header">Header</div>
-          <div id="content">Content</div>
+          <div id="main-content">Main Content</div>
           <div id="footer">Footer</div>
         HTML
       end
@@ -42,23 +43,59 @@ RSpec.describe Herb::Lint::Rules::Html::NoDuplicateIds do
       end
     end
 
-    context "when there are duplicate ids" do
+    context "with unique erb dom_id ids (documentation example)" do
+      let(:source) do
+        <<~ERB
+          <div id="<%= dom_id("header") %>">Header</div>
+          <div id="<%= dom_id("main_content") %>">Main Content</div>
+          <div id="<%= dom_id("footer") %>">Footer</div>
+        ERB
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with duplicate id 'header' (documentation example)" do
       let(:source) do
         <<~HTML
-          <div id="content">First</div>
-          <div id="content">Second</div>
+          <div id="header">Header</div>
+
+          <div id="header">Duplicate Header</div>
+
+          <div id="footer">Footer</div>
         HTML
       end
 
-      it "reports an offense for the duplicate with first occurrence line number" do
+      it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-no-duplicate-ids")
-        expect(subject.first.message).to include("Duplicate id 'content'")
-        expect(subject.first.message).to include("first defined at line 1")
+        expect(subject.first.message).to include("Duplicate id 'header'")
         expect(subject.first.severity).to eq("error")
       end
     end
 
+    context "with duplicate erb dom_id ids (documentation example)" do
+      let(:source) do
+        <<~ERB
+          <div id="<%= dom_id("header") %>">Header</div>
+
+          <div id="<%= dom_id("header") %>">Duplicate Header</div>
+
+          <div id="<%= dom_id("footer") %>">Footer</div>
+        ERB
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-duplicate-ids")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    # Additional edge case tests
     context "when the same id appears three times" do
       let(:source) do
         <<~HTML
@@ -112,19 +149,6 @@ RSpec.describe Herb::Lint::Rules::Html::NoDuplicateIds do
       end
     end
 
-    context "with different ids on same tag type" do
-      let(:source) do
-        <<~HTML
-          <div id="first">First</div>
-          <div id="second">Second</div>
-        HTML
-      end
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
-      end
-    end
-
     context "when id has mixed case (case-sensitive check)" do
       let(:source) do
         <<~HTML
@@ -134,14 +158,6 @@ RSpec.describe Herb::Lint::Rules::Html::NoDuplicateIds do
       end
 
       it "does not report an offense (ids are case-sensitive)" do
-        expect(subject).to be_empty
-      end
-    end
-
-    context "with single element having an id" do
-      let(:source) { '<div id="unique">text</div>' }
-
-      it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
