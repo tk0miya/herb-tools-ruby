@@ -21,6 +21,8 @@ module Herb
 
       def run #: Integer
         parse_options
+        return initialize_config if options[:init]
+
         execute_lint
       rescue SystemExit => e
         e.status
@@ -44,6 +46,16 @@ module Herb
       def handle_error(message, backtrace = nil) #: Integer
         stderr.puts message
         stderr.puts backtrace if backtrace && ENV["DEBUG"]
+        EXIT_RUNTIME_ERROR
+      end
+
+      # Initializes a new .herb.yml configuration file
+      def initialize_config #: Integer
+        Herb::Config::Template.generate(base_dir: Dir.pwd)
+        stdout.puts "Created .herb.yml"
+        EXIT_SUCCESS
+      rescue Herb::Config::Error => e
+        stderr.puts "Error: #{e.message}"
         EXIT_RUNTIME_ERROR
       end
 
@@ -85,10 +97,15 @@ module Herb
             exit EXIT_SUCCESS
           end
 
+          opts.on("--init", "Generate a default .herb.yml configuration file") do
+            options[:init] = true
+          end
+
           opts.on("--help", "Show this help") do
             stdout.puts opts
             stdout.puts
             stdout.puts "Examples:"
+            stdout.puts "  herb-lint --init                   # Generate a default .herb.yml configuration"
             stdout.puts "  herb-lint                          # Lint all files in current directory"
             stdout.puts "  herb-lint app/views                # Lint files in app/views"
             stdout.puts "  herb-lint app/views/users/*.erb    # Lint specific files"
