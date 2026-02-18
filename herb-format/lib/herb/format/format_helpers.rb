@@ -297,6 +297,67 @@ module Herb
             child.location.start.line != child.location.end.line
         end
       end
+
+      # ============================================================
+      # Positioning & Spacing
+      # ============================================================
+
+      # Check if a node can be appended to a previous inline element or ERB node.
+      # Used internally by should_append_to_last_line?.
+      #
+      # @rbs child: Herb::AST::Node
+      def appendable_after_inline_or_erb?(child) #: bool
+        child.is_a?(Herb::AST::HTMLTextNode) ||
+          child.is_a?(Herb::AST::ERBContentNode) ||
+          (child.is_a?(Herb::AST::HTMLElementNode) && inline_html_element?(child))
+      end
+
+      # Should the current node be appended to the previous line (no newline)?
+      # Returns true when content should flow directly from the previous content:
+      # - Text immediately after an inline element (no whitespace between)
+      # - Adjacent inline elements (no whitespace between)
+      # - ERB content on the same line as previous inline/text content
+      #
+      # @rbs child: Herb::AST::Node
+      # @rbs siblings: Array[Herb::AST::Node]
+      # @rbs index: Integer
+      def should_append_to_last_line?(child, siblings, index) #: bool # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+        prev_index = find_previous_meaningful_sibling(siblings, index)
+        return false unless prev_index
+
+        prev_node = siblings[prev_index]
+        return false if whitespace_between?(siblings, prev_index, index)
+
+        if prev_node.is_a?(Herb::AST::HTMLElementNode) && inline_html_element?(prev_node)
+          return appendable_after_inline_or_erb?(child)
+        end
+
+        if prev_node.is_a?(Herb::AST::HTMLTextNode) && non_empty_text_node?(prev_node)
+          return child.is_a?(Herb::AST::ERBContentNode) ||
+                 (child.is_a?(Herb::AST::HTMLElementNode) && inline_html_element?(child))
+        end
+
+        return appendable_after_inline_or_erb?(child) if prev_node.is_a?(Herb::AST::ERBContentNode)
+
+        false
+      end
+
+      # Should user-intentional spacing (blank lines) be preserved?
+      # Returns true when a whitespace node contains multiple newlines (\n\n)
+      # and is surrounded by meaningful content nodes.
+      #
+      # @rbs child: Herb::AST::Node
+      # @rbs siblings: Array[Herb::AST::Node]
+      # @rbs index: Integer
+      def should_preserve_user_spacing?(child, siblings, index) #: bool
+        return false unless pure_whitespace_node?(child)
+        return false unless child.content.count("\n") >= 2
+
+        prev_index = find_previous_meaningful_sibling(siblings, index)
+        return false unless prev_index
+
+        ((index + 1)...siblings.length).any? { |i| non_whitespace_node?(siblings[i]) }
+      end
     end
   end
 end
