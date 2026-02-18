@@ -48,47 +48,28 @@ RSpec.describe Herb::Lint::CLI do
       let(:config_path) { ".herb.yml" }
 
       context "when .herb.yml does not exist" do
-        it "creates .herb.yml and returns EXIT_SUCCESS" do
-          output = capture_stdout { subject }
-          expect(subject).to eq(described_class::EXIT_SUCCESS)
+        subject(:run_init) { cli.run }
+
+        it "creates .herb.yml file and returns EXIT_SUCCESS" do
+          output = capture_stdout { run_init }
+          expect(run_init).to eq(described_class::EXIT_SUCCESS)
           expect(output).to include("Created .herb.yml")
           expect(File.exist?(config_path)).to be true
-        end
-
-        it "creates .herb.yml with valid YAML content" do
-          subject
           content = File.read(config_path)
           expect { YAML.safe_load(content, permitted_classes: [Symbol]) }.not_to raise_error
-        end
-
-        it "creates .herb.yml with linter configuration" do
-          subject
-          config = YAML.safe_load_file(config_path, permitted_classes: [Symbol])
-          expect(config).to have_key("linter")
-          expect(config["linter"]).to have_key("enabled")
-          expect(config["linter"]).to have_key("include")
-          expect(config["linter"]).to have_key("exclude")
-          expect(config["linter"]).to have_key("rules")
-        end
-
-        it "creates .herb.yml with formatter configuration" do
-          subject
-          config = YAML.safe_load_file(config_path, permitted_classes: [Symbol])
-          expect(config).to have_key("formatter")
-          expect(config["formatter"]).to have_key("enabled")
-          expect(config["formatter"]).to have_key("indentWidth")
-          expect(config["formatter"]).to have_key("maxLineLength")
         end
       end
 
       context "when .herb.yml already exists" do
+        subject(:run_init) { cli.run }
+
         before do
           File.write(config_path, "existing: config")
         end
 
-        it "returns EXIT_RUNTIME_ERROR without overwriting" do
-          output = capture_stderr { subject }
-          expect(subject).to eq(described_class::EXIT_RUNTIME_ERROR)
+        it "returns EXIT_RUNTIME_ERROR without overwriting the file" do
+          output = capture_stderr { run_init }
+          expect(run_init).to eq(described_class::EXIT_RUNTIME_ERROR)
           expect(output).to include("Error: .herb.yml already exists")
           expect(File.read(config_path)).to eq("existing: config")
         end

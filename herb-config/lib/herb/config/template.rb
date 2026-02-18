@@ -41,16 +41,10 @@ module Herb
             post: []
       YAML
 
-      # @rbs return: String
-      def self.default_config #: String
-        DEFAULT_TEMPLATE
-      end
-
       # Generates a .herb.yml file in the specified directory
-      # @rbs path: String
-      # @rbs return: void
-      def self.generate(path: Dir.pwd) #: void
-        config_path = File.join(path, ".herb.yml")
+      # @rbs base_dir: String
+      def self.generate(base_dir:) #: void
+        config_path = File.join(base_dir, ".herb.yml")
 
         raise Error, ".herb.yml already exists" if File.exist?(config_path)
 

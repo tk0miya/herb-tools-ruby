@@ -51,7 +51,7 @@ module Herb
 
       # Initializes a new .herb.yml configuration file
       def initialize_config #: Integer
-        Herb::Config::Template.generate
+        Herb::Config::Template.generate(base_dir: Dir.pwd)
         stdout.puts "Created .herb.yml"
         EXIT_SUCCESS
       rescue Herb::Config::Error => e
