@@ -46,102 +46,209 @@ module Herb
         #     <% end %>
         #   </head>
         #
-        class NoDuplicateMetaNames < VisitorRule
+        class NoDuplicateMetaNames < VisitorRule # rubocop:disable Metrics/ClassLength
+          # Internal struct representing a collected <meta> tag with extracted attributes.
+          MetaTag = Struct.new(:node, :name_value, :http_equiv_value, :media_value, keyword_init: true)
+          private_constant :MetaTag
+
           def self.rule_name = "html-no-duplicate-meta-names" #: String
           def self.description = "Disallow duplicate meta elements with the same name attribute" #: String
           def self.default_severity = "error" #: String
           def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
 
-          # @rbs @seen_meta_names: Hash[String, Herb::Location]
-          # @rbs @seen_meta_http_equivs: Hash[String, Herb::Location]
+          # @rbs @element_stack: Array[String]
+          # @rbs @document_metas: Array[untyped]
+          # @rbs @current_branch_metas: Array[untyped]
+          # @rbs @control_flow_metas: Array[untyped]
+          # @rbs @in_control_flow: bool
+          # @rbs @control_flow_type: Symbol?
 
           # @rbs override
           def on_new_investigation
             super
-            @seen_meta_names = {}
-            @seen_meta_http_equivs = {}
+            @element_stack = []
+            @document_metas = []
+            @current_branch_metas = []
+            @control_flow_metas = []
+            @in_control_flow = false
+            @control_flow_type = nil
           end
 
+          # Track element nesting to detect when we are inside <head>.
+          # Reset meta tracking on <head> entry. Only process <meta> inside <head>.
+          #
           # @rbs override
-          def visit_html_element_node(node)
-            check_duplicate_meta(node) if meta_element?(node)
+          def visit_html_element_node(node) #: void
+            tag = tag_name(node)&.downcase
+            return unless tag
+
+            if tag == "head"
+              @document_metas = []
+              @current_branch_metas = []
+              @control_flow_metas = []
+            elsif tag == "meta" && inside_head?
+              collect_and_check_meta_tag(node)
+            end
+
+            @element_stack.push(tag)
             super
+            @element_stack.pop
           end
 
-          # Process if/elsif/else branches independently so that the same meta name
-          # in different branches of a conditional is not reported as a duplicate.
+          # Process if/elsif/else as a conditional: same meta name in different
+          # branches is not a duplicate.
           #
           # @rbs override
           def visit_erb_if_node(node) #: void
-            process_conditional_branches(collect_if_branches(node))
+            process_control_flow(collect_if_branches(node), :conditional)
           end
 
-          # Process unless/else branches independently so that the same meta name
-          # in different branches of a conditional is not reported as a duplicate.
+          # Process unless/else as a conditional: same meta name in different
+          # branches is not a duplicate.
           #
           # @rbs override
           def visit_erb_unless_node(node) #: void
             branches = [node.statements]
             branches << node.else_clause.statements if node.else_clause
-            process_conditional_branches(branches)
+            process_control_flow(branches, :conditional)
+          end
+
+          # Process while loop: meta tags are only checked within the same iteration.
+          #
+          # @rbs override
+          def visit_erb_while_node(node) #: void
+            process_control_flow([node.statements], :loop)
+          end
+
+          # Process until loop: meta tags are only checked within the same iteration.
+          #
+          # @rbs override
+          def visit_erb_until_node(node) #: void
+            process_control_flow([node.statements], :loop)
+          end
+
+          # Process for loop: meta tags are only checked within the same iteration.
+          #
+          # @rbs override
+          def visit_erb_for_node(node) #: void
+            process_control_flow([node.statements], :loop)
+          end
+
+          # Process block (e.g. each do...end): meta tags are only checked within
+          # the same iteration.
+          #
+          # @rbs override
+          def visit_erb_block_node(node) #: void
+            process_control_flow([node.body || []], :loop)
           end
 
           private
 
-          # @rbs node: Herb::AST::HTMLElementNode
-          def meta_element?(node) #: bool
-            tag_name(node) == "meta"
+          def inside_head? #: bool
+            @element_stack.include?("head")
           end
 
           # @rbs node: Herb::AST::HTMLElementNode
-          def check_duplicate_meta(node) #: void
-            check_duplicate_meta_name(node)
-            check_duplicate_meta_http_equiv(node)
+          def collect_and_check_meta_tag(node) #: void
+            meta_tag = extract_meta_tag(node)
+            return unless meta_tag.name_value || meta_tag.http_equiv_value
+
+            if @in_control_flow
+              handle_control_flow_meta(meta_tag)
+            else
+              handle_global_meta(meta_tag)
+            end
+
+            @current_branch_metas.push(meta_tag)
           end
 
           # @rbs node: Herb::AST::HTMLElementNode
-          def check_duplicate_meta_name(node) #: void
+          def extract_meta_tag(node) #: untyped
+            meta_tag = MetaTag.new(node:)
+
             name_attr = find_attribute(node, "name")
-            name_value = attribute_value(name_attr)
-            return if name_value.nil? || name_value.empty?
+            name_val = attribute_value(name_attr)
+            meta_tag.name_value = name_val if name_val && !name_val.empty?
 
-            normalized_name = name_value.downcase
-
-            if @seen_meta_names.key?(normalized_name)
-              first_line = @seen_meta_names[normalized_name].start.line
-              add_offense(
-                message: "Duplicate meta name '#{name_value}' (first defined at line #{first_line})",
-                location: node.location
-              )
-            else
-              @seen_meta_names[normalized_name] = node.location
-            end
-          end
-
-          # @rbs node: Herb::AST::HTMLElementNode
-          def check_duplicate_meta_http_equiv(node) #: void
             http_equiv_attr = find_attribute(node, "http-equiv")
-            http_equiv_value = attribute_value(http_equiv_attr)
-            return if http_equiv_value.nil? || http_equiv_value.empty?
+            http_equiv_val = attribute_value(http_equiv_attr)
+            meta_tag.http_equiv_value = http_equiv_val if http_equiv_val && !http_equiv_val.empty?
 
-            normalized_value = http_equiv_value.downcase
+            media_attr = find_attribute(node, "media")
+            media_val = attribute_value(media_attr)
+            meta_tag.media_value = media_val if media_val && !media_val.empty?
 
-            if @seen_meta_http_equivs.key?(normalized_value)
-              first_line = @seen_meta_http_equivs[normalized_value].start.line
-              add_offense(
-                message: "Duplicate meta http-equiv '#{http_equiv_value}' (first defined at line #{first_line})",
-                location: node.location
-              )
+            meta_tag
+          end
+
+          # @rbs meta_tag: untyped
+          def handle_control_flow_meta(meta_tag) #: void
+            if @control_flow_type == :loop
+              check_against_meta_list(meta_tag, @current_branch_metas, "within the same loop iteration")
             else
-              @seen_meta_http_equivs[normalized_value] = node.location
+              check_against_meta_list(meta_tag, @current_branch_metas, "within the same control flow branch")
+              check_against_meta_list(meta_tag, @document_metas, "")
+              @control_flow_metas.push(meta_tag)
             end
           end
 
-          # Collect all branch statement lists from an if/elsif/else chain.
-          #
+          # @rbs meta_tag: untyped
+          def handle_global_meta(meta_tag) #: void
+            check_against_meta_list(meta_tag, @document_metas, "")
+            @document_metas.push(meta_tag)
+          end
+
+          # @rbs meta_tag: untyped
+          # @rbs existing_metas: Array[untyped]
+          # @rbs context: String
+          def check_against_meta_list(meta_tag, existing_metas, context) #: void
+            existing_metas.each do |existing|
+              next unless meta_tags_duplicate?(meta_tag, existing)
+
+              attr_desc = if meta_tag.name_value
+                            "name=\"#{meta_tag.name_value}\""
+                          else
+                            "http-equiv=\"#{meta_tag.http_equiv_value}\""
+                          end
+              attr_type = meta_tag.name_value ? "Meta names" : "`http-equiv` values"
+              context_msg = context.empty? ? "" : " #{context}"
+
+              add_offense(
+                message: "Duplicate `<meta>` tag with `#{attr_desc}`#{context_msg}. " \
+                         "#{attr_type} should be unique within the `<head>` section.",
+                location: meta_tag.node.location
+              )
+              break
+            end
+          end
+
+          # @rbs meta1: untyped
+          # @rbs meta2: untyped
+          def meta_tags_duplicate?(meta1, meta2) #: bool
+            return false unless media_values_match?(meta1, meta2)
+
+            return meta1.name_value.downcase == meta2.name_value.downcase if meta1.name_value && meta2.name_value
+
+            if meta1.http_equiv_value && meta2.http_equiv_value
+              return meta1.http_equiv_value.downcase == meta2.http_equiv_value.downcase
+            end
+
+            false
+          end
+
+          # @rbs meta1: untyped
+          # @rbs meta2: untyped
+          def media_values_match?(meta1, meta2) #: bool
+            both_present = meta1.media_value && meta2.media_value
+            one_present = meta1.media_value || meta2.media_value
+            return true unless one_present
+            return false unless both_present
+
+            meta1.media_value.downcase == meta2.media_value.downcase
+          end
+
           # @rbs node: Herb::AST::ERBIfNode
-          # @rbs return: Array[untyped]
           def collect_if_branches(node) #: Array[untyped]
             branches = []
             current = node
@@ -153,32 +260,47 @@ module Herb
             branches
           end
 
-          # Process a list of branches independently: each branch starts from the
-          # pre-conditional state so that duplicate meta tags across branches are
-          # not flagged. After all branches, the union of additions is merged back.
+          # Process control flow with branch isolation mirroring the TypeScript
+          # ControlFlowTrackingVisitor logic:
           #
-          # @rbs branches: Array[untyped]
-          def process_conditional_branches(branches) #: void
-            base_meta_names = @seen_meta_names.dup
-            base_meta_http_equivs = @seen_meta_http_equivs.dup
+          # - onEnterControlFlow: save state, reset currentBranchMetas,
+          #   reset controlFlowMetas only for outermost control flow context.
+          # - onEnterBranch: reset currentBranchMetas for each branch.
+          # - onExitBranch: no-op (controlFlowMetas accumulates across branches).
+          # - onExitControlFlow: for conditionals at the outermost level, promote
+          #   all collected controlFlowMetas to documentMetas.
+          #
+          # Nested control flow shares the same controlFlowMetas accumulator so
+          # that inner conditional metas propagate to the outer context.
+          #
+          # @rbs branch_statements_list: Array[untyped]
+          # @rbs flow_type: Symbol
+          def process_control_flow(branch_statements_list, flow_type) #: void
+            was_already_in_control_flow = @in_control_flow
 
-            all_branch_meta_names = {}
-            all_branch_meta_http_equivs = {}
+            # onEnterControlFlow
+            saved_current_branch_metas = @current_branch_metas
+            saved_control_flow_type = @control_flow_type
+            saved_control_flow_metas = @control_flow_metas unless was_already_in_control_flow
 
-            branches.each do |branch_statements|
-              @seen_meta_names = base_meta_names.dup
-              @seen_meta_http_equivs = base_meta_http_equivs.dup
+            @current_branch_metas = []
+            @in_control_flow = true
+            @control_flow_type = flow_type
+            @control_flow_metas = [] unless was_already_in_control_flow
 
+            # onEnterBranch / visit / onExitBranch (no-op) for each branch
+            branch_statements_list.each do |branch_statements|
+              @current_branch_metas = []
               visit_all(branch_statements)
-
-              all_branch_meta_names.merge!(@seen_meta_names.reject { |k, _| base_meta_names.key?(k) })
-              all_branch_meta_http_equivs.merge!(
-                @seen_meta_http_equivs.reject { |k, _| base_meta_http_equivs.key?(k) }
-              )
             end
 
-            @seen_meta_names = base_meta_names.merge(all_branch_meta_names)
-            @seen_meta_http_equivs = base_meta_http_equivs.merge(all_branch_meta_http_equivs)
+            # onExitControlFlow
+            @document_metas.concat(@control_flow_metas) if flow_type == :conditional && !was_already_in_control_flow
+
+            @current_branch_metas = saved_current_branch_metas
+            @in_control_flow = was_already_in_control_flow
+            @control_flow_type = saved_control_flow_type
+            @control_flow_metas = saved_control_flow_metas unless was_already_in_control_flow
           end
         end
       end
