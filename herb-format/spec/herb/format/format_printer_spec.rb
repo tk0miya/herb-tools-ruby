@@ -228,7 +228,6 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
   end
 
-  # Task 2.9: State Management Fields
   describe "state initialization" do
     let(:printer) { described_class.new(indent_width:, max_line_length:, format_context:) }
 
@@ -269,7 +268,6 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
   end
 
-  # Task 2.10: capture Pattern
   describe "#capture" do
     let(:printer) { described_class.new(indent_width:, max_line_length:, format_context:) }
 
@@ -307,7 +305,6 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
   end
 
-  # Task 2.11: trackBoundary Pattern
   describe "#track_boundary" do
     let(:printer) { described_class.new(indent_width:, max_line_length:, format_context:) }
     let(:node) { Herb.parse("<div>test</div>", track_whitespace: true).value }
@@ -330,7 +327,6 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
   end
 
-  # Task 2.12: withIndent Pattern
   describe "#with_indent" do
     let(:printer) { described_class.new(indent_width:, max_line_length:, format_context:) }
 
@@ -361,7 +357,6 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
   end
 
-  # Task 2.13: Output Helper Methods
   describe "#indent" do
     let(:printer) { described_class.new(indent_width:, max_line_length:, format_context:) }
 

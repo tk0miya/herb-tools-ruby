@@ -60,18 +60,13 @@ module Herb
         @max_line_length = max_line_length
         @format_context = format_context
 
-        # Output management
         @lines = []
         @indent_level = 0
         @string_line_count = 0
-
-        # Context management
         @inline_mode = false
         @in_conditional_open_tag_context = false
         @current_attribute_name = nil
         @element_stack = []
-
-        # Cache and analysis
         @element_formatting_analysis = {}
         @node_is_multiline = {}
       end
@@ -177,8 +172,6 @@ module Herb
         PRESERVED_ELEMENTS.include?(tag_name.downcase)
       end
 
-      # -- Task 2.10: capture Pattern --
-
       # Temporarily switch to a separate output buffer, returning captured lines.
       # Restores @lines and @inline_mode after block completes.
       #
@@ -199,8 +192,6 @@ module Herb
         result
       end
 
-      # -- Task 2.11: trackBoundary Pattern --
-
       # Record whether a node spans multiple lines in the output.
       # Sets @node_is_multiline[node] = true if output grew beyond one line.
       #
@@ -215,8 +206,6 @@ module Herb
         @node_is_multiline[node] = true if @string_line_count > start_line_count
       end
 
-      # -- Task 2.12: withIndent Pattern --
-
       # Temporarily increase the indent level while executing the block.
       # Restores the original indent level after the block completes.
       #
@@ -227,8 +216,6 @@ module Herb
         yield
         @indent_level -= 1
       end
-
-      # -- Task 2.13: Output Helper Methods --
 
       # Return the current indentation string based on @indent_level.
       #
