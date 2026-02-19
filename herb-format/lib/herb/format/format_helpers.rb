@@ -299,6 +299,56 @@ module Herb
       end
 
       # ============================================================
+      # Text & Punctuation Helpers
+      # ============================================================
+
+      # Check if a space is needed between the current line and the next word.
+      # Returns false when:
+      # - The word is closing punctuation (e.g., ")", ".", ",")
+      # - The current line ends with opening punctuation (e.g., "(", "[")
+      # - The word starts with an ERB tag and the current line ends with a non-word character
+      #
+      # @rbs current_line: String
+      # @rbs word: String
+      def needs_space_between?(current_line, word) #: bool
+        return false if closing_punctuation?(word)
+        return false if opening_punctuation?(current_line)
+        return false if starts_with_erb_tag?(word) && current_line.match?(/[^\w\s"')\]}-]$/)
+
+        true
+      end
+
+      # Check if a word is closing punctuation (e.g., ")", ".", ",", "!").
+      # No space should precede closing punctuation.
+      #
+      # @rbs word: String
+      def closing_punctuation?(word) #: bool
+        word.match?(/^[.,;:!?)}\]]+$/)
+      end
+
+      # Check if a string ends with opening punctuation (e.g., "(", "[", "{").
+      # No space should follow opening punctuation.
+      #
+      # @rbs word: String
+      def opening_punctuation?(word) #: bool
+        word.match?(/[(\[{]$/)
+      end
+
+      # Check if a string ends with an ERB closing tag (%>).
+      #
+      # @rbs text: String
+      def ends_with_erb_tag?(text) #: bool
+        text.match?(/%>$/)
+      end
+
+      # Check if a string starts with an ERB opening tag (<%).
+      #
+      # @rbs text: String
+      def starts_with_erb_tag?(text) #: bool
+        text.match?(/^<%/)
+      end
+
+      # ============================================================
       # Positioning & Spacing
       # ============================================================
 
