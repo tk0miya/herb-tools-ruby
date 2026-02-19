@@ -53,15 +53,27 @@ module Herb
 
           def self.unsafe_autofixable?: () -> bool
 
-          @seen_meta_names: Hash[String, Herb::Location]
-
           @seen_meta_http_equivs: Hash[String, Herb::Location]
+
+          @seen_meta_names: Hash[String, Herb::Location]
 
           # @rbs override
           def on_new_investigation: ...
 
           # @rbs override
           def visit_html_element_node: ...
+
+          # Process if/elsif/else branches independently so that the same meta name
+          # in different branches of a conditional is not reported as a duplicate.
+          #
+          # @rbs override
+          def visit_erb_if_node: ...
+
+          # Process unless/else branches independently so that the same meta name
+          # in different branches of a conditional is not reported as a duplicate.
+          #
+          # @rbs override
+          def visit_erb_unless_node: ...
 
           private
 
@@ -76,6 +88,19 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLElementNode
           def check_duplicate_meta_http_equiv: (Herb::AST::HTMLElementNode node) -> void
+
+          # Collect all branch statement lists from an if/elsif/else chain.
+          #
+          # @rbs node: Herb::AST::ERBIfNode
+          # @rbs return: Array[untyped]
+          def collect_if_branches: (Herb::AST::ERBIfNode node) -> Array[untyped]
+
+          # Process a list of branches independently: each branch starts from the
+          # pre-conditional state so that duplicate meta tags across branches are
+          # not flagged. After all branches, the union of additions is merged back.
+          #
+          # @rbs branches: Array[untyped]
+          def process_conditional_branches: (Array[untyped] branches) -> void
         end
       end
     end
