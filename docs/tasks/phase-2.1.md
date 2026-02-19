@@ -50,8 +50,8 @@ Part G: Integration & Testing                         ← Integration
 - [x] Task 2.4: Content Analysis (4 functions)
 - [x] Task 2.5: Positioning & Spacing (2 functions)
 - [x] Task 2.6: Text & Punctuation Helpers (5 functions)
-- [ ] Task 2.7: ERB Helpers (3 functions)
-- [ ] Task 2.8: Utility Functions (dedent, get_tag_name)
+- [x] Task 2.7: ERB Helpers (3 functions)
+- [x] Task 2.8: Utility Functions (dedent, get_tag_name)
 
 ### Part B: Core Patterns (5 tasks)
 - [ ] Task 2.9: State Management Fields
@@ -72,7 +72,7 @@ Part G: Integration & Testing                         ← Integration
 - [ ] Task 2.20: Class Attribute Formatting
 - [ ] Task 2.21: Quote Normalization
 
-**Progress: 6/21 tasks completed**
+**Progress: 8/21 tasks completed**
 
 ---
 

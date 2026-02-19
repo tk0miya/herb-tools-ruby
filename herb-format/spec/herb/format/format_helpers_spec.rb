@@ -1302,6 +1302,126 @@ RSpec.describe Herb::Format::FormatHelpers do
     end
   end
 
+  describe "#herb_disable_comment?" do
+    subject { helper.herb_disable_comment?(node) }
+
+    context "with herb:disable comment" do
+      let(:node) do
+        ast = Herb.parse("<%# herb:disable %>", track_whitespace: true).value
+        ast.children.first
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context "with herb:disable-next-line comment" do
+      let(:node) do
+        ast = Herb.parse("<%# herb:disable-next-line %>", track_whitespace: true).value
+        ast.children.first
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context "with regular ERB comment" do
+      let(:node) do
+        ast = Herb.parse("<%# regular comment %>", track_whitespace: true).value
+        ast.children.first
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "with ERB output node" do
+      let(:node) do
+        ast = Herb.parse("<%= @user %>", track_whitespace: true).value
+        ast.children.first
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "with HTML element node" do
+      let(:node) do
+        ast = Herb.parse("<div></div>", track_whitespace: true).value
+        ast.children.first
+      end
+
+      it { is_expected.to be false }
+    end
+  end
+
+  describe "#dedent" do
+    subject { helper.dedent(text) }
+
+    context "with uniformly indented text" do
+      let(:text) { "  hello\n  world" }
+
+      it { is_expected.to eq("hello\nworld") }
+    end
+
+    context "with mixed indentation" do
+      let(:text) { "  hello\n    world\n  end" }
+
+      it { is_expected.to eq("hello\n  world\nend") }
+    end
+
+    context "with no indentation" do
+      let(:text) { "hello\nworld" }
+
+      it { is_expected.to eq("hello\nworld") }
+    end
+
+    context "with blank lines preserved" do
+      let(:text) { "  hello\n\n  world" }
+
+      it { is_expected.to eq("hello\n\nworld") }
+    end
+
+    context "with single line" do
+      let(:text) { "  hello" }
+
+      it { is_expected.to eq("hello") }
+    end
+
+    context "with empty string" do
+      let(:text) { "" }
+
+      it { is_expected.to eq("") }
+    end
+  end
+
+  describe "#get_tag_name" do
+    subject { helper.get_tag_name(node) }
+
+    context "with a div element" do
+      let(:node) do
+        ast = Herb.parse("<div></div>", track_whitespace: true).value
+        ast.children.first
+      end
+
+      it { is_expected.to eq("div") }
+    end
+
+    context "with a span element" do
+      let(:node) do
+        ast = Herb.parse("<span></span>", track_whitespace: true).value
+        ast.children.first
+      end
+
+      it { is_expected.to eq("span") }
+    end
+
+    context "with uppercase tag name" do
+      let(:node) do
+        ast = Herb.parse("<DIV></DIV>", track_whitespace: true).value
+        ast.children.first
+      end
+
+      it { is_expected.to eq("DIV") }
+    end
+  end
+
   describe "#should_preserve_user_spacing?" do
     subject { helper.should_preserve_user_spacing?(child, siblings, index) }
 

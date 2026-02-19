@@ -88,6 +88,24 @@ module Herb
       # @rbs node: Herb::AST::Node
       def erb_control_flow_node?: (Herb::AST::Node node) -> bool
 
+      # Check if a node is a herb:disable comment (<%# herb:disable %>).
+      # These comments disable formatting for adjacent content.
+      #
+      # @rbs node: Herb::AST::Node
+      def herb_disable_comment?: (Herb::AST::Node node) -> bool
+
+      # Remove common leading whitespace from multi-line text.
+      # Blank lines are preserved as-is.
+      #
+      # @rbs text: String
+      def dedent: (String text) -> String
+
+      # Get the tag name from an HTMLElementNode.
+      # Returns an empty string if not available.
+      #
+      # @rbs element_node: Herb::AST::HTMLElementNode
+      def get_tag_name: (Herb::AST::HTMLElementNode element_node) -> String
+
       # Find the index of the previous meaningful (non-whitespace) sibling.
       # Returns nil if no meaningful sibling exists before current_index.
       #

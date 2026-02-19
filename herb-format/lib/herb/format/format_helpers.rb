@@ -144,6 +144,43 @@ module Herb
           node.is_a?(Herb::AST::ERBBlockNode)
       end
 
+      # Check if a node is a herb:disable comment (<%# herb:disable %>).
+      # These comments disable formatting for adjacent content.
+      #
+      # @rbs node: Herb::AST::Node
+      def herb_disable_comment?(node) #: bool
+        return false unless node.is_a?(Herb::AST::ERBContentNode)
+        return false unless node.tag_opening&.value == "<%#"
+
+        content = node.content&.value || ""
+        content.strip.start_with?("herb:disable")
+      end
+
+      # ============================================================
+      # Utility Functions
+      # ============================================================
+
+      # Remove common leading whitespace from multi-line text.
+      # Blank lines are preserved as-is.
+      #
+      # @rbs text: String
+      def dedent(text) #: String
+        lines = text.split("\n")
+        min_indent = lines.reject { _1.strip.empty? }
+                          .map { _1[/^\s*/].length }
+                          .min || 0
+
+        lines.map { _1.strip.empty? ? _1 : _1[min_indent..] }.join("\n")
+      end
+
+      # Get the tag name from an HTMLElementNode.
+      # Returns an empty string if not available.
+      #
+      # @rbs element_node: Herb::AST::HTMLElementNode
+      def get_tag_name(element_node) #: String
+        element_node.tag_name&.value || ""
+      end
+
       # ============================================================
       # Sibling & Child Search/Analysis
       # ============================================================
