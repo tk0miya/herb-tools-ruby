@@ -58,51 +58,7 @@ The TypeScript implementation has a `DetailedFormatter` that is the **default** 
 
 #### 2. CustomRuleLoader (.herb/rules/ Support)
 
-The TypeScript implementation automatically loads custom rules from `.herb/rules/**/*.mjs` without requiring explicit configuration.
-
-**TypeScript Features:**
-- Glob pattern-based rule discovery: `.herb/rules/**/*.mjs`
-- Automatic validation of rule structure
-- Error handling for duplicate rule names
-- Warning messages for invalid rules
-- CLI flag `--no-custom-rules` to skip loading
-
-**Current Ruby Status:**
-- ❌ CustomRuleLoader **not implemented**
-- Design document exists (`herb-lint-design.md`) but not implemented
-- `RuleRegistry` exists and can register rules, but no automatic loading
-
-**Implementation Tasks:**
-- [ ] Create `Herb::Lint::CustomRuleLoader` class
-  - [ ] Implement glob-based rule discovery (`.herb/rules/**/*.rb`)
-  - [ ] Load Ruby files using `require` or `load`
-  - [ ] Capture loaded rule classes
-- [ ] Add rule validation
-  - [ ] Validate rule classes inherit from `Herb::Lint::Rules::Base`
-  - [ ] Validate required class methods exist (`rule_name`, `description`, etc.)
-  - [ ] Handle invalid rules gracefully with warning messages
-- [ ] Add duplicate rule name detection
-  - [ ] Check against existing built-in rules
-  - [ ] Check against other custom rules
-  - [ ] Warn user about duplicates
-- [ ] Integrate with `RuleRegistry`
-  - [ ] Auto-register discovered rules
-  - [ ] Maintain separation between built-in and custom rules
-- [ ] Update `Runner` to call `CustomRuleLoader` during initialization
-  - [ ] Load custom rules before creating Linter
-  - [ ] Pass custom rules to RuleRegistry
-- [ ] Add `--no-custom-rules` CLI flag
-  - [ ] Skip CustomRuleLoader when flag is present
-  - [ ] Update CLI help text
-- [ ] Write unit tests for CustomRuleLoader
-  - [ ] Test rule discovery
-  - [ ] Test validation logic
-  - [ ] Test duplicate detection
-  - [ ] Test error handling
-- [ ] Write integration tests
-  - [ ] Create sample custom rules in test fixtures
-  - [ ] Verify custom rules are loaded and executed
-  - [ ] Verify `--no-custom-rules` flag works
+> **Note:** This feature is tracked in [Phase 22: Custom Rule Loading](phase-22-custom-rule-loading.md). Removed from Phase 25 to avoid duplication.
 
 #### 3. --init Command (Configuration File Generation)
 
