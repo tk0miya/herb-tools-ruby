@@ -16,6 +16,7 @@ module Herb
           "linter" => {
             "include" => DEFAULT_INCLUDE.dup,
             "exclude" => DEFAULT_EXCLUDE.dup,
+            "custom_rules" => [],
             "rules" => {}
           },
           "formatter" => {

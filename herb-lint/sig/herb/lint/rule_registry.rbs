@@ -34,17 +34,20 @@ module Herb
       # Creates a PatternMatcher for each rule based on its include/exclude/only configuration.
       def build_all: () -> Array[Rules::VisitorRule | Rules::SourceRule]
 
-      # Load custom rules from a directory.
-      # @rbs path: String -- path to directory containing rule files
-      def load_custom_rules: (String path) -> void
+      # Load and register custom rules from the given require names.
+      # Each name is passed to Kernel#require. Any newly defined rule classes
+      # are automatically discovered via ObjectSpace and registered.
+      # @rbs names: Array[String] -- require names (gem names or file paths)
+      def load_custom_rules: (Array[String] names) -> void
 
       private
 
+      # Returns all currently loaded rule subclasses via ObjectSpace.
+      # Used to detect newly defined rules after requiring custom rule files.
+      def all_rule_subclasses: () -> Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+
       # Load all built-in rules into the registry.
       def load_builtin_rules: () -> void
-
-      # @rbs file: String
-      def load_rule_file: (String file) -> void
     end
   end
 end

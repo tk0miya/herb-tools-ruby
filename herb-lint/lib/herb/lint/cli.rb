@@ -74,17 +74,22 @@ module Herb
         config_hash = Herb::Config::Loader.load(path: options[:config_file])
         config = Herb::Config::LinterConfig.new(config_hash)
 
-        ignore_disable_comments = options[:ignore_disable_comments] || false
-        autofix = options[:fix] || false
-        unsafe = options[:fix_unsafely] || false
-
-        runner = Runner.new(config, ignore_disable_comments:, autofix:, unsafe:)
+        runner = Runner.new(config, **runner_options)
         result = runner.run(argv)
 
         formatter = create_formatter
         formatter.report(result)
 
         exit_code_for(result, config:)
+      end
+
+      def runner_options #: Hash[Symbol, bool]
+        {
+          ignore_disable_comments: options[:ignore_disable_comments] || false,
+          autofix: options[:fix] || false,
+          unsafe: options[:fix_unsafely] || false,
+          no_custom_rules: options[:no_custom_rules] || false
+        }
       end
 
       # Parses command-line options using OptionParser.
@@ -146,6 +151,10 @@ module Herb
           opts.on("--fix-unsafely", "Apply all fixes including unsafe ones") do
             options[:fix] = true
             options[:fix_unsafely] = true
+          end
+
+          opts.on("--no-custom-rules", "Skip loading custom rules from linter.custom_rules configuration") do
+            options[:no_custom_rules] = true
           end
 
           opts.on("--fail-level LEVEL", %w[error warning info hint],

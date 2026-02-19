@@ -2,36 +2,6 @@
 
 Static analysis tool for ERB templates.
 
-## Implementation Status
-
-This specification describes the full feature set for herb-lint. The implementation is being developed incrementally:
-
-### MVP (Minimum Viable Product) - ✅ Complete
-
-The MVP provides core linting functionality:
-
-- **Configuration**: Basic `.herb.yml` loading (linter.rules section only)
-- **File Discovery**: Simple pattern matching (`**/*.html.erb` patterns)
-- **Rules**: Initial 3 rules implemented (html-img-require-alt, html-attribute-double-quotes, html-no-duplicate-ids)
-- **CLI**: Basic options (`--version`, `--help`, file/directory arguments)
-- **Output Formatters**: All formatters implemented
-  - SimpleFormatter (simple text output)
-  - DetailedFormatter (detailed output with syntax highlighting)
-  - JsonFormatter (JSON output)
-  - GitHubActionsFormatter (GitHub Actions format)
-- **Inline Directives**: Support for `herb:disable` and `herb:linter ignore` comments
-
-### Post-MVP Features
-
-Features described in this specification but not yet implemented:
-
-- **Configuration**: Full validation, schema checking
-- **CLI**: `--init`, `--config-file`, `--force`, `--theme`, `--no-wrap-lines`, `--truncate-lines`, `--no-custom-rules`, `--no-timing` options
-- **Custom Rules**: Dynamic loading from `.herb/rules/` directory
-- **Timing**: Performance metrics display in output
-
-Refer to `docs/tasks/README.md` and `docs/tasks/phase-25-linter-missing-features.md` for the detailed implementation roadmap.
-
 ## CLI Interface
 
 ### Synopsis
@@ -58,6 +28,7 @@ herb-lint [options] [files...]
 | `--fail-level <level>` | Minimum severity to cause non-zero exit: `error`, `warning`, `info`, `hint` (default: `error`) |
 | `-c, --config-file <path>` | Path to configuration file (searches upward from current directory by default) |
 | `--ignore-disable-comments` | Ignore all inline disable comments and check all violations |
+| `--no-custom-rules` | Skip loading custom rules from `linter.custom_rules` |
 | `--version` | Show version number |
 | `--help` | Show help message |
 
@@ -303,113 +274,94 @@ The Ruby implementation provides **50 built-in rules** organized into 5 categori
 
 ## Custom Rules
 
-### Directory
+> **Note:** The TypeScript reference implementation uses `.herb/rules/*.mjs`, auto-discovering rule files from a fixed directory. The Ruby implementation replaces this with an explicit require-based system: users list names in `linter.custom_rules`, and each is passed to `Kernel#require`. This removes the fixed-directory constraint, allowing rules to come from gems, local files, or any path on `$LOAD_PATH`.
 
-Custom rules are loaded from `.herb/rules/*.rb`.
+### Configuration
 
-### Base Class
+Custom rules are specified in `.herb.yml` under the `linter.custom_rules` key:
+
+```yaml
+linter:
+  custom_rules:
+    - herb-lint-rails
+    - herb-lint-i18n
+```
+
+### How It Works
+
+1. The `Runner` calls `RuleRegistry#load_custom_rules` at startup
+2. Each name is passed to `Kernel#require`
+3. Newly defined subclasses of `VisitorRule` or `SourceRule` are automatically discovered via ObjectSpace and registered in the `RuleRegistry`
+4. Custom rules participate in linting alongside built-in rules
+
+### Writing Custom Rules
+
+Any Ruby file or gem that defines subclasses of `Herb::Lint::Rules::VisitorRule` or `SourceRule` works as a custom rule provider. No explicit registration is needed—rules are auto-discovered after `require` via ObjectSpace.
+
+#### Example: gem-based custom rules
 
 ```ruby
-module Herb
-  module Lint
-    module Rules
-      class Base
-        # @return [String] Rule identifier (kebab-case)
-        def self.rule_name
-          raise NotImplementedError
-        end
+# lib/herb_lint_rails.rb
+require "herb/lint"
 
-        # @return [Symbol] Default severity (:error, :warning, :info, :hint)
-        def self.default_severity
-          :warning
-        end
+module HerbLintRails
+  class PreferTurboFrame < Herb::Lint::Rules::VisitorRule
+    def self.rule_name = "rails/prefer-turbo-frame"
+    def self.description = "Prefer <turbo-frame> over manual Turbo Frame patterns"
+    def self.safe_autofixable? = false
+    def self.unsafe_autofixable? = false
 
-        # @return [String] Rule description
-        def self.description
-          raise NotImplementedError
-        end
-
-        # @return [Boolean] Whether the rule supports auto-fix
-        def self.fixable?
-          false
-        end
-
-        # @param node [Herb::AST::Node] AST node to check
-        # @param context [Herb::Lint::Context] Linting context
-        # @return [Array<Herb::Lint::Offense>] Detected offenses
-        def check(node, context)
-          raise NotImplementedError
-        end
-
-        # @param node [Herb::AST::Node] AST node to fix
-        # @param context [Herb::Lint::Context] Linting context
-        # @return [String, nil] Fixed content or nil if not fixable
-        def fix(node, context)
-          nil
-        end
-      end
+    def visit_html_element(node)
+      # Rule implementation using visitor pattern
+      super
     end
   end
 end
 ```
 
-### Example Custom Rule
+No explicit registration is needed. The rule class is automatically discovered and registered after `require`.
+
+#### Example: local file custom rules
 
 ```ruby
-# .herb/rules/no_inline_styles.rb
-module Herb
-  module Lint
-    module Rules
-      class NoInlineStyles < Base
-        def self.rule_name
-          "no-inline-styles"
-        end
-
-        def self.description
-          "Disallow inline style attributes"
-        end
-
-        def check(node, context)
-          return [] unless node.type == :element
-
-          offenses = []
-          if node.attributes["style"]
-            offenses << Offense.new(
-              rule: self.class.rule_name,
-              message: "Avoid inline styles, use CSS classes instead",
-              node: node,
-              severity: context.severity_for(self.class.rule_name)
-            )
-          end
-          offenses
-        end
-      end
-    end
+# lib/my_rules/no_data_attributes.rb
+module MyRules
+  class NoDataAttributes < Herb::Lint::Rules::VisitorRule
+    def self.rule_name = "my/no-data-attributes"
+    def self.description = "Disallow data-* attributes"
+    def self.safe_autofixable? = false
+    def self.unsafe_autofixable? = false
   end
 end
 ```
 
-### Visitor Pattern
+```yaml
+# .herb.yml — use a local file path (relative or absolute)
+linter:
+  custom_rules:
+    - ./lib/my_rules/no_data_attributes
+```
 
-Rules can implement visitor methods for specific node types:
+### Configuring Custom Rules
 
-```ruby
-class MyRule < Base
-  # Called for each element node
-  def visit_element(node, context)
-    # Check element
-  end
+Custom rules are configured the same way as built-in rules:
 
-  # Called for each attribute
-  def visit_attribute(name, value, node, context)
-    # Check attribute
-  end
+```yaml
+linter:
+  custom_rules:
+    - herb-lint-rails
+  rules:
+    rails/prefer-turbo-frame:
+      severity: warning
+      enabled: true
+```
 
-  # Called for each ERB output tag
-  def visit_erb_output(node, context)
-    # Check ERB output
-  end
-end
+### Disabling Custom Rules
+
+Use `--no-custom-rules` to skip loading from `linter.custom_rules`:
+
+```bash
+herb-lint --no-custom-rules app/views
 ```
 
 ## Internal Architecture

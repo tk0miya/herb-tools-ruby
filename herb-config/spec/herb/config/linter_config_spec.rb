@@ -489,6 +489,48 @@ RSpec.describe Herb::Config::LinterConfig do
     end
   end
 
+  describe "#custom_rules" do
+    subject { described_class.new(config).custom_rules }
+
+    context "when linter.custom_rules is configured" do
+      let(:config) do
+        {
+          "linter" => {
+            "custom_rules" => %w[herb-lint-rails herb-lint-i18n]
+          }
+        }
+      end
+
+      it "returns the configured custom rule names" do
+        expect(subject).to eq(%w[herb-lint-rails herb-lint-i18n])
+      end
+    end
+
+    context "when linter.custom_rules is an empty array" do
+      let(:config) { { "linter" => { "custom_rules" => [] } } }
+
+      it "returns an empty array" do
+        expect(subject).to eq([])
+      end
+    end
+
+    context "when linter.custom_rules is not configured" do
+      let(:config) { { "linter" => {} } }
+
+      it "returns an empty array" do
+        expect(subject).to eq([])
+      end
+    end
+
+    context "when linter section is missing" do
+      let(:config) { {} }
+
+      it "returns an empty array" do
+        expect(subject).to eq([])
+      end
+    end
+  end
+
   describe "#build_pattern_matcher" do
     subject { described_class.new(config).build_pattern_matcher(rule_name) }
 

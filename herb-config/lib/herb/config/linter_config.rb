@@ -68,6 +68,11 @@ module Herb
         linter_config["failLevel"] || "error"
       end
 
+      # Returns the list of require names providing additional lint rules.
+      def custom_rules #: Array[String]
+        linter_config["custom_rules"] || []
+      end
+
       # Builds a PatternMatcher for a specific rule.
       # Returns a matcher configured with the rule's include, exclude, and only patterns.
       # @rbs rule_name: String -- the name of the rule

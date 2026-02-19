@@ -296,38 +296,43 @@ RSpec.describe Herb::Lint::RuleRegistry do
   end
 
   describe "#load_custom_rules" do
-    let(:custom_rules_dir) { File.join(Dir.tmpdir, "herb_test_rules_#{Process.pid}") }
-
-    before do
-      FileUtils.mkdir_p(custom_rules_dir)
-    end
-
-    after do
-      FileUtils.rm_rf(custom_rules_dir)
-    end
-
-    context "when directory does not exist" do
-      it "does not raise an error" do
-        expect { registry.load_custom_rules("/nonexistent/path") }.not_to raise_error
+    context "with an empty list" do
+      it "does not raise an error and makes no changes" do
+        expect { registry.load_custom_rules([]) }.not_to raise_error
+        expect(registry.rule_names).to eq([])
       end
     end
 
-    context "when directory is empty" do
-      it "does not load any rules" do
-        registry.load_custom_rules(custom_rules_dir)
-        expect(registry.rule_names.size).to eq(0)
+    context "with a non-existent gem name" do
+      it "raises LoadError" do
+        expect { registry.load_custom_rules(["herb_lint_nonexistent_gem_xyz"]) }.to raise_error(LoadError)
       end
     end
 
-    context "when directory contains rule files" do
+    context "with a file that defines rule classes" do
+      let(:temp_dir) { File.join(Dir.tmpdir, "herb_test_custom_rules_#{Process.pid}") }
+
       before do
-        File.write(File.join(custom_rules_dir, "custom_rule.rb"), <<~RUBY)
-          # Custom rule file placeholder
+        FileUtils.mkdir_p(temp_dir)
+        File.write(File.join(temp_dir, "herb_lint_test_custom_rule.rb"), <<~RUBY)
+          class HerbLintTestCustomRule < Herb::Lint::Rules::VisitorRule
+            def self.rule_name = "custom/test-rule"
+            def self.description = "Test custom rule"
+            def self.safe_autofixable? = false
+            def self.unsafe_autofixable? = false
+          end
         RUBY
+        $LOAD_PATH.unshift(temp_dir)
       end
 
-      it "loads the rule files without error" do
-        expect { registry.load_custom_rules(custom_rules_dir) }.not_to raise_error
+      after do
+        $LOAD_PATH.delete(temp_dir)
+        FileUtils.rm_rf(temp_dir)
+      end
+
+      it "loads and registers rules from required files" do
+        registry.load_custom_rules(["herb_lint_test_custom_rule"])
+        expect(registry.get("custom/test-rule")).not_to be_nil
       end
     end
   end

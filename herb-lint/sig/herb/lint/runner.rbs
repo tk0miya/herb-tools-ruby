@@ -13,14 +13,17 @@ module Herb
 
       attr_reader unsafe: bool
 
+      attr_reader no_custom_rules: bool
+
       attr_reader linter: Linter
 
       # @rbs config: Herb::Config::LinterConfig
       # @rbs ignore_disable_comments: bool -- when true, report offenses even when suppressed
       # @rbs autofix: bool -- when true, apply safe automatic fixes
       # @rbs unsafe: bool -- when true, also apply unsafe fixes (requires autofix: true)
+      # @rbs no_custom_rules: bool -- when true, skip loading from linter.custom_rules
       # @rbs rule_registry: RuleRegistry? -- optional custom rule registry (for testing)
-      def initialize: (Herb::Config::LinterConfig config, ?ignore_disable_comments: bool, ?autofix: bool, ?unsafe: bool, ?rule_registry: RuleRegistry?) -> void
+      def initialize: (Herb::Config::LinterConfig config, ?ignore_disable_comments: bool, ?autofix: bool, ?unsafe: bool, ?no_custom_rules: bool, ?rule_registry: RuleRegistry?) -> void
 
       # Run linting on the given paths and return aggregated results.
       # @rbs paths: Array[String] -- explicit paths (files or directories) to lint
@@ -36,6 +39,8 @@ module Herb
       def discover_files: (Array[String] paths) -> Array[String]
 
       # Build and configure a Linter instance.
+      # Loads custom rules from configuration before instantiating the Linter,
+      # unless --no-custom-rules was specified.
       # @rbs registry: RuleRegistry? -- optional custom rule registry (defaults to all built-in rules)
       def build_linter: (?RuleRegistry? registry) -> Linter
 

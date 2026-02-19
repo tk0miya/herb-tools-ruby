@@ -11,18 +11,28 @@ module Herb
       attr_reader :ignore_disable_comments #: bool
       attr_reader :autofix #: bool
       attr_reader :unsafe #: bool
+      attr_reader :no_custom_rules #: bool
       attr_reader :linter #: Linter
 
       # @rbs config: Herb::Config::LinterConfig
       # @rbs ignore_disable_comments: bool -- when true, report offenses even when suppressed
       # @rbs autofix: bool -- when true, apply safe automatic fixes
       # @rbs unsafe: bool -- when true, also apply unsafe fixes (requires autofix: true)
+      # @rbs no_custom_rules: bool -- when true, skip loading from linter.custom_rules
       # @rbs rule_registry: RuleRegistry? -- optional custom rule registry (for testing)
-      def initialize(config, ignore_disable_comments: false, autofix: false, unsafe: false, rule_registry: nil) #: void
+      def initialize( # rubocop:disable Metrics/ParameterLists
+        config,
+        ignore_disable_comments: false,
+        autofix: false,
+        unsafe: false,
+        no_custom_rules: false,
+        rule_registry: nil
+      ) #: void
         @config = config
         @ignore_disable_comments = ignore_disable_comments
         @autofix = autofix
         @unsafe = unsafe
+        @no_custom_rules = no_custom_rules
         @linter = build_linter(rule_registry)
       end
 
@@ -71,9 +81,12 @@ module Herb
       end
 
       # Build and configure a Linter instance.
+      # Loads custom rules from configuration before instantiating the Linter,
+      # unless --no-custom-rules was specified.
       # @rbs registry: RuleRegistry? -- optional custom rule registry (defaults to all built-in rules)
       def build_linter(registry = nil) #: Linter
         registry ||= RuleRegistry.new(config:)
+        registry.load_custom_rules(config.custom_rules) unless no_custom_rules
 
         Linter.new(config, rule_registry: registry, ignore_disable_comments:)
       end

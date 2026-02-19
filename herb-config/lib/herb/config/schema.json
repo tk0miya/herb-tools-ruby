@@ -57,6 +57,13 @@
             "type": "string"
           }
         },
+        "custom_rules": {
+          "type": "array",
+          "description": "List of require names (gem names or file paths) providing additional lint rules",
+          "items": {
+            "type": "string"
+          }
+        },
         "rules": {
           "type": "object",
           "description": "Per-rule configuration",
