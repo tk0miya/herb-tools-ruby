@@ -89,27 +89,17 @@ All completed work is documented in the git history and reflected in the current
 
 | Phase | File | Tasks | Description | Status |
 |-------|------|-------|-------------|--------|
-| Phase 1 | [phase-1-formatter-foundation.md](./phase-1-formatter-foundation.md) | 19 | Gem scaffold, data structures, configuration, CI | 📋 |
 | Phase 2 | [phase-2-formatter-engine.md](./phase-2-formatter-engine.md) | 12 | Core formatting engine (HTML, ERB, whitespace) | 📋 |
 | Phase 3 | [phase-3-formatter-core.md](./phase-3-formatter-core.md) | 6 | FormatIgnore, Formatter, FormatterFactory | 📋 |
 | Phase 4 | [phase-4-formatter-rewriters.md](./phase-4-formatter-rewriters.md) | 9 | Rewriter system (base, registry, built-ins, custom loader) | 📋 |
 | Phase 5 | [phase-5-formatter-runner.md](./phase-5-formatter-runner.md) | 4 | Runner and batch file processing | 📋 |
 | Phase 6 | [phase-6-formatter-cli.md](./phase-6-formatter-cli.md) | 9 | CLI (options, --init, --stdin, --check, reporting) | 📋 |
 
-**Total: ~59 tasks**
+**Total: ~40 tasks**
 
 Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
 ### Phase Overview (herb-format)
-
-#### Phase 1: Foundation (19 tasks)
-
-| Part | Tasks | Description |
-|------|-------|-------------|
-| Part A | 10 | Gem scaffold, boilerplate, and CI setup |
-| Part B | 3 | Data structures (FormatResult, AggregatedResult, Context) |
-| Part C | 4 | Configuration and error handling |
-| Part D | 2 | Integration testing |
 
 #### Phase 2: FormatPrinter (12 tasks)
 
@@ -159,12 +149,6 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
 The following features are not yet scheduled into phases. Consider adding them when needed:
 
-### ~~Custom Rule Loading (Linter)~~ → Implemented (Phase 22)
-- ✅ `linter.custom_rules` configuration in `.herb.yml`
-- ✅ `RuleRegistry#load_custom_rules` with ObjectSpace auto-registration
-- ✅ `--no-custom-rules` CLI flag (matches TypeScript)
-- ✅ Replaces TypeScript's fixed-directory auto-discovery (`.herb/rules/`) with explicit `Kernel#require` list — supports gems, local files, or any `$LOAD_PATH` entry
-
 ### Code Architecture Improvements
 - PatternMatcher class separation (currently integrated in FileDiscovery)
 - LinterFactory implementation (currently Runner creates Linter directly)
@@ -172,8 +156,6 @@ The following features are not yet scheduled into phases. Consider adding them w
 ### Performance
 - Parallel file processing
 - Caching for repeated lints/formats
-
-See [phase-22-future-enhancements.md](./phase-22-future-enhancements.md) for detailed descriptions of linter enhancement features.
 
 ## Related Documentation
 

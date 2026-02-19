@@ -23,7 +23,6 @@ herb-lint/
 │           ├── lint_result.rb
 │           ├── aggregated_result.rb
 │           ├── rule_registry.rb
-│           ├── custom_rule_loader.rb
 │           ├── autofixer.rb
 │           ├── errors.rb
 │           ├── directive_parser.rb
@@ -80,7 +79,6 @@ Herb::Lint
 ├── LintResult                # Lint result for a single file
 ├── AggregatedResult          # Aggregated result for multiple files
 ├── RuleRegistry              # Rule registration and lookup (Registry Pattern)
-├── CustomRuleLoader          # Custom rule loading
 ├── Autofixer                 # Autofix application
 ├── Errors                    # Custom exceptions
 ├── DirectiveParser           # Directive parsing (herb:disable, herb:linter ignore)
@@ -228,6 +226,7 @@ end
 - `--fail-level LEVEL` - Minimum severity to trigger failure (error, warning, info, hint); overrides `linter.failLevel` from config
 - `--config PATH` - Custom configuration file path
 - `--ignore-disable-comments` - Report offenses even when suppressed with `<%# herb:disable %>` comments
+- `--no-custom-rules` - Skip loading custom rules from `linter.custom_rules` configuration
 - `--version` - Display version information
 - `--help` - Display help message
 
@@ -250,8 +249,7 @@ end
 
 **Dependencies:**
 - `Herb::Config::LinterConfig` - Configuration
-- `RuleRegistry` - Rule management
-- `CustomRuleLoader` - Custom rule loading
+- `RuleRegistry` - Rule management (includes custom rule loading)
 - `LinterFactory` - Linter instantiation
 - `Herb::Core::FileDiscovery` - File discovery
 - `Autofixer` - Autofix application
@@ -413,6 +411,7 @@ class Herb::Lint::RuleRegistry
   def all: () -> Array[singleton(Rules::Base)]
   def rule_names: () -> Array[String]
   def load_builtin_rules: () -> void
+  def load_custom_rules: (Array[String] names) -> void
 
   private
 
@@ -514,38 +513,21 @@ Parser rules (1):
 - Maintains name-to-class mapping
 - Prevents duplicate registration
 
-### Herb::Lint::CustomRuleLoader
+### Custom Rule Loading
 
-**Responsibility:** Loads custom rule implementations from configured paths.
+Custom rule loading is handled by `RuleRegistry#load_custom_rules`.
 
-```rbs
-class Herb::Lint::CustomRuleLoader
-  @config: Herb::Config::LinterConfig
-  @registry: RuleRegistry
-
-  attr_reader config: Herb::Config::LinterConfig
-  attr_reader registry: RuleRegistry
-
-  def initialize: (
-    Herb::Config::LinterConfig config,
-    RuleRegistry registry
-  ) -> void
-
-  def load: () -> void
-
-  private
-
-  def load_custom_rules_from: (String path) -> void
-  def require_rule_file: (String file_path) -> void
-  def auto_register_rules: () -> void
-end
-```
+**Design Decision:** The Ruby implementation uses an explicit require list (`linter.custom_rules` in `.herb.yml`) rather than the TypeScript approach of auto-discovering rule files from a fixed directory (`.herb/rules/**/*.mjs`). This provides:
+- Explicit over implicit: listing in `.herb.yml` is transparent
+- No fixed-directory constraint: rules can come from gems, local files, or any `$LOAD_PATH` entry
+- Bundler compatibility: gems are already on `$LOAD_PATH` via Bundler
 
 **Processing:**
-1. Reads custom rule paths from configuration
-2. Requires Ruby files containing rule classes
-3. Auto-registers newly loaded rule classes with RuleRegistry
-4. Handles load errors gracefully
+1. Reads `linter.custom_rules` from configuration (array of require names)
+2. Calls `Kernel#require` for each name (supports gem names, local paths, `$LOAD_PATH` entries)
+3. Uses ObjectSpace snapshot diff to detect newly defined `VisitorRule`/`SourceRule` subclasses
+4. Auto-registers discovered rule classes with RuleRegistry
+5. Handles load errors gracefully (`LoadError` propagates to CLI)
 
 ### Herb::Lint::Autofixer
 
@@ -1102,7 +1084,7 @@ CLI#run
   │
   ├── Runner.new(config)
   │   ├── RuleRegistry.load_builtin_rules
-  │   └── CustomRuleLoader.load
+  │   └── RuleRegistry.load_custom_rules(config.custom_rules)
   │
   ├── Runner#run(files)
   │   ├── FileDiscovery.discover (herb-core)

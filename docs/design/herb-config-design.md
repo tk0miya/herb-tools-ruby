@@ -152,6 +152,7 @@ JSON Schema file defining the structure and constraints of valid configuration.
 - Extract linter section from complete configuration
 - Provide accessor methods for linter settings
 - Handle rule-specific configuration (enabled status, severity, options)
+- Provide `custom_rules` (Array[String]): list of require names for custom rule loading (default: `[]`)
 - Support both string and symbol keys for rule lookup
 
 **Rule Configuration Format:**
