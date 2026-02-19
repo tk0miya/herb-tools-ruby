@@ -4,41 +4,171 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows duplicate <meta> elements with the same name attribute.
-        #
-        # Each meta name should only appear once in a document. Duplicate meta
-        # elements with the same name can cause unpredictable behavior as search
-        # engines and browsers may use different values.
+        # Description:
+        #   Warn when multiple `<meta>` tags share the same `name` or `http-equiv` attribute within the same
+        #   `<head>` block, unless they are wrapped in conditional comments.
         #
         # Good:
-        #   <meta name="description" content="Page description">
-        #   <meta name="viewport" content="width=device-width">
+        #   <head>
+        #     <meta name="description" content="Welcome to our site">
+        #     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        #   </head>
+        #
+        #   <head>
+        #     <% if mobile? %>
+        #       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        #     <% else %>
+        #       <meta name="viewport" content="width=1024">
+        #     <% end %>
+        #   </head>
         #
         # Bad:
-        #   <meta name="description" content="First">
-        #   <meta name="description" content="Second">
+        #   <head>
+        #     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        #     <meta name="viewport" content="width=1024">
+        #   </head>
+        #
+        #   <head>
+        #     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        #     <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        #   </head>
+        #
+        #   <head>
+        #     <meta name="viewport" content="width=1024">
+        #
+        #     <% if mobile? %>
+        #       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        #     <% else %>
+        #       <meta http-equiv="refresh" content="30">
+        #     <% end %>
+        #   </head>
         class NoDuplicateMetaNames < VisitorRule
+          # Internal struct representing a collected <meta> tag with extracted attributes.
+          class MetaTag < Struct[untyped]
+            attr_accessor node(): untyped
+
+            attr_accessor name_value(): untyped
+
+            attr_accessor http_equiv_value(): untyped
+
+            attr_accessor media_value(): untyped
+
+            def self.new: (?node: untyped, ?name_value: untyped, ?http_equiv_value: untyped, ?media_value: untyped) -> instance
+                        | ({ ?node: untyped, ?name_value: untyped, ?http_equiv_value: untyped, ?media_value: untyped }) -> instance
+          end
+
           def self.rule_name: () -> String
 
           def self.description: () -> String
 
           def self.default_severity: () -> String
 
-          @seen_meta_names: Hash[String, Herb::Location]
+          def self.safe_autofixable?: () -> bool
+
+          def self.unsafe_autofixable?: () -> bool
+
+          @control_flow_type: Symbol?
+
+          @in_control_flow: bool
+
+          @control_flow_metas: Array[untyped]
+
+          @current_branch_metas: Array[untyped]
+
+          @document_metas: Array[untyped]
+
+          @element_stack: Array[String]
 
           # @rbs override
           def on_new_investigation: ...
 
+          # Track element nesting to detect when we are inside <head>.
+          # Reset meta tracking on <head> entry. Only process <meta> inside <head>.
+          #
           # @rbs override
           def visit_html_element_node: ...
 
+          # Process if/elsif/else as a conditional: same meta name in different
+          # branches is not a duplicate.
+          #
+          # @rbs override
+          def visit_erb_if_node: ...
+
+          # Process unless/else as a conditional: same meta name in different
+          # branches is not a duplicate.
+          #
+          # @rbs override
+          def visit_erb_unless_node: ...
+
+          # Process while loop: meta tags are only checked within the same iteration.
+          #
+          # @rbs override
+          def visit_erb_while_node: ...
+
+          # Process until loop: meta tags are only checked within the same iteration.
+          #
+          # @rbs override
+          def visit_erb_until_node: ...
+
+          # Process for loop: meta tags are only checked within the same iteration.
+          #
+          # @rbs override
+          def visit_erb_for_node: ...
+
+          # Process block (e.g. each do...end): meta tags are only checked within
+          # the same iteration.
+          #
+          # @rbs override
+          def visit_erb_block_node: ...
+
           private
 
-          # @rbs node: Herb::AST::HTMLElementNode
-          def meta_element?: (Herb::AST::HTMLElementNode node) -> bool
+          def inside_head?: () -> bool
 
           # @rbs node: Herb::AST::HTMLElementNode
-          def check_duplicate_meta_name: (Herb::AST::HTMLElementNode node) -> void
+          def collect_and_check_meta_tag: (Herb::AST::HTMLElementNode node) -> void
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def extract_meta_tag: (Herb::AST::HTMLElementNode node) -> untyped
+
+          # @rbs meta_tag: untyped
+          def handle_control_flow_meta: (untyped meta_tag) -> void
+
+          # @rbs meta_tag: untyped
+          def handle_global_meta: (untyped meta_tag) -> void
+
+          # @rbs meta_tag: untyped
+          # @rbs existing_metas: Array[untyped]
+          # @rbs context: String
+          def check_against_meta_list: (untyped meta_tag, Array[untyped] existing_metas, String context) -> void
+
+          # @rbs meta1: untyped
+          # @rbs meta2: untyped
+          def meta_tags_duplicate?: (untyped meta1, untyped meta2) -> bool
+
+          # @rbs meta1: untyped
+          # @rbs meta2: untyped
+          def media_values_match?: (untyped meta1, untyped meta2) -> bool
+
+          # @rbs node: Herb::AST::ERBIfNode
+          def collect_if_branches: (Herb::AST::ERBIfNode node) -> Array[untyped]
+
+          # Process control flow with branch isolation mirroring the TypeScript
+          # ControlFlowTrackingVisitor logic:
+          #
+          # - onEnterControlFlow: save state, reset currentBranchMetas,
+          #   reset controlFlowMetas only for outermost control flow context.
+          # - onEnterBranch: reset currentBranchMetas for each branch.
+          # - onExitBranch: no-op (controlFlowMetas accumulates across branches).
+          # - onExitControlFlow: for conditionals at the outermost level, promote
+          #   all collected controlFlowMetas to documentMetas.
+          #
+          # Nested control flow shares the same controlFlowMetas accumulator so
+          # that inner conditional metas propagate to the outer context.
+          #
+          # @rbs branch_statements_list: Array[untyped]
+          # @rbs flow_type: Symbol
+          def process_control_flow: (Array[untyped] branch_statements_list, Symbol flow_type) -> void
         end
       end
     end
