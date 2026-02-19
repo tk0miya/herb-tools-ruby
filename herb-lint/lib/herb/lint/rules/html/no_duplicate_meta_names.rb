@@ -7,19 +7,45 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows duplicate <meta> elements with the same name attribute.
-        #
-        # Each meta name should only appear once in a document. Duplicate meta
-        # elements with the same name can cause unpredictable behavior as search
-        # engines and browsers may use different values.
+        # Description:
+        #   Warn when multiple `<meta>` tags share the same `name` or `http-equiv` attribute within the same
+        #   `<head>` block, unless they are wrapped in conditional comments.
         #
         # Good:
-        #   <meta name="description" content="Page description">
-        #   <meta name="viewport" content="width=device-width">
+        #   <head>
+        #     <meta name="description" content="Welcome to our site">
+        #     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        #   </head>
+        #
+        #   <head>
+        #     <% if mobile? %>
+        #       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        #     <% else %>
+        #       <meta name="viewport" content="width=1024">
+        #     <% end %>
+        #   </head>
         #
         # Bad:
-        #   <meta name="description" content="First">
-        #   <meta name="description" content="Second">
+        #   <head>
+        #     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        #     <meta name="viewport" content="width=1024">
+        #   </head>
+        #
+        #   <head>
+        #     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        #     <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        #   </head>
+        #
+        #   <head>
+        #     <meta name="viewport" content="width=1024">
+        #
+        #     <% if mobile? %>
+        #       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        #     <% else %>
+        #       <meta http-equiv="refresh" content="30">
+        #     <% end %>
+        #   </head>
+        #
         class NoDuplicateMetaNames < VisitorRule
           def self.rule_name = "html-no-duplicate-meta-names" #: String
           def self.description = "Disallow duplicate meta elements with the same name attribute" #: String
@@ -28,16 +54,18 @@ module Herb
           def self.unsafe_autofixable? = false #: bool
 
           # @rbs @seen_meta_names: Hash[String, Herb::Location]
+          # @rbs @seen_meta_http_equivs: Hash[String, Herb::Location]
 
           # @rbs override
           def on_new_investigation #: void
             super
             @seen_meta_names = {}
+            @seen_meta_http_equivs = {}
           end
 
           # @rbs override
           def visit_html_element_node(node)
-            check_duplicate_meta_name(node) if meta_element?(node)
+            check_duplicate_meta(node) if meta_element?(node)
             super
           end
 
@@ -46,6 +74,12 @@ module Herb
           # @rbs node: Herb::AST::HTMLElementNode
           def meta_element?(node) #: bool
             tag_name(node) == "meta"
+          end
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def check_duplicate_meta(node) #: void
+            check_duplicate_meta_name(node)
+            check_duplicate_meta_http_equiv(node)
           end
 
           # @rbs node: Herb::AST::HTMLElementNode
@@ -64,6 +98,25 @@ module Herb
               )
             else
               @seen_meta_names[normalized_name] = node.location
+            end
+          end
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def check_duplicate_meta_http_equiv(node) #: void
+            http_equiv_attr = find_attribute(node, "http-equiv")
+            http_equiv_value = attribute_value(http_equiv_attr)
+            return if http_equiv_value.nil? || http_equiv_value.empty?
+
+            normalized_value = http_equiv_value.downcase
+
+            if @seen_meta_http_equivs.key?(normalized_value)
+              first_line = @seen_meta_http_equivs[normalized_value].start.line
+              add_offense(
+                message: "Duplicate meta http-equiv '#{http_equiv_value}' (first defined at line #{first_line})",
+                location: node.location
+              )
+            else
+              @seen_meta_http_equivs[normalized_value] = node.location
             end
           end
         end
