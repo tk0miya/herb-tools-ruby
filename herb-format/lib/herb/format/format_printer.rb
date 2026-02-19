@@ -12,7 +12,7 @@ module Herb
     # Leaf nodes are handled with identity-like output for now. As formatting
     # rules are added, visitor methods will be overridden to apply indentation,
     # line wrapping, attribute formatting, and other transformations.
-    class FormatPrinter < ::Herb::Printer::Base
+    class FormatPrinter < ::Herb::Printer::Base # rubocop:disable Metrics/ClassLength
       VOID_ELEMENTS = %w[
         area base br col embed hr img input link meta param source track wbr
       ].freeze
@@ -49,6 +49,30 @@ module Herb
         @indent_width = indent_width
         @max_line_length = max_line_length
         @format_context = format_context
+
+        # Output management (Task 2.9)
+        # @rbs @lines: Array[String]
+        @lines = []
+        # @rbs @indent_level: Integer
+        @indent_level = 0
+        # @rbs @string_line_count: Integer
+        @string_line_count = 0
+
+        # Context management (Task 2.9)
+        # @rbs @inline_mode: bool
+        @inline_mode = false
+        # @rbs @in_conditional_open_tag_context: bool
+        @in_conditional_open_tag_context = false
+        # @rbs @current_attribute_name: String?
+        @current_attribute_name = nil
+        # @rbs @element_stack: Array[Herb::AST::HTMLElementNode]
+        @element_stack = []
+
+        # Cache and analysis (Task 2.9)
+        # @rbs @element_formatting_analysis: Hash[Herb::AST::HTMLElementNode, ElementAnalysis]
+        @element_formatting_analysis = {}
+        # @rbs @node_is_multiline: Hash[Herb::AST::Node, bool]
+        @node_is_multiline = {}
       end
 
       # -- Leaf nodes --
@@ -150,6 +174,98 @@ module Herb
       # @rbs tag_name: String
       def preserved_element?(tag_name) #: bool
         PRESERVED_ELEMENTS.include?(tag_name.downcase)
+      end
+
+      # -- Task 2.10: capture Pattern --
+
+      # Temporarily switch to a separate output buffer, returning captured lines.
+      # Restores @lines and @inline_mode after block completes.
+      #
+      # @rbs &block: () -> void
+      # @rbs return: Array[String]
+      def capture #: Array[String]
+        previous_lines = @lines
+        previous_inline_mode = @inline_mode
+
+        @lines = []
+
+        yield
+
+        result = @lines
+        @lines = previous_lines
+        @inline_mode = previous_inline_mode
+
+        result
+      end
+
+      # -- Task 2.11: trackBoundary Pattern --
+
+      # Record whether a node spans multiple lines in the output.
+      # Sets @node_is_multiline[node] = true if output grew beyond one line.
+      #
+      # @rbs node: Herb::AST::Node
+      # @rbs &block: () -> void
+      # @rbs return: void
+      def track_boundary(node) #: void
+        start_line_count = @string_line_count
+
+        yield
+
+        @node_is_multiline[node] = true if @string_line_count > start_line_count
+      end
+
+      # -- Task 2.12: withIndent Pattern --
+
+      # Temporarily increase the indent level while executing the block.
+      # Restores the original indent level after the block completes.
+      #
+      # @rbs &block: () -> void
+      # @rbs return: void
+      def with_indent #: void
+        @indent_level += 1
+        yield
+        @indent_level -= 1
+      end
+
+      # -- Task 2.13: Output Helper Methods --
+
+      # Return the current indentation string based on @indent_level.
+      #
+      # @rbs return: String
+      def indent #: String
+        " " * (@indent_level * @indent_width)
+      end
+
+      # Push a line to @lines with leading indentation.
+      # Empty/whitespace-only lines are pushed without indentation.
+      #
+      # @rbs line: String
+      # @rbs return: void
+      def push_with_indent(line) #: void
+        indent_str = line.strip.empty? ? "" : indent
+        push(indent_str + line)
+      end
+
+      # Append text to the last line in @lines without adding a newline.
+      # If @lines is empty, starts a new line.
+      #
+      # @rbs text: String
+      # @rbs return: void
+      def push_to_last_line(text) #: void
+        if @lines.empty?
+          @lines << text
+        else
+          @lines[-1] += text
+        end
+      end
+
+      # Push a line to @lines and update @string_line_count for each newline.
+      #
+      # @rbs line: String
+      # @rbs return: void
+      def push(line) #: void
+        @lines << line
+        @string_line_count += 1 if line.include?("\n")
       end
     end
   end

@@ -54,11 +54,11 @@ Part G: Integration & Testing                         ← Integration
 - [x] Task 2.8: Utility Functions (dedent, get_tag_name)
 
 ### Part B: Core Patterns (5 tasks)
-- [ ] Task 2.9: State Management Fields
-- [ ] Task 2.10: capture Pattern
-- [ ] Task 2.11: trackBoundary Pattern
-- [ ] Task 2.12: withIndent Pattern
-- [ ] Task 2.13: Output Helper Methods
+- [x] Task 2.9: State Management Fields
+- [x] Task 2.10: capture Pattern
+- [x] Task 2.11: trackBoundary Pattern
+- [x] Task 2.12: withIndent Pattern
+- [x] Task 2.13: Output Helper Methods
 
 ### Part C: ElementAnalyzer (4 tasks)
 - [ ] Task 2.14: ElementAnalysis Data Structure
@@ -72,7 +72,7 @@ Part G: Integration & Testing                         ← Integration
 - [ ] Task 2.20: Class Attribute Formatting
 - [ ] Task 2.21: Quote Normalization
 
-**Progress: 8/21 tasks completed**
+**Progress: 13/21 tasks completed**
 
 ---
 
