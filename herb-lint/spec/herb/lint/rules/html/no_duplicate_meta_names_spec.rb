@@ -44,6 +44,24 @@ RSpec.describe Herb::Lint::Rules::Html::NoDuplicateMetaNames do
       end
     end
 
+    context "with same meta name in different if/else branches (documentation example)" do
+      let(:source) do
+        <<~ERB
+          <head>
+            <% if mobile? %>
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <% else %>
+              <meta name="viewport" content="width=1024">
+            <% end %>
+          </head>
+        ERB
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
     # Bad examples from documentation
     context "with duplicate meta name in head (documentation example)" do
       let(:source) do
@@ -78,6 +96,27 @@ RSpec.describe Herb::Lint::Rules::Html::NoDuplicateMetaNames do
         expect(subject.first.rule_name).to eq("html-no-duplicate-meta-names")
         expect(subject.first.message).to include("Duplicate meta http-equiv 'X-UA-Compatible'")
         expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "with meta before if and same meta inside if branch (documentation example)" do
+      let(:source) do
+        <<~ERB
+          <head>
+            <meta name="viewport" content="width=1024">
+
+            <% if mobile? %>
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <% else %>
+              <meta http-equiv="refresh" content="30">
+            <% end %>
+          </head>
+        ERB
+      end
+
+      it "reports an offense for the meta inside the if branch" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("Duplicate meta name 'viewport'")
       end
     end
 

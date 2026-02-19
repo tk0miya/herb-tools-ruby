@@ -69,6 +69,24 @@ module Herb
             super
           end
 
+          # Process if/elsif/else branches independently so that the same meta name
+          # in different branches of a conditional is not reported as a duplicate.
+          #
+          # @rbs override
+          def visit_erb_if_node(node) #: void
+            process_conditional_branches(collect_if_branches(node))
+          end
+
+          # Process unless/else branches independently so that the same meta name
+          # in different branches of a conditional is not reported as a duplicate.
+          #
+          # @rbs override
+          def visit_erb_unless_node(node) #: void
+            branches = [node.statements]
+            branches << node.else_clause.statements if node.else_clause
+            process_conditional_branches(branches)
+          end
+
           private
 
           # @rbs node: Herb::AST::HTMLElementNode
@@ -118,6 +136,49 @@ module Herb
             else
               @seen_meta_http_equivs[normalized_value] = node.location
             end
+          end
+
+          # Collect all branch statement lists from an if/elsif/else chain.
+          #
+          # @rbs node: Herb::AST::ERBIfNode
+          # @rbs return: Array[untyped]
+          def collect_if_branches(node) #: Array[untyped]
+            branches = []
+            current = node
+            while current.is_a?(Herb::AST::ERBIfNode)
+              branches << current.statements
+              current = current.subsequent
+            end
+            branches << current.statements if current.is_a?(Herb::AST::ERBElseNode)
+            branches
+          end
+
+          # Process a list of branches independently: each branch starts from the
+          # pre-conditional state so that duplicate meta tags across branches are
+          # not flagged. After all branches, the union of additions is merged back.
+          #
+          # @rbs branches: Array[untyped]
+          def process_conditional_branches(branches) #: void
+            base_meta_names = @seen_meta_names.dup
+            base_meta_http_equivs = @seen_meta_http_equivs.dup
+
+            all_branch_meta_names = {}
+            all_branch_meta_http_equivs = {}
+
+            branches.each do |branch_statements|
+              @seen_meta_names = base_meta_names.dup
+              @seen_meta_http_equivs = base_meta_http_equivs.dup
+
+              visit_all(branch_statements)
+
+              all_branch_meta_names.merge!(@seen_meta_names.reject { |k, _| base_meta_names.key?(k) })
+              all_branch_meta_http_equivs.merge!(
+                @seen_meta_http_equivs.reject { |k, _| base_meta_http_equivs.key?(k) }
+              )
+            end
+
+            @seen_meta_names = base_meta_names.merge(all_branch_meta_names)
+            @seen_meta_http_equivs = base_meta_http_equivs.merge(all_branch_meta_http_equivs)
           end
         end
       end
