@@ -39,6 +39,8 @@ module Herb
 
       def execute_lint: () -> Integer
 
+      def runner_options: () -> Hash[Symbol, bool]
+
       # Parses command-line options using OptionParser.
       def parse_options: () -> void
 

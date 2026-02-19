@@ -108,26 +108,31 @@ module Herb
         end
       end
 
-      # Load custom rules from a directory.
-      # @rbs path: String -- path to directory containing rule files
-      def load_custom_rules(path) #: void
-        return unless File.directory?(path)
+      # Load and register custom rules from the given require names.
+      # Each name is passed to Kernel#require. Any newly defined rule classes
+      # are automatically discovered via ObjectSpace and registered.
+      # @rbs names: Array[String] -- require names (gem names or file paths)
+      def load_custom_rules(names) #: void
+        return if names.empty?
 
-        Dir.glob(File.join(path, "*.rb")).each do |file|
-          load_rule_file(file)
-        end
+        before = all_rule_subclasses
+        names.each { require _1 }
+        (all_rule_subclasses - before).each { register(_1) }
       end
 
       private
 
+      # Returns all currently loaded rule subclasses via ObjectSpace.
+      # Used to detect newly defined rules after requiring custom rule files.
+      def all_rule_subclasses #: Array[singleton(Rules::VisitorRule) | singleton(Rules::SourceRule)]
+        ObjectSpace.each_object(Class)
+                   .select { _1 < Rules::VisitorRule || _1 < Rules::SourceRule }
+                   .to_a
+      end
+
       # Load all built-in rules into the registry.
       def load_builtin_rules #: void
         self.class.builtin_rules.each { register(_1) }
-      end
-
-      # @rbs file: String
-      def load_rule_file(file) #: void
-        require file
       end
     end
   end

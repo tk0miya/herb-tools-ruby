@@ -205,6 +205,17 @@ RSpec.describe Herb::Lint::CLI do
         end
       end
 
+      context "with --no-custom-rules flag" do
+        let(:argv) { ["--no-custom-rules"] }
+
+        it "passes no_custom_rules: true to Runner" do
+          allow(Herb::Lint::Runner).to receive(:new).and_call_original
+          subject
+          expect(Herb::Lint::Runner).to have_received(:new)
+            .with(anything, hash_including(no_custom_rules: true))
+        end
+      end
+
       context "when file has herb:linter ignore" do
         let(:argv) { [] }
 

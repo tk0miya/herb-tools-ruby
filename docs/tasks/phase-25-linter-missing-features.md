@@ -56,7 +56,7 @@ The TypeScript implementation has a `DetailedFormatter` that is the **default** 
 - [ ] Write unit tests for DetailedFormatter
 - [ ] Write integration tests via CLI
 
-#### 2. CustomRuleLoader (.herb/rules/ Support)
+#### 2. Custom Rules System (Replaces CustomRuleLoader)
 
 > **Note:** This feature is tracked in [Phase 22: Custom Rule Loading](phase-22-custom-rule-loading.md). Removed from Phase 25 to avoid duplication.
 
@@ -204,19 +204,18 @@ The following features are mentioned in requirements/design documents but **do N
 
 1. ❌ **Parallel Processing** - Not implemented in TypeScript
 2. ❌ **Caching** - Not implemented in TypeScript
-3. ❌ **General Plugin System** - TypeScript has "Rewriter System" but this is for the **formatter**, not the linter
 
 ## Testing Requirements
 
 - [ ] Unit tests for all new classes/methods
   - [ ] DetailedFormatter
-  - [ ] CustomRuleLoader
+  - [x] Custom rules system (Phase 22)
   - [ ] Config path resolution
   - [ ] Timing tracking
 - [ ] Integration tests via CLI
   - [ ] All new CLI options
   - [ ] Default format selection
-  - [ ] Custom rule loading
+  - [x] Custom rules loading (Phase 22)
   - [ ] Config file generation
 - [ ] Update existing CLI specs
   - [ ] Verify new options appear in help
@@ -234,22 +233,18 @@ The following features are mentioned in requirements/design documents but **do N
   - [ ] Update output format examples
 - [ ] Update `docs/design/herb-lint-design.md`
   - [ ] Add DetailedFormatter design
-  - [ ] Add CustomRuleLoader design
+  - [x] Update custom rules system design (Phase 22)
   - [ ] Update component diagrams
 - [ ] Update `README.md`
   - [ ] Add examples with new CLI options
   - [ ] Show DetailedFormatter output
-  - [ ] Document custom rule creation
-- [ ] Create custom rule guide
-  - [ ] Document rule base class
-  - [ ] Provide example custom rules
-  - [ ] Explain `.herb/rules/` directory structure
+  - [ ] Document plugin system usage
 
 ## Acceptance Criteria
 
 - [ ] All high-priority features implemented and tested
 - [ ] DetailedFormatter is the default output format
-- [ ] CustomRuleLoader automatically loads rules from `.herb/rules/`
+- [x] Custom rules system loads rules from `linter.custom_rules` (Phase 22)
 - [ ] --init generates a working `.herb.yml` configuration
 - [ ] --config-file allows specifying custom configuration path
 - [ ] CLI help text updated with new options

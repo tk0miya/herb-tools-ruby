@@ -8,6 +8,7 @@ RSpec.describe Herb::Config::Defaults do
       expect(config).to have_key("linter")
       expect(config["linter"]["include"]).to eq(["**/*.html.erb"])
       expect(config["linter"]["exclude"]).to eq([])
+      expect(config["linter"]["custom_rules"]).to eq([])
       expect(config["linter"]["rules"]).to eq({})
     end
 

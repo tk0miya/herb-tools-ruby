@@ -159,15 +159,11 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
 The following features are not yet scheduled into phases. Consider adding them when needed:
 
-### Custom Rule Loading (Linter)
-- CustomRuleLoader implementation
-- Plugin mechanism for third-party rules
-- Dynamic rule discovery from `.herb/rules/` directory
-
-### RuleRegistry Dynamic Discovery (Linter)
-- Automatic rule discovery by directory scanning
-- Dynamic loading using reflection
-- Consider when rule count exceeds 10
+### ~~Custom Rule Loading (Linter)~~ → Implemented (Phase 22)
+- ✅ `linter.custom_rules` configuration in `.herb.yml`
+- ✅ `RuleRegistry#load_custom_rules` with ObjectSpace auto-registration
+- ✅ `--no-custom-rules` CLI flag (matches TypeScript)
+- ✅ Replaces TypeScript's fixed-directory auto-discovery (`.herb/rules/`) with explicit `Kernel#require` list — supports gems, local files, or any `$LOAD_PATH` entry
 
 ### Code Architecture Improvements
 - PatternMatcher class separation (currently integrated in FileDiscovery)

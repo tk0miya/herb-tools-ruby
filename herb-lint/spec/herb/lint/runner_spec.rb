@@ -5,6 +5,45 @@ require "fileutils"
 require "herb/config"
 
 RSpec.describe Herb::Lint::Runner do
+  describe ".new" do
+    let(:temp_custom_rules_dir) { File.join(Dir.tmpdir, "herb_test_no_custom_rules_#{Process.pid}") }
+    let(:config) { Herb::Config::LinterConfig.new({ "linter" => { "custom_rules" => ["herb_test_no_custom_rules_rule"] } }) }
+
+    before do
+      FileUtils.mkdir_p(temp_custom_rules_dir)
+      File.write(File.join(temp_custom_rules_dir, "herb_test_no_custom_rules_rule.rb"), <<~RUBY)
+        class HerbTestNoCustomRulesRule < Herb::Lint::Rules::VisitorRule
+          def self.rule_name = "test/no-custom-rules-rule"
+          def self.description = "No custom rules test rule"
+          def self.safe_autofixable? = false
+          def self.unsafe_autofixable? = false
+        end
+      RUBY
+      $LOAD_PATH.unshift(temp_custom_rules_dir)
+    end
+
+    after do
+      $LOAD_PATH.delete(temp_custom_rules_dir)
+      FileUtils.rm_rf(temp_custom_rules_dir)
+    end
+
+    context "when no_custom_rules: false (default)" do
+      let(:runner) { described_class.new(config) }
+
+      it "loads custom rules from configuration" do
+        expect(runner.linter.rules.map { _1.class.rule_name }).to include("test/no-custom-rules-rule")
+      end
+    end
+
+    context "when no_custom_rules: true" do
+      let(:runner) { described_class.new(config, no_custom_rules: true) }
+
+      it "skips loading custom rules" do
+        expect(runner.linter.rules.map { _1.class.rule_name }).not_to include("test/no-custom-rules-rule")
+      end
+    end
+  end
+
   describe "#run" do
     subject { runner.run(paths) }
 
