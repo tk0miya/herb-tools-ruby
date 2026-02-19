@@ -71,8 +71,6 @@ module Herb
         @node_is_multiline = {}
       end
 
-      # -- Leaf nodes --
-
       # @rbs override
       def visit_literal_node(node)
         write(node.content)
@@ -87,8 +85,6 @@ module Herb
       def visit_whitespace_node(node)
         write(node.value.value) if node.value
       end
-
-      # -- HTML element nodes --
 
       # Visit HTML element node. Handles void elements (no close tag) and
       # preserved elements (content unchanged) specially.
@@ -176,7 +172,6 @@ module Herb
       # Restores @lines and @inline_mode after block completes.
       #
       # @rbs &block: () -> void
-      # @rbs return: Array[String]
       def capture #: Array[String]
         previous_lines = @lines
         previous_inline_mode = @inline_mode
@@ -197,7 +192,6 @@ module Herb
       #
       # @rbs node: Herb::AST::Node
       # @rbs &block: () -> void
-      # @rbs return: void
       def track_boundary(node) #: void
         start_line_count = @string_line_count
 
@@ -210,7 +204,6 @@ module Herb
       # Restores the original indent level after the block completes.
       #
       # @rbs &block: () -> void
-      # @rbs return: void
       def with_indent #: void
         @indent_level += 1
         yield
@@ -218,8 +211,6 @@ module Herb
       end
 
       # Return the current indentation string based on @indent_level.
-      #
-      # @rbs return: String
       def indent #: String
         " " * (@indent_level * @indent_width)
       end
@@ -228,7 +219,6 @@ module Herb
       # Empty/whitespace-only lines are pushed without indentation.
       #
       # @rbs line: String
-      # @rbs return: void
       def push_with_indent(line) #: void
         indent_str = line.strip.empty? ? "" : indent
         push(indent_str + line)
@@ -238,7 +228,6 @@ module Herb
       # If @lines is empty, starts a new line.
       #
       # @rbs text: String
-      # @rbs return: void
       def push_to_last_line(text) #: void
         if @lines.empty?
           @lines << text
@@ -250,7 +239,6 @@ module Herb
       # Push a line to @lines and update @string_line_count for each newline.
       #
       # @rbs line: String
-      # @rbs return: void
       def push(line) #: void
         @lines << line
         @string_line_count += 1 if line.include?("\n")

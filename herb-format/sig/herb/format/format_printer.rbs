@@ -108,7 +108,6 @@ module Herb
       # Restores @lines and @inline_mode after block completes.
       #
       # @rbs &block: () -> void
-      # @rbs return: Array[String]
       def capture: () { () -> void } -> Array[String]
 
       # Record whether a node spans multiple lines in the output.
@@ -116,39 +115,32 @@ module Herb
       #
       # @rbs node: Herb::AST::Node
       # @rbs &block: () -> void
-      # @rbs return: void
       def track_boundary: (Herb::AST::Node node) { () -> void } -> void
 
       # Temporarily increase the indent level while executing the block.
       # Restores the original indent level after the block completes.
       #
       # @rbs &block: () -> void
-      # @rbs return: void
       def with_indent: () { () -> void } -> void
 
       # Return the current indentation string based on @indent_level.
-      #
-      # @rbs return: String
       def indent: () -> String
 
       # Push a line to @lines with leading indentation.
       # Empty/whitespace-only lines are pushed without indentation.
       #
       # @rbs line: String
-      # @rbs return: void
       def push_with_indent: (String line) -> void
 
       # Append text to the last line in @lines without adding a newline.
       # If @lines is empty, starts a new line.
       #
       # @rbs text: String
-      # @rbs return: void
       def push_to_last_line: (String text) -> void
 
       # Push a line to @lines and update @string_line_count for each newline.
       #
       # @rbs line: String
-      # @rbs return: void
       def push: (String line) -> void
     end
   end
