@@ -41,6 +41,16 @@ module Herb
         printer.context.output
       end
 
+      # @rbs @lines: Array[String]
+      # @rbs @indent_level: Integer
+      # @rbs @string_line_count: Integer
+      # @rbs @inline_mode: bool
+      # @rbs @in_conditional_open_tag_context: bool
+      # @rbs @current_attribute_name: String?
+      # @rbs @element_stack: Array[Herb::AST::HTMLElementNode]
+      # @rbs @element_formatting_analysis: Hash[Herb::AST::HTMLElementNode, untyped]
+      # @rbs @node_is_multiline: Hash[Herb::AST::Node, bool]
+
       # @rbs indent_width: Integer
       # @rbs max_line_length: Integer
       # @rbs format_context: Context
@@ -49,6 +59,21 @@ module Herb
         @indent_width = indent_width
         @max_line_length = max_line_length
         @format_context = format_context
+
+        # Output management
+        @lines = []
+        @indent_level = 0
+        @string_line_count = 0
+
+        # Context management
+        @inline_mode = false
+        @in_conditional_open_tag_context = false
+        @current_attribute_name = nil
+        @element_stack = []
+
+        # Cache and analysis
+        @element_formatting_analysis = {}
+        @node_is_multiline = {}
       end
 
       # -- Leaf nodes --

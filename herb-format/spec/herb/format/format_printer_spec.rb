@@ -119,6 +119,30 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
   end
 
+  describe "#initialize" do
+    subject(:printer) do
+      described_class.new(indent_width:, max_line_length:, format_context:)
+    end
+
+    it "initializes output management fields" do
+      expect(printer.instance_variable_get(:@lines)).to eq([])
+      expect(printer.instance_variable_get(:@indent_level)).to eq(0)
+      expect(printer.instance_variable_get(:@string_line_count)).to eq(0)
+    end
+
+    it "initializes context management fields" do
+      expect(printer.instance_variable_get(:@inline_mode)).to be false
+      expect(printer.instance_variable_get(:@in_conditional_open_tag_context)).to be false
+      expect(printer.instance_variable_get(:@current_attribute_name)).to be_nil
+      expect(printer.instance_variable_get(:@element_stack)).to eq([])
+    end
+
+    it "initializes cache and analysis fields" do
+      expect(printer.instance_variable_get(:@element_formatting_analysis)).to eq({})
+      expect(printer.instance_variable_get(:@node_is_multiline)).to eq({})
+    end
+  end
+
   describe "#indent_string" do
     subject { printer.send(:indent_string, level) }
 
