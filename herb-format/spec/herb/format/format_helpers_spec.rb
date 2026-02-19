@@ -872,4 +872,301 @@ RSpec.describe Herb::Format::FormatHelpers do
       it { is_expected.to be true }
     end
   end
+
+  describe "#appendable_after_inline_or_erb?" do
+    subject { helper.appendable_after_inline_or_erb?(child) }
+
+    context "when child is an HTMLTextNode" do
+      let(:child) do
+        ast = Herb.parse("<div>text</div>", track_whitespace: true).value
+        ast.children.first.body.first
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context "when child is an ERBContentNode" do
+      let(:child) do
+        ast = Herb.parse("<div><%= @user %></div>", track_whitespace: true).value
+        ast.children.first.body.first
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context "when child is an inline HTMLElementNode" do
+      let(:child) do
+        ast = Herb.parse("<div><span>text</span></div>", track_whitespace: true).value
+        ast.children.first.body.first
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context "when child is a block HTMLElementNode" do
+      let(:child) do
+        ast = Herb.parse("<div><div>text</div></div>", track_whitespace: true).value
+        ast.children.first.body.first
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "when child is a WhitespaceNode" do
+      let(:child) do
+        ast = Herb.parse("<div class='foo'></div>", track_whitespace: true).value
+        ast.children.first.open_tag.children.find { |c| c.is_a?(Herb::AST::WhitespaceNode) }
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "when child is an ERB control flow node" do
+      let(:child) do
+        ast = Herb.parse("<div><% if true %><% end %></div>", track_whitespace: true).value
+        ast.children.first.body.first
+      end
+
+      it { is_expected.to be false }
+    end
+  end
+
+  describe "#should_append_to_last_line?" do
+    subject { helper.should_append_to_last_line?(child, siblings, index) }
+
+    context "with adjacent inline elements (no whitespace)" do
+      let(:siblings) do
+        ast = Herb.parse("<div><span>a</span><em>b</em></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:child) { siblings[1] }
+      let(:index) { 1 }
+
+      it { is_expected.to be true }
+    end
+
+    context "with text after inline element (no whitespace)" do
+      let(:siblings) do
+        ast = Herb.parse("<div><span>a</span>text</div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:child) { siblings[1] }
+      let(:index) { 1 }
+
+      it { is_expected.to be true }
+    end
+
+    context "with ERB after inline element (no whitespace)" do
+      let(:siblings) do
+        ast = Herb.parse("<div><span>a</span><%= @val %></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:child) { siblings[1] }
+      let(:index) { 1 }
+
+      it { is_expected.to be true }
+    end
+
+    context "with inline element after text (no whitespace)" do
+      let(:siblings) do
+        ast = Herb.parse("<div>text<span>a</span></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:child) { siblings[1] }
+      let(:index) { 1 }
+
+      it { is_expected.to be true }
+    end
+
+    context "with ERB after text (no whitespace)" do
+      let(:siblings) do
+        ast = Herb.parse("<div>text<%= @val %></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:child) { siblings[1] }
+      let(:index) { 1 }
+
+      it { is_expected.to be true }
+    end
+
+    context "with text after ERB (no whitespace)" do
+      let(:siblings) do
+        ast = Herb.parse("<div><%= @val %>text</div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:child) { siblings[1] }
+      let(:index) { 1 }
+
+      it { is_expected.to be true }
+    end
+
+    context "with adjacent ERB nodes (no whitespace)" do
+      let(:siblings) do
+        ast = Herb.parse("<div><%= @a %><%= @b %></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:child) { siblings[1] }
+      let(:index) { 1 }
+
+      it { is_expected.to be true }
+    end
+
+    context "with whitespace between inline elements" do
+      let(:siblings) do
+        ast = Herb.parse("<div><span>a</span>  <em>b</em></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:child) { siblings[2] }
+      let(:index) { 2 }
+
+      it { is_expected.to be false }
+    end
+
+    context "with block element after inline" do
+      let(:siblings) do
+        ast = Herb.parse("<div><span>a</span><div>b</div></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:child) { siblings[1] }
+      let(:index) { 1 }
+
+      it { is_expected.to be false }
+    end
+
+    context "with block element before inline" do
+      let(:siblings) do
+        ast = Herb.parse("<div><div>a</div><span>b</span></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:child) { siblings[1] }
+      let(:index) { 1 }
+
+      it { is_expected.to be false }
+    end
+
+    context "with no previous sibling" do
+      let(:siblings) do
+        ast = Herb.parse("<div><span>a</span></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:child) { siblings[0] }
+      let(:index) { 0 }
+
+      it { is_expected.to be false }
+    end
+
+    context "with ERB control flow after inline element" do
+      let(:siblings) do
+        ast = Herb.parse("<div><span>a</span><% if true %><% end %></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:child) { siblings[1] }
+      let(:index) { 1 }
+
+      it { is_expected.to be false }
+    end
+
+    context "with inline element after ERB (no whitespace)" do
+      let(:siblings) do
+        ast = Herb.parse("<div><%= @val %><span>a</span></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:child) { siblings[1] }
+      let(:index) { 1 }
+
+      it { is_expected.to be true }
+    end
+
+    context "with block element after text (no whitespace)" do
+      let(:siblings) do
+        ast = Herb.parse("<div>text<div>b</div></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:child) { siblings[1] }
+      let(:index) { 1 }
+
+      it { is_expected.to be false }
+    end
+
+    context "with block element after ERB (no whitespace)" do
+      let(:siblings) do
+        ast = Herb.parse("<div><%= @val %><div>b</div></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:child) { siblings[1] }
+      let(:index) { 1 }
+
+      it { is_expected.to be false }
+    end
+
+    context "with ERB control flow as previous sibling" do
+      let(:siblings) do
+        ast = Herb.parse("<div><% if true %><% end %><span>a</span></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:child) { siblings[1] }
+      let(:index) { 1 }
+
+      it { is_expected.to be false }
+    end
+  end
+
+  describe "#should_preserve_user_spacing?" do
+    subject { helper.should_preserve_user_spacing?(child, siblings, index) }
+
+    context "with double newline whitespace between meaningful nodes" do
+      let(:siblings) do
+        ast = Herb.parse("<div><p>a</p>\n\n<p>b</p></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:index) { 1 }
+      let(:child) { siblings[index] }
+
+      it { is_expected.to be true }
+    end
+
+    context "with single newline whitespace between meaningful nodes" do
+      let(:siblings) do
+        ast = Herb.parse("<div><p>a</p>\n<p>b</p></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:index) { 1 }
+      let(:child) { siblings[index] }
+
+      it { is_expected.to be false }
+    end
+
+    context "with non-whitespace node" do
+      let(:siblings) do
+        ast = Herb.parse("<div><p>a</p><p>b</p></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:child) { siblings[0] }
+      let(:index) { 0 }
+
+      it { is_expected.to be false }
+    end
+
+    context "with whitespace at start (no previous meaningful node)" do
+      let(:siblings) do
+        ast = Herb.parse("<div>\n\n<p>b</p></div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:index) { 0 }
+      let(:child) { siblings[index] }
+
+      it { is_expected.to be false }
+    end
+
+    context "with whitespace at end (no next meaningful node)" do
+      let(:siblings) do
+        ast = Herb.parse("<div><p>a</p>\n\n</div>", track_whitespace: true).value
+        ast.children.first.body
+      end
+      let(:index) { 1 }
+      let(:child) { siblings[index] }
+
+      it { is_expected.to be false }
+    end
+  end
 end
