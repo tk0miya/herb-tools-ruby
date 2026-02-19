@@ -5,8 +5,8 @@ module Herb
     module Rules
       module Html
         # Description:
-        #   Warn when multiple `<meta>` tags share the same `name` or `http-equiv` attribute within
-        #   the same `<head>` block, unless they are wrapped in conditional comments.
+        #   Warn when multiple `<meta>` tags share the same `name` or `http-equiv` attribute within the same
+        #   `<head>` block, unless they are wrapped in conditional comments.
         #
         # Good:
         #   <head>
@@ -55,6 +55,8 @@ module Herb
 
           @seen_meta_names: Hash[String, Herb::Location]
 
+          @seen_meta_http_equivs: Hash[String, Herb::Location]
+
           # @rbs override
           def on_new_investigation: ...
 
@@ -67,7 +69,13 @@ module Herb
           def meta_element?: (Herb::AST::HTMLElementNode node) -> bool
 
           # @rbs node: Herb::AST::HTMLElementNode
+          def check_duplicate_meta: (Herb::AST::HTMLElementNode node) -> void
+
+          # @rbs node: Herb::AST::HTMLElementNode
           def check_duplicate_meta_name: (Herb::AST::HTMLElementNode node) -> void
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          def check_duplicate_meta_http_equiv: (Herb::AST::HTMLElementNode node) -> void
         end
       end
     end

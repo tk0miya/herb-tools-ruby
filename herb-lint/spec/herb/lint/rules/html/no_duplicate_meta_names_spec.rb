@@ -28,6 +28,60 @@ RSpec.describe Herb::Lint::Rules::Html::NoDuplicateMetaNames do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
+    # Good examples from documentation
+    context "with unique meta names in head (documentation example)" do
+      let(:source) do
+        <<~HTML
+          <head>
+            <meta name="description" content="Welcome to our site">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+        HTML
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with duplicate meta name in head (documentation example)" do
+      let(:source) do
+        <<~HTML
+          <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="viewport" content="width=1024">
+          </head>
+        HTML
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-duplicate-meta-names")
+        expect(subject.first.message).to include("Duplicate meta name 'viewport'")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "with duplicate meta http-equiv in head (documentation example)" do
+      let(:source) do
+        <<~HTML
+          <head>
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta http-equiv="X-UA-Compatible" content="chrome=1">
+          </head>
+        HTML
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-duplicate-meta-names")
+        expect(subject.first.message).to include("Duplicate meta http-equiv 'X-UA-Compatible'")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    # Additional edge case tests
     context "when all meta names are unique" do
       let(:source) do
         <<~HTML
@@ -164,6 +218,33 @@ RSpec.describe Herb::Lint::Rules::Html::NoDuplicateMetaNames do
         expect(subject.size).to eq(1)
         expect(subject.first.message).to include("Duplicate meta name 'description'")
         expect(subject.first.line).to eq(4)
+      end
+    end
+
+    context "when meta http-equiv attribute has empty value" do
+      let(:source) do
+        <<~HTML
+          <meta http-equiv="" content="First">
+          <meta http-equiv="" content="Second">
+        HTML
+      end
+
+      it "does not report an offense (empty http-equiv values are not tracked)" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when meta http-equiv values differ only in case" do
+      let(:source) do
+        <<~HTML
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta http-equiv="x-ua-compatible" content="chrome=1">
+        HTML
+      end
+
+      it "reports an offense (case-insensitive comparison)" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to include("Duplicate meta http-equiv")
       end
     end
   end
