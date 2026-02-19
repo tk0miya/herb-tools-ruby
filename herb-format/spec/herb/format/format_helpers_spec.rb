@@ -1111,6 +1111,197 @@ RSpec.describe Herb::Format::FormatHelpers do
     end
   end
 
+  describe "#needs_space_between?" do
+    subject { helper.needs_space_between?(current_line, word) }
+
+    context "with two regular words" do
+      let(:current_line) { "Hello" }
+      let(:word) { "world" }
+
+      it { is_expected.to be true }
+    end
+
+    context "with closing punctuation as word" do
+      let(:current_line) { "text" }
+      let(:word) { ")" }
+
+      it { is_expected.to be false }
+    end
+
+    context "with period as word" do
+      let(:current_line) { "text" }
+      let(:word) { "." }
+
+      it { is_expected.to be false }
+    end
+
+    context "with comma as word" do
+      let(:current_line) { "text" }
+      let(:word) { "," }
+
+      it { is_expected.to be false }
+    end
+
+    context "with current line ending with opening punctuation" do
+      let(:current_line) { "(" }
+      let(:word) { "text" }
+
+      it { is_expected.to be false }
+    end
+
+    context "with current line ending with opening bracket" do
+      let(:current_line) { "[" }
+      let(:word) { "text" }
+
+      it { is_expected.to be false }
+    end
+
+    context "with ERB tag after special symbol" do
+      let(:current_line) { "$" }
+      let(:word) { "<%= value %>" }
+
+      it { is_expected.to be false }
+    end
+
+    context "with ERB tag after regular word" do
+      let(:current_line) { "text" }
+      let(:word) { "<%= value %>" }
+
+      it { is_expected.to be true }
+    end
+
+    context "with regular word after ERB tag" do
+      let(:current_line) { "<%= value %>" }
+      let(:word) { "text" }
+
+      it { is_expected.to be true }
+    end
+  end
+
+  describe "#closing_punctuation?" do
+    subject { helper.closing_punctuation?(word) }
+
+    context "with a closing punctuation character" do
+      let(:word) { ")" }
+
+      it { is_expected.to be true }
+    end
+
+    context "with multiple punctuation characters" do
+      let(:word) { ")." }
+
+      it { is_expected.to be true }
+    end
+
+    context "with regular word" do
+      let(:word) { "hello" }
+
+      it { is_expected.to be false }
+    end
+
+    context "with word ending in punctuation" do
+      let(:word) { "hello." }
+
+      it { is_expected.to be false }
+    end
+  end
+
+  describe "#opening_punctuation?" do
+    subject { helper.opening_punctuation?(word) }
+
+    context "with an opening punctuation character" do
+      let(:word) { "(" }
+
+      it { is_expected.to be true }
+    end
+
+    context "with word ending in opening punctuation" do
+      let(:word) { "func(" }
+
+      it { is_expected.to be true }
+    end
+
+    context "with regular word" do
+      let(:word) { "hello" }
+
+      it { is_expected.to be false }
+    end
+
+    context "with closing punctuation" do
+      let(:word) { ")" }
+
+      it { is_expected.to be false }
+    end
+  end
+
+  describe "#ends_with_erb_tag?" do
+    subject { helper.ends_with_erb_tag?(text) }
+
+    context "with text ending in ERB tag" do
+      let(:text) { "<%= value %>" }
+
+      it { is_expected.to be true }
+    end
+
+    context "with text ending in ERB comment tag" do
+      let(:text) { "<%# comment %>" }
+
+      it { is_expected.to be true }
+    end
+
+    context "with text ending in ERB tag followed by space" do
+      let(:text) { "<%= value %> " }
+
+      it { is_expected.to be false }
+    end
+
+    context "with regular text" do
+      let(:text) { "hello world" }
+
+      it { is_expected.to be false }
+    end
+
+    context "with ERB tag in the middle" do
+      let(:text) { "<%= value %> more" }
+
+      it { is_expected.to be false }
+    end
+  end
+
+  describe "#starts_with_erb_tag?" do
+    subject { helper.starts_with_erb_tag?(text) }
+
+    context "with text starting with ERB output tag" do
+      let(:text) { "<%= value %>" }
+
+      it { is_expected.to be true }
+    end
+
+    context "with text starting with ERB code tag" do
+      let(:text) { "<% code %>" }
+
+      it { is_expected.to be true }
+    end
+
+    context "with text starting with ERB comment tag" do
+      let(:text) { "<%# comment %>" }
+
+      it { is_expected.to be true }
+    end
+
+    context "with regular text" do
+      let(:text) { "hello world" }
+
+      it { is_expected.to be false }
+    end
+
+    context "with ERB tag preceded by other text" do
+      let(:text) { "before <%= value %>" }
+
+      it { is_expected.to be false }
+    end
+  end
+
   describe "#should_preserve_user_spacing?" do
     subject { helper.should_preserve_user_spacing?(child, siblings, index) }
 

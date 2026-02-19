@@ -157,6 +157,38 @@ module Herb
       # @rbs children: Array[Herb::AST::Node]
       def complex_erb_control_flow?: (Array[Herb::AST::Node] children) -> bool
 
+      # Check if a space is needed between the current line and the next word.
+      # Returns false when:
+      # - The word is closing punctuation (e.g., ")", ".", ",")
+      # - The current line ends with opening punctuation (e.g., "(", "[")
+      # - The word starts with an ERB tag and the current line ends with a non-word character
+      #
+      # @rbs current_line: String
+      # @rbs word: String
+      def needs_space_between?: (String current_line, String word) -> bool
+
+      # Check if a word is closing punctuation (e.g., ")", ".", ",", "!").
+      # No space should precede closing punctuation.
+      #
+      # @rbs word: String
+      def closing_punctuation?: (String word) -> bool
+
+      # Check if a string ends with opening punctuation (e.g., "(", "[", "{").
+      # No space should follow opening punctuation.
+      #
+      # @rbs word: String
+      def opening_punctuation?: (String word) -> bool
+
+      # Check if a string ends with an ERB closing tag (%>).
+      #
+      # @rbs text: String
+      def ends_with_erb_tag?: (String text) -> bool
+
+      # Check if a string starts with an ERB opening tag (<%).
+      #
+      # @rbs text: String
+      def starts_with_erb_tag?: (String text) -> bool
+
       # Check if a node can be appended to a previous inline element or ERB node.
       # Used internally by should_append_to_last_line?.
       #
