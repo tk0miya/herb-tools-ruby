@@ -30,6 +30,8 @@ module Herb
       # @rbs ignore_errors: bool
       def self.format: (Herb::ParseResult | Herb::AST::Node input, format_context: Context, ?ignore_errors: bool) -> String
 
+      @node_is_multiline: Hash[Herb::AST::Node, bool]
+
       @inline_mode: bool
 
       @string_line_count: Integer
@@ -80,6 +82,13 @@ module Herb
       #
       # @rbs &: () -> void
       def capture: () { () -> void } -> Array[String]
+
+      # Track if a node spans multiple lines.
+      # Records whether the node produced multiline output.
+      #
+      # @rbs node: Herb::AST::Node
+      # @rbs &: () -> void
+      def track_boundary: (Herb::AST::Node node) { () -> void } -> void
 
       # Visit the body of an HTML element. For preserved elements (script,
       # style, pre, textarea), content is output as-is using IdentityPrinter.

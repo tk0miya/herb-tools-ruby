@@ -56,7 +56,7 @@ Part G: Integration & Testing                         ← Integration
 ### Part B: Core Patterns (5 tasks)
 - [ ] Task 2.9: State Management Fields
 - [x] Task 2.10: capture Pattern
-- [ ] Task 2.11: trackBoundary Pattern
+- [x] Task 2.11: trackBoundary Pattern
 - [ ] Task 2.12: withIndent Pattern
 - [ ] Task 2.13: Output Helper Methods
 

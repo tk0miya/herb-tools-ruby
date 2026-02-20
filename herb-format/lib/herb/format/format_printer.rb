@@ -12,7 +12,7 @@ module Herb
     # Leaf nodes are handled with identity-like output for now. As formatting
     # rules are added, visitor methods will be overridden to apply indentation,
     # line wrapping, attribute formatting, and other transformations.
-    class FormatPrinter < ::Herb::Printer::Base
+    class FormatPrinter < ::Herb::Printer::Base # rubocop:disable Metrics/ClassLength
       VOID_ELEMENTS = %w[
         area base br col embed hr img input link meta param source track wbr
       ].freeze
@@ -44,6 +44,7 @@ module Herb
       # @rbs @lines: Array[String]
       # @rbs @string_line_count: Integer
       # @rbs @inline_mode: bool
+      # @rbs @node_is_multiline: Hash[Herb::AST::Node, bool]
 
       # @rbs indent_width: Integer
       # @rbs max_line_length: Integer
@@ -56,6 +57,7 @@ module Herb
         @lines = []
         @string_line_count = 0
         @inline_mode = false
+        @node_is_multiline = {}
       end
 
       # -- Leaf nodes --
@@ -145,6 +147,21 @@ module Herb
         @inline_mode = previous_inline_mode
 
         result
+      end
+
+      # Track if a node spans multiple lines.
+      # Records whether the node produced multiline output.
+      #
+      # @rbs node: Herb::AST::Node
+      # @rbs &: () -> void
+      def track_boundary(node) #: void
+        start_line_count = @string_line_count
+
+        yield
+
+        end_line_count = @string_line_count
+
+        @node_is_multiline[node] = true if end_line_count > start_line_count
       end
 
       # Visit the body of an HTML element. For preserved elements (script,
