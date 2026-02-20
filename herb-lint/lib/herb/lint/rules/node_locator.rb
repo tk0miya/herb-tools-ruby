@@ -31,7 +31,7 @@ module Herb
       # @rbs @target_node: Herb::AST::Node
 
       # @rbs override
-      def visit_child_nodes(node) #: void
+      def visit_child_nodes(node)
         @found = parent_stack.last if node.equal?(@target_node)
 
         return if found

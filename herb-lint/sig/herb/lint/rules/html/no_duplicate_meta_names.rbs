@@ -24,6 +24,10 @@ module Herb
 
           def self.default_severity: () -> String
 
+          def self.safe_autofixable?: () -> bool
+
+          def self.unsafe_autofixable?: () -> bool
+
           @seen_meta_names: Hash[String, Herb::Location]
 
           # @rbs override

@@ -46,7 +46,7 @@ module Herb
           # @rbs @first_locals_line: Integer?
 
           # @rbs override
-          def on_new_investigation #: void
+          def on_new_investigation
             super
             @first_locals_line = nil
           end

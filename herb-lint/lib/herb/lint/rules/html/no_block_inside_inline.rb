@@ -73,7 +73,7 @@ module Herb
           # @rbs @inline_stack: Array[String]
 
           # @rbs override
-          def on_new_investigation #: void
+          def on_new_investigation
             super
             @inline_stack = []
           end

@@ -42,7 +42,7 @@ module Herb
           # @rbs @seen_ids: Hash[String, Herb::Location]
 
           # @rbs override
-          def on_new_investigation #: void
+          def on_new_investigation
             super
             @seen_ids = {}
           end

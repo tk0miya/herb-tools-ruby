@@ -79,7 +79,7 @@ module Herb
           # @rbs @inside_svg: bool
 
           # @rbs override
-          def on_new_investigation #: void
+          def on_new_investigation
             super
             @inside_svg = false
           end

@@ -59,7 +59,7 @@ module Herb
         #
         # This hook is inspired by RuboCop's on_new_investigation pattern.
         # @rbs override
-        def on_new_investigation #: void
+        def on_new_investigation
           # Default implementation does nothing
           # Subclasses can override to reset state
         end

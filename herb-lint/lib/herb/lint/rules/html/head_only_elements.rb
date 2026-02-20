@@ -86,7 +86,7 @@ module Herb
           attr_reader :element_stack
 
           # @rbs override
-          def on_new_investigation #: void
+          def on_new_investigation
             super
             @element_stack = []
           end
@@ -106,7 +106,6 @@ module Herb
 
           # @rbs node: untyped -- HTMLElementNode
           # @rbs tag: String
-          # @rbs return: void
           def check_head_only_element(node, tag) #: void
             return if inside_head?
             return unless inside_body?
@@ -121,7 +120,6 @@ module Herb
 
           # @rbs node: untyped -- HTMLElementNode
           # @rbs tag: String
-          # @rbs return: bool
           def allowed_exception?(node, tag) #: bool
             (tag == "title" && inside_svg?) ||
               (tag == "style" && inside_svg?) ||
@@ -129,22 +127,18 @@ module Herb
           end
 
           # @rbs node: untyped -- HTMLElementNode
-          # @rbs return: bool
           def itemprop_attribute?(node) #: bool
             attribute?(node, "itemprop")
           end
 
-          # @rbs return: bool
           def inside_head? #: bool
             element_stack.include?("head")
           end
 
-          # @rbs return: bool
           def inside_body? #: bool
             element_stack.include?("body")
           end
 
-          # @rbs return: bool
           def inside_svg? #: bool
             element_stack.include?("svg")
           end

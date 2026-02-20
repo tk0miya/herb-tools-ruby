@@ -30,7 +30,7 @@ module Herb
           # @rbs @anchor_depth: Integer
 
           # @rbs override
-          def on_new_investigation #: void
+          def on_new_investigation
             super
             @anchor_depth = 0
           end

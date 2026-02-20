@@ -34,8 +34,6 @@ module Herb
           def check_source: ...
 
           # @rbs override
-          # @rbs offense: Offense
-          # @rbs source: String
           def autofix_source: ...
 
           private

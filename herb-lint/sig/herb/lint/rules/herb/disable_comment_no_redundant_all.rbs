@@ -38,7 +38,7 @@ module Herb
           def check_disable_comment: ...
 
           # @rbs rule_name: String, comment: HerbDirective::DisableComment -- return: void
-          def report_redundant_rule: (String rule_name, untyped comment) -> untyped
+          def report_redundant_rule: (String rule_name, untyped comment) -> void
         end
       end
     end

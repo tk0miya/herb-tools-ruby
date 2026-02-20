@@ -58,8 +58,7 @@ module Herb
           private
 
           # @rbs node: Herb::HtmlElementNode -- Check if element has both disabled and aria-disabled
-          # @rbs return: void
-          def check_element(node)
+          def check_element(node) #: void
             return unless element_supports_native_disabled?(node)
             return if dynamic_disabled_attributes?(node)
             return unless both_disabled_attributes?(node)
@@ -73,8 +72,7 @@ module Herb
           end
 
           # @rbs node: Herb::HtmlElementNode
-          # @rbs return: bool
-          def element_supports_native_disabled?(node)
+          def element_supports_native_disabled?(node) #: bool
             element_tag_name = tag_name(node)
             return false unless element_tag_name
 
@@ -82,14 +80,12 @@ module Herb
           end
 
           # @rbs node: Herb::HtmlElementNode
-          # @rbs return: bool
-          def both_disabled_attributes?(node)
+          def both_disabled_attributes?(node) #: bool
             attribute?(node, "disabled") && attribute?(node, "aria-disabled")
           end
 
           # @rbs node: Herb::HtmlElementNode
-          # @rbs return: bool
-          def dynamic_disabled_attributes?(node)
+          def dynamic_disabled_attributes?(node) #: bool
             return true if attribute?(node, "disabled") && attribute_has_erb_content?(node, "disabled")
             return true if attribute?(node, "aria-disabled") && attribute_has_erb_content?(node, "aria-disabled")
 
@@ -97,8 +93,7 @@ module Herb
           end
 
           # @rbs node: Herb::HtmlElementNode, attribute_name: String -- Check if attribute value contains ERB
-          # @rbs return: bool
-          def attribute_has_erb_content?(node, attribute_name)
+          def attribute_has_erb_content?(node, attribute_name) #: bool
             attr = find_attribute(node, attribute_name)
             return false unless attr
 
