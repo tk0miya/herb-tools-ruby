@@ -227,4 +227,97 @@ RSpec.describe Herb::Format::FormatPrinter do
       it { is_expected.to be false }
     end
   end
+
+  describe "#push" do
+    let(:printer) do
+      Class.new(described_class) do
+        public :push, :capture
+        attr_reader :string_line_count
+      end.new(indent_width:, max_line_length:, format_context:)
+    end
+
+    it "appends a line to the capture buffer" do
+      result = printer.capture { printer.push("hello") }
+
+      expect(result).to eq(["hello"])
+    end
+
+    it "increments string_line_count by 1 when line contains one newline" do
+      printer.push("line\n")
+
+      expect(printer.string_line_count).to eq(1)
+    end
+
+    it "increments string_line_count by the number of newlines in the string" do
+      printer.push("\n\n\n")
+
+      expect(printer.string_line_count).to eq(3)
+    end
+
+    it "does not increment string_line_count for lines without newlines" do
+      printer.push("no newline")
+
+      expect(printer.string_line_count).to eq(0)
+    end
+  end
+
+  describe "#capture" do
+    subject { printer.capture { nil } }
+
+    let(:printer) do
+      Class.new(described_class) do
+        public :push, :capture
+        attr_reader :string_line_count
+        attr_accessor :inline_mode
+      end.new(indent_width:, max_line_length:, format_context:)
+    end
+
+    it "returns an empty array when block produces no output" do
+      expect(subject).to eq([])
+    end
+
+    context "with lines pushed inside block" do
+      subject { printer.capture { printer.push("hello") } }
+
+      it "captures the pushed lines" do
+        expect(subject).to eq(["hello"])
+      end
+    end
+
+    context "with lines pushed before and inside capture" do
+      it "isolates captured output from outer buffer" do
+        printer.push("outer")
+        result = printer.capture { printer.push("inner") }
+
+        expect(result).to eq(["inner"])
+      end
+
+      it "restores the outer buffer after capture" do
+        printer.push("outer")
+        printer.capture { printer.push("inner") }
+        result = printer.capture { printer.push("check") }
+
+        expect(result).to eq(["check"])
+      end
+    end
+
+    context "with string_line_count incremented inside block" do
+      it "restores string_line_count after capture" do
+        printer.push("outer\n")
+        printer.capture { printer.push("inner\n") }
+
+        expect(printer.string_line_count).to eq(1)
+      end
+    end
+
+    context "with inline_mode set to true" do
+      before { printer.inline_mode = true }
+
+      it "restores inline_mode after capture" do
+        printer.capture { nil }
+
+        expect(printer.inline_mode).to be true
+      end
+    end
+  end
 end

@@ -55,7 +55,7 @@ Part G: Integration & Testing                         ← Integration
 
 ### Part B: Core Patterns (5 tasks)
 - [ ] Task 2.9: State Management Fields
-- [ ] Task 2.10: capture Pattern
+- [x] Task 2.10: capture Pattern
 - [ ] Task 2.11: trackBoundary Pattern
 - [ ] Task 2.12: withIndent Pattern
 - [ ] Task 2.13: Output Helper Methods
@@ -72,7 +72,7 @@ Part G: Integration & Testing                         ← Integration
 - [ ] Task 2.20: Class Attribute Formatting
 - [ ] Task 2.21: Quote Normalization
 
-**Progress: 8/21 tasks completed**
+**Progress: 9/21 tasks completed**
 
 ---
 
@@ -674,6 +674,10 @@ end
 - indent returns correct number of spaces
 - push_with_indent outputs with indentation
 - push_to_last_line appends to last line
+
+**Note on test strategy:** `push` tests currently access the method via `send` (private). These tests are temporary scaffolding. When integration tests (Task 2.36) are written, review which tests can be replaced:
+- `#push` newline counting contract (`@string_line_count` increment) is subtle and worth keeping as a focused unit test even after integration coverage exists
+- `push_with_indent` and `push_to_last_line` behavior will be fully covered by integration tests and can be removed at that point
 
 **Estimate:** 1 hour
 

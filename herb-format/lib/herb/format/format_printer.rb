@@ -41,6 +41,10 @@ module Herb
         printer.context.output
       end
 
+      # @rbs @lines: Array[String]
+      # @rbs @string_line_count: Integer
+      # @rbs @inline_mode: bool
+
       # @rbs indent_width: Integer
       # @rbs max_line_length: Integer
       # @rbs format_context: Context
@@ -49,6 +53,9 @@ module Herb
         @indent_width = indent_width
         @max_line_length = max_line_length
         @format_context = format_context
+        @lines = []
+        @string_line_count = 0
+        @inline_mode = false
       end
 
       # -- Leaf nodes --
@@ -109,6 +116,36 @@ module Herb
       end
 
       private
+
+      # Push a line to the output buffer.
+      #
+      # @rbs line: String
+      def push(line) #: void
+        @lines << line
+        @string_line_count += line.count("\n")
+      end
+
+      # Capture output to a temporary buffer.
+      # Saves and restores @lines, @string_line_count, and @inline_mode around the block.
+      #
+      # @rbs &: () -> void
+      def capture #: Array[String]
+        previous_lines = @lines
+        previous_string_line_count = @string_line_count
+        previous_inline_mode = @inline_mode
+
+        @lines = []
+        @string_line_count = 0
+
+        yield
+
+        result = @lines
+        @lines = previous_lines
+        @string_line_count = previous_string_line_count
+        @inline_mode = previous_inline_mode
+
+        result
+      end
 
       # Visit the body of an HTML element. For preserved elements (script,
       # style, pre, textarea), content is output as-is using IdentityPrinter.
