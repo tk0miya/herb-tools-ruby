@@ -173,10 +173,10 @@ module Herb
         case options[:format]
         when "json"
           Formatter::JsonFormatter.new(io: stdout)
-        when "detailed"
-          Formatter::DetailedFormatter.new(io: stdout)
-        else
+        when "simple"
           Formatter::SimpleFormatter.new(io: stdout)
+        else
+          Formatter::DetailedFormatter.new(io: stdout)
         end
       end
     end

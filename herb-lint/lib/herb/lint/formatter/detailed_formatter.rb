@@ -144,21 +144,32 @@ module Herb
         # @rbs offense: Offense
         # @rbs line_num_width: Integer
         def print_column_indicator(offense, line_num_width) #: void
-          # Calculate spacing: "  " + line_num + " | " + column position
-          spacing = "  #{' ' * line_num_width} | #{' ' * (offense.column - 1)}"
-
-          # Calculate caret length based on offense range
-          caret_length = if offense.location.end.line == offense.line
-                           # Multi-column offense on same line
-                           [offense.location.end.column - offense.column + 1, 1].max
-                         else
-                           # Multi-line offense or single character
-                           1
-                         end
-
-          caret = colorize("^" * caret_length, color: :red, bold: true)
-
+          spacing = indicator_spacing(offense, line_num_width)
+          caret = colorize("^" * indicator_caret_length(offense), color: :red, bold: true)
           io.puts "#{spacing}#{caret}"
+        end
+
+        # Calculates the spacing string before the caret.
+        #
+        # @rbs offense: Offense
+        # @rbs line_num_width: Integer
+        def indicator_spacing(offense, line_num_width) #: String
+          # Use [col - 1, 0].max to handle column 0 (1-based columns minus 1 for offset)
+          column_offset = [offense.column - 1, 0].max
+          "  #{' ' * line_num_width} | #{' ' * column_offset}"
+        end
+
+        # Calculates the caret length based on the offense location range.
+        #
+        # @rbs offense: Offense
+        def indicator_caret_length(offense) #: Integer
+          if offense.location.end.line == offense.line
+            # Multi-column offense on same line
+            [offense.location.end.column - offense.column + 1, 1].max
+          else
+            # Multi-line offense or single character
+            1
+          end
         end
 
         # Returns the colored symbol for a severity level.

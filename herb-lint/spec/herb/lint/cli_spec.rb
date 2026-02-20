@@ -228,6 +228,38 @@ RSpec.describe Herb::Lint::CLI do
         end
       end
 
+      context "with default format (no --format option)" do
+        let(:argv) { [] }
+
+        before do
+          create_file("app/views/test.html.erb", '<img src="test.png">')
+        end
+
+        it "uses DetailedFormatter showing source code context" do
+          output = capture_stdout { subject }
+          # DetailedFormatter shows source code lines with line number prefix (e.g., "  1 | <img ...>")
+          # SimpleFormatter does not include source code lines at all
+          expect(output).to include("html-img-require-alt")
+          expect(output).to include('  1 | <img src="test.png">')
+        end
+      end
+
+      context "with --format detailed option" do
+        let(:argv) { ["--format", "detailed"] }
+
+        before do
+          create_file("app/views/test.html.erb", '<img src="test.png">')
+        end
+
+        it "outputs detailed format with source code context" do
+          output = capture_stdout { subject }
+          # DetailedFormatter shows source code lines with line number prefix (e.g., "  1 | <img ...>")
+          # SimpleFormatter does not include source code lines at all
+          expect(output).to include("html-img-require-alt")
+          expect(output).to include('  1 | <img src="test.png">')
+        end
+      end
+
       context "with --format json option" do
         let(:argv) { ["--format", "json"] }
 

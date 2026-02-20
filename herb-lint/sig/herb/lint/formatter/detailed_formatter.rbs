@@ -67,6 +67,17 @@ module Herb
         # @rbs line_num_width: Integer
         def print_column_indicator: (Offense offense, Integer line_num_width) -> void
 
+        # Calculates the spacing string before the caret.
+        #
+        # @rbs offense: Offense
+        # @rbs line_num_width: Integer
+        def indicator_spacing: (Offense offense, Integer line_num_width) -> String
+
+        # Calculates the caret length based on the offense location range.
+        #
+        # @rbs offense: Offense
+        def indicator_caret_length: (Offense offense) -> Integer
+
         # Returns the colored symbol for a severity level.
         #
         # @rbs severity: String
