@@ -7,7 +7,11 @@
 - Target Ruby 3.3+ features where appropriate
 - Sort lists of definitions in ASCII order unless there is a specific reason not to (e.g., `require` statements, `gem` declarations in Gemfile, constant definitions)
 - Always pass `track_whitespace: true` when calling `Herb.parse`. This applies to production code, test code, and any ad-hoc scripts. Example: `Herb.parse(source, track_whitespace: true)`
-- When disabling warnings for classes or methods, place the disable comment on the definition line. Example: `def greet #: void # rubocop:disable Metrics/BlockLength`
+
+### RuboCop Rules
+
+- Do not modify `.rubocop.yml` or `.rubocop-common.yml` files. Cop configurations are fixed and must not be changed.
+- When disabling a cop for a specific class or method, place the `# rubocop:disable` comment on the definition line, not at the top of the file or in `.rubocop.yml`. Example: `def greet #: void # rubocop:disable Metrics/BlockLength`
 
 ### Numbered Block Parameters
 
