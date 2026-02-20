@@ -36,6 +36,8 @@ module Herb
 
       @string_line_count: Integer
 
+      @indent_level: Integer
+
       @lines: Array[String]
 
       # @rbs indent_width: Integer
@@ -89,6 +91,11 @@ module Herb
       # @rbs node: Herb::AST::Node
       # @rbs &: () -> void
       def track_boundary: (Herb::AST::Node node) { () -> void } -> void
+
+      # Temporarily increase indent level for the duration of the block.
+      #
+      # @rbs &: () -> void
+      def with_indent: () { () -> void } -> void
 
       # Visit the body of an HTML element. For preserved elements (script,
       # style, pre, textarea), content is output as-is using IdentityPrinter.
