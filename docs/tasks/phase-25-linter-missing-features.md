@@ -140,23 +140,23 @@ Display performance metrics in output.
 - Shown in summary section of DetailedFormatter
 
 **Implementation Tasks:**
-- [ ] Track start/end time in `Runner#run`
-  - [ ] Record start time before file discovery
-  - [ ] Record end time after all files processed
-  - [ ] Calculate elapsed time
-- [ ] Store timing in `AggregatedResult`
-  - [ ] Add timing field (currently always null)
-  - [ ] Populate from Runner
-- [ ] Display timing in reporters
-  - [ ] Add to SimpleFormatter summary
-  - [ ] Add to DetailedFormatter summary
-  - [ ] Include in JSON output (already has field)
-- [ ] Add `--no-timing` CLI flag to disable display
-  - [ ] Parse option
-  - [ ] Pass to reporters
-  - [ ] Update help text
-- [ ] Write unit tests
-- [ ] Write integration tests
+- [x] Track start/end time in `Runner#run`
+  - [x] Record start time before file discovery
+  - [x] Record end time after all files processed
+  - [x] Calculate elapsed time
+- [x] Store timing in `AggregatedResult`
+  - [x] Add timing field (currently always null)
+  - [x] Populate from Runner
+- [x] Display timing in reporters
+  - [x] Add to SimpleFormatter summary
+  - [x] Add to DetailedFormatter summary
+  - [x] Include in JSON output (already has field)
+- [x] Add `--no-timing` CLI flag to disable display
+  - [x] Parse option
+  - [x] Pass to reporters
+  - [x] Update help text
+- [x] Write unit tests
+- [x] Write integration tests
 
 ### Phase 25.3: Low Priority
 
@@ -210,8 +210,8 @@ The following features are mentioned in requirements/design documents but **do N
 - [x] Unit tests for all new classes/methods
   - [x] DetailedFormatter
   - [x] Custom rules system (Phase 22)
-  - [ ] Config path resolution
-  - [ ] Timing tracking
+  - [x] Config path resolution
+  - [x] Timing tracking
 - [x] Integration tests via CLI
   - [ ] All new CLI options
   - [x] Default format selection

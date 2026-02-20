@@ -6,12 +6,18 @@ module Herb
     class AggregatedResult
       attr_reader :results #: Array[LintResult]
       attr_reader :rule_count #: Integer
+      attr_reader :start_time #: Time?
+      attr_reader :duration #: Integer?
 
       # @rbs results: Array[LintResult]
       # @rbs rule_count: Integer
-      def initialize(results, rule_count: 0) #: void
+      # @rbs start_time: Time? -- when linting started, or nil if not tracked
+      # @rbs duration: Integer? -- elapsed time in milliseconds, or nil if not tracked
+      def initialize(results, rule_count: 0, start_time: nil, duration: nil) #: void
         @results = results
         @rule_count = rule_count
+        @start_time = start_time
+        @duration = duration
       end
 
       # Returns the total number of offenses across all files.

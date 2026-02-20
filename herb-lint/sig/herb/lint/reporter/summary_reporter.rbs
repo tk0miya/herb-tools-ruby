@@ -12,8 +12,11 @@ module Herb
 
         attr_reader io: IO
 
+        attr_reader show_timing: bool
+
         # @rbs io: IO
-        def initialize: (?io: IO) -> void
+        # @rbs show_timing: bool -- when false, suppresses timing display
+        def initialize: (?io: IO, ?show_timing: bool) -> void
 
         # Displays a summary of the aggregated linting result.
         #
@@ -41,6 +44,11 @@ module Herb
         #
         # @rbs aggregated_result: AggregatedResult
         def print_fixable_line: (AggregatedResult aggregated_result) -> void
+
+        # Prints timing lines showing start time and total execution duration.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_timing_line: (AggregatedResult aggregated_result) -> void
 
         # Prints success message if all files are clean.
         #

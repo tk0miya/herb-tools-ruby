@@ -8,15 +8,18 @@ module Herb
     module Reporter
       # Summary reporter that outputs aggregated linting results.
       # This class is used by formatters to display summary information.
-      class SummaryReporter
+      class SummaryReporter # rubocop:disable Metrics/ClassLength
         include ConsoleUtils
         include StringUtils
 
         attr_reader :io #: IO
+        attr_reader :show_timing #: bool
 
         # @rbs io: IO
-        def initialize(io: $stdout) #: void
+        # @rbs show_timing: bool -- when false, suppresses timing display
+        def initialize(io: $stdout, show_timing: true) #: void
           @io = io
+          @show_timing = show_timing
         end
 
         # Displays a summary of the aggregated linting result.
@@ -30,6 +33,7 @@ module Herb
           print_files_line(aggregated_result) if aggregated_result.file_count > 1
           print_offenses_line(aggregated_result)
           print_fixable_line(aggregated_result)
+          print_timing_line(aggregated_result) if show_timing && aggregated_result.duration
           print_success_message(aggregated_result)
         end
 
@@ -116,6 +120,22 @@ module Herb
           else
             io.puts " #{pad_label('Fixable')} #{total_part}"
           end
+        end
+
+        # Prints timing lines showing start time and total execution duration.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_timing_line(aggregated_result) #: void
+          return unless aggregated_result.duration
+
+          if aggregated_result.start_time
+            time_str = aggregated_result.start_time.strftime("%H:%M:%S")
+            io.puts " #{pad_label('Start at')} #{colorize(time_str, color: :cyan)}"
+          end
+
+          rule_count = aggregated_result.rule_count
+          rule_str = colorize("(#{rule_count} #{pluralize(rule_count, 'rule')})", color: :gray, dim: true)
+          io.puts " #{pad_label('Duration')} #{colorize("#{aggregated_result.duration}ms", color: :cyan)} #{rule_str}"
         end
 
         # Prints success message if all files are clean.

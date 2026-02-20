@@ -24,6 +24,50 @@ RSpec.describe Herb::Lint::AggregatedResult do
     end
   end
 
+  describe "#start_time" do
+    subject { described_class.new(results, start_time:) }
+
+    let(:results) { [] }
+
+    context "when start_time is not provided" do
+      let(:start_time) { nil }
+
+      it "defaults to nil" do
+        expect(subject.start_time).to be_nil
+      end
+    end
+
+    context "when start_time is provided" do
+      let(:start_time) { Time.new(2026, 2, 20, 15, 30, 45) }
+
+      it "stores the start_time value" do
+        expect(subject.start_time).to eq(start_time)
+      end
+    end
+  end
+
+  describe "#duration" do
+    subject { described_class.new(results, duration:) }
+
+    let(:results) { [] }
+
+    context "when duration is not provided" do
+      let(:duration) { nil }
+
+      it "defaults to nil" do
+        expect(subject.duration).to be_nil
+      end
+    end
+
+    context "when duration is provided" do
+      let(:duration) { 1234 }
+
+      it "stores the duration in milliseconds" do
+        expect(subject.duration).to eq(1234)
+      end
+    end
+  end
+
   describe "#offense_count" do
     subject { aggregated_result.offense_count }
 

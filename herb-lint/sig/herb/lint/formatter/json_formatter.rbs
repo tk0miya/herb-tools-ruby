@@ -28,6 +28,11 @@ module Herb
         # @rbs file_path: String
         def build_offense: (Offense offense, String file_path) -> Hash[String, untyped]
 
+        # Builds the timing hash to match TypeScript format, or nil if not tracked.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def build_timing: (AggregatedResult aggregated_result) -> Hash[String, untyped]?
+
         # Builds the summary hash to match TypeScript format.
         #
         # @rbs aggregated_result: AggregatedResult

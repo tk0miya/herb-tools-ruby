@@ -120,6 +120,7 @@ module Herb
             stdout.puts "  herb-lint --format json .                 # Output as JSON"
             stdout.puts "  herb-lint --github .                      # Output GitHub Actions annotations"
             stdout.puts "  herb-lint --fail-level warning .          # Exit with error on warnings or errors"
+            stdout.puts "  herb-lint --no-timing .                   # Suppress timing information from output"
             stdout.puts
             stdout.puts "Exit codes:"
             stdout.puts "  0  No offenses found (or below fail level)"
@@ -157,6 +158,10 @@ module Herb
             options[:no_custom_rules] = true
           end
 
+          opts.on("--no-timing", "Suppress timing information from output") do
+            options[:no_timing] = true
+          end
+
           opts.on("--fail-level LEVEL", %w[error warning info hint],
                   "Exit with error for violations at or above this level") do |level|
             options[:fail_level] = level
@@ -170,13 +175,15 @@ module Herb
       def create_formatter #: Formatter::Base
         return Formatter::GitHubActionsFormatter.new(io: stdout) if options[:github]
 
+        show_timing = !options[:no_timing]
+
         case options[:format]
         when "json"
           Formatter::JsonFormatter.new(io: stdout)
         when "simple"
-          Formatter::SimpleFormatter.new(io: stdout)
+          Formatter::SimpleFormatter.new(io: stdout, show_timing:)
         else
-          Formatter::DetailedFormatter.new(io: stdout)
+          Formatter::DetailedFormatter.new(io: stdout, show_timing:)
         end
       end
     end

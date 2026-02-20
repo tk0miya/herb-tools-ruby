@@ -24,7 +24,7 @@ module Herb
           {
             "offenses" => build_offenses(aggregated_result),
             "summary" => build_summary(aggregated_result),
-            "timing" => nil,
+            "timing" => build_timing(aggregated_result),
             "completed" => true,
             "clean" => aggregated_result.offense_count.zero?,
             "message" => nil
@@ -55,6 +55,18 @@ module Herb
             "severity" => offense.severity,
             "code" => offense.rule_name,
             "source" => "Herb Linter"
+          }
+        end
+
+        # Builds the timing hash to match TypeScript format, or nil if not tracked.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def build_timing(aggregated_result) #: Hash[String, untyped]?
+          return nil unless aggregated_result.duration
+
+          {
+            "startTime" => aggregated_result.start_time&.iso8601,
+            "duration" => aggregated_result.duration
           }
         end
 

@@ -305,6 +305,36 @@ RSpec.describe Herb::Lint::CLI do
         end
       end
 
+      context "with --no-timing option" do
+        let(:argv) { ["--no-timing"] }
+
+        before do
+          create_file("app/views/test.html.erb", '<img src="test.png" alt="Test">')
+        end
+
+        it "suppresses timing information from output" do
+          output = capture_stdout { subject }
+          actual = output.gsub(/\e\[.*?m/, "")
+          expect(actual).not_to include("Duration")
+          expect(actual).not_to include("Start at")
+        end
+      end
+
+      context "without --no-timing option (default)" do
+        let(:argv) { [] }
+
+        before do
+          create_file("app/views/test.html.erb", '<img src="test.png" alt="Test">')
+        end
+
+        it "includes timing information in output" do
+          output = capture_stdout { subject }
+          actual = output.gsub(/\e\[.*?m/, "")
+          expect(actual).to include("Duration")
+          expect(actual).to include("Start at")
+        end
+      end
+
       context "with invalid --format option" do
         let(:argv) { ["--format", "invalid"] }
 

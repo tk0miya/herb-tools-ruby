@@ -8,9 +8,15 @@ module Herb
 
       attr_reader rule_count: Integer
 
+      attr_reader start_time: Time?
+
+      attr_reader duration: Integer?
+
       # @rbs results: Array[LintResult]
       # @rbs rule_count: Integer
-      def initialize: (Array[LintResult] results, ?rule_count: Integer) -> void
+      # @rbs start_time: Time? -- when linting started, or nil if not tracked
+      # @rbs duration: Integer? -- elapsed time in milliseconds, or nil if not tracked
+      def initialize: (Array[LintResult] results, ?rule_count: Integer, ?start_time: Time?, ?duration: Integer?) -> void
 
       # Returns the total number of offenses across all files.
       def offense_count: () -> Integer
