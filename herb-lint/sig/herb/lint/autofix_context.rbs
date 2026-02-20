@@ -14,19 +14,8 @@ module Herb
 
       attr_reader end_offset(): Integer?
 
-      # VisitorRule pattern: rule + node
-      # SourceRule pattern: rule + offsets
-      def initialize: (rule: Rules::VisitorRule, node: Herb::AST::Node) -> void
-                    | (rule: Rules::SourceRule, start_offset: Integer, end_offset: Integer) -> void
-
-      # Returns true when this is a source rule context (has offset information)
-      def source_rule?: () -> bool
-
-      # Returns true when this is a visitor rule context (has node information)
-      def visitor_rule?: () -> bool
-
-      # Returns true when the rule can autofix this offense
-      def autofixable?: (?unsafe: bool) -> bool
+      def self.new: (Herb::Lint::Rules::VisitorRule | Herb::Lint::Rules::SourceRule rule, Herb::AST::Node? node, Integer? start_offset, Integer? end_offset) -> instance
+                  | (rule: Herb::Lint::Rules::VisitorRule | Herb::Lint::Rules::SourceRule, node: Herb::AST::Node?, start_offset: Integer?, end_offset: Integer?) -> instance
 
       def self.members: () -> [ :rule, :node, :start_offset, :end_offset ]
 

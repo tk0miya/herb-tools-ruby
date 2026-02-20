@@ -1,4 +1,3 @@
-# rbs_inline: enabled
 # frozen_string_literal: true
 
 module Herb
@@ -190,7 +189,6 @@ module Herb
       #
       # @rbs siblings: Array[Herb::AST::Node]
       # @rbs current_index: Integer
-      # @rbs return: Integer?
       def find_previous_meaningful_sibling(siblings, current_index) #: Integer?
         (current_index - 1).downto(0) do |i|
           node = siblings[i]

@@ -16,13 +16,14 @@ module Herb
 
       attr_reader autofixed_offenses: Array[Offense]
 
+      # rubocop:disable Metrics/ParameterLists
       # @rbs file_path: String
       # @rbs unfixed_offenses: Array[Offense] -- offenses that were not fixed
       # @rbs source: String
       # @rbs ignored_count: Integer -- number of offenses suppressed by directives
       # @rbs parse_result: Herb::ParseResult? -- parsed AST for autofix phase (nil on parse error)
       # @rbs autofixed_offenses: Array[Offense] -- offenses that were automatically fixed
-      def initialize: (file_path: String, unfixed_offenses: Array[Offense], source: String, ?ignored_count: Integer, ?parse_result: Herb::ParseResult?, ?autofixed_offenses: Array[Offense]) -> void
+      def initialize: (file_path: String, unfixed_offenses: Array[Offense], source: String, ?ignored_count: Integer, ?parse_result: Herb::ParseResult?, ?autofixed_offenses: Array[Offense]) -> untyped
 
       # Returns the count of errors.
       def error_count: () -> Integer

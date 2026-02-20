@@ -260,8 +260,7 @@ module Herb
             control_flow_stack.any? { |type, _| type == LOOP }
           end
 
-          # @rbs return: Symbol?
-          def current_control_flow_type
+          def current_control_flow_type #: Symbol?
             return nil if control_flow_stack.empty?
 
             control_flow_stack.last[0]

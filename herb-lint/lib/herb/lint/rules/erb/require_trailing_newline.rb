@@ -42,7 +42,7 @@ module Herb
           end
 
           # @rbs override
-          # @rbs offense: Offense
+          # @rbs _offense: Offense
           # @rbs source: String
           def autofix_source(_offense, source) #: String?
             "#{source.rstrip}\n"

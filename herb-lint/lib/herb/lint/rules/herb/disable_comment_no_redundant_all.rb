@@ -53,8 +53,9 @@ module Herb
             end
           end
 
-          # @rbs rule_name: String, comment: HerbDirective::DisableComment -- return: void
-          def report_redundant_rule(rule_name, comment)
+          # @rbs rule_name: String
+          # @rbs comment: HerbDirective::DisableComment
+          def report_redundant_rule(rule_name, comment) #: void
             add_offense(
               message: "Redundant rule name `#{rule_name}` when `all` is already specified",
               location: comment.content_location

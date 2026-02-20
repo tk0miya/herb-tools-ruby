@@ -22,14 +22,6 @@ module Herb
         #
         #   <DIV>test</DIV> <%# herb:disable all, all %>
         class DisableCommentNoRedundantAll < DirectiveRule
-          def self.rule_name: () -> String
-
-          def self.description: () -> String
-
-          def self.default_severity: () -> String
-
-          def self.safe_autofixable?: () -> bool
-
           def self.unsafe_autofixable?: () -> bool
 
           private
@@ -37,8 +29,9 @@ module Herb
           # @rbs override
           def check_disable_comment: ...
 
-          # @rbs rule_name: String, comment: HerbDirective::DisableComment -- return: void
-          def report_redundant_rule: (String rule_name, untyped comment) -> untyped
+          # @rbs rule_name: String
+          # @rbs comment: HerbDirective::DisableComment
+          def report_redundant_rule: (String rule_name, HerbDirective::DisableComment comment) -> void
         end
       end
     end

@@ -76,7 +76,7 @@ module Herb
           end
 
           # Check non-trailing whitespace (between elements)
-          # @rbs node: Herb::AST::HTMLOpenTagNode
+          # @rbs _node: Herb::AST::HTMLOpenTagNode
           # @rbs whitespace: Herb::AST::WhitespaceNode
           def check_non_trailing_whitespace(_node, whitespace) #: void
             return if whitespace.value.value.length == 1

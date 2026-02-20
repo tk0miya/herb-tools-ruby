@@ -20,21 +20,13 @@ module Herb
         #
         #   (Note: File ends without a trailing newline)
         class RequireTrailingNewline < SourceRule
-          def self.rule_name: () -> String
-
-          def self.description: () -> String
-
-          def self.default_severity: () -> String
-
-          def self.safe_autofixable?: () -> bool
-
           def self.unsafe_autofixable?: () -> bool
 
           # @rbs override
           def check_source: ...
 
           # @rbs override
-          # @rbs offense: Offense
+          # @rbs _offense: Offense
           # @rbs source: String
           def autofix_source: ...
 

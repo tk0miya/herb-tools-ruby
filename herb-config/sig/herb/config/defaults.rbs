@@ -19,8 +19,8 @@ module Herb
 
       # Deep merges two hashes recursively
       # @rbs base: Hash[String, untyped]
-      # @rbs override: Hash[String, untyped]
-      def self.deep_merge: (Hash[String, untyped] base, Hash[String, untyped] override) -> Hash[String, untyped]
+      # @rbs other: Hash[String, untyped]
+      def self.deep_merge: (Hash[String, untyped] base, Hash[String, untyped] other) -> Hash[String, untyped]
     end
   end
 end

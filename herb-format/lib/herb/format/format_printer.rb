@@ -129,8 +129,6 @@ module Herb
 
       # Capture output to a temporary buffer.
       # Saves and restores @lines, @string_line_count, and @inline_mode around the block.
-      #
-      # @rbs &: () -> void
       def capture #: Array[String]
         previous_lines = @lines
         previous_string_line_count = @string_line_count
@@ -153,7 +151,6 @@ module Herb
       # Records whether the node produced multiline output.
       #
       # @rbs node: Herb::AST::Node
-      # @rbs &: () -> void
       def track_boundary(node) #: void
         start_line_count = @string_line_count
 

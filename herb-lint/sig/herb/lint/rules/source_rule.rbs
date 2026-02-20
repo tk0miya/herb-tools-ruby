@@ -25,8 +25,8 @@ module Herb
         # Check the source string for rule violations.
         # Subclasses must implement this method.
         #
-        # @rbs source: String -- raw source string to check
-        # @rbs context: Context -- linting context with file information
+        # @rbs _source: String -- raw source string to check
+        # @rbs _context: Context -- linting context with file information
         def check_source: (untyped _source, untyped _context) -> void
 
         # Apply autofix to the source string.

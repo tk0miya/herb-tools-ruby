@@ -31,14 +31,6 @@ module Herb
         class AvoidBothDisabledAndAriaDisabled < VisitorRule
           ELEMENTS_WITH_NATIVE_DISABLED_SUPPORT: Array[String]
 
-          def self.rule_name: () -> String
-
-          def self.description: () -> String
-
-          def self.default_severity: () -> String
-
-          def self.safe_autofixable?: () -> bool
-
           def self.unsafe_autofixable?: () -> bool
 
           # @rbs override
@@ -46,25 +38,21 @@ module Herb
 
           private
 
-          # @rbs node: Herb::HtmlElementNode -- Check if element has both disabled and aria-disabled
-          # @rbs return: void
-          def check_element: (Herb::HtmlElementNode node) -> void
+          # @rbs node: Herb::AST::HTMLElementNode
+          def check_element: (Herb::AST::HTMLElementNode node) -> void
 
-          # @rbs node: Herb::HtmlElementNode
-          # @rbs return: bool
-          def element_supports_native_disabled?: (Herb::HtmlElementNode node) -> bool
+          # @rbs node: Herb::AST::HTMLElementNode
+          def element_supports_native_disabled?: (Herb::AST::HTMLElementNode node) -> bool
 
-          # @rbs node: Herb::HtmlElementNode
-          # @rbs return: bool
-          def both_disabled_attributes?: (Herb::HtmlElementNode node) -> bool
+          # @rbs node: Herb::AST::HTMLElementNode
+          def both_disabled_attributes?: (Herb::AST::HTMLElementNode node) -> bool
 
-          # @rbs node: Herb::HtmlElementNode
-          # @rbs return: bool
-          def dynamic_disabled_attributes?: (Herb::HtmlElementNode node) -> bool
+          # @rbs node: Herb::AST::HTMLElementNode
+          def dynamic_disabled_attributes?: (Herb::AST::HTMLElementNode node) -> bool
 
-          # @rbs node: Herb::HtmlElementNode, attribute_name: String -- Check if attribute value contains ERB
-          # @rbs return: bool
-          def attribute_has_erb_content?: (Herb::HtmlElementNode node, untyped attribute_name) -> bool
+          # @rbs node: Herb::AST::HTMLElementNode
+          # @rbs attribute_name: String
+          def attribute_has_erb_content?: (Herb::AST::HTMLElementNode node, String attribute_name) -> bool
         end
       end
     end

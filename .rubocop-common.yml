@@ -1,5 +1,6 @@
 plugins:
   - rubocop-rake
+  - rubocop-rbs_inline
   - rubocop-rspec
 
 AllCops:
@@ -10,6 +11,27 @@ AllCops:
 
 Layout/LeadingCommentSpace:
   AllowRBSInlineAnnotation: true
+
+# Disabled: causes infinite loop with Layout/ExtraSpacing for single-attribute Data classes
+Style/RbsInline/DataClassCommentAlignment:
+  Enabled: false
+
+Style/RbsInline/MissingTypeAnnotation:
+  EnforcedStyle: doc_style_and_return_annotation
+  Exclude:
+    - "*/spec/**/*"
+
+# rubocop-rbs_inline flags trailing #: annotations as redundant for one-liner
+# shorthand methods (def method = expr) when the return type can be inferred
+# from the expression. This conflicts with MissingTypeAnnotation which requires
+# the annotation. Exclude rule files which commonly use this pattern.
+Style/RbsInline/RedundantTypeAnnotation:
+  EnforcedStyle: doc_style_and_return_annotation
+  Exclude:
+    - "*/lib/**/rules/**/*"
+
+Style/RbsInline/RequireRbsInlineComment:
+  EnforcedStyle: never
 
 Naming/PredicateMethod:
   AllowedMethods:

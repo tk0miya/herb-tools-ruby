@@ -25,12 +25,13 @@ module Herb
       # Raise PrintError if node tree contains parse errors.
       #
       # @rbs node: Herb::AST::Node
-      private_class_method def self.validate_no_errors!(node) #: void
+      def self.validate_no_errors!(node) #: void
         errors = node.recursive_errors
         return if errors.empty?
 
         raise PrintError, "Cannot print AST with parse errors (#{errors.size} error(s) found)"
       end
+      private_class_method :validate_no_errors!
 
       def initialize #: void
         super

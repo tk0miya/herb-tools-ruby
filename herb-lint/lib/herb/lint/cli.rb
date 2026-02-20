@@ -61,6 +61,8 @@ module Herb
 
       # Calculate the exit code based on failLevel configuration.
       # Returns EXIT_LINT_ERROR if any offense meets or exceeds the failLevel threshold.
+      # @rbs result: AggregatedResult
+      # @rbs config: Herb::Config::LinterConfig
       def exit_code_for(result, config:) #: Integer
         return EXIT_SUCCESS if result.success?
 

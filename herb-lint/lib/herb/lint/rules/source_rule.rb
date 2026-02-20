@@ -35,8 +35,8 @@ module Herb
         # Check the source string for rule violations.
         # Subclasses must implement this method.
         #
-        # @rbs source: String -- raw source string to check
-        # @rbs context: Context -- linting context with file information
+        # @rbs _source: String -- raw source string to check
+        # @rbs _context: Context -- linting context with file information
         def check_source(_source, _context) #: void
           raise NotImplementedError, "#{self.class.name} must implement #check_source"
         end

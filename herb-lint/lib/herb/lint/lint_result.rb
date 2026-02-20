@@ -11,20 +11,21 @@ module Herb
       attr_reader :parse_result #: Herb::ParseResult?
       attr_reader :autofixed_offenses #: Array[Offense]
 
+      # rubocop:disable Metrics/ParameterLists
       # @rbs file_path: String
       # @rbs unfixed_offenses: Array[Offense] -- offenses that were not fixed
       # @rbs source: String
       # @rbs ignored_count: Integer -- number of offenses suppressed by directives
       # @rbs parse_result: Herb::ParseResult? -- parsed AST for autofix phase (nil on parse error)
       # @rbs autofixed_offenses: Array[Offense] -- offenses that were automatically fixed
-      def initialize( # rubocop:disable Metrics/ParameterLists
+      def initialize( #: void
         file_path:,
         unfixed_offenses:,
         source:,
         ignored_count: 0,
         parse_result: nil,
         autofixed_offenses: []
-      ) #: void
+      )
         @file_path = file_path
         @unfixed_offenses = unfixed_offenses
         @source = source
@@ -32,6 +33,7 @@ module Herb
         @parse_result = parse_result
         @autofixed_offenses = autofixed_offenses
       end
+      # rubocop:enable Metrics/ParameterLists
 
       # Returns the count of errors.
       def error_count #: Integer

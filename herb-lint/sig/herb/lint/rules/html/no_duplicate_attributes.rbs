@@ -17,14 +17,6 @@ module Herb
         #
         #   <button type="submit" type="button" disabled>Submit</button>
         class NoDuplicateAttributes < VisitorRule
-          def self.rule_name: () -> String
-
-          def self.description: () -> String
-
-          def self.default_severity: () -> String
-
-          def self.safe_autofixable?: () -> bool
-
           def self.unsafe_autofixable?: () -> bool
 
           # Control flow types
@@ -124,7 +116,6 @@ module Herb
 
           def in_loop?: () -> bool
 
-          # @rbs return: Symbol?
           def current_control_flow_type: () -> Symbol?
         end
       end

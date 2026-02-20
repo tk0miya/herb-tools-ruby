@@ -11,7 +11,7 @@ module Herb
       :fixed,   #: Array[Offense]
       :unfixed  #: Array[Offense]
     ) do
-      def fixed_count = fixed.size #: Integer
+      def fixed_count = fixed.size #: Integer # rubocop:disable Style/RbsInline/RedundantTypeAnnotation
       def unfixed_count = unfixed.size #: Integer
     end
   end

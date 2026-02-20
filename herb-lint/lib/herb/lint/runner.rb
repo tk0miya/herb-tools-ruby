@@ -14,20 +14,21 @@ module Herb
       attr_reader :no_custom_rules #: bool
       attr_reader :linter #: Linter
 
+      # rubocop:disable Metrics/ParameterLists
       # @rbs config: Herb::Config::LinterConfig
       # @rbs ignore_disable_comments: bool -- when true, report offenses even when suppressed
       # @rbs autofix: bool -- when true, apply safe automatic fixes
       # @rbs unsafe: bool -- when true, also apply unsafe fixes (requires autofix: true)
       # @rbs no_custom_rules: bool -- when true, skip loading from linter.custom_rules
       # @rbs rule_registry: RuleRegistry? -- optional custom rule registry (for testing)
-      def initialize( # rubocop:disable Metrics/ParameterLists
+      def initialize( #: void
         config,
         ignore_disable_comments: false,
         autofix: false,
         unsafe: false,
         no_custom_rules: false,
         rule_registry: nil
-      ) #: void
+      )
         @config = config
         @ignore_disable_comments = ignore_disable_comments
         @autofix = autofix
@@ -35,6 +36,7 @@ module Herb
         @no_custom_rules = no_custom_rules
         @linter = build_linter(rule_registry)
       end
+      # rubocop:enable Metrics/ParameterLists
 
       # Run linting on the given paths and return aggregated results.
       # @rbs paths: Array[String] -- explicit paths (files or directories) to lint

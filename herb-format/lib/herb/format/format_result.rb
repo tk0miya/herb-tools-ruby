@@ -24,8 +24,8 @@ module Herb
         super
       end
 
-      def ignored? = ignored #: bool
-      def error? = !error.nil? #: bool
+      def ignored? = ignored #: bool # rubocop:disable Style/RbsInline/RedundantTypeAnnotation
+      def error? = !error.nil? #: bool # rubocop:disable Style/RbsInline/RedundantTypeAnnotation
       def changed? = original != formatted #: bool
 
       def diff #: String?

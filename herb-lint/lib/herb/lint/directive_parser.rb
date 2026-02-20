@@ -15,20 +15,20 @@ module Herb
       # Parsed rule name with position information for error reporting.
       # offset is relative to the start of the ERB content token value.
       DisableRuleName = Data.define(
-        :name,   #: String
-        :offset, #: Integer
-        :length  #: Integer
+        :name,    #: String
+        :offset,  #: Integer
+        :length   #: Integer
       )
 
       # Parsed herb:disable comment (including malformed ones).
       # match is true when the comment has a valid herb:disable format.
       # Malformed comments (match=false) are still stored for meta-rule validation.
       DisableComment = Data.define(
-        :match,             #: bool
-        :rule_names,        #: Array[String]
-        :rule_name_details, #: Array[DisableRuleName]
-        :rules_string,      #: String?
-        :content_location   #: Herb::Location -- location of the ERB content token
+        :match,              #: bool
+        :rule_names,         #: Array[String]
+        :rule_name_details,  #: Array[DisableRuleName]
+        :rules_string,       #: String?
+        :content_location    #: Herb::Location -- location of the ERB content token
       )
 
       # Parse result holding all directive information for a file.
@@ -103,14 +103,14 @@ module Herb
 
       # Build a DisableComment for herb:disable with no rules.
       # @rbs content_location: Herb::Location
-      private_class_method def self.build_empty_disable_comment(content_location) #: DisableComment
+      def self.build_empty_disable_comment(content_location) #: DisableComment
         DisableComment.new(match: true, rule_names: [], rule_name_details: [], rules_string: nil, content_location:)
       end
 
       # Build a DisableComment for a malformed directive (no space after prefix).
       # @rbs rest: String
       # @rbs content_location: Herb::Location
-      private_class_method def self.build_malformed_disable_comment(rest, content_location) #: DisableComment
+      def self.build_malformed_disable_comment(rest, content_location) #: DisableComment
         DisableComment.new(
           match: false, rule_names: [], rule_name_details: [],
           rules_string: rest, content_location:
@@ -121,9 +121,7 @@ module Herb
       # @rbs content: String -- full content value for offset calculation
       # @rbs rules_string: String -- the portion after "herb:disable "
       # @rbs content_location: Herb::Location
-      # rubocop:disable Layout/LineLength
-      private_class_method def self.build_matched_disable_comment(content, rules_string, content_location) #: DisableComment
-        # rubocop:enable Layout/LineLength
+      def self.build_matched_disable_comment(content, rules_string, content_location) #: DisableComment
         rule_name_details = extract_rule_names(content, rules_string)
         rule_names = rule_name_details.map(&:name)
         DisableComment.new(match: true, rule_names:, rule_name_details:, rules_string:, content_location:)
@@ -133,7 +131,7 @@ module Herb
       #
       # @rbs content: String -- full content value for offset calculation
       # @rbs rules_string: String -- the portion after "herb:disable "
-      private_class_method def self.extract_rule_names(content, rules_string) #: Array[DisableRuleName]
+      def self.extract_rule_names(content, rules_string) #: Array[DisableRuleName]
         return [] if rules_string.nil? || rules_string.empty?
 
         rules_offset = content.index(rules_string)
@@ -158,6 +156,9 @@ module Herb
 
         details
       end
+
+      private_class_method :build_empty_disable_comment, :build_malformed_disable_comment,
+                           :build_matched_disable_comment, :extract_rule_names
 
       # Private visitor for AST traversal to collect directive comments.
       class Collector < Herb::Visitor
