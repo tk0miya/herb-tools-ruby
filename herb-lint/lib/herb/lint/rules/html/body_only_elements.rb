@@ -95,7 +95,7 @@ module Herb
           # @rbs @element_stack: Array[String]
 
           # @rbs override
-          def on_new_investigation #: void
+          def on_new_investigation
             super
             @element_stack = []
           end

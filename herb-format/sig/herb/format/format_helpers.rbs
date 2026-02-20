@@ -111,7 +111,6 @@ module Herb
       #
       # @rbs siblings: Array[Herb::AST::Node]
       # @rbs current_index: Integer
-      # @rbs return: Integer?
       def find_previous_meaningful_sibling: (Array[Herb::AST::Node] siblings, Integer current_index) -> Integer?
 
       # Check if there is whitespace between two indices in children array.

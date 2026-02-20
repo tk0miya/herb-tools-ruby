@@ -30,7 +30,7 @@ module Herb
           # @rbs @seen_meta_names: Hash[String, Herb::Location]
 
           # @rbs override
-          def on_new_investigation #: void
+          def on_new_investigation
             super
             @seen_meta_names = {}
           end

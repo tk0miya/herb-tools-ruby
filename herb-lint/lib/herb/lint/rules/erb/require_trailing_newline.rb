@@ -31,7 +31,7 @@ module Herb
           def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
-          def check_source(source, _context) #: void
+          def check_source(source, _context)
             return if source.empty?
 
             if !source.end_with?("\n")
@@ -42,9 +42,7 @@ module Herb
           end
 
           # @rbs override
-          # @rbs offense: Offense
-          # @rbs source: String
-          def autofix_source(_offense, source) #: String?
+          def autofix_source(_offense, source)
             "#{source.rstrip}\n"
           end
 

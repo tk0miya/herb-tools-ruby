@@ -100,7 +100,6 @@ module Herb
       # Location is set to (0, 0) as it doesn't affect printer output.
       # The printer uses the AST structure (whitespace nodes) for spacing, not locations.
       #
-      # @rbs return: Herb::AST::WhitespaceNode -- a whitespace node containing a single space
       def build_whitespace_node #: Herb::AST::WhitespaceNode
         ws_loc = Herb::Location.new(
           Herb::Position.new(0, 0),

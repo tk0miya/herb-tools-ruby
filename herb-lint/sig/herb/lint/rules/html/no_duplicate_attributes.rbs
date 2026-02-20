@@ -124,7 +124,6 @@ module Herb
 
           def in_loop?: () -> bool
 
-          # @rbs return: Symbol?
           def current_control_flow_type: () -> Symbol?
         end
       end

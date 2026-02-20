@@ -32,7 +32,7 @@ module Herb
           CONDITIONAL = :conditional #: Symbol
 
           # @rbs override
-          def on_new_investigation #: void
+          def on_new_investigation
             @control_flow_stack = [] #: Array[[Symbol, bool]]
             @tag_attributes = Set.new #: Set[String]
             @current_branch_attributes = Set.new #: Set[String]
@@ -260,8 +260,7 @@ module Herb
             control_flow_stack.any? { |type, _| type == LOOP }
           end
 
-          # @rbs return: Symbol?
-          def current_control_flow_type
+          def current_control_flow_type #: Symbol?
             return nil if control_flow_stack.empty?
 
             control_flow_stack.last[0]

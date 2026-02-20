@@ -47,23 +47,18 @@ module Herb
           private
 
           # @rbs node: Herb::HtmlElementNode -- Check if element has both disabled and aria-disabled
-          # @rbs return: void
           def check_element: (Herb::HtmlElementNode node) -> void
 
           # @rbs node: Herb::HtmlElementNode
-          # @rbs return: bool
           def element_supports_native_disabled?: (Herb::HtmlElementNode node) -> bool
 
           # @rbs node: Herb::HtmlElementNode
-          # @rbs return: bool
           def both_disabled_attributes?: (Herb::HtmlElementNode node) -> bool
 
           # @rbs node: Herb::HtmlElementNode
-          # @rbs return: bool
           def dynamic_disabled_attributes?: (Herb::HtmlElementNode node) -> bool
 
           # @rbs node: Herb::HtmlElementNode, attribute_name: String -- Check if attribute value contains ERB
-          # @rbs return: bool
           def attribute_has_erb_content?: (Herb::HtmlElementNode node, untyped attribute_name) -> bool
         end
       end

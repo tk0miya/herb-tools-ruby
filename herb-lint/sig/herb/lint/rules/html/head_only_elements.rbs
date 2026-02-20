@@ -95,25 +95,19 @@ module Herb
 
           # @rbs node: untyped -- HTMLElementNode
           # @rbs tag: String
-          # @rbs return: void
           def check_head_only_element: (untyped node, String tag) -> void
 
           # @rbs node: untyped -- HTMLElementNode
           # @rbs tag: String
-          # @rbs return: bool
           def allowed_exception?: (untyped node, String tag) -> bool
 
           # @rbs node: untyped -- HTMLElementNode
-          # @rbs return: bool
           def itemprop_attribute?: (untyped node) -> bool
 
-          # @rbs return: bool
           def inside_head?: () -> bool
 
-          # @rbs return: bool
           def inside_body?: () -> bool
 
-          # @rbs return: bool
           def inside_svg?: () -> bool
         end
       end

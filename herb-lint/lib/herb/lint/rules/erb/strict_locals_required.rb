@@ -67,7 +67,7 @@ module Herb
           # @rbs @locals_definition_found: bool
 
           # @rbs override
-          def on_new_investigation #: void
+          def on_new_investigation
             super
             @locals_definition_found = false
           end
