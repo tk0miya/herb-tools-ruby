@@ -121,6 +121,33 @@ module Herb
 
       private
 
+      # Current indent string based on @indent_level.
+      #
+      def indent #: String
+        " " * (@indent_level * @indent_width)
+      end
+
+      # Push line with indentation applied.
+      # Empty or whitespace-only lines are pushed without indentation.
+      #
+      # @rbs line: String
+      def push_with_indent(line) #: void
+        indent_str = line.strip.empty? ? "" : indent
+        push(indent_str + line)
+      end
+
+      # Append text to the last line in the buffer (no newline).
+      # If buffer is empty, starts a new line.
+      #
+      # @rbs text: String
+      def push_to_last_line(text) #: void
+        if @lines.empty?
+          @lines << text
+        else
+          @lines[-1] += text
+        end
+      end
+
       # Push a line to the output buffer.
       #
       # @rbs line: String
