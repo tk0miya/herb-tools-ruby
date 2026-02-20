@@ -261,6 +261,125 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
   end
 
+  describe "#indent" do
+    subject { printer.send(:indent) }
+
+    let(:printer) do
+      Class.new(described_class) do
+        public :indent
+        attr_accessor :indent_level
+      end.new(indent_width:, max_line_length:, format_context:)
+    end
+
+    context "with indent_level 0" do
+      it { is_expected.to eq("") }
+    end
+
+    context "with indent_level 1" do
+      before { printer.indent_level = 1 }
+
+      it { is_expected.to eq("  ") }
+    end
+
+    context "with indent_level 2" do
+      before { printer.indent_level = 2 }
+
+      it { is_expected.to eq("    ") }
+    end
+
+    context "with custom indent_width" do
+      let(:indent_width) { 4 }
+
+      before { printer.indent_level = 1 }
+
+      it { is_expected.to eq("    ") }
+    end
+  end
+
+  describe "#push_with_indent" do
+    let(:printer) do
+      Class.new(described_class) do
+        public :push_with_indent, :capture
+        attr_accessor :indent_level
+      end.new(indent_width:, max_line_length:, format_context:)
+    end
+
+    context "with indent_level 0" do
+      it "pushes the line without indentation" do
+        result = printer.capture { printer.push_with_indent("hello") }
+
+        expect(result).to eq(["hello"])
+      end
+    end
+
+    context "with indent_level 1" do
+      before { printer.indent_level = 1 }
+
+      it "pushes the line with indentation" do
+        result = printer.capture { printer.push_with_indent("hello") }
+
+        expect(result).to eq(["  hello"])
+      end
+    end
+
+    context "with empty line" do
+      before { printer.indent_level = 2 }
+
+      it "pushes empty line without indentation" do
+        result = printer.capture { printer.push_with_indent("") }
+
+        expect(result).to eq([""])
+      end
+    end
+
+    context "with whitespace-only line" do
+      before { printer.indent_level = 1 }
+
+      it "pushes whitespace-only line without indentation" do
+        result = printer.capture { printer.push_with_indent("   ") }
+
+        expect(result).to eq(["   "])
+      end
+    end
+  end
+
+  describe "#push_to_last_line" do
+    let(:printer) do
+      Class.new(described_class) do
+        public :push, :push_to_last_line, :capture
+      end.new(indent_width:, max_line_length:, format_context:)
+    end
+
+    context "when buffer is empty" do
+      it "starts a new line with the text" do
+        result = printer.capture { printer.push_to_last_line("hello") }
+
+        expect(result).to eq(["hello"])
+      end
+    end
+
+    context "when buffer has lines" do
+      it "appends text to the last line without adding a new element" do
+        result = printer.capture do
+          printer.push("first")
+          printer.push_to_last_line(" appended")
+        end
+
+        expect(result).to eq(["first appended"])
+      end
+
+      it "appends to the last of multiple lines" do
+        result = printer.capture do
+          printer.push("line1")
+          printer.push("line2")
+          printer.push_to_last_line(" suffix")
+        end
+
+        expect(result).to eq(["line1", "line2 suffix"])
+      end
+    end
+  end
+
   describe "#with_indent" do
     let(:printer) do
       Class.new(described_class) do
