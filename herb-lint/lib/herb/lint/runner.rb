@@ -39,10 +39,13 @@ module Herb
       # Run linting on the given paths and return aggregated results.
       # @rbs paths: Array[String] -- explicit paths (files or directories) to lint
       def run(paths = []) #: AggregatedResult
+        start_time = Time.now
+        start_monotonic = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         files = discover_files(paths)
         results = files.map { process_file(_1) }
+        duration = ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_monotonic) * 1000).round
         rule_count = linter.rules.size
-        AggregatedResult.new(results, rule_count:)
+        AggregatedResult.new(results, rule_count:, start_time:, duration:)
       end
 
       private

@@ -242,6 +242,21 @@ RSpec.describe Herb::Lint::Runner do
       end
     end
 
+    context "when tracking timing" do
+      before do
+        create_file("app/views/test.html.erb", '<img src="test.png" alt="Test">')
+      end
+
+      it "records start time in the result" do
+        expect(subject.start_time).to be_a(Time)
+      end
+
+      it "records elapsed duration in milliseconds" do
+        expect(subject.duration).to be_a(Integer)
+        expect(subject.duration).to be >= 0
+      end
+    end
+
     context "when tracking rule count" do
       context "with custom rules" do
         let(:rule_registry) { Herb::Lint::RuleRegistry.new(builtins: false, rules: [safe_fixable_rule, unsafe_fixable_rule], config:) }

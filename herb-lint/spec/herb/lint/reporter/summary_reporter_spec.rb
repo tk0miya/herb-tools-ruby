@@ -254,6 +254,50 @@ RSpec.describe Herb::Lint::Reporter::SummaryReporter do
       end
     end
 
+    context "with timing information" do
+      let(:reporter) { described_class.new(io: output, show_timing: true) }
+      let(:start_time) { Time.new(2026, 2, 20, 15, 30, 45) }
+      let(:aggregated_result) { Herb::Lint::AggregatedResult.new(results, start_time:, duration: 456) }
+      let(:results) { [build(:lint_result)] }
+
+      it "displays start time in summary" do
+        subject
+
+        actual = output.string.gsub(/\e\[.*?m/, "")
+        expect(actual).to include("Start at")
+        expect(actual).to include("15:30:45")
+      end
+
+      it "displays duration in milliseconds in summary" do
+        subject
+
+        actual = output.string.gsub(/\e\[.*?m/, "")
+        expect(actual).to include("Duration")
+        expect(actual).to include("456ms")
+      end
+
+      it "displays rule count alongside duration" do
+        subject
+
+        actual = output.string.gsub(/\e\[.*?m/, "")
+        expect(actual).to include("rule")
+      end
+    end
+
+    context "when show_timing: false" do
+      let(:reporter) { described_class.new(io: output, show_timing: false) }
+      let(:aggregated_result) { Herb::Lint::AggregatedResult.new(results, duration: 500) }
+      let(:results) { [build(:lint_result)] }
+
+      it "does not display timing in summary" do
+        subject
+
+        actual = output.string.gsub(/\e\[.*?m/, "")
+        expect(actual).not_to include("Duration")
+        expect(actual).not_to include("Start at")
+      end
+    end
+
     context "with non-TTY output" do
       let(:output) { StringIO.new }
       let(:results) do

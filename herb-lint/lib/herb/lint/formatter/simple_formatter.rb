@@ -16,9 +16,10 @@ module Herb
         include StringUtils
 
         # @rbs io: IO
-        def initialize(io: $stdout) #: void
-          super
-          @summary_reporter = Herb::Lint::Reporter::SummaryReporter.new(io:)
+        # @rbs show_timing: bool -- when false, suppresses timing display
+        def initialize(io: $stdout, show_timing: true) #: void
+          super(io:)
+          @summary_reporter = Herb::Lint::Reporter::SummaryReporter.new(io:, show_timing:)
         end
 
         # Reports the aggregated linting result.
