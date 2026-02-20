@@ -34,27 +34,27 @@ The TypeScript implementation has a `DetailedFormatter` that is the **default** 
 - ❌ DetailedFormatter **not implemented**
 
 **Implementation Tasks:**
-- [ ] Create `Herb::Lint::Formatter::DetailedFormatter` class
+- [x] Create `Herb::Lint::Formatter::DetailedFormatter` class
 - [ ] Integrate syntax highlighting library (Rouge recommended)
   - [ ] Add Rouge dependency to gemspec
   - [ ] Implement theme loading/selection
   - [ ] Apply syntax highlighting to ERB code snippets
-- [ ] Implement code context display (±2 lines around violation)
-  - [ ] Extract relevant lines from source
-  - [ ] Format with line numbers
-  - [ ] Highlight the specific violation line
+- [x] Implement code context display (±2 lines around violation)
+  - [x] Extract relevant lines from source
+  - [x] Format with line numbers
+  - [x] Highlight the specific violation line
 - [ ] Add top violated rules to summary
   - [ ] Track offense counts per rule in AggregatedResult
   - [ ] Display top 5 rules by count
   - [ ] Make count configurable
-- [ ] Make DetailedFormatter the **default** when `--format` is not specified
-  - [ ] Update CLI#create_reporter to use DetailedFormatter by default
-  - [ ] Update tests to expect DetailedFormatter output
+- [x] Make DetailedFormatter the **default** when `--format` is not specified
+  - [x] Update CLI#create_formatter to use DetailedFormatter by default
+  - [x] Update tests to expect DetailedFormatter output
 - [ ] Add `--theme` CLI option for theme customization
 - [ ] Add `--no-wrap-lines` CLI option
 - [ ] Add `--truncate-lines` CLI option
-- [ ] Write unit tests for DetailedFormatter
-- [ ] Write integration tests via CLI
+- [x] Write unit tests for DetailedFormatter
+- [x] Write integration tests via CLI
 
 #### 2. Custom Rules System (Replaces CustomRuleLoader)
 
@@ -207,16 +207,16 @@ The following features are mentioned in requirements/design documents but **do N
 
 ## Testing Requirements
 
-- [ ] Unit tests for all new classes/methods
-  - [ ] DetailedFormatter
+- [x] Unit tests for all new classes/methods
+  - [x] DetailedFormatter
   - [x] Custom rules system (Phase 22)
   - [ ] Config path resolution
   - [ ] Timing tracking
-- [ ] Integration tests via CLI
+- [x] Integration tests via CLI
   - [ ] All new CLI options
-  - [ ] Default format selection
+  - [x] Default format selection
   - [x] Custom rules loading (Phase 22)
-  - [ ] Config file generation
+  - [x] Config file generation
 - [ ] Update existing CLI specs
   - [ ] Verify new options appear in help
   - [ ] Verify exit codes
@@ -243,7 +243,7 @@ The following features are mentioned in requirements/design documents but **do N
 ## Acceptance Criteria
 
 - [ ] All high-priority features implemented and tested
-- [ ] DetailedFormatter is the default output format
+- [x] DetailedFormatter is the default output format
 - [x] Custom rules system loads rules from `linter.custom_rules` (Phase 22)
 - [ ] --init generates a working `.herb.yml` configuration
 - [ ] --config-file allows specifying custom configuration path
