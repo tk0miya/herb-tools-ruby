@@ -30,6 +30,12 @@ module Herb
       # @rbs ignore_errors: bool
       def self.format: (Herb::ParseResult | Herb::AST::Node input, format_context: Context, ?ignore_errors: bool) -> String
 
+      @inline_mode: bool
+
+      @string_line_count: Integer
+
+      @lines: Array[String]
+
       # @rbs indent_width: Integer
       # @rbs max_line_length: Integer
       # @rbs format_context: Context
@@ -63,6 +69,17 @@ module Herb
       def visit_html_close_tag_node: ...
 
       private
+
+      # Push a line to the output buffer.
+      #
+      # @rbs line: String
+      def push: (String line) -> void
+
+      # Capture output to a temporary buffer.
+      # Saves and restores @lines, @string_line_count, and @inline_mode around the block.
+      #
+      # @rbs &: () -> void
+      def capture: () { () -> void } -> Array[String]
 
       # Visit the body of an HTML element. For preserved elements (script,
       # style, pre, textarea), content is output as-is using IdentityPrinter.

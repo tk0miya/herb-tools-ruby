@@ -1219,6 +1219,11 @@ end
    >
    ```
 
+- [ ] Review and migrate private method tests in `format_printer_spec.rb`
+  - Replace `#capture` tests with integration-level coverage (the save/restore semantics are verified via correct formatted output)
+  - Replace `push_with_indent` / `push_to_last_line` tests with integration coverage
+  - Keep the `#push` newline counting test (`@string_line_count` increments by the number of `\n` characters) — this contract is subtle and not easily observable through formatted output alone
+
 **Estimate:** 4 hours
 
 **Dependencies:** Task 2.35
