@@ -42,6 +42,7 @@ module Herb
       end
 
       # @rbs @lines: Array[String]
+      # @rbs @indent_level: Integer
       # @rbs @string_line_count: Integer
       # @rbs @inline_mode: bool
       # @rbs @node_is_multiline: Hash[Herb::AST::Node, bool]
@@ -55,6 +56,7 @@ module Herb
         @max_line_length = max_line_length
         @format_context = format_context
         @lines = []
+        @indent_level = 0
         @string_line_count = 0
         @inline_mode = false
         @node_is_multiline = {}
@@ -162,6 +164,15 @@ module Herb
         end_line_count = @string_line_count
 
         @node_is_multiline[node] = true if end_line_count > start_line_count
+      end
+
+      # Temporarily increase indent level for the duration of the block.
+      #
+      # @rbs &: () -> void
+      def with_indent #: void
+        @indent_level += 1
+        yield
+        @indent_level -= 1
       end
 
       # Visit the body of an HTML element. For preserved elements (script,

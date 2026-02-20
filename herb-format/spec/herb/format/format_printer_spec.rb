@@ -261,6 +261,37 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
   end
 
+  describe "#with_indent" do
+    let(:printer) do
+      Class.new(described_class) do
+        public :with_indent
+        attr_reader :indent_level
+      end.new(indent_width:, max_line_length:, format_context:)
+    end
+
+    it "increases indent_level by 1 inside the block" do
+      printer.with_indent do
+        expect(printer.indent_level).to eq(1)
+      end
+    end
+
+    it "restores indent_level to 0 after the block" do
+      printer.with_indent { nil }
+
+      expect(printer.indent_level).to eq(0)
+    end
+
+    it "supports nested with_indent calls" do
+      printer.with_indent do
+        printer.with_indent do
+          expect(printer.indent_level).to eq(2)
+        end
+        expect(printer.indent_level).to eq(1)
+      end
+      expect(printer.indent_level).to eq(0)
+    end
+  end
+
   describe "#capture" do
     subject { printer.capture { nil } }
 

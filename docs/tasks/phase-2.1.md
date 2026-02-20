@@ -57,7 +57,7 @@ Part G: Integration & Testing                         ← Integration
 - [ ] Task 2.9: State Management Fields
 - [x] Task 2.10: capture Pattern
 - [x] Task 2.11: trackBoundary Pattern
-- [ ] Task 2.12: withIndent Pattern
+- [x] Task 2.12: withIndent Pattern
 - [ ] Task 2.13: Output Helper Methods
 
 ### Part C: ElementAnalyzer (4 tasks)
@@ -72,7 +72,7 @@ Part G: Integration & Testing                         ← Integration
 - [ ] Task 2.20: Class Attribute Formatting
 - [ ] Task 2.21: Quote Normalization
 
-**Progress: 9/21 tasks completed**
+**Progress: 10/21 tasks completed**
 
 ---
 
