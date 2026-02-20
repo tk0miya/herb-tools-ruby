@@ -2,6 +2,3 @@ inherit_from: ../.rubocop-common.yml
 
 plugins:
   - rubocop-factory_bot
-
-Metrics/ClassLength:
-  Max: 200

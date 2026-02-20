@@ -12,7 +12,7 @@ module Herb
     # Leaf nodes are handled with identity-like output for now. As formatting
     # rules are added, visitor methods will be overridden to apply indentation,
     # line wrapping, attribute formatting, and other transformations.
-    class FormatPrinter < ::Herb::Printer::Base
+    class FormatPrinter < ::Herb::Printer::Base # rubocop:disable Metrics/ClassLength
       VOID_ELEMENTS = %w[
         area base br col embed hr img input link meta param source track wbr
       ].freeze
