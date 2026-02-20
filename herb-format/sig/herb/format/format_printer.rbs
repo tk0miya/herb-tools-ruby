@@ -97,19 +97,19 @@ module Herb
       # Capture output to a temporary buffer.
       # Saves and restores @lines, @string_line_count, and @inline_mode around the block.
       #
-      # @rbs &: () -> void
+      # @rbs &block: () -> void
       def capture: () { () -> void } -> Array[String]
 
       # Track if a node spans multiple lines.
       # Records whether the node produced multiline output.
       #
       # @rbs node: Herb::AST::Node
-      # @rbs &: () -> void
+      # @rbs &block: () -> void
       def track_boundary: (Herb::AST::Node node) { () -> void } -> void
 
       # Temporarily increase indent level for the duration of the block.
       #
-      # @rbs &: () -> void
+      # @rbs &block: () -> void
       def with_indent: () { () -> void } -> void
 
       # Visit the body of an HTML element. For preserved elements (script,
