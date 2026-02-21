@@ -1,0 +1,30 @@
+# Generated from lib/herb/format/element_analysis.rb with RBS::Inline
+
+module Herb
+  module Format
+    # Analysis result for HTMLElementNode formatting decisions.
+    class ElementAnalysis < Data
+      attr_reader open_tag_inline(): bool
+
+      attr_reader element_content_inline(): bool
+
+      attr_reader close_tag_inline(): bool
+
+      def self.new: (bool open_tag_inline, bool element_content_inline, bool close_tag_inline) -> instance
+                  | (open_tag_inline: bool, element_content_inline: bool, close_tag_inline: bool) -> instance
+
+      def self.members: () -> [ :open_tag_inline, :element_content_inline, :close_tag_inline ]
+
+      def members: () -> [ :open_tag_inline, :element_content_inline, :close_tag_inline ]
+    end
+
+    # :nodoc:
+    class ElementAnalysis
+      # Element is fully inline (one line output)
+      def fully_inline?: () -> bool
+
+      # Element uses block formatting
+      def block_format?: () -> bool
+    end
+  end
+end

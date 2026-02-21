@@ -32,6 +32,8 @@ module Herb
 
       @node_is_multiline: Hash[Herb::AST::Node, bool]
 
+      @element_formatting_analysis: Hash[Herb::AST::HTMLElementNode, ElementAnalysis]
+
       @inline_mode: bool
 
       @string_line_count: Integer
