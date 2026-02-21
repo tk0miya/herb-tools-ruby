@@ -69,7 +69,7 @@ Part G: Integration & Testing                         ← Integration
 ### Part D: Attribute Formatting (5 tasks)
 - [x] Task 2.18: Attribute Inline Rendering
 - [ ] Task 2.19: Attribute Multiline Rendering
-- [ ] Task 2.20: Class Attribute Formatting
+- [x] Task 2.20: Class Attribute Formatting
 - [ ] Task 2.21: Quote Normalization
 - [ ] Task 2.21b: HTML Open/Close Tag Visitors
 
