@@ -14,9 +14,14 @@ module Herb
 
         CONTEXT_LINES: ::Integer
 
+        DEFAULT_TRUNCATE_WIDTH: ::Integer
+
         # @rbs io: IO
         # @rbs show_timing: bool -- when false, suppresses timing display
-        def initialize: (?io: IO, ?show_timing: bool) -> void
+        # @rbs theme: String? -- color theme name (reserved for future Rouge integration)
+        # @rbs wrap_lines: bool -- when false, disables line wrapping in output
+        # @rbs truncate_lines: bool -- when true, truncates long source lines
+        def initialize: (?io: IO, ?show_timing: bool, ?theme: String?, ?wrap_lines: bool, ?truncate_lines: bool) -> void
 
         # Reports the aggregated linting result.
         # Outputs the disabled message when aggregated_result.completed? is false.
@@ -92,6 +97,14 @@ module Herb
         # @rbs bold: bool
         # @rbs dim: bool
         def colorize: (String text, ?color: color?, ?bold: bool, ?dim: bool) -> String
+
+        # Applies truncation to a source line if truncate_lines is enabled.
+        #
+        # @rbs content: String
+        def maybe_truncate: (String content) -> String
+
+        # Returns the terminal width for line truncation.
+        def terminal_width: () -> Integer
       end
     end
   end
