@@ -2,9 +2,6 @@
 
 module Herb
   module Lint
-    # Bridges the check phase and autofix phase.
-    # Carries a direct reference to the offending AST node (for VisitorRule) or
-    # source offsets (for SourceRule) and the rule instance that can fix it.
     class AutofixContext < Data
       attr_reader rule(): Herb::Lint::Rules::VisitorRule | Herb::Lint::Rules::SourceRule
 
@@ -14,23 +11,34 @@ module Herb
 
       attr_reader end_offset(): Integer?
 
-      # VisitorRule pattern: rule + node
-      # SourceRule pattern: rule + offsets
-      def initialize: (rule: Rules::VisitorRule, node: Herb::AST::Node) -> void
-                    | (rule: Rules::SourceRule, start_offset: Integer, end_offset: Integer) -> void
-
-      # Returns true when this is a source rule context (has offset information)
-      def source_rule?: () -> bool
-
-      # Returns true when this is a visitor rule context (has node information)
-      def visitor_rule?: () -> bool
-
-      # Returns true when the rule can autofix this offense
-      def autofixable?: (?unsafe: bool) -> bool
+      def self.new: (Herb::Lint::Rules::VisitorRule | Herb::Lint::Rules::SourceRule rule, Herb::AST::Node? node, Integer? start_offset, Integer? end_offset) -> instance
+                  | (rule: Herb::Lint::Rules::VisitorRule | Herb::Lint::Rules::SourceRule, node: Herb::AST::Node?, start_offset: Integer?, end_offset: Integer?) -> instance
 
       def self.members: () -> [ :rule, :node, :start_offset, :end_offset ]
 
       def members: () -> [ :rule, :node, :start_offset, :end_offset ]
+    end
+
+    # Bridges the check phase and autofix phase.
+    # Carries a direct reference to the offending AST node (for VisitorRule) or
+    # source offsets (for SourceRule) and the rule instance that can fix it.
+    class AutofixContext
+      # : (rule: Herb::Lint::Rules::VisitorRule, node: Herb::AST::Node) -> void
+      # : (rule: Herb::Lint::Rules::SourceRule, start_offset: Integer, end_offset: Integer) -> void
+      def initialize: (rule: Herb::Lint::Rules::VisitorRule, node: Herb::AST::Node) -> void
+                    | (rule: Herb::Lint::Rules::SourceRule, start_offset: Integer, end_offset: Integer) -> void
+
+      # Returns true when this is a source rule context (has offset information).
+      def source_rule?: () -> bool
+
+      # Returns true when this is a visitor rule context (has node information).
+      def visitor_rule?: () -> bool
+
+      # Returns true when the rule can autofix this offense.
+      # Safe autofixes are always allowed.
+      # Unsafe autofixes require unsafe: true.
+      # @rbs unsafe: bool
+      def autofixable?: (?unsafe: bool) -> bool
     end
   end
 end

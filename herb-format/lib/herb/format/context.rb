@@ -4,9 +4,9 @@ module Herb
   module Format
     # Provides contextual information during formatting and rewriting.
     Context = Data.define(
-      :file_path,     #: String
-      :source,        #: String
-      :config         #: Herb::Config::FormatterConfig
+      :file_path,  #: String
+      :source,     #: String
+      :config      #: Herb::Config::FormatterConfig
     )
 
     # :nodoc:
