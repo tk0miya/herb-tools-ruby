@@ -20,134 +20,152 @@ RSpec.describe Herb::Format::FormatPrinter do
 
     let(:ast) { Herb.parse(source, track_whitespace: true) }
 
-    context "with document node" do
-      let(:source) { "Hello World" }
+    context "with basic nodes" do
+      context "with document node" do
+        let(:source) { "Hello World" }
 
-      it "visits all children" do
-        expect(subject).to eq("Hello World")
-      end
-    end
-
-    context "with literal nodes" do
-      let(:source) { "Plain text" }
-
-      it "preserves literal content" do
-        expect(subject).to eq("Plain text")
-      end
-    end
-
-    context "with HTML text nodes" do
-      let(:source) { "<div>Hello</div>" }
-
-      it "outputs opening tag, text content, and closing tag" do
-        expect(subject).to eq("<div>Hello</div>")
-      end
-    end
-
-    context "with whitespace nodes" do
-      let(:source) { "<div class='foo'></div>" }
-
-      it "outputs opening tag with attribute and closing tag" do
-        expect(subject).to eq('<div class="foo"></div>')
-      end
-    end
-
-    context "with void element" do
-      let(:source) { "<br>" }
-
-      it "outputs void element without closing tag" do
-        expect(subject).to eq("<br>")
-      end
-    end
-
-    context "with simple HTML element" do
-      let(:source) { "<div>content</div>" }
-
-      it "outputs opening tag, content, and closing tag" do
-        expect(subject).to eq("<div>content</div>")
-      end
-    end
-
-    context "with HTML element with attributes" do
-      let(:source) { '<div class="foo" id="bar">content</div>' }
-
-      it "outputs opening tag with attributes, content, and closing tag" do
-        expect(subject).to eq('<div class="foo" id="bar">content</div>')
-      end
-    end
-
-    context "with nested elements" do
-      let(:source) { "<div><p>nested</p></div>" }
-
-      it "outputs both opening and closing tags for nested elements" do
-        expect(subject).to eq("<div><p>nested</p></div>")
-      end
-    end
-
-    context "with boolean attribute" do
-      let(:source) { "<input disabled>" }
-
-      it "renders boolean attribute without value" do
-        expect(subject).to eq("<input disabled>")
-      end
-    end
-
-    context "with single-quoted attributes" do
-      let(:source) { "<div id='main' class='container'></div>" }
-
-      it "normalizes single quotes to double quotes" do
-        expect(subject).to eq('<div id="main" class="container"></div>')
-      end
-    end
-
-    context "with ERB in attribute value" do
-      let(:source) { '<div class="<%= foo %>">content</div>' }
-
-      it "renders ERB expression inside attribute value" do
-        expect(subject).to eq('<div class="<%= foo %>">content</div>')
-      end
-    end
-
-    context "with no attributes" do
-      let(:source) { "<div>content</div>" }
-
-      it "renders tag without attribute string" do
-        expect(subject).to eq("<div>content</div>")
-      end
-    end
-
-    context "with preserved element" do
-      context "with multi-line pre element" do
-        let(:source) { "<pre>\n  def hello\n    puts 'world'\n  end\n</pre>" }
-
-        it "preserves all newlines and indentation" do
-          expect(subject).to include("\n  def hello\n    puts 'world'\n  end\n")
+        it "visits all children" do
+          expect(subject).to eq("Hello World")
         end
       end
 
-      context "with textarea element" do
-        let(:source) { "<textarea>\n  User input\n    with indents\n</textarea>" }
+      context "with literal nodes" do
+        let(:source) { "Plain text" }
 
-        it "preserves content as-is" do
-          expect(subject).to include("\n  User input\n    with indents\n")
+        it "preserves literal content" do
+          expect(subject).to eq("Plain text")
+        end
+      end
+    end
+
+    context "with HTML elements" do
+      context "with simple elements" do
+        context "with text content" do
+          let(:source) { "<div>Hello</div>" }
+
+          it "outputs opening tag, text content, and closing tag" do
+            expect(subject).to eq("<div>Hello</div>")
+          end
+        end
+
+        context "with basic content" do
+          let(:source) { "<div>content</div>" }
+
+          it "outputs opening tag, content, and closing tag" do
+            expect(subject).to eq("<div>content</div>")
+          end
         end
       end
 
-      context "with script element" do
-        let(:source) { "<script>\n  console.log('test');\n</script>" }
+      context "with void elements" do
+        let(:source) { "<br>" }
 
-        it "preserves script content with original formatting" do
-          expect(subject).to include("\n  console.log('test');\n")
+        it "outputs void element without closing tag" do
+          expect(subject).to eq("<br>")
         end
       end
 
-      context "with style element" do
-        let(:source) { "<style>\n  .foo { color: red; }\n</style>" }
+      context "with nested elements" do
+        let(:source) { "<div><p>nested</p></div>" }
 
-        it "preserves style content with original formatting" do
-          expect(subject).to include("\n  .foo { color: red; }\n")
+        it "outputs both opening and closing tags for nested elements" do
+          expect(subject).to eq("<div><p>nested</p></div>")
         end
       end
+
+      context "with preserved elements" do
+        context "with multi-line pre element" do
+          let(:source) { "<pre>\n  def hello\n    puts 'world'\n  end\n</pre>" }
+
+          it "preserves all newlines and indentation" do
+            expect(subject).to include("\n  def hello\n    puts 'world'\n  end\n")
+          end
+        end
+
+        context "with textarea element" do
+          let(:source) { "<textarea>\n  User input\n    with indents\n</textarea>" }
+
+          it "preserves content as-is" do
+            expect(subject).to include("\n  User input\n    with indents\n")
+          end
+        end
+
+        context "with script element" do
+          let(:source) { "<script>\n  console.log('test');\n</script>" }
+
+          it "preserves script content with original formatting" do
+            expect(subject).to include("\n  console.log('test');\n")
+          end
+        end
+
+        context "with style element" do
+          let(:source) { "<style>\n  .foo { color: red; }\n</style>" }
+
+          it "preserves style content with original formatting" do
+            expect(subject).to include("\n  .foo { color: red; }\n")
+          end
+        end
+      end
+    end
+
+    context "with HTML attributes" do
+      context "with basic attributes" do
+        let(:source) { '<div class="foo" id="bar">content</div>' }
+
+        it "outputs opening tag with attributes, content, and closing tag" do
+          expect(subject).to eq('<div class="foo" id="bar">content</div>')
+        end
+      end
+
+      context "with no attributes" do
+        let(:source) { "<div>content</div>" }
+
+        it "renders tag without attribute string" do
+          expect(subject).to eq("<div>content</div>")
+        end
+      end
+
+      context "with boolean attributes" do
+        let(:source) { "<input disabled>" }
+
+        it "renders boolean attribute without value" do
+          expect(subject).to eq("<input disabled>")
+        end
+      end
+
+      context "with quote normalization" do
+        context "with single-quoted attributes on empty element" do
+          let(:source) { "<div class='foo'></div>" }
+
+          it "normalizes single quotes to double quotes" do
+            expect(subject).to eq('<div class="foo"></div>')
+          end
+        end
+
+        context "with multiple single-quoted attributes" do
+          let(:source) { "<div id='main' class='container'></div>" }
+
+          it "normalizes single quotes to double quotes" do
+            expect(subject).to eq('<div id="main" class="container"></div>')
+          end
+        end
+      end
+
+      context "with ERB in attribute values" do
+        let(:source) { '<div class="<%= foo %>">content</div>' }
+
+        it "renders ERB expression inside attribute value" do
+          expect(subject).to eq('<div class="<%= foo %>">content</div>')
+        end
+      end
+    end
+
+    context "with ERB tags" do
+      pending "Part E: ERB Formatting (Task 2.22-2.28)"
+    end
+
+    context "with text flow" do
+      pending "Part F: Text Flow & Spacing (Task 2.29-2.34)"
     end
   end
 
