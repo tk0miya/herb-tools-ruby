@@ -22,6 +22,13 @@ module Herb
       # @rbs indent_width: Integer
       def initialize: (FormatPrinter printer, Integer max_line_length, Integer indent_width) -> void
 
+      # Analyze element and return formatting decisions.
+      #
+      # @rbs element: Herb::AST::HTMLElementNode
+      def analyze: (Herb::AST::HTMLElementNode element) -> ElementAnalysis
+
+      private
+
       # Should render open tag inline?
       #
       # @rbs element: Herb::AST::HTMLElementNode
@@ -38,7 +45,11 @@ module Herb
       # @rbs open_tag_inline: bool
       def should_render_element_content_inline?: (Herb::AST::HTMLElementNode element, bool open_tag_inline) -> bool
 
-      private
+      # Should render close tag inline?
+      #
+      # @rbs _element: Herb::AST::HTMLElementNode
+      # @rbs element_content_inline: bool
+      def should_render_close_tag_inline?: (untyped _element, bool element_content_inline) -> bool
 
       # Get inline nodes from open tag (excludes whitespace and attributes).
       #

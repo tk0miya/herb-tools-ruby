@@ -24,6 +24,31 @@ module Herb
         @in_conditional_open_tag_context = false
       end
 
+      # Analyze element and return formatting decisions.
+      #
+      # @rbs element: Herb::AST::HTMLElementNode
+      def analyze(element) #: ElementAnalysis
+        tag_name = get_tag_name(element)
+
+        if content_preserving?(tag_name)
+          ElementAnalysis.new(open_tag_inline: false, element_content_inline: false, close_tag_inline: false)
+        elsif element.is_void
+          ElementAnalysis.new(open_tag_inline: true, element_content_inline: true, close_tag_inline: true)
+        else
+          open_tag_inline = should_render_open_tag_inline?(element)
+          element_content_inline = should_render_element_content_inline?(element, open_tag_inline)
+          close_tag_inline = should_render_close_tag_inline?(element, element_content_inline)
+
+          ElementAnalysis.new(
+            open_tag_inline:,
+            element_content_inline:,
+            close_tag_inline:
+          )
+        end
+      end
+
+      private
+
       # Should render open tag inline?
       #
       # @rbs element: Herb::AST::HTMLElementNode
@@ -89,7 +114,13 @@ module Herb
         false
       end
 
-      private
+      # Should render close tag inline?
+      #
+      # @rbs _element: Herb::AST::HTMLElementNode
+      # @rbs element_content_inline: bool
+      def should_render_close_tag_inline?(_element, element_content_inline) #: bool
+        element_content_inline
+      end
 
       # Get inline nodes from open tag (excludes whitespace and attributes).
       #
