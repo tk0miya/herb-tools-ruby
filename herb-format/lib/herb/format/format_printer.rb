@@ -274,39 +274,25 @@ module Herb
       # @rbs tag_name: String
       # @rbs all_children: Array[Herb::AST::Node]
       # @rbs is_void: bool
-      def render_multiline_attributes(tag_name, all_children, is_void) #: void
-        push_with_indent(multiline_opening_line(tag_name, all_children))
-        render_multiline_attribute_children(all_children)
-        push_with_indent(is_void ? "/>" : ">")
-      end
+      def render_multiline_attributes(tag_name, all_children, is_void) #: void # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+        herb_disable_comments = all_children.select { |child| herb_disable_comment?(child) }
 
-      # Build the opening line for multiline attribute rendering.
-      # Appends any herb:disable comments inline after the tag name.
-      #
-      # @rbs tag_name: String
-      # @rbs all_children: Array[Herb::AST::Node]
-      def multiline_opening_line(tag_name, all_children) #: String
         opening_line = "<#{tag_name}"
 
-        herb_disable_comments = all_children.select { |child| herb_disable_comment?(child) }
-        return opening_line if herb_disable_comments.empty?
-
-        comment_output = capture do
-          herb_disable_comments.each do |comment|
-            @inline_mode = true
-            push(" ")
-            visit(comment)
-            @inline_mode = false
+        if herb_disable_comments.any?
+          comment_output = capture do
+            herb_disable_comments.each do |comment|
+              @inline_mode = true
+              push(" ")
+              visit(comment)
+              @inline_mode = false
+            end
           end
+          opening_line += comment_output.join
         end
-        opening_line + comment_output.join
-      end
 
-      # Output each child in a multiline attribute block with increased indentation.
-      # Attributes are rendered inline; other non-whitespace, non-herb:disable nodes are visited.
-      #
-      # @rbs all_children: Array[Herb::AST::Node]
-      def render_multiline_attribute_children(all_children) #: void
+        push_with_indent(opening_line)
+
         with_indent do
           all_children.each do |child|
             if child.is_a?(Herb::AST::HTMLAttributeNode)
@@ -316,6 +302,8 @@ module Herb
             end
           end
         end
+
+        push_with_indent(is_void ? "/>" : ">")
       end
 
       # Render a single attribute.
