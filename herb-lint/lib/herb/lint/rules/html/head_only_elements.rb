@@ -82,8 +82,7 @@ module Herb
           def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
 
-          # @rbs @element_stack: Array[String]
-          attr_reader :element_stack
+          attr_reader :element_stack #: Array[String]
 
           # @rbs override
           def on_new_investigation

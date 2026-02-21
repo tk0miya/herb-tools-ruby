@@ -15,20 +15,20 @@ module Herb
       # Parsed rule name with position information for error reporting.
       # offset is relative to the start of the ERB content token value.
       DisableRuleName = Data.define(
-        :name,   #: String
-        :offset, #: Integer
-        :length  #: Integer
+        :name,    #: String
+        :offset,  #: Integer
+        :length   #: Integer
       )
 
       # Parsed herb:disable comment (including malformed ones).
       # match is true when the comment has a valid herb:disable format.
       # Malformed comments (match=false) are still stored for meta-rule validation.
       DisableComment = Data.define(
-        :match,             #: bool
-        :rule_names,        #: Array[String]
-        :rule_name_details, #: Array[DisableRuleName]
-        :rules_string,      #: String?
-        :content_location   #: Herb::Location -- location of the ERB content token
+        :match,              #: bool
+        :rule_names,         #: Array[String]
+        :rule_name_details,  #: Array[DisableRuleName]
+        :rules_string,       #: String?
+        :content_location    #: Herb::Location -- location of the ERB content token
       )
 
       # Parse result holding all directive information for a file.
