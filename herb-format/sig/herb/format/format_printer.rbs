@@ -34,6 +34,8 @@ module Herb
 
       @element_formatting_analysis: Hash[Herb::AST::HTMLElementNode, ElementAnalysis]
 
+      @in_conditional_open_tag_context: bool
+
       @inline_mode: bool
 
       @string_line_count: Integer

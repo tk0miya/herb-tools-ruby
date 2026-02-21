@@ -45,6 +45,7 @@ module Herb
       # @rbs @indent_level: Integer
       # @rbs @string_line_count: Integer
       # @rbs @inline_mode: bool
+      # @rbs @in_conditional_open_tag_context: bool
       # @rbs @element_formatting_analysis: Hash[Herb::AST::HTMLElementNode, ElementAnalysis]
       # @rbs @node_is_multiline: Hash[Herb::AST::Node, bool]
 
@@ -60,6 +61,7 @@ module Herb
         @indent_level = 0
         @string_line_count = 0
         @inline_mode = false
+        @in_conditional_open_tag_context = false
         @element_formatting_analysis = {}
         @node_is_multiline = {}
       end

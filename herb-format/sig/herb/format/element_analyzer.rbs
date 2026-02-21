@@ -1,0 +1,48 @@
+# Generated from lib/herb/format/element_analyzer.rb with RBS::Inline
+
+module Herb
+  module Format
+    # Analyzes HTMLElementNode to determine formatting decisions.
+    #
+    # Determines whether the open tag, element content, and close tag
+    # should be rendered inline or as block-level content.
+    class ElementAnalyzer
+      include FormatHelpers
+
+      @printer: FormatPrinter
+
+      @max_line_length: Integer
+
+      @indent_width: Integer
+
+      @in_conditional_open_tag_context: bool
+
+      # @rbs printer: FormatPrinter
+      # @rbs max_line_length: Integer
+      # @rbs indent_width: Integer
+      def initialize: (FormatPrinter printer, Integer max_line_length, Integer indent_width) -> void
+
+      # Should render open tag inline?
+      #
+      # @rbs element: Herb::AST::HTMLElementNode
+      def should_render_open_tag_inline?: (Herb::AST::HTMLElementNode element) -> bool
+
+      private
+
+      # Get inline nodes from open tag (excludes whitespace and attributes).
+      #
+      # @rbs open_tag: Herb::AST::HTMLOpenTagNode
+      def get_inline_nodes: (Herb::AST::HTMLOpenTagNode open_tag) -> Array[Herb::AST::Node]
+
+      # Has multiline attributes?
+      #
+      # @rbs open_tag: Herb::AST::HTMLOpenTagNode
+      def multiline_attributes?: (Herb::AST::HTMLOpenTagNode open_tag) -> bool
+
+      # Should render inline? Check attribute count and line length.
+      #
+      # @rbs element: Herb::AST::HTMLElementNode
+      def should_render_inline?: (Herb::AST::HTMLElementNode element) -> bool
+    end
+  end
+end
