@@ -33,6 +33,7 @@ module Herb
           print_files_line(aggregated_result) if aggregated_result.file_count > 1
           print_offenses_line(aggregated_result)
           print_fixable_line(aggregated_result)
+          print_top_rules_line(aggregated_result)
           print_timing_line(aggregated_result) if show_timing && aggregated_result.duration
           print_success_message(aggregated_result)
         end
@@ -119,6 +120,26 @@ module Herb
             io.puts " #{pad_label('Fixable')} #{total_part} | #{fixable_part}"
           else
             io.puts " #{pad_label('Fixable')} #{total_part}"
+          end
+        end
+
+        # Prints the top violated rules in descending order of offense count.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_top_rules_line(aggregated_result) #: void
+          return if aggregated_result.offense_count.zero?
+
+          top_rules = aggregated_result.offenses
+                                       .group_by(&:rule_name)
+                                       .transform_values(&:count)
+                                       .sort_by { |_, count| -count }
+                                       .first(5)
+
+          io.puts " #{pad_label('Top Rules')}"
+          top_rules.each do |rule_name, count|
+            rule = colorize(rule_name, color: :cyan)
+            count_str = colorize("#{count} #{pluralize(count, 'offense')}", color: :red, bold: true)
+            io.puts "   #{rule}: #{count_str}"
           end
         end
 
