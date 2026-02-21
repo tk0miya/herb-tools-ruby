@@ -79,7 +79,7 @@ module Herb
           # Reset meta tracking on <head> entry. Only process <meta> inside <head>.
           #
           # @rbs override
-          def visit_html_element_node(node) #: void
+          def visit_html_element_node(node)
             tag = tag_name(node)&.downcase
             return unless tag
 
@@ -100,7 +100,7 @@ module Herb
           # branches is not a duplicate.
           #
           # @rbs override
-          def visit_erb_if_node(node) #: void
+          def visit_erb_if_node(node)
             process_control_flow(collect_if_branches(node), :conditional)
           end
 
@@ -108,7 +108,7 @@ module Herb
           # branches is not a duplicate.
           #
           # @rbs override
-          def visit_erb_unless_node(node) #: void
+          def visit_erb_unless_node(node)
             branches = [node.statements]
             branches << node.else_clause.statements if node.else_clause
             process_control_flow(branches, :conditional)
@@ -117,21 +117,21 @@ module Herb
           # Process while loop: meta tags are only checked within the same iteration.
           #
           # @rbs override
-          def visit_erb_while_node(node) #: void
+          def visit_erb_while_node(node)
             process_control_flow([node.statements], :loop)
           end
 
           # Process until loop: meta tags are only checked within the same iteration.
           #
           # @rbs override
-          def visit_erb_until_node(node) #: void
+          def visit_erb_until_node(node)
             process_control_flow([node.statements], :loop)
           end
 
           # Process for loop: meta tags are only checked within the same iteration.
           #
           # @rbs override
-          def visit_erb_for_node(node) #: void
+          def visit_erb_for_node(node)
             process_control_flow([node.statements], :loop)
           end
 
@@ -139,7 +139,7 @@ module Herb
           # the same iteration.
           #
           # @rbs override
-          def visit_erb_block_node(node) #: void
+          def visit_erb_block_node(node)
             process_control_flow([node.body || []], :loop)
           end
 
