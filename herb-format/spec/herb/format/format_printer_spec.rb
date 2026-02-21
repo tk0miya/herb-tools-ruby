@@ -502,4 +502,159 @@ RSpec.describe Herb::Format::FormatPrinter do
       end
     end
   end
+
+  describe "#format_erb_content" do
+    subject { printer.send(:format_erb_content, content) }
+
+    let(:printer) do
+      described_class.new(indent_width:, max_line_length:, format_context:)
+    end
+
+    context "with empty content" do
+      let(:content) { "" }
+
+      it { is_expected.to eq("") }
+    end
+
+    context "with whitespace-only content" do
+      let(:content) { "   " }
+
+      it { is_expected.to eq("") }
+    end
+
+    context "with unspaced content" do
+      let(:content) { "@user.name" }
+
+      it "adds leading and trailing spaces" do
+        expect(subject).to eq(" @user.name ")
+      end
+    end
+
+    context "with already-spaced content" do
+      let(:content) { " @user.name " }
+
+      it "normalizes to single spaces" do
+        expect(subject).to eq(" @user.name ")
+      end
+    end
+
+    context "with extra whitespace around content" do
+      let(:content) { "   spaced   " }
+
+      it "strips and adds single spaces" do
+        expect(subject).to eq(" spaced ")
+      end
+    end
+
+    context "with heredoc content" do
+      let(:content) { "<<HEREDOC" }
+
+      it "adds leading space and trailing newline" do
+        expect(subject).to eq(" <<HEREDOC\n")
+      end
+    end
+
+    context "with heredoc content and extra spaces" do
+      let(:content) { "  <<HEREDOC  " }
+
+      it "strips and adds leading space and trailing newline" do
+        expect(subject).to eq(" <<HEREDOC\n")
+      end
+    end
+  end
+
+  describe "#reconstruct_erb_node" do
+    let(:printer) do
+      described_class.new(indent_width:, max_line_length:, format_context:)
+    end
+
+    context "with formatted output tag" do
+      let(:node) { Herb.parse("<%=@user.name%>").value.children.first }
+
+      it "reconstructs with normalized spaces" do
+        result = printer.send(:reconstruct_erb_node, node, with_formatting: true)
+
+        expect(result).to eq("<%= @user.name %>")
+      end
+    end
+
+    context "with formatted statement tag" do
+      let(:node) { Herb.parse("<%foo%>").value.children.first }
+
+      it "reconstructs with normalized spaces" do
+        result = printer.send(:reconstruct_erb_node, node, with_formatting: true)
+
+        expect(result).to eq("<% foo %>")
+      end
+    end
+
+    context "without formatting" do
+      let(:node) { Herb.parse("<%=@user.name%>").value.children.first }
+
+      it "preserves original content without normalization" do
+        result = printer.send(:reconstruct_erb_node, node, with_formatting: false)
+
+        expect(result).to eq("<%=@user.name%>")
+      end
+    end
+
+    context "with heredoc tag" do
+      let(:node) { Herb.parse("<%=<<HEREDOC\ntext\nHEREDOC\n%>").value.children.first }
+
+      it "normalizes spacing and uses newline suffix for heredoc" do
+        result = printer.send(:reconstruct_erb_node, node, with_formatting: true)
+
+        expect(result).to eq("<%= <<HEREDOC\ntext\nHEREDOC\n%>")
+      end
+    end
+  end
+
+  describe "#print_erb_node" do
+    let(:printer) do
+      Class.new(described_class) do
+        public :push
+        attr_accessor :inline_mode, :indent_level
+      end.new(indent_width:, max_line_length:, format_context:)
+    end
+
+    let(:node) { Herb.parse("<%=@user.name%>").value.children.first }
+
+    context "when not in inline mode" do
+      it "pushes the ERB tag without indentation at level 0" do
+        result = printer.capture { printer.send(:print_erb_node, node) }
+
+        expect(result).to eq(["<%= @user.name %>"])
+      end
+
+      context "with indentation" do
+        before { printer.indent_level = 1 }
+
+        it "pushes the ERB tag with current indentation" do
+          result = printer.capture { printer.send(:print_erb_node, node) }
+
+          expect(result).to eq(["  <%= @user.name %>"])
+        end
+      end
+    end
+
+    context "when in inline mode" do
+      before { printer.inline_mode = true }
+
+      it "pushes the ERB tag without any indentation" do
+        result = printer.capture { printer.send(:print_erb_node, node) }
+
+        expect(result).to eq(["<%= @user.name %>"])
+      end
+
+      context "with indent level set" do
+        before { printer.indent_level = 2 }
+
+        it "ignores indent level and pushes without indentation" do
+          result = printer.capture { printer.send(:print_erb_node, node) }
+
+          expect(result).to eq(["<%= @user.name %>"])
+        end
+      end
+    end
+  end
 end
