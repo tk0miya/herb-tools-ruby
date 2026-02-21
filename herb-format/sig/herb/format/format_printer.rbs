@@ -161,19 +161,6 @@ module Herb
       # @rbs is_void: bool
       def render_multiline_attributes: (String tag_name, Array[Herb::AST::Node] all_children, bool is_void) -> void
 
-      # Build the opening line for multiline attribute rendering.
-      # Appends any herb:disable comments inline after the tag name.
-      #
-      # @rbs tag_name: String
-      # @rbs all_children: Array[Herb::AST::Node]
-      def multiline_opening_line: (String tag_name, Array[Herb::AST::Node] all_children) -> String
-
-      # Output each child in a multiline attribute block with increased indentation.
-      # Attributes are rendered inline; other non-whitespace, non-herb:disable nodes are visited.
-      #
-      # @rbs all_children: Array[Herb::AST::Node]
-      def render_multiline_attribute_children: (Array[Herb::AST::Node] all_children) -> void
-
       # Render a single attribute.
       # Returns a string like 'class="foo"' or 'disabled' (boolean attribute).
       #
