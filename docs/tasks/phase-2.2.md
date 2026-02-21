@@ -1121,6 +1121,12 @@ end
 - All modules load
 - RBS type checking passes
 
+**Implementation Items:**
+- [ ] Enable `context "with inline element that exceeds max line length"` in
+  `element_analyzer_spec.rb`: once all visit methods use `push` (instead of
+  writing to `PrintContext`), `capture { visit(element) }` will return actual
+  rendered lines and the length check will behave correctly
+
 **Estimate:** 1 hour
 
 **Dependencies:** All prior tasks

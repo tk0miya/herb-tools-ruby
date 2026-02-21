@@ -123,6 +123,29 @@ module Herb
         write(node.tag_closing.value)
       end
 
+      # Capture output to a temporary buffer.
+      # Saves and restores @lines, @string_line_count, and @inline_mode around the block.
+      # Used by ElementAnalyzer to render elements speculatively for length checks.
+      #
+      # @rbs &block: () -> void
+      def capture(&) #: Array[String]
+        previous_lines = @lines
+        previous_string_line_count = @string_line_count
+        previous_inline_mode = @inline_mode
+
+        @lines = []
+        @string_line_count = 0
+
+        yield
+
+        result = @lines
+        @lines = previous_lines
+        @string_line_count = previous_string_line_count
+        @inline_mode = previous_inline_mode
+
+        result
+      end
+
       private
 
       # Current indent string based on @indent_level.
@@ -158,28 +181,6 @@ module Herb
       def push(line) #: void
         @lines << line
         @string_line_count += line.count("\n")
-      end
-
-      # Capture output to a temporary buffer.
-      # Saves and restores @lines, @string_line_count, and @inline_mode around the block.
-      #
-      # @rbs &block: () -> void
-      def capture(&) #: Array[String]
-        previous_lines = @lines
-        previous_string_line_count = @string_line_count
-        previous_inline_mode = @inline_mode
-
-        @lines = []
-        @string_line_count = 0
-
-        yield
-
-        result = @lines
-        @lines = previous_lines
-        @string_line_count = previous_string_line_count
-        @inline_mode = previous_inline_mode
-
-        result
       end
 
       # Track if a node spans multiple lines.

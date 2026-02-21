@@ -27,6 +27,17 @@ module Herb
       # @rbs element: Herb::AST::HTMLElementNode
       def should_render_open_tag_inline?: (Herb::AST::HTMLElementNode element) -> bool
 
+      # Should render element content inline?
+      #
+      # Determines whether the children of an element should be rendered on the
+      # same line as the opening tag. Returns false immediately if the open tag
+      # itself is not inline. For inline elements, renders the full element via
+      # capture to check the total line length.
+      #
+      # @rbs element: Herb::AST::HTMLElementNode
+      # @rbs open_tag_inline: bool
+      def should_render_element_content_inline?: (Herb::AST::HTMLElementNode element, bool open_tag_inline) -> bool
+
       private
 
       # Get inline nodes from open tag (excludes whitespace and attributes).
@@ -43,6 +54,11 @@ module Herb
       #
       # @rbs element: Herb::AST::HTMLElementNode
       def should_render_inline?: (Herb::AST::HTMLElementNode element) -> bool
+
+      # Is this node inline (can appear on the same line as surrounding content)?
+      #
+      # @rbs node: Herb::AST::Node
+      def inline_node?: (Herb::AST::Node node) -> bool
     end
   end
 end

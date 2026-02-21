@@ -231,7 +231,7 @@ RSpec.describe Herb::Format::FormatPrinter do
   describe "#push" do
     let(:printer) do
       Class.new(described_class) do
-        public :push, :capture
+        public :push
         attr_reader :string_line_count
       end.new(indent_width:, max_line_length:, format_context:)
     end
@@ -299,7 +299,7 @@ RSpec.describe Herb::Format::FormatPrinter do
   describe "#push_with_indent" do
     let(:printer) do
       Class.new(described_class) do
-        public :push_with_indent, :capture
+        public :push_with_indent
         attr_accessor :indent_level
       end.new(indent_width:, max_line_length:, format_context:)
     end
@@ -346,7 +346,7 @@ RSpec.describe Herb::Format::FormatPrinter do
   describe "#push_to_last_line" do
     let(:printer) do
       Class.new(described_class) do
-        public :push, :push_to_last_line, :capture
+        public :push, :push_to_last_line
       end.new(indent_width:, max_line_length:, format_context:)
     end
 
@@ -416,7 +416,7 @@ RSpec.describe Herb::Format::FormatPrinter do
 
     let(:printer) do
       Class.new(described_class) do
-        public :push, :capture
+        public :push
         attr_reader :string_line_count
         attr_accessor :inline_mode
       end.new(indent_width:, max_line_length:, format_context:)
