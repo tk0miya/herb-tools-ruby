@@ -322,5 +322,56 @@ RSpec.describe Herb::Lint::Reporter::SummaryReporter do
         expect(output.string).not_to match(/\e\[.*?m/)
       end
     end
+
+    context "with offenses from multiple rules" do
+      let(:results) do
+        [
+          build(:lint_result,
+                file_path: "app/views/users/show.html.erb",
+                unfixed_offenses: [
+                  build(:offense, rule_name: "html-img-require-alt", severity: "error"),
+                  build(:offense, rule_name: "html-img-require-alt", severity: "error"),
+                  build(:offense, rule_name: "html-attribute-double-quotes", severity: "warning")
+                ])
+        ]
+      end
+
+      it "displays top rules section" do
+        subject
+
+        actual = output.string.gsub(/\e\[.*?m/, "")
+        expect(actual).to include("Top Rules")
+      end
+
+      it "displays rules sorted by offense count" do
+        subject
+
+        actual = output.string.gsub(/\e\[.*?m/, "")
+        expect(actual).to include("html-img-require-alt: 2 offenses")
+        expect(actual).to include("html-attribute-double-quotes: 1 offense")
+      end
+
+      it "lists the most violated rule first" do
+        subject
+
+        actual = output.string.gsub(/\e\[.*?m/, "")
+        img_pos = actual.index("html-img-require-alt")
+        attr_pos = actual.index("html-attribute-double-quotes")
+        expect(img_pos).to be < attr_pos
+      end
+    end
+
+    context "with top rules and no offenses" do
+      let(:results) do
+        [build(:lint_result, file_path: "clean.html.erb")]
+      end
+
+      it "does not display the top rules section" do
+        subject
+
+        actual = output.string.gsub(/\e\[.*?m/, "")
+        expect(actual).not_to include("Top Rules")
+      end
+    end
   end
 end

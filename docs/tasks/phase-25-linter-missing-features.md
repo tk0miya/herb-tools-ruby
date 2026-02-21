@@ -165,18 +165,18 @@ Display performance metrics in output.
 Show most common violations in summary.
 
 **Implementation Tasks:**
-- [ ] Track offense counts per rule in `AggregatedResult`
-  - [ ] Add method to group offenses by rule
-  - [ ] Count offenses for each rule
-- [ ] Add method to retrieve top N rules by count
-  - [ ] Sort rules by offense count descending
-  - [ ] Return top N (default: 5)
-- [ ] Display in DetailedFormatter summary
-  - [ ] Format as list with rule name and count
-  - [ ] Only show if violations exist
+- [x] Track offense counts per rule in `AggregatedResult`
+  - [x] Add method to group offenses by rule
+  - [x] Count offenses for each rule
+- [x] Add method to retrieve top N rules by count
+  - [x] Sort rules by offense count descending
+  - [x] Return top N (default: 5)
+- [x] Display in DetailedFormatter summary
+  - [x] Format as list with rule name and count
+  - [x] Only show if violations exist
 - [ ] Make count configurable (optional)
-- [ ] Write unit tests
-- [ ] Write integration tests
+- [x] Write unit tests
+- [x] Write integration tests
 
 #### 8. Additional CLI Options (Low Priority)
 

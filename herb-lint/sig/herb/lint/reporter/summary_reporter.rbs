@@ -45,6 +45,11 @@ module Herb
         # @rbs aggregated_result: AggregatedResult
         def print_fixable_line: (AggregatedResult aggregated_result) -> void
 
+        # Prints the top violated rules in descending order of offense count.
+        #
+        # @rbs aggregated_result: AggregatedResult
+        def print_top_rules_line: (AggregatedResult aggregated_result) -> void
+
         # Prints timing lines showing start time and total execution duration.
         #
         # @rbs aggregated_result: AggregatedResult
