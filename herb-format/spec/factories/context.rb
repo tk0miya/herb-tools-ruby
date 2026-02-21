@@ -9,17 +9,7 @@ FactoryBot.define do
 
     file_path { "test.html.erb" }
     source { "<div>test</div>" }
-    config do
-      Herb::Config::FormatterConfig.new(
-        {
-          "formatter" => {
-            "enabled" => true,
-            "indentWidth" => indent_width,
-            "maxLineLength" => max_line_length
-          }
-        }
-      )
-    end
+    config { association :formatter_config, indent_width:, max_line_length: }
 
     initialize_with { new(file_path:, source:, config:) }
   end
