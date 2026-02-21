@@ -15,6 +15,8 @@ module Herb
 
       attr_reader no_custom_rules: bool
 
+      attr_reader force: bool
+
       attr_reader linter: Linter
 
       # @rbs config: Herb::Config::LinterConfig
@@ -22,10 +24,12 @@ module Herb
       # @rbs autofix: bool -- when true, apply safe automatic fixes
       # @rbs unsafe: bool -- when true, also apply unsafe fixes (requires autofix: true)
       # @rbs no_custom_rules: bool -- when true, skip loading from linter.custom_rules
+      # @rbs force: bool -- when true, run all rules regardless of enabled/disabled config
       # @rbs rule_registry: RuleRegistry? -- optional custom rule registry (for testing)
-      def initialize: (Herb::Config::LinterConfig config, ?ignore_disable_comments: bool, ?autofix: bool, ?unsafe: bool, ?no_custom_rules: bool, ?rule_registry: RuleRegistry?) -> void
+      def initialize: (Herb::Config::LinterConfig config, ?ignore_disable_comments: bool, ?autofix: bool, ?unsafe: bool, ?no_custom_rules: bool, ?force: bool, ?rule_registry: RuleRegistry?) -> void
 
       # Run linting on the given paths and return aggregated results.
+      # Returns an AggregatedResult with completed: false when linting is disabled.
       # @rbs paths: Array[String] -- explicit paths (files or directories) to lint
       def run: (?Array[String] paths) -> AggregatedResult
 

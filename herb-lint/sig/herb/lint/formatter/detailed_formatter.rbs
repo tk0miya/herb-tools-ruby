@@ -19,6 +19,7 @@ module Herb
         def initialize: (?io: IO, ?show_timing: bool) -> void
 
         # Reports the aggregated linting result.
+        # Outputs the disabled message when aggregated_result.completed? is false.
         #
         # @rbs aggregated_result: AggregatedResult
         def report: (AggregatedResult aggregated_result) -> void

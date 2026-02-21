@@ -24,6 +24,50 @@ RSpec.describe Herb::Lint::AggregatedResult do
     end
   end
 
+  describe "#completed?" do
+    context "when completed is not provided (default)" do
+      subject { described_class.new([]) }
+
+      it "returns true" do
+        expect(subject.completed?).to be true
+      end
+    end
+
+    context "when completed: false" do
+      subject { described_class.new([], completed: false) }
+
+      it "returns false" do
+        expect(subject.completed?).to be false
+      end
+    end
+
+    context "when completed: true" do
+      subject { described_class.new([], completed: true) }
+
+      it "returns true" do
+        expect(subject.completed?).to be true
+      end
+    end
+  end
+
+  describe "#message" do
+    context "when message is not provided (default)" do
+      subject { described_class.new([]) }
+
+      it "returns nil" do
+        expect(subject.message).to be_nil
+      end
+    end
+
+    context "when message is provided" do
+      subject { described_class.new([], message: "Linter is disabled.") }
+
+      it "returns the message" do
+        expect(subject.message).to eq("Linter is disabled.")
+      end
+    end
+  end
+
   describe "#start_time" do
     subject { described_class.new(results, start_time:) }
 

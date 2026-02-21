@@ -180,5 +180,20 @@ RSpec.describe Herb::Lint::Formatter::GitHubActionsFormatter do
                                    ])
       end
     end
+
+    context "when linter is disabled (completed: false)" do
+      let(:aggregated_result) do
+        Herb::Lint::AggregatedResult.new(
+          [],
+          completed: false,
+          message: "Linter is disabled in .herb.yml configuration. Use --force to lint anyway."
+        )
+      end
+
+      it "outputs nothing" do
+        subject
+        expect(output.string).to be_empty
+      end
+    end
   end
 end

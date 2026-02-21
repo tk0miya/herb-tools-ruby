@@ -12,6 +12,13 @@ module Herb
         @config = config_hash
       end
 
+      # Returns whether the linter is globally enabled.
+      # When false, linting is skipped unless --force is specified.
+      # Defaults to true if not configured.
+      def enabled? #: bool
+        linter_config.fetch("enabled", true)
+      end
+
       # Returns the file patterns to include in linting.
       # Merges patterns from both the top-level 'files' section and 'linter' section.
       def include_patterns #: Array[String]

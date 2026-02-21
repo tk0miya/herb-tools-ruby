@@ -16,6 +16,7 @@ module Herb
         end
 
         # Reports the aggregated linting result.
+        # When aggregated_result.completed? is false, outputs the disabled message.
         #
         # This method must be implemented by subclasses.
         #

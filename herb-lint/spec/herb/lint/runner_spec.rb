@@ -247,13 +247,40 @@ RSpec.describe Herb::Lint::Runner do
         create_file("app/views/test.html.erb", '<img src="test.png" alt="Test">')
       end
 
-      it "records start time in the result" do
+      it "records start time and elapsed duration in the result" do
         expect(subject.start_time).to be_a(Time)
-      end
-
-      it "records elapsed duration in milliseconds" do
         expect(subject.duration).to be_a(Integer)
         expect(subject.duration).to be >= 0
+      end
+    end
+
+    context "when linter is disabled in config" do
+      let(:config_hash) { { "linter" => { "enabled" => false } } }
+
+      before do
+        create_file("app/views/test.html.erb", '<img src="test.png">')
+      end
+
+      it "returns a disabled result with timing and no offenses" do
+        expect(subject.completed?).to be false
+        expect(subject.message).to include("Linter is disabled")
+        expect(subject.start_time).to be_a(Time)
+        expect(subject.duration).to be_a(Integer)
+        expect(subject.results).to be_empty
+      end
+    end
+
+    context "when linter is disabled but force: true" do
+      let(:config_hash) { { "linter" => { "enabled" => false, "include" => ["**/*.html.erb"] } } }
+      let(:runner) { described_class.new(config, force: true) }
+
+      before do
+        create_file("app/views/test.html.erb", '<img src="test.png">')
+      end
+
+      it "runs linting despite disabled config" do
+        expect(subject.completed?).to be true
+        expect(subject.offense_count).to be > 0
       end
     end
 
@@ -281,6 +308,33 @@ RSpec.describe Herb::Lint::Runner do
 
           # Should count all built-in rules (this number may change as rules are added)
           expect(result.rule_count).to be > 0
+        end
+      end
+    end
+
+    context "with force: true" do
+      context "when a directory is excluded in config" do
+        let(:config_hash) { { "linter" => { "exclude" => ["app/views/excluded/**"] } } }
+        let(:config) { Herb::Config::LinterConfig.new(config_hash) }
+
+        before { create_file("app/views/excluded/test.html.erb", "<img src=\"test.png\">\n") }
+
+        context "when force: false (default)" do
+          let(:runner) { described_class.new(config) }
+
+          it "skips files in the excluded directory" do
+            result = runner.run(["app/views/excluded"])
+            expect(result.offenses).to be_empty
+          end
+        end
+
+        context "when force: true with explicit directory path" do
+          let(:runner) { described_class.new(config, force: true) }
+
+          it "lints files in the excluded directory when force is specified" do
+            result = runner.run(["app/views/excluded"])
+            expect(result.offenses).not_to be_empty
+          end
         end
       end
     end

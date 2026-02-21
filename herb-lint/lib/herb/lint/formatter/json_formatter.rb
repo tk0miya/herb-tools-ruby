@@ -9,6 +9,7 @@ module Herb
       # Formatter that outputs linting results in JSON format.
       class JsonFormatter < Base
         # Reports the aggregated linting result as JSON.
+        # When aggregated_result.completed? is false, outputs the disabled result.
         #
         # @rbs aggregated_result: AggregatedResult
         def report(aggregated_result) #: void
@@ -18,17 +19,29 @@ module Herb
         private
 
         # Builds the full output hash to match TypeScript herb linter format.
+        # Handles both completed and disabled (completed: false) results.
         #
         # @rbs aggregated_result: AggregatedResult
         def build_output(aggregated_result) #: Hash[String, untyped]
-          {
-            "offenses" => build_offenses(aggregated_result),
-            "summary" => build_summary(aggregated_result),
-            "timing" => build_timing(aggregated_result),
-            "completed" => true,
-            "clean" => aggregated_result.offense_count.zero?,
-            "message" => nil
-          }
+          if aggregated_result.completed?
+            {
+              "offenses" => build_offenses(aggregated_result),
+              "summary" => build_summary(aggregated_result),
+              "timing" => build_timing(aggregated_result),
+              "completed" => true,
+              "clean" => aggregated_result.offense_count.zero?,
+              "message" => nil
+            }
+          else
+            {
+              "offenses" => [],
+              "summary" => build_summary(aggregated_result),
+              "timing" => build_timing(aggregated_result),
+              "completed" => false,
+              "clean" => nil,
+              "message" => aggregated_result.message
+            }
+          end
         end
 
         # Builds flat offenses array from all files.

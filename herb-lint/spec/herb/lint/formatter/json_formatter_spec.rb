@@ -307,5 +307,37 @@ RSpec.describe Herb::Lint::Formatter::JsonFormatter do
         expect(parsed_output["summary"]["ruleCount"]).to eq(42)
       end
     end
+
+    context "when linter is disabled (completed: false)" do
+      let(:disabled_message) { "Linter is disabled in .herb.yml configuration. Use --force to lint anyway." }
+      let(:aggregated_result) do
+        Herb::Lint::AggregatedResult.new([], completed: false, message: disabled_message)
+      end
+
+      it "outputs disabled result with zeroed summary and nil clean" do
+        subject
+
+        expect(parsed_output["completed"]).to be false
+        expect(parsed_output["message"]).to eq(disabled_message)
+        expect(parsed_output["offenses"]).to eq([])
+        expect(parsed_output["clean"]).to be_nil
+        expect(parsed_output["summary"]["filesChecked"]).to eq(0)
+        expect(parsed_output["summary"]["totalOffenses"]).to eq(0)
+        expect(parsed_output["summary"]["ruleCount"]).to eq(0)
+      end
+
+      context "when timing is present" do
+        let(:aggregated_result) do
+          Herb::Lint::AggregatedResult.new([], completed: false, message: disabled_message,
+                                               start_time: Time.new(2026, 2, 21, 10, 0, 0), duration: 5)
+        end
+
+        it "includes timing in the output" do
+          subject
+
+          expect(parsed_output["timing"]["duration"]).to eq(5)
+        end
+      end
+    end
   end
 end

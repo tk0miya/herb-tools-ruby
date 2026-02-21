@@ -14,6 +14,7 @@ module Herb
         def initialize: (?io: IO) -> void
 
         # Reports the aggregated linting result.
+        # When aggregated_result.completed? is false, outputs the disabled message.
         #
         # This method must be implemented by subclasses.
         #

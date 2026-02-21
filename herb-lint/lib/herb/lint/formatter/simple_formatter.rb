@@ -23,9 +23,12 @@ module Herb
         end
 
         # Reports the aggregated linting result.
+        # Outputs the disabled message when aggregated_result.completed? is false.
         #
         # @rbs aggregated_result: AggregatedResult
         def report(aggregated_result) #: void
+          return io.puts(aggregated_result.message) unless aggregated_result.completed?
+
           aggregated_result.results.each do |result|
             print_offenses(result) if result.offense_count.positive?
           end
