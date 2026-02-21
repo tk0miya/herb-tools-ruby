@@ -76,9 +76,9 @@ module Herb
           end
 
           # Check non-trailing whitespace (between elements)
-          # @rbs _node: Herb::AST::HTMLOpenTagNode
+          # @rbs node: Herb::AST::HTMLOpenTagNode
           # @rbs whitespace: Herb::AST::WhitespaceNode
-          def check_non_trailing_whitespace(_node, whitespace) #: void
+          def check_non_trailing_whitespace(node, whitespace) #: void # rubocop:disable Lint/UnusedMethodArgument
             return if whitespace.value.value.length == 1
 
             add_offense(message: EXTRA_SPACE_SINGLE_SPACE, location: whitespace.location)

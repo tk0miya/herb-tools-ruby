@@ -35,9 +35,9 @@ module Herb
         # Check the source string for rule violations.
         # Subclasses must implement this method.
         #
-        # @rbs _source: String -- raw source string to check
-        # @rbs _context: Context -- linting context with file information
-        def check_source(_source, _context) #: void
+        # @rbs source: String -- raw source string to check
+        # @rbs context: Context -- linting context with file information
+        def check_source(source, context) #: void
           raise NotImplementedError, "#{self.class.name} must implement #check_source"
         end
 
@@ -45,9 +45,9 @@ module Herb
         # Override in autofixable rules to perform source-level fixes.
         # Returns the fixed source string, or nil if the fix cannot be applied.
         #
-        # @rbs _offense: Offense -- the offense to fix
-        # @rbs _source: String -- the current source string
-        def autofix_source(_offense, _source) #: String?
+        # @rbs offense: Offense -- the offense to fix
+        # @rbs source: String -- the current source string
+        def autofix_source(offense, source) #: String? # rubocop:disable Lint/UnusedMethodArgument
           nil
         end
 

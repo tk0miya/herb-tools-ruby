@@ -90,9 +90,9 @@ module Herb
         # Override in autofixable rules to perform AST mutation.
         # Returns true if the fix was applied, false otherwise.
         #
-        # @rbs _node: untyped -- the offending AST node (type varies by rule)
-        # @rbs _parse_result: Herb::ParseResult -- the parse result from the lint phase
-        def autofix(_node, _parse_result) #: bool
+        # @rbs node: untyped -- the offending AST node (type varies by rule)
+        # @rbs parse_result: Herb::ParseResult -- the parse result from the lint phase
+        def autofix(node, parse_result) #: bool # rubocop:disable Lint/UnusedMethodArgument
           false
         end
 
