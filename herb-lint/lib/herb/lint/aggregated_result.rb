@@ -8,16 +8,28 @@ module Herb
       attr_reader :rule_count #: Integer
       attr_reader :start_time #: Time?
       attr_reader :duration #: Integer?
+      attr_reader :message #: String?
 
       # @rbs results: Array[LintResult]
       # @rbs rule_count: Integer
       # @rbs start_time: Time? -- when linting started, or nil if not tracked
       # @rbs duration: Integer? -- elapsed time in milliseconds, or nil if not tracked
-      def initialize(results, rule_count: 0, start_time: nil, duration: nil) #: void
+      # @rbs completed: bool -- false when linting was skipped (e.g. disabled in config)
+      # @rbs message: String? -- informational message, present when completed is false
+      def initialize( # rubocop:disable Metrics/ParameterLists
+        results, rule_count: 0, start_time: nil, duration: nil, completed: true, message: nil
+      ) #: void
         @results = results
         @rule_count = rule_count
         @start_time = start_time
         @duration = duration
+        @completed = completed
+        @message = message
+      end
+
+      # Returns true if linting ran to completion (not skipped due to disabled config).
+      def completed? #: bool
+        @completed
       end
 
       # Returns the total number of offenses across all files.

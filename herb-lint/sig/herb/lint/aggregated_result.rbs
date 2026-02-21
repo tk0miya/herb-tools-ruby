@@ -12,11 +12,18 @@ module Herb
 
       attr_reader duration: Integer?
 
+      attr_reader message: String?
+
       # @rbs results: Array[LintResult]
       # @rbs rule_count: Integer
       # @rbs start_time: Time? -- when linting started, or nil if not tracked
       # @rbs duration: Integer? -- elapsed time in milliseconds, or nil if not tracked
-      def initialize: (Array[LintResult] results, ?rule_count: Integer, ?start_time: Time?, ?duration: Integer?) -> void
+      # @rbs completed: bool -- false when linting was skipped (e.g. disabled in config)
+      # @rbs message: String? -- informational message, present when completed is false
+      def initialize: (Array[LintResult] results, ?rule_count: Integer, ?start_time: Time?, ?duration: Integer?, ?completed: bool, ?message: String?) -> void
+
+      # Returns true if linting ran to completion (not skipped due to disabled config).
+      def completed?: () -> bool
 
       # Returns the total number of offenses across all files.
       def offense_count: () -> Integer

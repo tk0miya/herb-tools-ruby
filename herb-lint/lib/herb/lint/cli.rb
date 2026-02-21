@@ -64,6 +64,7 @@ module Herb
       # @rbs result: Herb::Lint::AggregatedResult
       # @rbs config: Herb::Config::LinterConfig
       def exit_code_for(result, config:) #: Integer
+        return EXIT_SUCCESS unless result.completed?
         return EXIT_SUCCESS if result.success?
 
         fail_level = options[:fail_level] || config.fail_level
@@ -90,7 +91,8 @@ module Herb
           ignore_disable_comments: options[:ignore_disable_comments] || false,
           autofix: options[:fix] || false,
           unsafe: options[:fix_unsafely] || false,
-          no_custom_rules: options[:no_custom_rules] || false
+          no_custom_rules: options[:no_custom_rules] || false,
+          force: options[:force] || false
         }
       end
 
@@ -123,6 +125,7 @@ module Herb
             stdout.puts "  herb-lint --github .                      # Output GitHub Actions annotations"
             stdout.puts "  herb-lint --fail-level warning .          # Exit with error on warnings or errors"
             stdout.puts "  herb-lint --no-timing .                   # Suppress timing information from output"
+            stdout.puts "  herb-lint --force .                       # Run all rules even if disabled in config"
             stdout.puts
             stdout.puts "Exit codes:"
             stdout.puts "  0  No offenses found (or below fail level)"
@@ -158,6 +161,10 @@ module Herb
 
           opts.on("--no-custom-rules", "Skip loading custom rules from linter.custom_rules configuration") do
             options[:no_custom_rules] = true
+          end
+
+          opts.on("--force", "Force execution of all rules, ignoring enabled/disabled configuration") do
+            options[:force] = true
           end
 
           opts.on("--no-timing", "Suppress timing information from output") do

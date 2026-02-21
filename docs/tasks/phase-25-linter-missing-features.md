@@ -123,12 +123,12 @@ TypeScript implementation supports specifying a custom configuration file path.
 Force execution of disabled rules.
 
 **Implementation Tasks:**
-- [ ] Add `--force` CLI option
-- [ ] Pass flag to Runner/Linter
-- [ ] Override rule enabled/disabled configuration when flag is set
-- [ ] Update CLI help text
-- [ ] Write unit tests
-- [ ] Write integration tests
+- [x] Add `--force` CLI option
+- [x] Pass flag to Runner/Linter
+- [x] Override rule enabled/disabled configuration when flag is set
+- [x] Update CLI help text
+- [x] Write unit tests
+- [x] Write integration tests
 
 #### 6. Timing Information Display
 

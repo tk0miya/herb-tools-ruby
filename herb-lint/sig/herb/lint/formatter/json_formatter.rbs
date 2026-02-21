@@ -6,6 +6,7 @@ module Herb
       # Formatter that outputs linting results in JSON format.
       class JsonFormatter < Base
         # Reports the aggregated linting result as JSON.
+        # When aggregated_result.completed? is false, outputs the disabled result.
         #
         # @rbs aggregated_result: AggregatedResult
         def report: (AggregatedResult aggregated_result) -> void
@@ -13,6 +14,7 @@ module Herb
         private
 
         # Builds the full output hash to match TypeScript herb linter format.
+        # Handles both completed and disabled (completed: false) results.
         #
         # @rbs aggregated_result: AggregatedResult
         def build_output: (AggregatedResult aggregated_result) -> Hash[String, untyped]

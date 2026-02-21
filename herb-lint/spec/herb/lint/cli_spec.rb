@@ -216,6 +216,87 @@ RSpec.describe Herb::Lint::CLI do
         end
       end
 
+      context "with --force flag" do
+        let(:argv) { ["--force"] }
+
+        it "passes force: true to Runner" do
+          allow(Herb::Lint::Runner).to receive(:new).and_call_original
+          subject
+          expect(Herb::Lint::Runner).to have_received(:new)
+            .with(anything, hash_including(force: true))
+        end
+      end
+
+      context "when linter is globally disabled in config" do
+        let(:config_content) do
+          <<~YAML
+            linter:
+              enabled: false
+          YAML
+        end
+
+        before do
+          File.write(".herb.yml", config_content)
+          create_file("app/views/test.html.erb", '<img src="test.png">')
+        end
+
+        context "without --force" do
+          let(:argv) { [] }
+
+          it "returns EXIT_SUCCESS and shows disabled message" do
+            output = capture_stdout { subject }
+            expect(subject).to eq(described_class::EXIT_SUCCESS)
+            expect(output).to include("Linter is disabled in .herb.yml configuration. Use --force to lint anyway.")
+            expect(output).not_to include("html-img-require-alt")
+          end
+        end
+
+        context "with --force" do
+          let(:argv) { ["--force"] }
+
+          it "lints despite global disabled setting" do
+            output = capture_stdout { subject }
+            expect(output).to include("html-img-require-alt")
+            expect(subject).to eq(described_class::EXIT_LINT_ERROR)
+          end
+        end
+      end
+
+      context "when a directory is excluded in config" do
+        let(:config_content) do
+          <<~YAML
+            linter:
+              exclude:
+                - "app/views/excluded/**"
+          YAML
+        end
+
+        before do
+          File.write(".herb.yml", config_content)
+          create_file("app/views/excluded/test.html.erb", '<img src="test.png">')
+        end
+
+        context "without --force" do
+          let(:argv) { ["app/views/excluded"] }
+
+          it "skips files in the excluded directory" do
+            output = capture_stdout { subject }
+            expect(subject).to eq(described_class::EXIT_SUCCESS)
+            expect(output).not_to include("html-img-require-alt")
+          end
+        end
+
+        context "with --force" do
+          let(:argv) { ["--force", "app/views/excluded"] }
+
+          it "lints files in the excluded directory" do
+            output = capture_stdout { subject }
+            expect(output).to include("html-img-require-alt")
+            expect(subject).to eq(described_class::EXIT_LINT_ERROR)
+          end
+        end
+      end
+
       context "when file has herb:linter ignore" do
         let(:argv) { [] }
 

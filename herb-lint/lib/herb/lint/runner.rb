@@ -12,6 +12,7 @@ module Herb
       attr_reader :autofix #: bool
       attr_reader :unsafe #: bool
       attr_reader :no_custom_rules #: bool
+      attr_reader :force #: bool
       attr_reader :linter #: Linter
 
       # @rbs config: Herb::Config::LinterConfig
@@ -19,6 +20,7 @@ module Herb
       # @rbs autofix: bool -- when true, apply safe automatic fixes
       # @rbs unsafe: bool -- when true, also apply unsafe fixes (requires autofix: true)
       # @rbs no_custom_rules: bool -- when true, skip loading from linter.custom_rules
+      # @rbs force: bool -- when true, run all rules regardless of enabled/disabled config
       # @rbs rule_registry: RuleRegistry? -- optional custom rule registry (for testing)
       def initialize( # rubocop:disable Metrics/ParameterLists
         config,
@@ -26,6 +28,7 @@ module Herb
         autofix: false,
         unsafe: false,
         no_custom_rules: false,
+        force: false,
         rule_registry: nil
       ) #: void
         @config = config
@@ -33,19 +36,30 @@ module Herb
         @autofix = autofix
         @unsafe = unsafe
         @no_custom_rules = no_custom_rules
+        @force = force
         @linter = build_linter(rule_registry)
       end
 
       # Run linting on the given paths and return aggregated results.
+      # Returns an AggregatedResult with completed: false when linting is disabled.
       # @rbs paths: Array[String] -- explicit paths (files or directories) to lint
       def run(paths = []) #: AggregatedResult
         start_time = Time.now
         start_monotonic = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-        files = discover_files(paths)
-        results = files.map { process_file(_1) }
+
+        if config.enabled? || force
+          files = discover_files(paths)
+          results = files.map { process_file(_1) }
+          rule_count = linter.rules.size
+          message = nil
+        else
+          results = []
+          rule_count = 0
+          message = "Linter is disabled in .herb.yml configuration. Use --force to lint anyway."
+        end
+
         duration = ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_monotonic) * 1000).round
-        rule_count = linter.rules.size
-        AggregatedResult.new(results, rule_count:, start_time:, duration:)
+        AggregatedResult.new(results, rule_count:, start_time:, duration:, completed: message.nil?, message:)
       end
 
       private
@@ -75,10 +89,14 @@ module Herb
 
       # @rbs paths: Array[String]
       def discover_files(paths) #: Array[String]
+        # When --force is used with explicit paths, ignore exclude patterns
+        # so that files excluded by configuration can still be linted.
+        effective_excludes = force && paths.any? ? [] : config.exclude_patterns
+
         discovery = Herb::Core::FileDiscovery.new(
           base_dir: Dir.pwd,
           include_patterns: config.include_patterns,
-          exclude_patterns: config.exclude_patterns
+          exclude_patterns: effective_excludes
         )
         discovery.discover(paths)
       end

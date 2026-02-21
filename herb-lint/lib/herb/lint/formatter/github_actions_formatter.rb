@@ -8,9 +8,12 @@ module Herb
       # Formatter that outputs linting results as GitHub Actions workflow commands.
       class GitHubActionsFormatter < Base
         # Reports the aggregated linting result as GitHub Actions annotations.
+        # Outputs nothing when aggregated_result.completed? is false (silent exit).
         #
         # @rbs aggregated_result: AggregatedResult
         def report(aggregated_result) #: void
+          return unless aggregated_result.completed?
+
           aggregated_result.results.each do |result|
             result.unfixed_offenses.each do |offense|
               io.puts format_annotation(result.file_path, offense)
