@@ -34,6 +34,8 @@ module Herb
 
       @element_formatting_analysis: Hash[Herb::AST::HTMLElementNode, ElementAnalysis]
 
+      @current_attribute_name: String?
+
       @in_conditional_open_tag_context: bool
 
       @inline_mode: bool
@@ -138,6 +140,43 @@ module Herb
       #
       # @rbs tag_name: String
       def preserved_element?: (String tag_name) -> bool
+
+      # Render attributes inline (same line).
+      # Returns a string like ' class="foo" id="bar"', or "" if no attributes.
+      #
+      # @rbs open_tag: Herb::AST::HTMLOpenTagNode
+      def render_attributes_inline: (Herb::AST::HTMLOpenTagNode open_tag) -> String
+
+      # Render a single attribute.
+      # Returns a string like 'class="foo"' or 'disabled' (boolean attribute).
+      #
+      # @rbs attribute: Herb::AST::HTMLAttributeNode
+      def render_attribute: (Herb::AST::HTMLAttributeNode attribute) -> String
+
+      # Extract the attribute name as a string.
+      #
+      # @rbs attribute: Herb::AST::HTMLAttributeNode
+      def get_attribute_name: (Herb::AST::HTMLAttributeNode attribute) -> String
+
+      # Return normalized quote pair (always double quotes).
+      #
+      # @rbs _attribute_value: Herb::AST::HTMLAttributeValueNode
+      def get_attribute_quotes: (untyped _attribute_value) -> [ String, String ]
+
+      # Render the content of an attribute value node.
+      # Handles literal content and embedded ERB nodes.
+      #
+      # @rbs attribute_value: Herb::AST::HTMLAttributeValueNode
+      def render_attribute_value_content: (Herb::AST::HTMLAttributeValueNode attribute_value) -> String
+
+      # Render the class attribute.
+      # Stub implementation; Task 2.20 will add wrapping for long values.
+      #
+      # @rbs name: String
+      # @rbs content: String
+      # @rbs open_quote: String
+      # @rbs close_quote: String
+      def render_class_attribute: (String name, String content, String open_quote, String close_quote) -> String
     end
   end
 end
