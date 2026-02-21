@@ -48,7 +48,7 @@ RSpec.describe Herb::Format::FormatPrinter do
       let(:source) { "<div class='foo'></div>" }
 
       it "outputs opening tag with attribute and closing tag" do
-        expect(subject).to eq("<div classfoo></div>")
+        expect(subject).to eq('<div class="foo"></div>')
       end
     end
 
@@ -69,10 +69,10 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "with HTML element with attributes" do
-      let(:source) { "<div class=\"foo\" id=\"bar\">content</div>" }
+      let(:source) { '<div class="foo" id="bar">content</div>' }
 
       it "outputs opening tag with attributes, content, and closing tag" do
-        expect(subject).to eq("<div classfoo idbar>content</div>")
+        expect(subject).to eq('<div class="foo" id="bar">content</div>')
       end
     end
 
@@ -81,6 +81,38 @@ RSpec.describe Herb::Format::FormatPrinter do
 
       it "outputs both opening and closing tags for nested elements" do
         expect(subject).to eq("<div><p>nested</p></div>")
+      end
+    end
+
+    context "with boolean attribute" do
+      let(:source) { "<input disabled>" }
+
+      it "renders boolean attribute without value" do
+        expect(subject).to eq("<input disabled>")
+      end
+    end
+
+    context "with single-quoted attributes" do
+      let(:source) { "<div id='main' class='container'></div>" }
+
+      it "normalizes single quotes to double quotes" do
+        expect(subject).to eq('<div id="main" class="container"></div>')
+      end
+    end
+
+    context "with ERB in attribute value" do
+      let(:source) { '<div class="<%= foo %>">content</div>' }
+
+      it "renders ERB expression inside attribute value" do
+        expect(subject).to eq('<div class="<%= foo %>">content</div>')
+      end
+    end
+
+    context "with no attributes" do
+      let(:source) { "<div>content</div>" }
+
+      it "renders tag without attribute string" do
+        expect(subject).to eq("<div>content</div>")
       end
     end
 

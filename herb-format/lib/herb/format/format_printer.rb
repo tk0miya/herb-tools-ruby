@@ -46,6 +46,7 @@ module Herb
       # @rbs @string_line_count: Integer
       # @rbs @inline_mode: bool
       # @rbs @in_conditional_open_tag_context: bool
+      # @rbs @current_attribute_name: String?
       # @rbs @element_formatting_analysis: Hash[Herb::AST::HTMLElementNode, ElementAnalysis]
       # @rbs @node_is_multiline: Hash[Herb::AST::Node, bool]
 
@@ -62,6 +63,7 @@ module Herb
         @string_line_count = 0
         @inline_mode = false
         @in_conditional_open_tag_context = false
+        @current_attribute_name = nil
         @element_formatting_analysis = {}
         @node_is_multiline = {}
       end
@@ -109,7 +111,7 @@ module Herb
       def visit_html_open_tag_node(node)
         write(node.tag_opening.value)
         write(node.tag_name.value)
-        visit_child_nodes(node)
+        write(render_attributes_inline(node))
         write(node.tag_closing.value)
       end
 
@@ -247,6 +249,77 @@ module Herb
       # @rbs tag_name: String
       def preserved_element?(tag_name) #: bool
         PRESERVED_ELEMENTS.include?(tag_name.downcase)
+      end
+
+      # Render attributes inline (same line).
+      # Returns a string like ' class="foo" id="bar"', or "" if no attributes.
+      #
+      # @rbs open_tag: Herb::AST::HTMLOpenTagNode
+      def render_attributes_inline(open_tag) #: String
+        attributes = open_tag.child_nodes.select { _1.is_a?(Herb::AST::HTMLAttributeNode) }
+        return "" if attributes.empty?
+
+        " #{attributes.map { render_attribute(_1) }.join(' ')}"
+      end
+
+      # Render a single attribute.
+      # Returns a string like 'class="foo"' or 'disabled' (boolean attribute).
+      #
+      # @rbs attribute: Herb::AST::HTMLAttributeNode
+      def render_attribute(attribute) #: String
+        name = get_attribute_name(attribute)
+        @current_attribute_name = name
+
+        if attribute.value.nil?
+          @current_attribute_name = nil
+          return name
+        end
+
+        open_quote, close_quote = get_attribute_quotes(attribute.value)
+        content = render_attribute_value_content(attribute.value)
+
+        @current_attribute_name = nil
+
+        return render_class_attribute(name, content, open_quote, close_quote) if name == "class"
+
+        "#{name}=#{open_quote}#{content}#{close_quote}"
+      end
+
+      # Extract the attribute name as a string.
+      #
+      # @rbs attribute: Herb::AST::HTMLAttributeNode
+      def get_attribute_name(attribute) #: String
+        attribute.name.children.map do |child|
+          child.is_a?(Herb::AST::LiteralNode) ? child.content : ::Herb::Printer::IdentityPrinter.print(child)
+        end.join
+      end
+
+      # Return normalized quote pair (always double quotes).
+      #
+      # @rbs _attribute_value: Herb::AST::HTMLAttributeValueNode
+      def get_attribute_quotes(_attribute_value) #: [String, String]
+        ['"', '"']
+      end
+
+      # Render the content of an attribute value node.
+      # Handles literal content and embedded ERB nodes.
+      #
+      # @rbs attribute_value: Herb::AST::HTMLAttributeValueNode
+      def render_attribute_value_content(attribute_value) #: String
+        attribute_value.children.map do |child|
+          child.is_a?(Herb::AST::LiteralNode) ? child.content : ::Herb::Printer::IdentityPrinter.print(child)
+        end.join
+      end
+
+      # Render the class attribute.
+      # Stub implementation; Task 2.20 will add wrapping for long values.
+      #
+      # @rbs name: String
+      # @rbs content: String
+      # @rbs open_quote: String
+      # @rbs close_quote: String
+      def render_class_attribute(name, content, open_quote, close_quote) #: String
+        "#{name}=#{open_quote}#{content}#{close_quote}"
       end
     end
   end
