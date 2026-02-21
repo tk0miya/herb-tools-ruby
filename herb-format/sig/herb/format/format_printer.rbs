@@ -76,6 +76,13 @@ module Herb
       # @rbs override
       def visit_html_close_tag_node: ...
 
+      # Capture output to a temporary buffer.
+      # Saves and restores @lines, @string_line_count, and @inline_mode around the block.
+      # Used by ElementAnalyzer to render elements speculatively for length checks.
+      #
+      # @rbs &block: () -> void
+      def capture: () { () -> void } -> Array[String]
+
       private
 
       # Current indent string based on @indent_level.
@@ -97,12 +104,6 @@ module Herb
       #
       # @rbs line: String
       def push: (String line) -> void
-
-      # Capture output to a temporary buffer.
-      # Saves and restores @lines, @string_line_count, and @inline_mode around the block.
-      #
-      # @rbs &block: () -> void
-      def capture: () { () -> void } -> Array[String]
 
       # Track if a node spans multiple lines.
       # Records whether the node produced multiline output.

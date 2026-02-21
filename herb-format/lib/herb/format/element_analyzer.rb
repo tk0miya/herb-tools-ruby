@@ -42,6 +42,53 @@ module Herb
         should_render_inline?(element)
       end
 
+      # Should render element content inline?
+      #
+      # Determines whether the children of an element should be rendered on the
+      # same line as the opening tag. Returns false immediately if the open tag
+      # itself is not inline. For inline elements, renders the full element via
+      # capture to check the total line length.
+      #
+      # @rbs element: Herb::AST::HTMLElementNode
+      # @rbs open_tag_inline: bool
+      def should_render_element_content_inline?(element, open_tag_inline) #: bool # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+        # Open tag not inline → false
+        return false unless open_tag_inline
+
+        # No children → true
+        return true if element.body.empty?
+
+        # Has non-inline child → false
+        has_non_inline_child = element.body.any? { |child| !inline_node?(child) }
+        return false if has_non_inline_child
+
+        tag_name = get_tag_name(element)
+
+        # Inline element: render entire element and check length
+        if inline_element?(tag_name)
+          rendered = @printer.capture { @printer.visit(element) }
+          total_length = rendered.join.length
+          return total_length <= @max_line_length
+        end
+
+        # Block element: check significant children
+        significant_children = filter_significant_children(element.body)
+
+        # Single text child with no newlines → true
+        if significant_children.length == 1 &&
+           significant_children[0].is_a?(Herb::AST::HTMLTextNode)
+          return !significant_children[0].content.include?("\n")
+        end
+
+        # All nested elements are inline → true
+        return true if all_nested_elements_inline?(significant_children)
+
+        # Mixed text and inline content → true
+        return true if mixed_text_and_inline_content?(significant_children)
+
+        false
+      end
+
       private
 
       # Get inline nodes from open tag (excludes whitespace and attributes).
@@ -69,6 +116,23 @@ module Herb
         # TODO: Implement proper attribute count and line length check
         # (requires accessible capture method on printer)
         true
+      end
+
+      # Is this node inline (can appear on the same line as surrounding content)?
+      #
+      # @rbs node: Herb::AST::Node
+      def inline_node?(node) #: bool
+        return true if node.is_a?(Herb::AST::WhitespaceNode)
+        return true if node.is_a?(Herb::AST::HTMLTextNode)
+
+        if node.is_a?(Herb::AST::HTMLElementNode)
+          tag_name = get_tag_name(node)
+          return inline_element?(tag_name)
+        end
+
+        return !erb_control_flow_node?(node) if erb_node?(node)
+
+        false
       end
     end
   end
