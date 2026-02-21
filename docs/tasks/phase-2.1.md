@@ -54,7 +54,7 @@ Part G: Integration & Testing                         ← Integration
 - [x] Task 2.8: Utility Functions (dedent, get_tag_name)
 
 ### Part B: Core Patterns (5 tasks)
-- [ ] Task 2.9: State Management Fields
+- [x] Task 2.9: State Management Fields
 - [x] Task 2.10: capture Pattern
 - [x] Task 2.11: trackBoundary Pattern
 - [x] Task 2.12: withIndent Pattern
@@ -66,13 +66,14 @@ Part G: Integration & Testing                         ← Integration
 - [x] Task 2.16: ElementAnalyzer - shouldRenderElementContentInline
 - [x] Task 2.17: ElementAnalyzer - Complete Implementation
 
-### Part D: Attribute Formatting (4 tasks)
+### Part D: Attribute Formatting (5 tasks)
 - [ ] Task 2.18: Attribute Inline Rendering
 - [ ] Task 2.19: Attribute Multiline Rendering
 - [ ] Task 2.20: Class Attribute Formatting
 - [ ] Task 2.21: Quote Normalization
+- [ ] Task 2.21b: HTML Open/Close Tag Visitors
 
-**Progress: 12/21 tasks completed**
+**Progress: 13/22 tasks completed**
 
 ---
 
@@ -463,8 +464,6 @@ class FormatPrinter < ::Herb::Printer::Base
   # Context management
   # @rbs @inline_mode: bool
   # @rbs @in_conditional_open_tag_context: bool
-  # @rbs @current_attribute_name: String?
-  # @rbs @element_stack: Array[Herb::AST::HTMLElementNode]
 
   # Cache and analysis
   # @rbs @element_formatting_analysis: Hash[Herb::AST::HTMLElementNode, ElementAnalysis]
@@ -477,13 +476,14 @@ class FormatPrinter < ::Herb::Printer::Base
     @string_line_count = 0
     @inline_mode = false
     @in_conditional_open_tag_context = false
-    @current_attribute_name = nil
-    @element_stack = []
     @element_formatting_analysis = {}
     @node_is_multiline = {}
   end
 end
 ```
+
+**Note:** `@current_attribute_name` and `@element_stack` were moved to Task 2.18,
+where they are first introduced.
 
 **Test Cases:**
 - All fields initialized correctly
@@ -996,6 +996,20 @@ end
 
 **Location:** `herb-format/lib/herb/format/format_printer.rb`
 
+**State Fields (moved from Task 2.9):**
+
+Add the following fields to `initialize`:
+
+```ruby
+# @rbs @current_attribute_name: String?
+
+@current_attribute_name = nil
+```
+
+- `@current_attribute_name` tracks the name of the attribute currently being
+  rendered, used by `in_token_list_attribute?` (Task 2.24) to decide whether
+  to add spaces inside token-list attributes such as `class`.
+
 **Implementation Items:**
 
 ```ruby
@@ -1288,10 +1302,136 @@ end
 
 ---
 
+### Task 2.21b: HTML Open/Close Tag Visitors
+
+**Purpose:** Implement `visit_html_open_tag_node` and `visit_html_close_tag_node`
+with inline/multiline dispatch, and update `visit_html_element_node` to maintain
+`@element_stack`.
+
+**Location:** `herb-format/lib/herb/format/format_printer.rb`
+
+**State Fields (moved from Task 2.9):**
+
+Add the following fields to `initialize`:
+
+```ruby
+# @rbs @element_stack: Array[Herb::AST::HTMLElementNode]
+
+@element_stack = []
+```
+
+**Implementation Items:**
+
+```ruby
+# Current element (top of element stack)
+#
+# @rbs return: Herb::AST::HTMLElementNode?
+def current_element #: Herb::AST::HTMLElementNode?
+  @element_stack.last
+end
+
+# Current tag name
+#
+# @rbs return: String
+def current_tag_name #: String
+  current_element&.tag_name&.value || ""
+end
+
+# Visit HTML element node.
+# Pushes/pops @element_stack around child visiting so that
+# visit_html_open_tag_node and visit_html_close_tag_node can access
+# the enclosing element via current_element.
+#
+# @rbs override
+def visit_html_element_node(node)
+  tag_name = node.tag_name&.value || ""
+
+  @element_stack.push(node)
+
+  context.enter_tag(tag_name) do
+    visit(node.open_tag)
+
+    unless node.is_void
+      visit_element_body(node)
+      visit(node.close_tag) if node.close_tag
+    end
+  end
+ensure
+  @element_stack.pop
+end
+
+# Visit HTML open tag node.
+# Uses pre-computed ElementFormattingAnalysis to decide whether to
+# render attributes inline or multiline.
+#
+# @rbs override
+def visit_html_open_tag_node(node)
+  element = current_element
+  analysis = element && @element_formatting_analysis[element]
+
+  if analysis
+    tag_name = current_tag_name
+    all_children = node.child_nodes
+
+    if analysis.open_tag_inline
+      inline_attrs = render_attributes_inline(node)
+      is_void = VOID_ELEMENTS.include?(tag_name)
+      line = @inline_mode ? "" : indent
+      line += "<#{tag_name}#{inline_attrs}#{is_void ? " />" : ">"}"
+      push(line)
+    else
+      is_void = VOID_ELEMENTS.include?(tag_name)
+      if @inline_mode
+        render_multiline_attributes(tag_name, all_children, is_void)
+      else
+        render_multiline_attributes(tag_name, all_children, is_void)
+      end
+    end
+  else
+    # Fallback: write as-is (handles preserved elements, edge cases)
+    write(node.tag_opening.value)
+    write(node.tag_name.value)
+    visit_child_nodes(node)
+    write(node.tag_closing.value)
+  end
+end
+
+# Visit HTML close tag node.
+# Appends inline (same line) when analysis says closeTagInline,
+# otherwise pushes to a new indented line.
+#
+# @rbs override
+def visit_html_close_tag_node(node)
+  element = current_element
+  analysis = element && @element_formatting_analysis[element]
+  close_tag_inline = analysis&.close_tag_inline
+
+  closing = "</#{node.tag_name&.value}>"
+
+  if close_tag_inline
+    push_to_last_line(closing)
+  else
+    push_with_indent(closing)
+  end
+end
+```
+
+**Test Cases:**
+- `@element_stack` is pushed before `visit(node.open_tag)` and popped after
+- `current_element` returns the enclosing `HTMLElementNode`
+- `visit_html_open_tag_node` dispatches to inline or multiline rendering
+- `visit_html_close_tag_node` appends inline when `close_tag_inline` is true
+
+**Estimate:** 2 hours
+
+**Dependencies:** Tasks 2.14–2.21 (ElementAnalyzer, all rendering helpers)
+
+---
+
 **Part D Summary:**
-- **Total Tasks:** 4 tasks
-- **Estimate:** 8-10 hours
-- **Difficulty:** High (class attribute wrapping is complex)
+- **Total Tasks:** 5 tasks (2.18–2.21b)
+- **Estimate:** 10-12 hours
+- **Difficulty:** High (class attribute wrapping is complex; open/close tag dispatch)
 
 ---
 
@@ -1305,7 +1445,7 @@ This document is long, so Part E (ERB Formatting), Part F (Text Flow & Spacing),
 - Part C: ElementAnalyzer (4 tasks, 8-10h)
 - Part D: Attribute Formatting (4 tasks, 8-10h)
 
-**Total (Part A-D):** 21 tasks, 30-37 hours
+**Total (Part A-D):** 22 tasks, 32-39 hours
 
 **Remaining:**
 - Part E: ERB Formatting (6-8 tasks, 10-15h)
