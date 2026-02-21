@@ -108,6 +108,49 @@ RSpec.describe Herb::Format::FormatPrinter do
       end
     end
 
+    context "with class attribute" do
+      context "with short class value" do
+        let(:source) { '<div class="foo bar">content</div>' }
+
+        it "keeps class attribute on same line" do
+          expect(subject).to eq('<div class="foo bar">content</div>')
+        end
+      end
+
+      context "with extra whitespace in class value" do
+        let(:source) { '<div class="  foo   bar  ">content</div>' }
+
+        it "normalizes whitespace in class attribute" do
+          expect(subject).to eq('<div class="foo bar">content</div>')
+        end
+      end
+
+      context "with ERB in class attribute and long value" do
+        let(:max_line_length) { 30 }
+        let(:source) { '<div class="flex items-center justify-between <%= active_class %>">content</div>' }
+
+        it "normalizes whitespace but does not wrap when ERB is present" do
+          result = subject
+
+          expect(result).to include('class="')
+          expect(result).to include("<%= active_class %>")
+        end
+      end
+
+      context "with long class value exceeding max_line_length" do
+        let(:max_line_length) { 60 }
+        let(:source) do
+          '<div class="flex items-center justify-between px-4 py-2 bg-white shadow-md rounded-lg">content</div>'
+        end
+
+        it "wraps long class attribute across multiple lines" do
+          result = subject
+
+          expect(result).to include("class=\"\n")
+        end
+      end
+    end
+
     context "with no attributes" do
       let(:source) { "<div>content</div>" }
 
@@ -408,6 +451,135 @@ RSpec.describe Herb::Format::FormatPrinter do
         end
 
         expect(result).to eq(["line1", "line2 suffix"])
+      end
+    end
+  end
+
+  describe "#render_class_attribute" do
+    subject { printer.send(:render_class_attribute, name, content, open_quote, close_quote) }
+
+    let(:printer) do
+      Class.new(described_class) do
+        public :render_class_attribute
+        attr_accessor :indent_level
+      end.new(indent_width:, max_line_length:, format_context:)
+    end
+    let(:name) { "class" }
+    let(:open_quote) { '"' }
+    let(:close_quote) { '"' }
+
+    context "with short class value" do
+      let(:content) { "foo bar" }
+
+      it "returns attribute without wrapping" do
+        expect(subject).to eq('class="foo bar"')
+      end
+    end
+
+    context "with extra whitespace" do
+      let(:content) { "  foo   bar  " }
+
+      it "normalizes whitespace" do
+        expect(subject).to eq('class="foo bar"')
+      end
+    end
+
+    context "with ERB in content and long line" do
+      let(:max_line_length) { 30 }
+      let(:content) { "flex items-center justify-between <%= active_class %>" }
+
+      it "normalizes but does not wrap when ERB is present" do
+        expect(subject).to eq('class="flex items-center justify-between <%= active_class %>"')
+      end
+    end
+
+    context "with long class value exceeding max_line_length" do
+      let(:max_line_length) { 60 }
+      let(:content) { "flex items-center justify-between px-4 py-2 bg-white shadow-md rounded-lg" }
+
+      it "wraps long class attribute with multiline format" do
+        expect(subject).to start_with("class=\"\n")
+        expect(subject).to end_with("\n\"")
+      end
+    end
+
+    context "with multiline content that has actual newlines and exceeds 80 chars" do
+      let(:content) { "flex items-center\njustify-between px-4 py-2 bg-white shadow-md rounded-lg border-2" }
+
+      it "wraps using original line breaks" do
+        expect(subject).to start_with("class=\"\n")
+        expect(subject).to end_with("\n\"")
+      end
+    end
+  end
+
+  describe "#break_tokens_into_lines" do
+    subject { printer.send(:break_tokens_into_lines, tokens, indent) }
+
+    let(:printer) do
+      Class.new(described_class) do
+        public :break_tokens_into_lines
+      end.new(indent_width:, max_line_length:, format_context:)
+    end
+    let(:indent) { 0 }
+
+    context "with tokens that fit on one line" do
+      let(:tokens) { %w[foo bar baz] }
+
+      it "returns a single line" do
+        expect(subject).to eq(["foo bar baz"])
+      end
+    end
+
+    context "with tokens that exceed max_line_length" do
+      let(:max_line_length) { 20 }
+      let(:tokens) { %w[flex items-center justify-between px-4 py-2] }
+
+      it "breaks tokens into multiple lines" do
+        expect(subject.length).to be > 1
+        subject.each { |line| expect(line.length).to be <= max_line_length }
+      end
+    end
+
+    context "with empty tokens" do
+      let(:tokens) { [] }
+
+      it "returns an empty array" do
+        expect(subject).to eq([])
+      end
+    end
+
+    context "with a single token" do
+      let(:tokens) { ["flex"] }
+
+      it "returns a single-element array" do
+        expect(subject).to eq(["flex"])
+      end
+    end
+  end
+
+  describe "#format_multiline_attribute_value" do
+    subject { printer.send(:format_multiline_attribute_value, lines) }
+
+    let(:printer) do
+      Class.new(described_class) do
+        public :format_multiline_attribute_value
+      end.new(indent_width:, max_line_length:, format_context:)
+    end
+
+    context "with single line" do
+      let(:lines) { ["foo bar"] }
+
+      it "wraps with newlines and indents content" do
+        expect(subject).to eq("\n  foo bar\n")
+      end
+    end
+
+    context "with multiple lines" do
+      let(:lines) { ["flex items-center", "justify-between px-4"] }
+
+      it "formats each line with two-space indent" do
+        expect(subject).to eq("\n  flex items-center\n  justify-between px-4\n")
       end
     end
   end
