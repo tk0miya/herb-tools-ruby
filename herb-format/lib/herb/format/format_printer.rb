@@ -45,6 +45,7 @@ module Herb
       # @rbs @indent_level: Integer
       # @rbs @string_line_count: Integer
       # @rbs @inline_mode: bool
+      # @rbs @element_formatting_analysis: Hash[Herb::AST::HTMLElementNode, ElementAnalysis]
       # @rbs @node_is_multiline: Hash[Herb::AST::Node, bool]
 
       # @rbs indent_width: Integer
@@ -59,6 +60,7 @@ module Herb
         @indent_level = 0
         @string_line_count = 0
         @inline_mode = false
+        @element_formatting_analysis = {}
         @node_is_multiline = {}
       end
 
