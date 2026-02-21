@@ -22,6 +22,12 @@ RSpec.describe "CLI integration" do # rubocop:disable RSpec/DescribeClass
       expect(subject[:stdout]).to include("Usage:")
       expect(subject[:status].exitstatus).to eq(Herb::Lint::CLI::EXIT_SUCCESS)
     end
+
+    it "includes --theme, --no-wrap-lines, --truncate-lines in help output" do
+      expect(subject[:stdout]).to include("--theme")
+      expect(subject[:stdout]).to include("--no-wrap-lines")
+      expect(subject[:stdout]).to include("--truncate-lines")
+    end
   end
 
   describe "linting files" do
@@ -72,6 +78,36 @@ RSpec.describe "CLI integration" do # rubocop:disable RSpec/DescribeClass
       expect(output).to include("Summary:")
       expect(output).to include("Checked")
       expect(output).to include("Offenses")
+    end
+  end
+
+  describe "--theme option" do
+    subject { run_cli("--theme", "monokai", fixture_path("missing_alt.html.erb")) }
+
+    it "accepts the option and runs normally" do
+      expect(subject[:status].exitstatus).to eq(Herb::Lint::CLI::EXIT_LINT_ERROR)
+      expect(subject[:stdout]).to include("html-img-require-alt")
+      expect(subject[:stderr]).to be_empty
+    end
+  end
+
+  describe "--no-wrap-lines option" do
+    subject { run_cli("--no-wrap-lines", fixture_path("missing_alt.html.erb")) }
+
+    it "accepts the option and runs normally" do
+      expect(subject[:status].exitstatus).to eq(Herb::Lint::CLI::EXIT_LINT_ERROR)
+      expect(subject[:stdout]).to include("html-img-require-alt")
+      expect(subject[:stderr]).to be_empty
+    end
+  end
+
+  describe "--truncate-lines option" do
+    subject { run_cli("--truncate-lines", fixture_path("missing_alt.html.erb")) }
+
+    it "accepts the option and runs normally" do
+      expect(subject[:status].exitstatus).to eq(Herb::Lint::CLI::EXIT_LINT_ERROR)
+      expect(subject[:stdout]).to include("html-img-require-alt")
+      expect(subject[:stderr]).to be_empty
     end
   end
 

@@ -474,5 +474,113 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
         expect(actual).to include(expected_context)
       end
     end
+
+    context "with truncate_lines: true" do
+      let(:formatter) { described_class.new(io: output, truncate_lines: true) }
+
+      let(:long_line) { "<div class=\"very-long-class-name\">#{'x' * 200}</div>" }
+      let(:results) do
+        [
+          build(:lint_result,
+                source: "#{long_line}\n<p>Next</p>\n",
+                unfixed_offenses: [
+                  build(:offense,
+                        severity: "error",
+                        rule_name: "test-rule",
+                        message: "Some offense",
+                        start_line: 1,
+                        start_column: 1)
+                ])
+        ]
+      end
+
+      it "truncates long source lines with ellipsis" do
+        subject
+
+        actual = strip_colors(output.string)
+
+        # The long line should be truncated (not shown in full)
+        expect(actual).not_to include(long_line)
+        # But it should contain a truncated version ending with ...
+        expect(actual).to include("...")
+      end
+    end
+
+    context "with truncate_lines: false (default)" do
+      let(:formatter) { described_class.new(io: output, truncate_lines: false) }
+
+      let(:long_line) { "<div>#{'x' * 130}</div>" }
+      let(:results) do
+        [
+          build(:lint_result,
+                source: "#{long_line}\n",
+                unfixed_offenses: [
+                  build(:offense,
+                        severity: "error",
+                        rule_name: "test-rule",
+                        message: "Some offense",
+                        start_line: 1,
+                        start_column: 1)
+                ])
+        ]
+      end
+
+      it "shows source lines without truncation" do
+        subject
+
+        actual = strip_colors(output.string)
+
+        # Long line should be shown in full
+        expect(actual).to include(long_line)
+      end
+    end
+
+    context "with theme option" do
+      let(:formatter) { described_class.new(io: output, theme: "monokai") }
+
+      let(:results) do
+        [
+          build(:lint_result,
+                source: "<img>\n",
+                unfixed_offenses: [
+                  build(:offense,
+                        severity: "error",
+                        rule_name: "test-rule",
+                        message: "Test message",
+                        start_line: 1,
+                        start_column: 1)
+                ])
+        ]
+      end
+
+      it "accepts the theme option without error" do
+        expect { subject }.not_to raise_error
+        expect(strip_colors(output.string)).to include("Test message")
+      end
+    end
+
+    context "with wrap_lines: false" do
+      let(:formatter) { described_class.new(io: output, wrap_lines: false) }
+
+      let(:results) do
+        [
+          build(:lint_result,
+                source: "<img>\n",
+                unfixed_offenses: [
+                  build(:offense,
+                        severity: "error",
+                        rule_name: "test-rule",
+                        message: "Test message",
+                        start_line: 1,
+                        start_column: 1)
+                ])
+        ]
+      end
+
+      it "accepts the wrap_lines option without error" do
+        expect { subject }.not_to raise_error
+        expect(strip_colors(output.string)).to include("Test message")
+      end
+    end
   end
 end

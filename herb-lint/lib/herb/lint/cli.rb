@@ -126,6 +126,8 @@ module Herb
             stdout.puts "  herb-lint --fail-level warning .          # Exit with error on warnings or errors"
             stdout.puts "  herb-lint --no-timing .                   # Suppress timing information from output"
             stdout.puts "  herb-lint --force .                       # Run all rules even if disabled in config"
+            stdout.puts "  herb-lint --truncate-lines .              # Truncate long source lines in output"
+            stdout.puts "  herb-lint --no-wrap-lines .               # Disable line wrapping in output"
             stdout.puts
             stdout.puts "Exit codes:"
             stdout.puts "  0  No offenses found (or below fail level)"
@@ -171,6 +173,18 @@ module Herb
             options[:no_timing] = true
           end
 
+          opts.on("--theme THEME", "Color theme for syntax highlighting in detailed output") do |theme|
+            options[:theme] = theme
+          end
+
+          opts.on("--no-wrap-lines", "Disable line wrapping in detailed output") do
+            options[:wrap_lines] = false
+          end
+
+          opts.on("--truncate-lines", "Truncate long source lines in detailed output") do
+            options[:truncate_lines] = true
+          end
+
           opts.on("--fail-level LEVEL", %w[error warning info hint],
                   "Exit with error for violations at or above this level") do |level|
             options[:fail_level] = level
@@ -181,7 +195,7 @@ module Herb
       end
 
       # Creates the appropriate formatter based on command-line options.
-      def create_formatter #: Formatter::Base
+      def create_formatter #: Formatter::Base # rubocop:disable Metrics/AbcSize
         return Formatter::GitHubActionsFormatter.new(io: stdout) if options[:github]
 
         show_timing = !options[:no_timing]
@@ -192,7 +206,13 @@ module Herb
         when "simple"
           Formatter::SimpleFormatter.new(io: stdout, show_timing:)
         else
-          Formatter::DetailedFormatter.new(io: stdout, show_timing:)
+          Formatter::DetailedFormatter.new(
+            io: stdout,
+            show_timing:,
+            theme: options[:theme],
+            wrap_lines: options.fetch(:wrap_lines, true),
+            truncate_lines: options[:truncate_lines] || false
+          )
         end
       end
     end

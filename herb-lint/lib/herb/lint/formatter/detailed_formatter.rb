@@ -12,17 +12,24 @@ module Herb
       #
       # This formatter displays offenses for each file with severity symbols, colors,
       # and surrounding source code lines for better context.
-      class DetailedFormatter < Base
+      class DetailedFormatter < Base # rubocop:disable Metrics/ClassLength
         include ConsoleUtils
         include StringUtils
 
         CONTEXT_LINES = 2 # Number of lines to show before and after the offense
+        DEFAULT_TRUNCATE_WIDTH = 120 # Default width for line truncation
 
         # @rbs io: IO
         # @rbs show_timing: bool -- when false, suppresses timing display
-        def initialize(io: $stdout, show_timing: true) #: void
+        # @rbs theme: String? -- color theme name (reserved for future Rouge integration)
+        # @rbs wrap_lines: bool -- when false, disables line wrapping in output
+        # @rbs truncate_lines: bool -- when true, truncates long source lines
+        def initialize(io: $stdout, show_timing: true, theme: nil, wrap_lines: true, truncate_lines: false) #: void
           super(io:)
           @summary_reporter = Herb::Lint::Reporter::SummaryReporter.new(io:, show_timing:)
+          @theme = theme
+          @wrap_lines = wrap_lines
+          @truncate_lines = truncate_lines
         end
 
         # Reports the aggregated linting result.
@@ -137,7 +144,7 @@ module Herb
             separator = colorize(" | ", color: :gray)
           end
 
-          io.puts "  #{line_num_display}#{separator}#{content}"
+          io.puts "  #{line_num_display}#{separator}#{maybe_truncate(content)}"
 
           # Print column indicator for the offense line
           print_column_indicator(offense, width) if is_offense_line
@@ -198,6 +205,21 @@ module Herb
         # @rbs dim: bool
         def colorize(text, color: nil, bold: false, dim: false) #: String
           super(text, color:, bold:, dim:, tty: io.tty?)
+        end
+
+        # Applies truncation to a source line if truncate_lines is enabled.
+        #
+        # @rbs content: String
+        def maybe_truncate(content) #: String
+          return content unless @truncate_lines
+
+          width = terminal_width
+          content.length > width ? "#{content[0, width - 3]}..." : content
+        end
+
+        # Returns the terminal width for line truncation.
+        def terminal_width #: Integer
+          DEFAULT_TRUNCATE_WIDTH
         end
       end
     end

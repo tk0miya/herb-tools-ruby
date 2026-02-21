@@ -183,20 +183,20 @@ Show most common violations in summary.
 Remaining CLI options from TypeScript implementation:
 
 **Implementation Tasks:**
-- [ ] `--theme` option (requires DetailedFormatter)
-  - [ ] Add CLI option
-  - [ ] Pass to DetailedFormatter
-  - [ ] Update help text
-- [ ] `--no-wrap-lines` option (requires DetailedFormatter)
-  - [ ] Add CLI option
-  - [ ] Pass to DetailedFormatter
-  - [ ] Disable line wrapping in output
-  - [ ] Update help text
-- [ ] `--truncate-lines` option (requires DetailedFormatter)
-  - [ ] Add CLI option
-  - [ ] Pass to DetailedFormatter
-  - [ ] Enable line truncation in output
-  - [ ] Update help text
+- [x] `--theme` option (requires DetailedFormatter)
+  - [x] Add CLI option
+  - [x] Pass to DetailedFormatter
+  - [x] Update help text
+- [x] `--no-wrap-lines` option (requires DetailedFormatter)
+  - [x] Add CLI option
+  - [x] Pass to DetailedFormatter
+  - [x] Disable line wrapping in output
+  - [x] Update help text
+- [x] `--truncate-lines` option (requires DetailedFormatter)
+  - [x] Add CLI option
+  - [x] Pass to DetailedFormatter
+  - [x] Enable line truncation in output
+  - [x] Update help text
 
 ## Non-Features (Do Not Implement)
 
