@@ -430,6 +430,147 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
   end
 
+  describe "#render_multiline_attributes" do
+    let(:printer) do
+      Class.new(described_class) do
+        public :render_multiline_attributes
+        attr_accessor :indent_level
+      end.new(indent_width:, max_line_length:, format_context:)
+    end
+
+    def open_tag_children(source)
+      ast = Herb.parse(source, track_whitespace: true)
+      element = ast.value.children.first
+      element.open_tag.child_nodes
+    end
+
+    context "with multiple attributes" do
+      let(:source) { '<button type="submit" class="btn" disabled></button>' }
+
+      it "outputs each attribute on its own line" do
+        children = open_tag_children(source)
+        result = printer.capture { printer.render_multiline_attributes("button", children, false) }
+
+        expect(result.any? { |l| l.include?('type="submit"') }).to be true
+        expect(result.any? { |l| l.include?('class="btn"') }).to be true
+        expect(result.any? { |l| l.strip == "disabled" }).to be true
+      end
+
+      it "outputs attributes as separate entries in the buffer" do
+        children = open_tag_children(source)
+        result = printer.capture { printer.render_multiline_attributes("button", children, false) }
+
+        attr_lines = result.select { |line| line.strip != "<button" && line.strip != ">" }
+        expect(attr_lines.length).to eq(3)
+      end
+
+      it "indents attributes one level deeper than the opening tag" do
+        children = open_tag_children(source)
+        result = printer.capture { printer.render_multiline_attributes("button", children, false) }
+
+        attr_lines = result.grep(/type=|class=|disabled/)
+        expect(attr_lines).to all(start_with("  "))
+      end
+
+      it "outputs opening tag name on first line" do
+        children = open_tag_children(source)
+        result = printer.capture { printer.render_multiline_attributes("button", children, false) }
+
+        expect(result.first).to eq("<button")
+      end
+
+      it "outputs closing > on its own line" do
+        children = open_tag_children(source)
+        result = printer.capture { printer.render_multiline_attributes("button", children, false) }
+
+        expect(result.last).to eq(">")
+      end
+    end
+
+    context "with no attributes" do
+      let(:source) { "<div></div>" }
+
+      it "outputs opening tag and closing bracket" do
+        children = open_tag_children(source)
+        result = printer.capture { printer.render_multiline_attributes("div", children, false) }
+
+        expect(result).to eq(["<div", ">"])
+      end
+    end
+
+    context "with void element" do
+      let(:source) { '<input type="text" name="email">' }
+
+      it "outputs /> for void element" do
+        children = open_tag_children(source)
+        result = printer.capture { printer.render_multiline_attributes("input", children, true) }
+
+        expect(result.last).to eq("/>")
+      end
+
+      it "outputs attributes on separate lines" do
+        children = open_tag_children(source)
+        result = printer.capture { printer.render_multiline_attributes("input", children, true) }
+
+        expect(result.any? { |l| l.include?('type="text"') }).to be true
+        expect(result.any? { |l| l.include?('name="email"') }).to be true
+      end
+    end
+
+    context "with indented context" do
+      let(:source) { '<div class="foo" id="bar"></div>' }
+
+      before { printer.indent_level = 1 }
+
+      it "applies current indent to opening tag and closing bracket" do
+        children = open_tag_children(source)
+        result = printer.capture { printer.render_multiline_attributes("div", children, false) }
+
+        expect(result.first).to eq("  <div")
+        expect(result.last).to eq("  >")
+      end
+
+      it "applies extra indent to attributes" do
+        children = open_tag_children(source)
+        result = printer.capture { printer.render_multiline_attributes("div", children, false) }
+
+        expect(result.grep(/class=|id=/)).to all(start_with("    "))
+      end
+    end
+
+    context "with herb:disable comment in open tag" do
+      let(:source) { '<div <%# herb:disable %> class="foo"></div>' }
+
+      def herb_disable_children
+        ast = Herb.parse(source, track_whitespace: true)
+        element = ast.value.children.first
+        element.open_tag.child_nodes
+      end
+
+      it "does not output herb:disable comment as a separate attribute line" do
+        result = printer.capture { printer.render_multiline_attributes("div", herb_disable_children, false) }
+
+        # herb:disable comment should not appear as a standalone indented attribute entry
+        herb_disable_attr_lines = result.select do |line|
+          line.strip.start_with?("<%#") && line.include?("herb:disable")
+        end
+        expect(herb_disable_attr_lines).to be_empty
+      end
+
+      it "still outputs other attributes normally" do
+        result = printer.capture { printer.render_multiline_attributes("div", herb_disable_children, false) }
+
+        expect(result.any? { |l| l.include?('class="foo"') }).to be true
+      end
+
+      it "outputs the opening tag line starting with <div" do
+        result = printer.capture { printer.render_multiline_attributes("div", herb_disable_children, false) }
+
+        expect(result.first).to start_with("<div")
+      end
+    end
+  end
+
   describe "#with_indent" do
     let(:printer) do
       Class.new(described_class) do

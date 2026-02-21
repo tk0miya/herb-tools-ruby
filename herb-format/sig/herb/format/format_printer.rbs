@@ -13,6 +13,8 @@ module Herb
     # rules are added, visitor methods will be overridden to apply indentation,
     # line wrapping, attribute formatting, and other transformations.
     class FormatPrinter < ::Herb::Printer::Base
+      include FormatHelpers
+
       VOID_ELEMENTS: untyped
 
       PRESERVED_ELEMENTS: untyped
@@ -146,6 +148,31 @@ module Herb
       #
       # @rbs open_tag: Herb::AST::HTMLOpenTagNode
       def render_attributes_inline: (Herb::AST::HTMLOpenTagNode open_tag) -> String
+
+      # Render attributes in multiline format (one attribute per line).
+      # Outputs:
+      #   <tag_name [herb:disable comments]
+      #     attr1="val1"
+      #     attr2="val2"
+      #   > (or /> for void elements)
+      #
+      # @rbs tag_name: String
+      # @rbs all_children: Array[Herb::AST::Node]
+      # @rbs is_void: bool
+      def render_multiline_attributes: (String tag_name, Array[Herb::AST::Node] all_children, bool is_void) -> void
+
+      # Build the opening line for multiline attribute rendering.
+      # Appends any herb:disable comments inline after the tag name.
+      #
+      # @rbs tag_name: String
+      # @rbs all_children: Array[Herb::AST::Node]
+      def multiline_opening_line: (String tag_name, Array[Herb::AST::Node] all_children) -> String
+
+      # Output each child in a multiline attribute block with increased indentation.
+      # Attributes are rendered inline; other non-whitespace, non-herb:disable nodes are visited.
+      #
+      # @rbs all_children: Array[Herb::AST::Node]
+      def render_multiline_attribute_children: (Array[Herb::AST::Node] all_children) -> void
 
       # Render a single attribute.
       # Returns a string like 'class="foo"' or 'disabled' (boolean attribute).
