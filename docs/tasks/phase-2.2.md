@@ -10,7 +10,7 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 
 ### Part E: ERB Formatting (7 tasks)
 - [x] Task 2.22: ERB Tag Normalization (formatERBContent, reconstructERBNode)
-- [ ] Task 2.23: ERB Content Node (visitERBContentNode)
+- [x] Task 2.23: ERB Content Node (visitERBContentNode)
 - [ ] Task 2.24: ERB If Node (visitERBIfNode) - Inline Mode
 - [ ] Task 2.25: ERB If Node - Block Mode
 - [ ] Task 2.26: ERB Block Node (visitERBBlockNode)
@@ -28,12 +28,13 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 
 ### Part G: Integration & Testing (5 tasks)
 - [ ] Task 2.35: Wire Up All Components
+- [ ] Task 2.35b: Migrate write-based visitors to push (output unification)
 - [ ] Task 2.36: Integration Tests
 - [ ] Task 2.37: TypeScript Output Comparison
 - [ ] Task 2.38: Performance & Edge Cases
 - [ ] Task 2.39: Full Verification
 
-**Progress: 1/18 tasks completed**
+**Progress: 2/19 tasks completed**
 
 ---
 
@@ -1158,6 +1159,106 @@ end
 **Estimate:** 1 hour
 
 **Dependencies:** All prior tasks
+
+---
+
+### Task 2.35b: Migrate write-based visitors to push (output unification)
+
+**Purpose:** Unify the two output paths (`write` → `context.output` and `push` → `@lines`)
+so that all visitor methods use `push`. This allows `capture { visit(element) }` to return
+actual rendered lines, making `ElementAnalyzer` length checks work correctly. It also
+eliminates the fallback branch in `formatted_output`.
+
+**Background:** When `visit_erb_content_node` was implemented in Task 2.23, ERB nodes
+started using `push` while HTML nodes continued using `write`. This split means mixed
+content (e.g. `<div><%= @user.name %></div>`) cannot be tested via `.format`. This task
+resolves that technical debt.
+
+**Location:** `herb-format/lib/herb/format/format_printer.rb`
+
+**Implementation Items:**
+
+1. **Migrate HTML visitor methods from `write` to `push_to_last_line`**
+
+   Tokens within the same tag must be concatenated without a newline separator,
+   so use `push_to_last_line` to build up a single line.
+
+   ```ruby
+   # visit_html_open_tag_node
+   def visit_html_open_tag_node(node)
+     push_to_last_line(node.tag_opening.value)
+     push_to_last_line(node.tag_name.value)
+     push_to_last_line(render_attributes_inline(node))
+     push_to_last_line(node.tag_closing.value)
+   end
+
+   # visit_html_close_tag_node
+   def visit_html_close_tag_node(node)
+     push_to_last_line(node.tag_opening.value)
+     push_to_last_line(node.tag_name.value) if node.tag_name
+     push_to_last_line(node.tag_closing.value)
+   end
+
+   # visit_literal_node
+   def visit_literal_node(node)
+     push_to_last_line(node.content)
+   end
+
+   # visit_html_text_node
+   def visit_html_text_node(node)
+     push_to_last_line(node.content)
+   end
+
+   # visit_whitespace_node
+   def visit_whitespace_node(node)
+     push_to_last_line(node.value.value) if node.value
+   end
+   ```
+
+   Also migrate the `write` calls in preserved elements (`<script>`, `<style>`, `<pre>`, `<textarea>`):
+   ```ruby
+   node.body.each do |child|
+     push_to_last_line(::Herb::Printer::IdentityPrinter.print(child))
+   end
+   ```
+
+2. **Simplify `formatted_output`**
+
+   Remove the fallback branch; always return `@lines`:
+   ```ruby
+   def formatted_output #: String
+     @lines.join("\n")
+   end
+   ```
+
+3. **Enable the pending test in `element_analyzer_spec.rb`**
+
+   ```ruby
+   # Before:
+   pending "Enable once visit methods use push instead of write (Task 2.35)"
+
+   # After:
+   context "with inline element that exceeds max line length" do
+     # ... actual test
+   end
+   ```
+
+4. **Migrate `#visit_erb_content_node` unit tests to `.format` integration tests**
+
+   After unifying to `push`, integration tests via `.format` are more natural than
+   unit tests via `capture { visit(node) }`, so migrate where possible.
+
+   The indentation and inline mode tests in `describe "#visit_erb_content_node"` cannot
+   be expressed through `.format` at this level, so keep them as unit tests.
+
+**Test Cases:**
+- `<div><%= @user.name %></div>` → `<div><%= @user.name %></div>` (mixed HTML+ERB)
+- All existing HTML-only tests continue to pass
+- `element_analyzer_spec.rb` length check test passes
+
+**Estimate:** 2 hours
+
+**Dependencies:** Task 2.35, all ERB visitor methods from Task 2.23 onward
 
 ---
 
