@@ -81,3 +81,18 @@ jobs:
           working-directory: herb-format
       - name: Run all checks
         run: bundle exec rake
+
+  herb-highlighter:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: herb-highlighter
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+          working-directory: herb-highlighter
+      - name: Run all checks
+        run: bundle exec rake

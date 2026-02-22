@@ -1,0 +1,8 @@
+# Generated from lib/herb/highlight.rb with RBS::Inline
+
+module Herb
+  module Highlight
+    class Error < StandardError
+    end
+  end
+end
