@@ -1,0 +1,40 @@
+# Generated from lib/herb/highlight/themes.rb with RBS::Inline
+
+module Herb
+  module Highlight
+    # Built-in theme store for syntax highlighting.
+    # Supports loading custom themes from JSON files.
+    # Mirrors TypeScript themes.ts. All state and methods are class-level (no instances).
+    module Themes
+      # Default theme name used when no theme is specified.
+      DEFAULT_THEME: String
+
+      # Returns all built-in theme names.
+      def self.names: () -> Array[String]
+
+      # Resolves a built-in theme name or custom file path to a color mapping.
+      # If theme matches a built-in theme name, returns that theme's mapping.
+      # Otherwise, attempts to load theme as a file path (raises on error).
+      # Mirrors TypeScript resolveTheme.
+      #
+      # @rbs theme: String
+      def self.resolve: (String theme) -> Hash[String, String?]
+
+      # Adds a built-in theme. Called at file load time for each built-in theme.
+      #
+      # @rbs name: String
+      # @rbs mapping: Hash[String, String?]
+      def self.register: (String name, Hash[String, String?] mapping) -> void
+
+      # Reads and parses a JSON theme file.
+      # Validates that all required ColorScheme keys are present.
+      # All errors are wrapped with a descriptive message.
+      #
+      # @rbs path: String
+      private def self.load_from_file: (String path) -> Hash[String, String?]
+
+      # Returns the required ColorScheme keys derived from the onedark reference theme.
+      private def self.required_keys: () -> Array[String]
+    end
+  end
+end

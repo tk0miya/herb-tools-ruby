@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "highlight/color"
+require_relative "highlight/themes"
 require_relative "highlight/version"
 
 module Herb
