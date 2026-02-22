@@ -5,7 +5,8 @@ module Herb
     module Rules
       module Html
         # Description:
-        #   Disallow placing one `<a>` element inside another `<a>` element. Links must not contain other links as descendants.
+        #   Disallow placing one `<a>` element inside another `<a>` element.
+        #   Links must not contain other links as descendants.
         #
         # Good:
         #   <a href="/products">View products</a>

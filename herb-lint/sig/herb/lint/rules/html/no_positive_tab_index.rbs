@@ -5,7 +5,8 @@ module Herb
     module Rules
       module Html
         # Description:
-        #   Prevent using positive values for the `tabindex` attribute. Only `tabindex="0"` (to make elements focusable) and `tabindex="-1"` (to remove from tab order) should be used.
+        #   Prevent using positive values for the `tabindex` attribute. Only `tabindex="0"`
+        #   (to make elements focusable) and `tabindex="-1"` (to remove from tab order) should be used.
         #
         # Good:
         #   <!-- Natural tab order (no tabindex needed) -->

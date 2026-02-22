@@ -5,7 +5,9 @@ module Herb
     module Rules
       module Html
         # Description:
-        #   Discourage the use of the `title` attribute on most HTML elements, as it provides poor accessibility and user experience. The `title` attribute is only accessible via mouse hover and is not reliably exposed to screen readers or keyboard users.
+        #   Discourage the use of the `title` attribute on most HTML elements, as it provides poor
+        #   accessibility and user experience. The `title` attribute is only accessible via mouse
+        #   hover and is not reliably exposed to screen readers or keyboard users.
         #
         # Good:
         #   <!-- Use visible text instead of title -->

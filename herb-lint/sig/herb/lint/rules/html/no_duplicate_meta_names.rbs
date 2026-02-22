@@ -5,7 +5,9 @@ module Herb
     module Rules
       module Html
         # Description:
-        #   Warn when multiple `<meta>` tags share the same `name` or `http-equiv` attribute within the same `<head>` block, unless they are wrapped in conditional comments.
+        #   Warn when multiple `<meta>` tags share the same `name` or `http-equiv`
+        #   attribute within the same `<head>` block, unless they are wrapped in
+        #   conditional comments.
         #
         # Good:
         #   <head>

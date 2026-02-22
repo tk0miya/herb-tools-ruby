@@ -5,7 +5,9 @@ module Herb
     module Rules
       module Html
         # Description:
-        #   Warn when certain restricted attributes are present but have an empty string as their value. These attributes are required to have meaningful values to function properly, and leaving them empty is typically either a mistake or unnecessary.
+        #   Warn when certain restricted attributes are present but have an empty string as their value.
+        #   These attributes are required to have meaningful values to function properly, and leaving
+        #   them empty is typically either a mistake or unnecessary.
         #
         #   In most cases, if the value is not available, it's better to omit the attribute entirely.
         #
