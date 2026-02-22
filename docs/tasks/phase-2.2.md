@@ -9,7 +9,7 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 ## 📋 Task Checklist (Part 2)
 
 ### Part E: ERB Formatting (7 tasks)
-- [ ] Task 2.22: ERB Tag Normalization (formatERBContent, reconstructERBNode)
+- [x] Task 2.22: ERB Tag Normalization (formatERBContent, reconstructERBNode)
 - [ ] Task 2.23: ERB Content Node (visitERBContentNode)
 - [ ] Task 2.24: ERB If Node (visitERBIfNode) - Inline Mode
 - [ ] Task 2.25: ERB If Node - Block Mode
@@ -33,7 +33,7 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 - [ ] Task 2.38: Performance & Edge Cases
 - [ ] Task 2.39: Full Verification
 
-**Progress: 0/18 tasks completed**
+**Progress: 1/18 tasks completed**
 
 ---
 
@@ -131,6 +131,8 @@ end
 **Test Cases:**
 - `<%=@user.name%>` normalized to `<%= @user.name %>`
 - Indentation is correct
+
+**Note:** Add integration tests via `.format` here. Fill in the `"with ERB tags"` context in `format_printer_spec.rb` (currently pending) with tests that verify actual formatted output flowing through `format_erb_content` → `reconstruct_erb_node` → `print_erb_node`. At the same time, remove the unit tests for `#format_erb_content`, `#reconstruct_erb_node`, and `#print_erb_node` that were added in Task 2.22, as they will be fully covered by the integration tests.
 
 **Estimate:** 30 minutes
 
