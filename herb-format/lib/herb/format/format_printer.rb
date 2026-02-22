@@ -75,17 +75,17 @@ module Herb
 
       # @rbs override
       def visit_literal_node(node)
-        write(node.content)
+        push_to_last_line(node.content)
       end
 
       # @rbs override
       def visit_html_text_node(node)
-        write(node.content)
+        push_to_last_line(node.content)
       end
 
       # @rbs override
       def visit_whitespace_node(node)
-        write(node.value.value) if node.value
+        push_to_last_line(node.value.value) if node.value
       end
 
       # -- HTML element nodes --
@@ -112,10 +112,10 @@ module Herb
       #
       # @rbs override
       def visit_html_open_tag_node(node)
-        write(node.tag_opening.value)
-        write(node.tag_name.value)
-        write(render_attributes_inline(node))
-        write(node.tag_closing.value)
+        push_to_last_line(node.tag_opening.value)
+        push_to_last_line(node.tag_name.value)
+        push_to_last_line(render_attributes_inline(node))
+        push_to_last_line(node.tag_closing.value)
       end
 
       # Visit HTML close tag node.
@@ -123,18 +123,15 @@ module Herb
       #
       # @rbs override
       def visit_html_close_tag_node(node)
-        write(node.tag_opening.value)
-        write(node.tag_name.value) if node.tag_name
-        write(node.tag_closing.value)
+        push_to_last_line(node.tag_opening.value)
+        push_to_last_line(node.tag_name.value) if node.tag_name
+        push_to_last_line(node.tag_closing.value)
       end
 
       # Return the formatted output string.
-      # Uses the push-based @lines buffer when populated (ERB nodes and future
-      # HTML node migrations). Falls back to the write-based context.output
-      # for the current HTML visitor implementations.
       #
       def formatted_output #: String
-        @lines.any? ? @lines.join("\n") : context.output
+        @lines.join("\n")
       end
 
       # Capture output to a temporary buffer.
@@ -259,7 +256,7 @@ module Herb
         if preserved_element?(tag_name)
           # Preserve content as-is for script, style, pre, textarea
           node.body.each do |child|
-            write(::Herb::Printer::IdentityPrinter.print(child))
+            push_to_last_line(::Herb::Printer::IdentityPrinter.print(child))
           end
         else
           # Format body with increased indent

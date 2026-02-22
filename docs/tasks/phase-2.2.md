@@ -28,13 +28,13 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 
 ### Part G: Integration & Testing (5 tasks)
 - [ ] Task 2.35: Wire Up All Components
-- [ ] Task 2.35b: Migrate write-based visitors to push (output unification)
+- [x] Task 2.35b: Migrate write-based visitors to push (output unification)
 - [ ] Task 2.36: Integration Tests
 - [ ] Task 2.37: TypeScript Output Comparison
 - [ ] Task 2.38: Performance & Edge Cases
 - [ ] Task 2.39: Full Verification
 
-**Progress: 2/19 tasks completed**
+**Progress: 3/19 tasks completed**
 
 ---
 

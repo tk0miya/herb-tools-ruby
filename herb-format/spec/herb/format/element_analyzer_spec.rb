@@ -186,13 +186,7 @@ RSpec.describe Herb::Format::ElementAnalyzer do
       it { expect(subject.element_content_inline).to be(false) }
     end
 
-    # TODO: Enable once visit methods use push instead of write.
-    # Currently capture { visit(element) } returns [] because visit methods
-    # write to PrintContext, not @lines. So rendered length is always 0,
-    # meaning inline elements are unconditionally treated as fitting.
-    # See: Task 2.35 (Wire Up All Components)
-    context "with inline element that exceeds max line length",
-            skip: "Enable once visit methods use push instead of write (Task 2.35)" do
+    context "with inline element that exceeds max line length" do
       let(:analyzer) { described_class.new(printer, 10, printer.indent_width) }
       let(:element) { parse_element("<span>This is a very long text that exceeds the line limit</span>") }
 
