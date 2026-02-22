@@ -41,7 +41,7 @@ module Herb
           format_context:
         )
         printer.visit(node)
-        printer.context.output
+        printer.formatted_output
       end
 
       # @rbs @lines: Array[String]
@@ -128,6 +128,15 @@ module Herb
         write(node.tag_closing.value)
       end
 
+      # Return the formatted output string.
+      # Uses the push-based @lines buffer when populated (ERB nodes and future
+      # HTML node migrations). Falls back to the write-based context.output
+      # for the current HTML visitor implementations.
+      #
+      def formatted_output #: String
+        @lines.any? ? @lines.join("\n") : context.output
+      end
+
       # Capture output to a temporary buffer.
       # Saves and restores @lines, @string_line_count, and @inline_mode around the block.
       # Used by ElementAnalyzer to render elements speculatively for length checks.
@@ -149,6 +158,22 @@ module Herb
         @inline_mode = previous_inline_mode
 
         result
+      end
+
+      # -- ERB Formatting --
+
+      # Visit ERB content node.
+      # Routes comment nodes (<%# ... %>) to visit_erb_comment_node.
+      # All other ERB content nodes are printed with normalized spacing.
+      #
+      # @rbs override
+      def visit_erb_content_node(node)
+        if node.tag_opening&.value == "<%#"
+          visit_erb_comment_node(node)
+          return
+        end
+
+        print_erb_node(node)
       end
 
       private
