@@ -173,6 +173,28 @@ module Herb
         print_erb_node(node)
       end
 
+      # Visit ERB end node (<% end %>).
+      # Normalizes spacing and outputs using the push-based buffer.
+      #
+      # @rbs override
+      def visit_erb_end_node(node)
+        print_erb_node(node)
+      end
+
+      # Visit ERB if node.
+      # Dispatches to inline mode (inside attributes) or block mode (normal).
+      #
+      # @rbs override
+      def visit_erb_if_node(node)
+        track_boundary(node) do
+          if @inline_mode
+            visit_erb_if_inline(node)
+          else
+            visit_erb_if_block(node)
+          end
+        end
+      end
+
       private
 
       # Current indent string based on indent_level.
@@ -503,6 +525,70 @@ module Herb
       # @rbs lines: Array[String]
       def format_multiline_attribute_value(lines) #: String
         "\n#{lines.map { |line| "  #{line}" }.join("\n")}\n"
+      end
+
+      # -- ERB Control Flow --
+
+      # Visit ERB if node in inline mode (inside attributes).
+      # Handles conditional rendering of attributes in open tags.
+      # In token-list attributes (e.g., class, data-controller, data-action),
+      # adds spaces before each child and before the closing <% end %> tag.
+      #
+      # @rbs node: Herb::AST::ERBIfNode
+      def visit_erb_if_inline(node) #: void
+        print_erb_node(node)
+
+        node.statements.each { visit_erb_if_inline_statement(_1) }
+
+        has_html_attributes = node.statements.any? { _1.is_a?(Herb::AST::HTMLAttributeNode) }
+
+        push(" ") if (has_html_attributes || in_token_list_attribute?) && node.end_node
+
+        visit(node.subsequent) if node.subsequent
+        visit(node.end_node) if node.end_node
+      end
+
+      # Visit a single statement child of an ERBIfNode in inline mode.
+      # HTMLAttributeNodes are rendered as attribute strings.
+      # Text content is pushed directly. Other nodes are visited normally.
+      # In token-list attribute context, a space is added before each child.
+      #
+      # @rbs child: Herb::AST::Node
+      def visit_erb_if_inline_statement(child) #: void
+        if child.is_a?(Herb::AST::HTMLAttributeNode)
+          push(" ")
+          push(render_attribute(child))
+        elsif child.is_a?(Herb::AST::LiteralNode) || child.is_a?(Herb::AST::HTMLTextNode)
+          push(" ") if in_token_list_attribute?
+          push_to_last_line(child.content)
+        else
+          push(" ") if in_token_list_attribute?
+          visit(child)
+        end
+      end
+
+      # Visit ERB if node in block mode (normal, outside attributes).
+      # Implemented in Task 2.25.
+      #
+      # @rbs node: Herb::AST::ERBIfNode
+      def visit_erb_if_block(node) #: void
+        print_erb_node(node)
+
+        with_indent do
+          node.statements.each { visit(_1) }
+        end
+
+        visit(node.subsequent) if node.subsequent
+        visit(node.end_node) if node.end_node
+      end
+
+      # Check whether the printer is currently rendering inside a token-list attribute.
+      # Token-list attributes (e.g., class, data-controller, data-action) separate
+      # values with spaces, so ERB conditionals within them need space padding.
+      #
+      def in_token_list_attribute? #: bool
+        !@current_attribute_name.nil? &&
+          FormatHelpers::TOKEN_LIST_ATTRIBUTES.include?(@current_attribute_name)
       end
 
       # -- ERB Tag Normalization --
