@@ -910,12 +910,34 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "when inline_mode is false" do
-      let(:source) { "<% if condition %><p>hello</p><% end %>" }
+      before { printer.inline_mode = false }
+
       let(:node) { parse_result.value.children.first }
 
-      it "dispatches to visit_erb_if_block" do
-        printer.inline_mode = false
-        expect(subject.first).to start_with("<% if condition %>")
+      context "with basic if block" do
+        let(:source) { "<% if user.admin? %><%= link_to \"Admin\", admin_path %><% end %>" }
+
+        it "indents statements and places end tag on its own line" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% if user.admin? %>
+              <%= link_to "Admin", admin_path %>
+            <% end %>
+          EXPECTED
+        end
+      end
+
+      context "with nested ERB if" do
+        let(:source) { "<% if outer %><% if inner %><%= text %><% end %><% end %>" }
+
+        it "indents each level of nesting" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% if outer %>
+              <% if inner %>
+                <%= text %>
+              <% end %>
+            <% end %>
+          EXPECTED
+        end
       end
     end
   end
