@@ -90,7 +90,7 @@ module Herb
       def parse_error_offense(error) #: Offense
         Offense.new(
           rule_name: "parser-no-errors",
-          message: error.message,
+          message: "#{error.message} (`#{error.type}`)",
           severity: "error",
           location: error.location
         )
