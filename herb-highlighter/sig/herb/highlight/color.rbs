@@ -1,0 +1,40 @@
+# Generated from lib/herb/highlight/color.rb with RBS::Inline
+
+module Herb
+  module Highlight
+    # ANSI color utilities for syntax highlighting.
+    # Converts hex/named colors to escape sequences and applies them to text.
+    # Mirrors TypeScript color.ts. All methods are module-level (no instances).
+    module Color
+      # All named ANSI colors accepted by themes (mirrors TypeScript color.ts `colors` object).
+      # Keys match the TypeScript names exactly (camelCase where TypeScript uses camelCase).
+      NAMED_COLORS: Hash[String, String]
+
+      # Converts a color value to an ANSI foreground escape sequence.
+      # Returns nil for unknown/unsupported color names.
+      #
+      # @rbs color: String -- hex "#RRGGBB" or named ANSI color
+      def self.ansi_code: (String color) -> String?
+
+      # Converts a color value to an ANSI background escape sequence.
+      # Returns nil for unknown/unsupported color names.
+      #
+      # @rbs color: String
+      def self.background_ansi_code: (String color) -> String?
+
+      # Applies ANSI foreground (and optional background) color to text.
+      # Respects the NO_COLOR environment variable: if ENV.key?("NO_COLOR"), returns text unchanged.
+      #
+      # @rbs text: String
+      # @rbs color: String -- hex or named color name
+      # @rbs background_color: String? -- optional background color (hex or named)
+      def self.colorize: (String text, String color, ?background_color: String?) -> String
+
+      # Maps a diagnostic severity string to a named color.
+      # Used by formatters to color severity labels and symbols.
+      #
+      # @rbs severity: String
+      def self.severity_color: (String severity) -> String
+    end
+  end
+end

@@ -410,13 +410,13 @@ def self.severity_color(severity) #: String
 - `.severity_color` for each severity value
 
 **Implementation Tasks:**
-- [ ] Create `lib/herb/highlight/color.rb`
-- [ ] Implement `NAMED_COLORS` constant (all 29 entries matching TypeScript `colors` object)
-- [ ] Implement `.ansi_code(color)` — hex → 24-bit `\e[38;2;R;G;Bm`; named → `NAMED_COLORS` lookup
-- [ ] Implement `.background_ansi_code(color)` — hex → `\e[48;2;R;G;Bm`; named → lookup
-- [ ] Implement `.colorize(text, color, background_color: nil)` with `NO_COLOR` env var support
-- [ ] Implement `.severity_color(severity)` mapping
-- [ ] Write `spec/herb/highlight/color_spec.rb`
+- [x] Create `lib/herb/highlight/color.rb`
+- [x] Implement `NAMED_COLORS` constant (all 29 entries matching TypeScript `colors` object)
+- [x] Implement `.ansi_code(color)` — hex → 24-bit `\e[38;2;R;G;Bm`; named → `NAMED_COLORS` lookup
+- [x] Implement `.background_ansi_code(color)` — hex → `\e[48;2;R;G;Bm`; named → lookup
+- [x] Implement `.colorize(text, color, background_color: nil)` with `NO_COLOR` env var support
+- [x] Implement `.severity_color(severity)` mapping
+- [x] Write `spec/herb/highlight/color_spec.rb`
 
 ---
 
