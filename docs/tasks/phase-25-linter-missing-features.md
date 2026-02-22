@@ -169,15 +169,6 @@ Show most common violations in summary.
 - [x] Write unit tests
 - [x] Write integration tests
 
-##### Investigation: Is "Make count configurable" needed?
-
-Check the TypeScript reference implementation to determine whether configuring the top-rules display count is an actual feature.
-
-**Tasks:**
-- [ ] Check `javascript/packages/linter/src/cli/argument-parser.ts` for a `--top-rules` or similar option
-- [ ] Check `javascript/packages/linter/src/formatters/detailed-formatter.ts` for any configurable count
-- [ ] If the feature exists in TypeScript: add a proper implementation task to this section
-- [ ] If the feature does not exist: delete this investigation step
 
 #### 8. Syntax Highlighting and Additional CLI Options (Low Priority)
 
