@@ -13,6 +13,8 @@ module Herb
     # rules are added, visitor methods will be overridden to apply indentation,
     # line wrapping, attribute formatting, and other transformations.
     class FormatPrinter < ::Herb::Printer::Base
+      include FormatHelpers
+
       VOID_ELEMENTS: untyped
 
       PRESERVED_ELEMENTS: untyped
@@ -119,6 +121,11 @@ module Herb
       # @rbs &block: () -> void
       def with_indent: () { () -> void } -> void
 
+      # Temporarily enable inline mode for the duration of the block.
+      #
+      # @rbs &block: () -> void
+      def with_inline_mode: () { () -> void } -> void
+
       # Visit the body of an HTML element. For preserved elements (script,
       # style, pre, textarea), content is output as-is using IdentityPrinter.
       # For normal elements, content is formatted with increased indentation.
@@ -146,6 +153,18 @@ module Herb
       #
       # @rbs open_tag: Herb::AST::HTMLOpenTagNode
       def render_attributes_inline: (Herb::AST::HTMLOpenTagNode open_tag) -> String
+
+      # Render attributes in multiline format (one attribute per line).
+      # Outputs:
+      #   <tag_name [herb:disable comments]
+      #     attr1="val1"
+      #     attr2="val2"
+      #   > (or /> for void elements)
+      #
+      # @rbs tag_name: String
+      # @rbs children: Array[Herb::AST::Node]
+      # @rbs is_void: bool
+      def render_multiline_attributes: (String tag_name, Array[Herb::AST::Node] children, bool is_void) -> void
 
       # Render a single attribute.
       # Returns a string like 'class="foo"' or 'disabled' (boolean attribute).
