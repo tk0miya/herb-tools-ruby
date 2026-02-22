@@ -61,7 +61,10 @@ module Herb
       # @rbs open_tag: Herb::AST::HTMLOpenTagNode
       def multiline_attributes?: (Herb::AST::HTMLOpenTagNode open_tag) -> bool
 
-      # Should render inline? Check attribute count and line length.
+      # Should render inline? Check attribute count and open tag line length.
+      # Elements with 0-1 attributes always render inline (single-attribute
+      # class value wrapping is handled separately by render_class_attribute).
+      # Elements with 2+ attributes use a line-length check on the open tag.
       #
       # @rbs element: Herb::AST::HTMLElementNode
       def should_render_inline?: (Herb::AST::HTMLElementNode element) -> bool

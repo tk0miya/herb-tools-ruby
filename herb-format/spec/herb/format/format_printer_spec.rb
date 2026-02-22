@@ -68,8 +68,8 @@ RSpec.describe Herb::Format::FormatPrinter do
       context "with nested elements" do
         let(:source) { "<div><p>nested</p></div>" }
 
-        it "outputs both opening and closing tags for nested elements" do
-          expect(subject).to eq("<div><p>nested</p></div>")
+        it "formats nested block elements on separate lines with indentation" do
+          expect(subject).to eq("<div>\n  <p>nested</p>\n</div>")
         end
       end
 
@@ -312,6 +312,70 @@ RSpec.describe Herb::Format::FormatPrinter do
           end
         end
       end
+
+      context "with multiline attributes" do
+        context "with multiple attributes" do
+          let(:max_line_length) { 30 }
+          let(:source) { '<button type="submit" class="btn" disabled></button>' }
+
+          it "outputs tag name, each attribute indented, and closing >" do
+            expect(subject).to eq(<<~ERB.chomp)
+              <button
+                type="submit"
+                class="btn"
+                disabled
+              >
+              </button>
+            ERB
+          end
+        end
+
+        context "with void element" do
+          let(:max_line_length) { 25 }
+          let(:source) { '<input type="text" name="email">' }
+
+          it "renders inline regardless of max_line_length (void elements always inline)" do
+            expect(subject).to eq('<input type="text" name="email">')
+          end
+        end
+
+        context "with indented context" do
+          let(:max_line_length) { 20 }
+          let(:source) { '<div><div class="foo" id="bar"></div></div>' }
+
+          it "applies current indent to all lines" do
+            expect(subject).to eq(<<~ERB.chomp)
+              <div>
+                <div
+                  class="foo"
+                  id="bar"
+                >
+                </div>
+              </div>
+            ERB
+          end
+        end
+
+        context "with ERB expression tag among children" do
+          pending "implement after Task 2.21b (ERB tag rendering in attributes) — tracked in Task 2.21c"
+        end
+
+        context "with herb:disable comment in open tag" do
+          pending "implement after Task 2.28 (ERB Comment Node) — tracked in Task 2.28b"
+        end
+
+        context "with ERB tag in attribute value" do
+          pending "implement after Task 2.28 (ERB Comment Node) — tracked in Task 2.28b"
+        end
+
+        context "with multiple herb:disable comments" do
+          pending "implement after Task 2.28 (ERB Comment Node) — tracked in Task 2.28b"
+        end
+
+        context "with herb:disable comment and no other attributes" do
+          pending "implement after Task 2.28 (ERB Comment Node) — tracked in Task 2.28b"
+        end
+      end
     end
 
     context "with ERB tags" do
@@ -320,6 +384,97 @@ RSpec.describe Herb::Format::FormatPrinter do
 
     context "with text flow" do
       pending "Part F: Text Flow & Spacing (Task 2.29-2.34)"
+    end
+  end
+
+  describe "#current_element" do
+    let(:printer) do
+      described_class.new(indent_width:, max_line_length:, format_context:)
+    end
+
+    it "returns nil when no element is being visited" do
+      expect(printer.current_element).to be_nil
+    end
+
+    it "returns the enclosing HTMLElementNode during visit" do
+      source = "<div>text</div>"
+      ast = Herb.parse(source, track_whitespace: true)
+      element = ast.value.children.first
+
+      observed = nil
+      allow(printer).to receive(:visit_html_open_tag_node).and_wrap_original do |original, node|
+        observed = printer.current_element
+        original.call(node)
+      end
+
+      printer.visit(ast.value)
+
+      expect(observed).to equal(element)
+    end
+  end
+
+  describe "#visit_html_element_node" do
+    let(:printer) do
+      described_class.new(indent_width:, max_line_length:, format_context:)
+    end
+
+    it "pushes @element_stack before visit(open_tag) and pops after" do
+      source = "<div>text</div>"
+      ast = Herb.parse(source, track_whitespace: true)
+      element = ast.value.children.first
+
+      stack_depth_during_open_tag = nil
+      allow(printer).to receive(:visit_html_open_tag_node).and_wrap_original do |original, node|
+        stack_depth_during_open_tag = printer.current_element
+        original.call(node)
+      end
+
+      printer.visit(ast.value)
+
+      expect(stack_depth_during_open_tag).to equal(element)
+      expect(printer.current_element).to be_nil
+    end
+  end
+
+  describe "#visit_html_open_tag_node" do
+    let(:printer) do
+      described_class.new(indent_width:, max_line_length:, format_context:)
+    end
+
+    it "dispatches to inline rendering when open_tag_inline is true" do
+      source = "<div>text</div>"
+      result = described_class.format(Herb.parse(source, track_whitespace: true), format_context:)
+
+      expect(result).to eq("<div>text</div>")
+    end
+
+    it "dispatches to multiline rendering when open_tag_inline is false" do
+      source = "<pre>content</pre>"
+      result = described_class.format(Herb.parse(source, track_whitespace: true), format_context:)
+
+      # content_preserving elements use open_tag_inline: false
+      # but with no attributes, the open tag is still rendered as single line
+      expect(result).to include("<pre>")
+    end
+  end
+
+  describe "#visit_html_close_tag_node" do
+    let(:printer) do
+      described_class.new(indent_width:, max_line_length:, format_context:)
+    end
+
+    it "appends close tag inline when close_tag_inline is true" do
+      source = "<div>text</div>"
+      result = described_class.format(Herb.parse(source, track_whitespace: true), format_context:)
+
+      expect(result).to eq("<div>text</div>")
+    end
+
+    it "puts close tag on a new line when close_tag_inline is false" do
+      source = "<div><p>nested</p></div>"
+      result = described_class.format(Herb.parse(source, track_whitespace: true), format_context:)
+
+      expect(result).to eq("<div>\n  <p>nested</p>\n</div>")
     end
   end
 
@@ -581,91 +736,6 @@ RSpec.describe Herb::Format::FormatPrinter do
 
         expect(result).to eq(["line1", "line2 suffix"])
       end
-    end
-  end
-
-  describe "#render_multiline_attributes" do
-    let(:printer) do
-      Class.new(described_class) do
-        public :render_multiline_attributes
-        attr_accessor :indent_level
-      end.new(indent_width:, max_line_length:, format_context:)
-    end
-
-    def open_tag_children(source)
-      ast = Herb.parse(source, track_whitespace: true)
-      element = ast.value.children.first
-      element.open_tag.child_nodes
-    end
-
-    context "with multiple attributes" do
-      subject { printer.capture { printer.render_multiline_attributes("button", open_tag_children(source), false) } }
-
-      let(:source) { '<button type="submit" class="btn" disabled></button>' }
-
-      it "outputs tag name, each attribute indented, and closing >" do
-        expect(subject).to eq(["<button", '  type="submit"', '  class="btn"', "  disabled", ">"])
-      end
-    end
-
-    context "with void element" do
-      subject { printer.capture { printer.render_multiline_attributes("input", open_tag_children(source), true) } }
-
-      let(:source) { '<input type="text" name="email">' }
-
-      it "outputs tag name, each attribute indented, and closing />" do
-        expect(subject).to eq(["<input", '  type="text"', '  name="email"', "/>"])
-      end
-    end
-
-    context "with indented context" do
-      subject { printer.capture { printer.render_multiline_attributes("div", open_tag_children(source), false) } }
-
-      let(:source) { '<div class="foo" id="bar"></div>' }
-
-      before { printer.indent_level = 1 }
-
-      it "applies current indent to all lines" do
-        expect(subject).to eq(["  <div", '    class="foo"', '    id="bar"', "  >"])
-      end
-    end
-
-    context "with no children" do
-      subject { printer.capture { printer.render_multiline_attributes("div", [], false) } }
-
-      it "outputs tag name and closing > with no attributes" do
-        expect(subject).to eq(["<div", ">"])
-      end
-    end
-
-    context "with only whitespace children" do
-      subject { printer.capture { printer.render_multiline_attributes("div", open_tag_children(source), false) } }
-
-      let(:source) { "<div ></div>" }
-
-      it "outputs tag name and closing > skipping whitespace nodes" do
-        expect(subject).to eq(["<div", ">"])
-      end
-    end
-
-    context "with ERB expression tag among children" do
-      pending "implement after Task 2.21b (ERB tag rendering in attributes) — tracked in Task 2.21c"
-    end
-
-    context "with herb:disable comment in open tag" do
-      pending "implement after Task 2.28 (ERB Comment Node) — tracked in Task 2.28b"
-    end
-
-    context "with ERB tag in attribute value" do
-      pending "implement after Task 2.28 (ERB Comment Node) — tracked in Task 2.28b"
-    end
-
-    context "with multiple herb:disable comments" do
-      pending "implement after Task 2.28 (ERB Comment Node) — tracked in Task 2.28b"
-    end
-
-    context "with herb:disable comment and no other attributes" do
-      pending "implement after Task 2.28 (ERB Comment Node) — tracked in Task 2.28b"
     end
   end
 

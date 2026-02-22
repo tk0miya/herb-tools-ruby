@@ -140,13 +140,21 @@ module Herb
         false
       end
 
-      # Should render inline? Check attribute count and line length.
+      # Should render inline? Check attribute count and open tag line length.
+      # Elements with 0-1 attributes always render inline (single-attribute
+      # class value wrapping is handled separately by render_class_attribute).
+      # Elements with 2+ attributes use a line-length check on the open tag.
       #
       # @rbs element: Herb::AST::HTMLElementNode
-      def should_render_inline?(element) #: bool # rubocop:disable Lint/UnusedMethodArgument
-        # TODO: Implement proper attribute count and line length check
-        # (requires accessible capture method on printer)
-        true
+      def should_render_inline?(element) #: bool
+        attributes = element.open_tag.child_nodes.select { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+        return true if attributes.length <= 1
+
+        tag_name = get_tag_name(element)
+        inline_attrs = @printer.send(:render_attributes_inline, element.open_tag)
+        indent_offset = @printer.indent_level * @printer.indent_width
+        open_tag_length = tag_name.length + inline_attrs.length + 1 # +1 for ">"
+        indent_offset + open_tag_length <= @max_line_length
       end
 
       # Is this node inline (can appear on the same line as surrounding content)?

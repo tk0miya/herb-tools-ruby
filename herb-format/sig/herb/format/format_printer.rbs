@@ -27,12 +27,25 @@ module Herb
 
       attr_reader indent_level: Integer
 
+      # Return formatted output from the lines buffer.
+      def output: () -> String
+
+      # Current element being visited (top of element stack).
+      def current_element: () -> Herb::AST::HTMLElementNode?
+
+      # Current tag name (from top of element stack).
+      def current_tag_name: () -> String
+
       # Format the given input and return a formatted string.
       #
       # @rbs input: Herb::ParseResult | Herb::AST::Node
       # @rbs format_context: Context
       # @rbs ignore_errors: bool
       def self.format: (Herb::ParseResult | Herb::AST::Node input, format_context: Context, ?ignore_errors: bool) -> String
+
+      @elements_being_analyzed: Set[Herb::AST::HTMLElementNode]
+
+      @element_stack: Array[Herb::AST::HTMLElementNode]
 
       @node_is_multiline: Hash[Herb::AST::Node, bool]
 
@@ -64,20 +77,24 @@ module Herb
       # @rbs override
       def visit_whitespace_node: ...
 
-      # Visit HTML element node. Handles void elements (no close tag) and
-      # preserved elements (content unchanged) specially.
+      # Visit HTML element node. Pushes/pops @element_stack around child visiting
+      # so that visit_html_open_tag_node and visit_html_close_tag_node can access
+      # the enclosing element via current_element. Populates @element_formatting_analysis
+      # using ElementAnalyzer before visiting children.
       #
       # @rbs override
       def visit_html_element_node: ...
 
       # Visit HTML open tag node.
-      # Outputs the opening tag structure: <tag_name attributes>
+      # Uses pre-computed ElementAnalysis to decide whether to render
+      # attributes inline or multiline.
       #
       # @rbs override
       def visit_html_open_tag_node: ...
 
       # Visit HTML close tag node.
-      # Outputs the closing tag structure: </tag_name>
+      # Appends inline (same line) when analysis says close_tag_inline,
+      # otherwise pushes to a new indented line.
       #
       # @rbs override
       def visit_html_close_tag_node: ...
@@ -90,6 +107,13 @@ module Herb
       def capture: () { () -> void } -> Array[String]
 
       private
+
+      # Override write to route all output through the @lines buffer.
+      # Calls super to keep context.output updated, then appends to @lines
+      # so that format returns complete output via @lines.join("\n").
+      #
+      # @rbs text: String
+      def write: (String text) -> void
 
       # Current indent string based on indent_level.
       def indent: () -> String
@@ -130,7 +154,9 @@ module Herb
 
       # Visit the body of an HTML element. For preserved elements (script,
       # style, pre, textarea), content is output as-is using IdentityPrinter.
-      # For normal elements, content is formatted with increased indentation.
+      # For inline elements (element_content_inline=true), content is visited
+      # in inline mode (no extra indentation). For block elements, content is
+      # formatted with increased indentation.
       #
       # @rbs node: Herb::AST::HTMLElementNode
       def visit_element_body: (Herb::AST::HTMLElementNode node) -> void
