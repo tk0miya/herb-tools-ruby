@@ -24,6 +24,7 @@ module Herb
       attr_reader :indent_width #: Integer
       attr_reader :max_line_length #: Integer
       attr_reader :format_context #: Context
+      attr_reader :indent_level #: Integer
 
       # Format the given input and return a formatted string.
       #
@@ -152,10 +153,10 @@ module Herb
 
       private
 
-      # Current indent string based on @indent_level.
+      # Current indent string based on indent_level.
       #
       def indent #: String
-        " " * (@indent_level * @indent_width)
+        " " * (indent_level * indent_width)
       end
 
       # Push line with indentation applied.
@@ -237,7 +238,7 @@ module Herb
           end
         else
           # Format body with increased indent
-          context.indent do
+          with_indent do
             node.body.each { visit(_1) }
           end
         end
@@ -246,7 +247,7 @@ module Herb
       # Generate indentation string for the current indent level.
       #
       # @rbs level: Integer
-      def indent_string(level = context.current_indent_level) #: String
+      def indent_string(level = indent_level) #: String
         " " * (indent_width * level)
       end
 
@@ -365,15 +366,97 @@ module Herb
         end.join
       end
 
-      # Render the class attribute.
-      # Stub implementation; Task 2.20 will add wrapping for long values.
+      # Render the class attribute with optional multiline wrapping for long values.
+      # Normalizes whitespace and wraps long class lists across multiple lines
+      # when the attribute would exceed max_line_length.
       #
       # @rbs name: String
       # @rbs content: String
       # @rbs open_quote: String
       # @rbs close_quote: String
-      def render_class_attribute(name, content, open_quote, close_quote) #: String
-        "#{name}=#{open_quote}#{content}#{close_quote}"
+      def render_class_attribute(name, content, open_quote, close_quote) #: String # rubocop:disable Metrics/CyclomaticComplexity
+        normalized_content = content.gsub(/[ \t\n\r]+/, " ").strip
+
+        if content.include?("\n") && normalized_content.length > 80
+          wrapped = wrap_class_by_newlines(content, name, open_quote, close_quote)
+          return wrapped if wrapped
+        end
+
+        current_indent = indent_level * indent_width
+        attribute_line = "#{name}=#{open_quote}#{normalized_content}#{close_quote}"
+
+        if current_indent + attribute_line.length > max_line_length &&
+           normalized_content.length > 60
+          return "#{name}=#{open_quote}#{normalized_content}#{close_quote}" if normalized_content.include?("<%")
+
+          wrapped = wrap_class_by_length(normalized_content, name, open_quote, close_quote, current_indent)
+          return wrapped if wrapped
+        end
+
+        "#{name}=#{open_quote}#{normalized_content}#{close_quote}"
+      end
+
+      # Wrap class attribute by splitting on original newlines.
+      #
+      # @rbs content: String
+      # @rbs name: String
+      # @rbs open_quote: String
+      # @rbs close_quote: String
+      def wrap_class_by_newlines(content, name, open_quote, close_quote) #: String?
+        lines = content.split(/\r?\n/).map(&:strip).reject(&:empty?)
+        return unless lines.length > 1
+
+        "#{name}=#{open_quote}#{format_multiline_attribute_value(lines)}#{close_quote}"
+      end
+
+      # Wrap class attribute by breaking long token sequences into lines.
+      #
+      # @rbs normalized_content: String
+      # @rbs name: String
+      # @rbs open_quote: String
+      # @rbs close_quote: String
+      # @rbs current_indent: Integer
+      def wrap_class_by_length(normalized_content, name, open_quote, close_quote, current_indent) #: String?
+        lines = break_tokens_into_lines(normalized_content.split, current_indent)
+        return unless lines.length > 1
+
+        "#{name}=#{open_quote}#{format_multiline_attribute_value(lines)}#{close_quote}"
+      end
+
+      # Break an array of tokens into lines that fit within max_line_length.
+      #
+      # @rbs tokens: Array[String]
+      # @rbs indent: Integer
+      def break_tokens_into_lines(tokens, indent) #: Array[String]
+        lines = []
+        current_line = []
+        current_length = indent
+
+        tokens.each do |token|
+          test_length = current_length + token.length + 1
+
+          if test_length > max_line_length && current_line.any?
+            lines << current_line.join(" ")
+            current_line = [token]
+            current_length = indent + token.length
+          else
+            current_line << token
+            current_length = test_length
+          end
+        end
+
+        lines << current_line.join(" ") if current_line.any?
+
+        lines
+      end
+
+      # Format an array of lines as a multiline attribute value.
+      # Each line is indented with two spaces, and the result is wrapped
+      # with leading and trailing newlines.
+      #
+      # @rbs lines: Array[String]
+      def format_multiline_attribute_value(lines) #: String
+        "\n#{lines.map { |line| "  #{line}" }.join("\n")}\n"
       end
     end
   end
