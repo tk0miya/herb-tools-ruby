@@ -11,12 +11,12 @@ RSpec.describe Herb::Lint::Rules::Html::NoSelfClosing do
 
   describe ".description" do
     it "returns description" do
-      expect(described_class.description).to eq("Consistent self-closing style for void elements")
+      expect(described_class.description).to eq("Disallow self-closing syntax for HTML elements")
     end
   end
 
   describe ".default_severity" do
-    it "returns 'warning'" do
+    it "returns 'error'" do
       expect(described_class.default_severity).to eq("error")
     end
   end
@@ -34,7 +34,40 @@ RSpec.describe Herb::Lint::Rules::Html::NoSelfClosing do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when void element has no self-closing slash" do
+    # Good examples from documentation
+    context "with proper span with closing tag (documentation example)" do
+      let(:source) { "<span></span>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with proper div with closing tag (documentation example)" do
+      let(:source) { "<div></div>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with void img without self-closing slash (documentation example)" do
+      let(:source) { '<img src="/logo.png" alt="Logo">' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with void input without self-closing slash (documentation example)" do
+      let(:source) { '<input type="text" autocomplete="off">' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with void br without self-closing slash (documentation example)" do
       let(:source) { "<br>" }
 
       it "does not report an offense" do
@@ -42,32 +75,89 @@ RSpec.describe Herb::Lint::Rules::Html::NoSelfClosing do
       end
     end
 
-    context "when void element has self-closing slash" do
+    context "with void hr without self-closing slash (documentation example)" do
+      let(:source) { "<hr>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with self-closing span (documentation example)" do
+      let(:source) { "<span />" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-self-closing")
+        expect(subject.first.message).to eq(
+          "Use `<span></span>` instead of self-closing `<span />` for HTML compatibility."
+        )
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "with self-closing div (documentation example)" do
+      let(:source) { "<div />" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-self-closing")
+        expect(subject.first.message).to eq(
+          "Use `<div></div>` instead of self-closing `<div />` for HTML compatibility."
+        )
+      end
+    end
+
+    context "with self-closing img with attributes (documentation example)" do
+      let(:source) { '<img src="/logo.png" alt="Logo" />' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-self-closing")
+        expect(subject.first.message).to eq("Use `<img>` instead of self-closing `<img />` for HTML compatibility.")
+      end
+    end
+
+    context "with self-closing input (documentation example)" do
+      let(:source) { '<input type="text" autocomplete="off" />' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-self-closing")
+        expect(subject.first.message).to eq("Use `<input>` instead of self-closing `<input />` for HTML compatibility.")
+      end
+    end
+
+    context "with self-closing br (documentation example)" do
+      let(:source) { "<br />" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-self-closing")
+        expect(subject.first.message).to eq("Use `<br>` instead of self-closing `<br />` for HTML compatibility.")
+      end
+    end
+
+    context "with self-closing hr (documentation example)" do
+      let(:source) { "<hr />" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-self-closing")
+        expect(subject.first.message).to eq("Use `<hr>` instead of self-closing `<hr />` for HTML compatibility.")
+      end
+    end
+
+    # Additional edge case tests
+    context "when void element has self-closing slash without space" do
       let(:source) { "<br/>" }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-no-self-closing")
-        expect(subject.first.message).to eq("Void element 'br' should not have a self-closing slash")
+        expect(subject.first.message).to eq("Use `<br>` instead of self-closing `<br />` for HTML compatibility.")
         expect(subject.first.severity).to eq("error")
-      end
-    end
-
-    context "when void element has self-closing slash with space" do
-      let(:source) { "<br />" }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Void element 'br' should not have a self-closing slash")
-      end
-    end
-
-    context "when void element with attributes has self-closing slash" do
-      let(:source) { '<img src="photo.jpg" />' }
-
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Void element 'img' should not have a self-closing slash")
       end
     end
 
@@ -90,11 +180,6 @@ RSpec.describe Herb::Lint::Rules::Html::NoSelfClosing do
 
       it "reports an offense for each" do
         expect(subject.size).to eq(3)
-        expect(subject.map(&:message)).to contain_exactly(
-          "Void element 'br' should not have a self-closing slash",
-          "Void element 'hr' should not have a self-closing slash",
-          "Void element 'img' should not have a self-closing slash"
-        )
       end
     end
 
@@ -109,7 +194,6 @@ RSpec.describe Herb::Lint::Rules::Html::NoSelfClosing do
 
       it "reports an offense for the nested void element" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Void element 'img' should not have a self-closing slash")
         expect(subject.first.line).to eq(2)
       end
     end

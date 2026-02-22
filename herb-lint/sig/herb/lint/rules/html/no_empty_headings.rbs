@@ -4,18 +4,36 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows empty heading elements.
-        #
-        # Heading elements (`<h1>`-`<h6>`) must contain meaningful content
-        # and should not be empty or contain only whitespace.
+        # Description:
+        #   Disallow headings (`h1`, `h2`, etc.) with no accessible text content.
         #
         # Good:
-        #   <h1>Page Title</h1>
-        #   <h2><%= title %></h2>
+        #   <h1>Heading Content</h1>
+        #
+        #   <h1><span>Text</span></h1>
+        #
+        #   <div role="heading" aria-level="1">Heading Content</div>
+        #
+        #   <h1 aria-hidden="true">Heading Content</h1>
+        #
+        #   <h1 hidden>Heading Content</h1>
         #
         # Bad:
         #   <h1></h1>
-        #   <h2>   </h2>
+        #
+        #   <h2></h2>
+        #
+        #   <h3></h3>
+        #
+        #   <h4></h4>
+        #
+        #   <h5></h5>
+        #
+        #   <h6></h6>
+        #
+        #   <div role="heading" aria-level="1"></div>
+        #
+        #   <h1><span aria-hidden="true">Inaccessible text</span></h1>
         class NoEmptyHeadings < VisitorRule
           HEADING_TAGS: Array[String]
 

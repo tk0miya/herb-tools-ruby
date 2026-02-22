@@ -34,6 +34,61 @@ RSpec.describe Herb::Lint::Rules::Html::TagNameLowercase do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
+    # Good examples from documentation
+    context "with lowercase div (documentation example)" do
+      let(:source) { '<div class="container"></div>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with lowercase input (documentation example)" do
+      let(:source) { '<input type="text" name="username" autocomplete="off">' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with lowercase span (documentation example)" do
+      let(:source) { "<span>Label</span>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with uppercase DIV (documentation example)" do
+      let(:source) { '<DIV class="container"></DIV>' }
+
+      it "reports offenses for both open and close tags" do
+        expect(subject.size).to eq(2)
+        expect(subject.first.rule_name).to eq("html-tag-name-lowercase")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "with titlecase Input (documentation example)" do
+      let(:source) { '<Input type="text" name="username" autocomplete="off">' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-tag-name-lowercase")
+      end
+    end
+
+    context "with titlecase Span (documentation example)" do
+      let(:source) { "<Span>Label</Span>" }
+
+      it "reports offenses for both open and close tags" do
+        expect(subject.size).to eq(2)
+        expect(subject.first.rule_name).to eq("html-tag-name-lowercase")
+      end
+    end
+
+    # Additional edge case tests
     context "when tag names are lowercase" do
       let(:source) { "<div>text</div>" }
 

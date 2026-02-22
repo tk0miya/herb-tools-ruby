@@ -28,6 +28,39 @@ RSpec.describe Herb::Lint::Rules::Html::NoNestedLinks do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
+    # Good examples from documentation
+    context "with separate non-nested links (documentation example)" do
+      let(:source) do
+        <<~HTML
+          <a href="/products">View products</a>
+          <a href="/about">About us</a>
+        HTML
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with nested anchor inside another anchor (documentation example)" do
+      let(:source) do
+        <<~HTML
+          <a href="/products">
+            View <a href="/special-offer">special offer</a>
+          </a>
+        HTML
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-nested-links")
+        expect(subject.first.message).to eq("Nested anchor element found inside another anchor element")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    # Additional edge case tests
     context "when anchor is not nested" do
       let(:source) { '<a href="/page">Link</a>' }
 
@@ -41,23 +74,6 @@ RSpec.describe Herb::Lint::Rules::Html::NoNestedLinks do
 
       it "does not report an offense" do
         expect(subject).to be_empty
-      end
-    end
-
-    context "when anchor is nested inside another anchor" do
-      let(:source) do
-        <<~HTML
-          <a href="/outer">
-            <a href="/inner">Nested link</a>
-          </a>
-        HTML
-      end
-
-      it "reports an offense for the inner anchor" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html-no-nested-links")
-        expect(subject.first.message).to eq("Nested anchor element found inside another anchor element")
-        expect(subject.first.severity).to eq("error")
       end
     end
 

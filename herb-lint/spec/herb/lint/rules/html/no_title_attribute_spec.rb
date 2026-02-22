@@ -16,7 +16,7 @@ RSpec.describe Herb::Lint::Rules::Html::NoTitleAttribute do
   end
 
   describe ".default_severity" do
-    it "returns 'warning'" do
+    it "returns 'error'" do
       expect(described_class.default_severity).to eq("error")
     end
   end
@@ -28,16 +28,42 @@ RSpec.describe Herb::Lint::Rules::Html::NoTitleAttribute do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when element has no title attribute" do
-      let(:source) { '<span class="info">More info available</span>' }
+    # Good examples from documentation
+    context "with visible text instead of title (documentation example)" do
+      let(:source) { "<button>Save document</button>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when element has a title attribute" do
-      let(:source) { '<span title="More info">Hover me</span>' }
+    context "with aria-label instead of title (documentation example)" do
+      let(:source) { '<button aria-label="Close dialog">×</button>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with title on iframe (exception, documentation example)" do
+      let(:source) { '<iframe src="https://example.com" title="Example website content"></iframe>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with title on link (exception, documentation example)" do
+      let(:source) { '<link href="default.css" rel="stylesheet" title="Default Style">' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with title on button (documentation example)" do
+      let(:source) { '<button title="Save your changes">Save</button>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
@@ -46,6 +72,42 @@ RSpec.describe Herb::Lint::Rules::Html::NoTitleAttribute do
           "Avoid using the 'title' attribute; it is unreliable for screen readers and touch devices"
         )
         expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "with title on div (documentation example)" do
+      let(:source) { '<div title="This is important information">Content</div>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-title-attribute")
+      end
+    end
+
+    context "with title on span (documentation example)" do
+      let(:source) { '<span title="Required field">*</span>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-title-attribute")
+      end
+    end
+
+    context "with title on input (documentation example)" do
+      let(:source) { '<input type="text" title="Enter your name" autocomplete="off">' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-title-attribute")
+      end
+    end
+
+    # Additional edge case tests
+    context "when element has no title attribute" do
+      let(:source) { '<span class="info">More info available</span>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
       end
     end
 

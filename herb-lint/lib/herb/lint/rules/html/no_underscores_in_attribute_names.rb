@@ -7,16 +7,22 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows underscores in HTML attribute names.
-        #
-        # HTML attribute names conventionally use hyphens as word separators.
-        # Underscores are not standard and should be replaced with hyphens.
+        # Description:
+        #   Warn when an HTML attribute name contains an underscore (`_`). According to the HTML
+        #   specification, attribute names should use only lowercase letters, digits, hyphens (`-`),
+        #   and colons (`:`) in specific namespaces. Underscores are not valid in standard HTML
+        #   attribute names and may lead to unpredictable behavior or be ignored by browsers entirely.
         #
         # Good:
-        #   <div data-value="foo">
+        #   <div data-user-id="123"></div>
+        #
+        #   <img aria-label="Close" alt="Close">
         #
         # Bad:
-        #   <div data_value="foo">
+        #   <div data_user_id="123"></div>
+        #
+        #   <img aria_label="Close" alt="Close">
+        #
         class NoUnderscoresInAttributeNames < VisitorRule
           def self.rule_name = "html-no-underscores-in-attribute-names" #: String
           def self.description = "Disallow underscores in HTML attribute names" #: String

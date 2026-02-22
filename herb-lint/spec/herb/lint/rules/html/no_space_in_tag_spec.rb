@@ -28,6 +28,67 @@ RSpec.describe Herb::Lint::Rules::Html::NoSpaceInTag do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
+    # Good examples from documentation
+    context "with correct spacing - single attribute (documentation example)" do
+      let(:source) { '<div class="foo"></div>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with correct spacing - img tag (documentation example)" do
+      let(:source) { '<img src="/logo.png" alt="Logo">' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with correct spacing - multiple attributes (documentation example)" do
+      let(:source) { '<input class="foo" name="bar">' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with correct spacing - multiple attributes on div (documentation example)" do
+      let(:source) { '<div class="foo" data-x="bar"></div>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with double space between tag name and attribute (documentation example)" do
+      let(:source) { '<div  class="foo"></div>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-space-in-tag")
+      end
+    end
+
+    context "with extra space before closing > (documentation example)" do
+      let(:source) { '<div class="foo" ></div>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-space-in-tag")
+      end
+    end
+
+    context "with excessive space between attributes (documentation example)" do
+      let(:source) { '<div class="foo"      data-x="bar"></div>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-space-in-tag")
+      end
+    end
+
     describe "when space is correct" do
       context "when tags have no extra spaces" do
         let(:source) { "<div>content</div>" }

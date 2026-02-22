@@ -7,18 +7,23 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that enforces lowercase tag names.
-        #
-        # HTML tag names are case-insensitive, but lowercase is the standard
-        # convention for modern HTML. This rule ensures consistency.
+        # Description:
+        #   Enforce that all HTML tag names are written in lowercase.
         #
         # Good:
-        #   <div></div>
-        #   <span>text</span>
+        #   <div class="container"></div>
+        #
+        #   <input type="text" name="username" autocomplete="off">
+        #
+        #   <span>Label</span>
         #
         # Bad:
-        #   <DIV></DIV>
-        #   <Span>text</Span>
+        #   <DIV class="container"></DIV>
+        #
+        #   <Input type="text" name="username" autocomplete="off">
+        #
+        #   <Span>Label</Span>
+        #
         class TagNameLowercase < VisitorRule
           def self.rule_name = "html-tag-name-lowercase" #: String
           def self.description = "Enforce lowercase tag names" #: String

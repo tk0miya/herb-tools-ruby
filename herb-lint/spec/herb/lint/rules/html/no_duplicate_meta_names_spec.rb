@@ -28,6 +28,42 @@ RSpec.describe Herb::Lint::Rules::Html::NoDuplicateMetaNames do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
+    # Good examples from documentation
+    context "with unique meta names in head (documentation example)" do
+      let(:source) do
+        <<~HTML
+          <head>
+            <meta name="description" content="Welcome to our site">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+        HTML
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with duplicate viewport meta (documentation example)" do
+      let(:source) do
+        <<~HTML
+          <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="viewport" content="width=1024">
+          </head>
+        HTML
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-duplicate-meta-names")
+        expect(subject.first.message).to include("Duplicate meta name 'viewport'")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    # Additional edge case tests
     context "when all meta names are unique" do
       let(:source) do
         <<~HTML

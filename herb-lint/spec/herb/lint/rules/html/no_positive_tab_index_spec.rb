@@ -28,16 +28,81 @@ RSpec.describe Herb::Lint::Rules::Html::NoPositiveTabIndex do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when tabindex is 0" do
-      let(:source) { '<button tabindex="0">Click</button>' }
+    # Good examples from documentation
+    context "with tabindex=0 to make non-interactive element focusable (documentation example)" do
+      let(:source) { '<div tabindex="0" role="button">Custom button</div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when tabindex is -1" do
-      let(:source) { '<button tabindex="-1">Click</button>' }
+    context "with tabindex=-1 to remove from tab order (documentation example)" do
+      let(:source) { '<button tabindex="-1">Skip this in tab order</button>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with zero tabindex span (documentation example)" do
+      let(:source) { '<span tabindex="0" role="button">Focusable span</span>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with tabindex=3 (documentation example)" do
+      let(:source) { '<button tabindex="3">Third in tab order</button>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-positive-tab-index")
+        expect(subject.first.severity).to eq("warning")
+      end
+    end
+
+    context "with tabindex=1 (documentation example)" do
+      let(:source) { '<button tabindex="1">First in tab order</button>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-positive-tab-index")
+      end
+    end
+
+    context "with tabindex=2 (documentation example)" do
+      let(:source) { '<button tabindex="2">Second in tab order</button>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-positive-tab-index")
+      end
+    end
+
+    context "with tabindex=5 on input (documentation example)" do
+      let(:source) { '<input tabindex="5" type="text" autocomplete="off">' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-positive-tab-index")
+      end
+    end
+
+    context "with tabindex=10 (documentation example)" do
+      let(:source) { '<button tabindex="10">Submit</button>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-positive-tab-index")
+      end
+    end
+
+    # Additional edge case tests
+    context "when tabindex is 0" do
+      let(:source) { '<button tabindex="0">Click</button>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty

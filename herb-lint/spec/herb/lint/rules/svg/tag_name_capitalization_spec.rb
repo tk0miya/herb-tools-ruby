@@ -28,6 +28,77 @@ RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
+    # Good examples from documentation
+    context "with correct linearGradient capitalization (documentation example)" do
+      let(:source) do
+        <<~HTML
+          <svg>
+            <linearGradient id="grad1">
+              <stop offset="0%" stop-color="rgb(255,255,0)" />
+            </linearGradient>
+          </svg>
+        HTML
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with correct clipPath and feGaussianBlur (documentation example)" do
+      let(:source) do
+        <<~HTML
+          <svg>
+            <clipPath id="clip">
+              <rect width="100" height="100" />
+            </clipPath>
+            <feGaussianBlur stdDeviation="5" />
+          </svg>
+        HTML
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with lowercase lineargradient (documentation example)" do
+      let(:source) do
+        <<~HTML
+          <svg>
+            <lineargradient id="grad1">
+              <stop offset="0%" stop-color="rgb(255,255,0)" />
+            </lineargradient>
+          </svg>
+        HTML
+      end
+
+      it "reports offenses for open and close tags" do
+        expect(subject.size).to eq(2)
+        expect(subject.first.rule_name).to eq("svg-tag-name-capitalization")
+        expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "with uppercase CLIPPATH (documentation example)" do
+      let(:source) do
+        <<~HTML
+          <svg>
+            <CLIPPATH id="clip">
+              <rect width="100" height="100" />
+            </CLIPPATH>
+          </svg>
+        HTML
+      end
+
+      it "reports offenses for open and close tags" do
+        expect(subject.size).to eq(2)
+        expect(subject.first.rule_name).to eq("svg-tag-name-capitalization")
+      end
+    end
+
+    # Additional edge case tests
     context "when SVG elements have correct capitalization" do
       let(:source) do
         <<~HTML

@@ -5,6 +5,28 @@
 # Unlike other rules, parser-no-errors is NOT implemented as a standard rule class.
 # Instead, it is integrated at the Linter level and handled specially.
 #
+# Description:
+#   Report parser errors as linting offenses. This rule surfaces syntax errors, malformed HTML,
+#   and other parsing issues that prevent the document from being correctly parsed.
+#
+# Good:
+#   <h2>Welcome to our site</h2>
+#   <p>This is a paragraph with proper structure.</p>
+#
+#   <div class="container">
+#     <img src="image.jpg" alt="Description">
+#   </div>
+#
+# Bad:
+#   <h2>Welcome to our site</h3>
+#
+#   <div>
+#     <p>This paragraph is never closed
+#   </div>
+#
+#   Some content
+#   </div>
+#
 # **Why this design?**
 #
 # Parser errors occur before the AST is available, making it impossible to run

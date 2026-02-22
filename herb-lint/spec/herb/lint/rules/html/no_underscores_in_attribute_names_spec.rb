@@ -28,6 +28,44 @@ RSpec.describe Herb::Lint::Rules::Html::NoUnderscoresInAttributeNames do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
+    # Good examples from documentation
+    context "with hyphenated data attribute (documentation example)" do
+      let(:source) { '<div data-user-id="123"></div>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with hyphenated aria attribute (documentation example)" do
+      let(:source) { '<img aria-label="Close" alt="Close">' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with underscored data attribute (documentation example)" do
+      let(:source) { '<div data_user_id="123"></div>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-underscores-in-attribute-names")
+        expect(subject.first.severity).to eq("warning")
+      end
+    end
+
+    context "with underscored aria attribute (documentation example)" do
+      let(:source) { '<img aria_label="Close" alt="Close">' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-underscores-in-attribute-names")
+      end
+    end
+
+    # Additional edge case tests
     context "when attribute names use hyphens" do
       let(:source) { '<div data-value="foo">' }
 

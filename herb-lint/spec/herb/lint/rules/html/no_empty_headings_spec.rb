@@ -16,7 +16,7 @@ RSpec.describe Herb::Lint::Rules::Html::NoEmptyHeadings do
   end
 
   describe ".default_severity" do
-    it "returns 'warning'" do
+    it "returns 'error'" do
       expect(described_class.default_severity).to eq("error")
     end
   end
@@ -28,31 +28,41 @@ RSpec.describe Herb::Lint::Rules::Html::NoEmptyHeadings do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when heading has text content" do
-      let(:source) { "<h1>Page Title</h1>" }
+    # Good examples from documentation
+    context "with heading with direct text content (documentation example)" do
+      let(:source) { "<h1>Heading Content</h1>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when heading has ERB content" do
-      let(:source) { "<h2><%= title %></h2>" }
+    context "with heading with nested span text (documentation example)" do
+      let(:source) { "<h1><span>Text</span></h1>" }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when heading has nested element" do
-      let(:source) { "<h3><span>Hello</span></h3>" }
+    context "with heading with aria-hidden attribute (documentation example)" do
+      let(:source) { '<h1 aria-hidden="true">Heading Content</h1>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when heading is empty" do
+    context "with heading with hidden attribute (documentation example)" do
+      let(:source) { "<h1 hidden>Heading Content</h1>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with empty h1 (documentation example)" do
       let(:source) { "<h1></h1>" }
 
       it "reports an offense" do
@@ -60,6 +70,60 @@ RSpec.describe Herb::Lint::Rules::Html::NoEmptyHeadings do
         expect(subject.first.rule_name).to eq("html-no-empty-headings")
         expect(subject.first.message).to eq("Heading element `<h1>` must not be empty")
         expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "with empty h2 (documentation example)" do
+      let(:source) { "<h2></h2>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-empty-headings")
+      end
+    end
+
+    context "with empty h3 (documentation example)" do
+      let(:source) { "<h3></h3>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-empty-headings")
+      end
+    end
+
+    context "with empty h4 (documentation example)" do
+      let(:source) { "<h4></h4>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-empty-headings")
+      end
+    end
+
+    context "with empty h5 (documentation example)" do
+      let(:source) { "<h5></h5>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-empty-headings")
+      end
+    end
+
+    context "with empty h6 (documentation example)" do
+      let(:source) { "<h6></h6>" }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-empty-headings")
+      end
+    end
+
+    # Additional edge case tests
+    context "when heading has ERB content" do
+      let(:source) { "<h2><%= title %></h2>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
       end
     end
 

@@ -442,128 +442,128 @@ For each rule, complete the following 8 steps:
 - [x] Step 8: Apply original logic
 
 #### html/no-duplicate-meta-names
-- [ ] Step 1: Remove existing comment
-- [ ] Step 2: Check documentation
-- [ ] Step 3: Read Description and Examples
-- [ ] Step 4: Add Description and Examples as comments
-- [ ] Step 5: Review and update test cases
-- [ ] Step 6: Check original implementation
-- [ ] Step 7: Compare and list differences
-- [ ] Step 8: Apply original logic
+- [x] Step 1: Remove existing comment
+- [x] Step 2: Check documentation
+- [x] Step 3: Read Description and Examples
+- [x] Step 4: Add Description and Examples as comments
+- [x] Step 5: Review and update test cases
+- [x] Step 6: Check original implementation
+- [x] Step 7: Compare and list differences
+- [x] Step 8: Apply original logic
 
 #### html/no-empty-attributes
-- [ ] Step 1: Remove existing comment
-- [ ] Step 2: Check documentation
-- [ ] Step 3: Read Description and Examples
-- [ ] Step 4: Add Description and Examples as comments
-- [ ] Step 5: Review and update test cases
-- [ ] Step 6: Check original implementation
-- [ ] Step 7: Compare and list differences
-- [ ] Step 8: Apply original logic
+- [x] Step 1: Remove existing comment
+- [x] Step 2: Check documentation
+- [x] Step 3: Read Description and Examples
+- [x] Step 4: Add Description and Examples as comments
+- [x] Step 5: Review and update test cases
+- [x] Step 6: Check original implementation
+- [x] Step 7: Compare and list differences
+- [x] Step 8: Apply original logic
 
 #### html/no-empty-headings
-- [ ] Step 1: Remove existing comment
-- [ ] Step 2: Check documentation
-- [ ] Step 3: Read Description and Examples
-- [ ] Step 4: Add Description and Examples as comments
-- [ ] Step 5: Review and update test cases
-- [ ] Step 6: Check original implementation
-- [ ] Step 7: Compare and list differences
-- [ ] Step 8: Apply original logic
+- [x] Step 1: Remove existing comment
+- [x] Step 2: Check documentation
+- [x] Step 3: Read Description and Examples
+- [x] Step 4: Add Description and Examples as comments
+- [x] Step 5: Review and update test cases
+- [x] Step 6: Check original implementation
+- [x] Step 7: Compare and list differences
+- [x] Step 8: Apply original logic
 
 #### html/no-nested-links
-- [ ] Step 1: Remove existing comment
-- [ ] Step 2: Check documentation
-- [ ] Step 3: Read Description and Examples
-- [ ] Step 4: Add Description and Examples as comments
-- [ ] Step 5: Review and update test cases
-- [ ] Step 6: Check original implementation
-- [ ] Step 7: Compare and list differences
-- [ ] Step 8: Apply original logic
+- [x] Step 1: Remove existing comment
+- [x] Step 2: Check documentation
+- [x] Step 3: Read Description and Examples
+- [x] Step 4: Add Description and Examples as comments
+- [x] Step 5: Review and update test cases
+- [x] Step 6: Check original implementation
+- [x] Step 7: Compare and list differences
+- [x] Step 8: Apply original logic
 
 #### html/no-positive-tab-index
-- [ ] Step 1: Remove existing comment
-- [ ] Step 2: Check documentation
-- [ ] Step 3: Read Description and Examples
-- [ ] Step 4: Add Description and Examples as comments
-- [ ] Step 5: Review and update test cases
-- [ ] Step 6: Check original implementation
-- [ ] Step 7: Compare and list differences
-- [ ] Step 8: Apply original logic
+- [x] Step 1: Remove existing comment
+- [x] Step 2: Check documentation
+- [x] Step 3: Read Description and Examples
+- [x] Step 4: Add Description and Examples as comments
+- [x] Step 5: Review and update test cases
+- [x] Step 6: Check original implementation
+- [x] Step 7: Compare and list differences
+- [x] Step 8: Apply original logic
 
 #### html/no-self-closing
-- [ ] Step 1: Remove existing comment
-- [ ] Step 2: Check documentation
-- [ ] Step 3: Read Description and Examples
-- [ ] Step 4: Add Description and Examples as comments
-- [ ] Step 5: Review and update test cases
-- [ ] Step 6: Check original implementation
-- [ ] Step 7: Compare and list differences
-- [ ] Step 8: Apply original logic
+- [x] Step 1: Remove existing comment
+- [x] Step 2: Check documentation
+- [x] Step 3: Read Description and Examples
+- [x] Step 4: Add Description and Examples as comments
+- [x] Step 5: Review and update test cases
+- [x] Step 6: Check original implementation
+- [x] Step 7: Compare and list differences
+- [x] Step 8: Apply original logic
 
 #### html/no-space-in-tag
-- [ ] Step 1: Remove existing comment
-- [ ] Step 2: Check documentation
-- [ ] Step 3: Read Description and Examples
-- [ ] Step 4: Add Description and Examples as comments
-- [ ] Step 5: Review and update test cases
-- [ ] Step 6: Check original implementation
-- [ ] Step 7: Compare and list differences
-- [ ] Step 8: Apply original logic
+- [x] Step 1: Remove existing comment
+- [x] Step 2: Check documentation
+- [x] Step 3: Read Description and Examples
+- [x] Step 4: Add Description and Examples as comments
+- [x] Step 5: Review and update test cases
+- [x] Step 6: Check original implementation
+- [x] Step 7: Compare and list differences
+- [x] Step 8: Apply original logic
 
 #### html/no-title-attribute
-- [ ] Step 1: Remove existing comment
-- [ ] Step 2: Check documentation
-- [ ] Step 3: Read Description and Examples
-- [ ] Step 4: Add Description and Examples as comments
-- [ ] Step 5: Review and update test cases
-- [ ] Step 6: Check original implementation
-- [ ] Step 7: Compare and list differences
-- [ ] Step 8: Apply original logic
+- [x] Step 1: Remove existing comment
+- [x] Step 2: Check documentation
+- [x] Step 3: Read Description and Examples
+- [x] Step 4: Add Description and Examples as comments
+- [x] Step 5: Review and update test cases
+- [x] Step 6: Check original implementation
+- [x] Step 7: Compare and list differences
+- [x] Step 8: Apply original logic
 
 #### html/no-underscores-in-attribute-names
-- [ ] Step 1: Remove existing comment
-- [ ] Step 2: Check documentation
-- [ ] Step 3: Read Description and Examples
-- [ ] Step 4: Add Description and Examples as comments
-- [ ] Step 5: Review and update test cases
-- [ ] Step 6: Check original implementation
-- [ ] Step 7: Compare and list differences
-- [ ] Step 8: Apply original logic
+- [x] Step 1: Remove existing comment
+- [x] Step 2: Check documentation
+- [x] Step 3: Read Description and Examples
+- [x] Step 4: Add Description and Examples as comments
+- [x] Step 5: Review and update test cases
+- [x] Step 6: Check original implementation
+- [x] Step 7: Compare and list differences
+- [x] Step 8: Apply original logic
 
 #### html/tag-name-lowercase
-- [ ] Step 1: Remove existing comment
-- [ ] Step 2: Check documentation
-- [ ] Step 3: Read Description and Examples
-- [ ] Step 4: Add Description and Examples as comments
-- [ ] Step 5: Review and update test cases
-- [ ] Step 6: Check original implementation
-- [ ] Step 7: Compare and list differences
-- [ ] Step 8: Apply original logic
+- [x] Step 1: Remove existing comment
+- [x] Step 2: Check documentation
+- [x] Step 3: Read Description and Examples
+- [x] Step 4: Add Description and Examples as comments
+- [x] Step 5: Review and update test cases
+- [x] Step 6: Check original implementation
+- [x] Step 7: Compare and list differences
+- [x] Step 8: Apply original logic
 
 ### SVG Rules (1 rule)
 
 #### svg/tag-name-capitalization
-- [ ] Step 1: Remove existing comment
-- [ ] Step 2: Check documentation
-- [ ] Step 3: Read Description and Examples
-- [ ] Step 4: Add Description and Examples as comments
-- [ ] Step 5: Review and update test cases
-- [ ] Step 6: Check original implementation
-- [ ] Step 7: Compare and list differences
-- [ ] Step 8: Apply original logic
+- [x] Step 1: Remove existing comment
+- [x] Step 2: Check documentation
+- [x] Step 3: Read Description and Examples
+- [x] Step 4: Add Description and Examples as comments
+- [x] Step 5: Review and update test cases
+- [x] Step 6: Check original implementation
+- [x] Step 7: Compare and list differences
+- [x] Step 8: Apply original logic
 
 ### Parser Rules (1 rule)
 
 #### parser/no-errors
-- [ ] Step 1: Remove existing comment
-- [ ] Step 2: Check documentation
-- [ ] Step 3: Read Description and Examples
-- [ ] Step 4: Add Description and Examples as comments
-- [ ] Step 5: Review and update test cases
-- [ ] Step 6: Check original implementation
-- [ ] Step 7: Compare and list differences
-- [ ] Step 8: Apply original logic
+- [x] Step 1: Remove existing comment
+- [x] Step 2: Check documentation
+- [x] Step 3: Read Description and Examples
+- [x] Step 4: Add Description and Examples as comments
+- [x] Step 5: Review and update test cases
+- [x] Step 6: Check original implementation
+- [x] Step 7: Compare and list differences
+- [x] Step 8: Apply original logic
 
 ## Summary
 
@@ -577,8 +577,8 @@ For each rule, complete the following 8 steps:
 
 ## Progress Tracking
 
-- [ ] ERB rules complete (12/13)
-- [ ] HERB rules complete (0/5)
-- [ ] HTML rules complete (0/31)
-- [ ] SVG rules complete (0/1)
-- [ ] Parser rules complete (0/1)
+- [x] ERB rules complete (13/13)
+- [x] HERB rules complete (5/5)
+- [x] HTML rules complete (31/31)
+- [x] SVG rules complete (1/1)
+- [x] Parser rules complete (1/1)

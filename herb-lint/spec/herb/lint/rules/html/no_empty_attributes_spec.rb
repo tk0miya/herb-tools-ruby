@@ -28,22 +28,94 @@ RSpec.describe Herb::Lint::Rules::Html::NoEmptyAttributes do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when attribute has a non-empty value" do
-      let(:source) { '<div class="container">text</div>' }
+    # Good examples from documentation
+    context "with non-empty id attribute (documentation example)" do
+      let(:source) { '<div id="header"></div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when attribute has an empty value" do
-      let(:source) { '<div class="">text</div>' }
+    context "with non-empty src attribute (documentation example)" do
+      let(:source) { '<img src="/logo.png" alt="Company logo">' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with non-empty name attribute (documentation example)" do
+      let(:source) { '<input type="text" name="email" autocomplete="off">' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with omitted attribute (documentation example)" do
+      let(:source) { "<div>Plain div</div>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with empty id attribute (documentation example)" do
+      let(:source) { '<div id=""></div>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-empty-attributes")
+        expect(subject.first.severity).to eq("warning")
+      end
+    end
+
+    context "with empty src attribute (documentation example)" do
+      let(:source) { '<img src="" alt="Company logo">' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-empty-attributes")
+      end
+    end
+
+    context "with empty name attribute (documentation example)" do
+      let(:source) { '<input name="" autocomplete="off">' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-empty-attributes")
+      end
+    end
+
+    context "with empty class attribute (documentation example)" do
+      let(:source) { '<div class="">Plain div</div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-no-empty-attributes")
         expect(subject.first.message).to eq("Unexpected empty attribute value for 'class'")
         expect(subject.first.severity).to eq("warning")
+      end
+    end
+
+    context "with empty aria-label attribute (documentation example)" do
+      let(:source) { '<button aria-label="">×</button>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-empty-attributes")
+      end
+    end
+
+    # Additional edge case tests
+    context "when attribute has a non-empty value" do
+      let(:source) { '<div class="container">text</div>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
       end
     end
 
@@ -103,14 +175,6 @@ RSpec.describe Herb::Lint::Rules::Html::NoEmptyAttributes do
 
       it "reports an offense for each element" do
         expect(subject.size).to eq(2)
-      end
-    end
-
-    context "with element that has no attributes" do
-      let(:source) { "<div>text</div>" }
-
-      it "does not report an offense" do
-        expect(subject).to be_empty
       end
     end
 
