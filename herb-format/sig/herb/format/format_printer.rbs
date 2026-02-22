@@ -99,6 +99,18 @@ module Herb
       # @rbs override
       def visit_erb_content_node: ...
 
+      # Visit ERB end node (<% end %>).
+      # Normalizes spacing and outputs using the push-based buffer.
+      #
+      # @rbs override
+      def visit_erb_end_node: ...
+
+      # Visit ERB if node.
+      # Dispatches to inline mode (inside attributes) or block mode (normal).
+      #
+      # @rbs override
+      def visit_erb_if_node: ...
+
       private
 
       # Current indent string based on indent_level.
@@ -249,6 +261,33 @@ module Herb
       #
       # @rbs lines: Array[String]
       def format_multiline_attribute_value: (Array[String] lines) -> String
+
+      # Visit ERB if node in inline mode (inside attributes).
+      # Handles conditional rendering of attributes in open tags.
+      # In token-list attributes (e.g., class, data-controller, data-action),
+      # adds spaces before each child and before the closing <% end %> tag.
+      #
+      # @rbs node: Herb::AST::ERBIfNode
+      def visit_erb_if_inline: (Herb::AST::ERBIfNode node) -> void
+
+      # Visit a single statement child of an ERBIfNode in inline mode.
+      # HTMLAttributeNodes are rendered as attribute strings.
+      # Text content is pushed directly. Other nodes are visited normally.
+      # In token-list attribute context, a space is added before each child.
+      #
+      # @rbs child: Herb::AST::Node
+      def visit_erb_if_inline_statement: (Herb::AST::Node child) -> void
+
+      # Visit ERB if node in block mode (normal, outside attributes).
+      # Implemented in Task 2.25.
+      #
+      # @rbs node: Herb::AST::ERBIfNode
+      def visit_erb_if_block: (Herb::AST::ERBIfNode node) -> void
+
+      # Check whether the printer is currently rendering inside a token-list attribute.
+      # Token-list attributes (e.g., class, data-controller, data-action) separate
+      # values with spaces, so ERB conditionals within them need space padding.
+      def in_token_list_attribute?: () -> bool
 
       # Format ERB content by normalizing whitespace.
       # Adds a leading space and a trailing space (or newline for heredocs).

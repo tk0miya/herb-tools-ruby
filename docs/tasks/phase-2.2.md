@@ -11,7 +11,7 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 ### Part E: ERB Formatting (7 tasks)
 - [x] Task 2.22: ERB Tag Normalization (formatERBContent, reconstructERBNode)
 - [x] Task 2.23: ERB Content Node (visitERBContentNode)
-- [ ] Task 2.24: ERB If Node (visitERBIfNode) - Inline Mode
+- [x] Task 2.24: ERB If Node (visitERBIfNode) - Inline Mode
 - [ ] Task 2.25: ERB If Node - Block Mode
 - [ ] Task 2.26: ERB Block Node (visitERBBlockNode)
 - [ ] Task 2.27: ERB Other Control Flow (unless, case, for, while)
@@ -29,6 +29,7 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 ### Part G: Integration & Testing (5 tasks)
 - [ ] Task 2.35: Wire Up All Components
 - [x] Task 2.35b: Migrate write-based visitors to push (output unification)
+- [ ] Task 2.35c: Migrate visit_erb_if_node tests to use `.format` as entry point
 - [ ] Task 2.36: Integration Tests
 - [ ] Task 2.37: TypeScript Output Comparison
 - [ ] Task 2.38: Performance & Edge Cases
@@ -1259,6 +1260,114 @@ resolves that technical debt.
 **Estimate:** 2 hours
 
 **Dependencies:** Task 2.35, all ERB visitor methods from Task 2.23 onward
+
+---
+
+### Task 2.35c: Migrate visit_erb_if_node tests to use `.format` as entry point
+
+**Purpose:** Replace the `printer.visit(node)` entry point in `#visit_erb_if_node` tests
+with `described_class.format(ast, format_context:)`, so the full formatting pipeline is
+exercised end-to-end. This requires wiring inline-mode ERB through the HTML open-tag
+visitor path.
+
+**Location:** `herb-format/lib/herb/format/format_printer.rb`,
+`herb-format/spec/herb/format/format_printer_spec.rb`
+
+**Background:**
+
+Currently `visit_html_open_tag_node` delegates to `render_attributes_inline`, which
+only selects `HTMLAttributeNode` children and returns a `String` via the `write`-based
+context. ERBIfNode children in the open tag (and ERBIfNode inside attribute values) are
+never routed through `printer.visit` with `inline_mode = true`, so the formatting logic
+in `visit_erb_if_inline` is unreachable from `.format`.
+
+Two gaps must be closed (both unblocked by Task 2.35b completing the write-to-push migration):
+
+1. **ERBIfNode directly in open tag** (`<div <% if disabled %>class="disabled"<% end %>>`)
+   `render_attributes_inline` skips non-`HTMLAttributeNode` children. It must also visit
+   `ERBIfNode` (and similar control-flow nodes) via `with_inline_mode { visit(child) }`.
+
+2. **ERBIfNode inside attribute value** (`<div class="btn<%if active%>active<%end%>">`)
+   `render_attribute_value_content` maps non-`LiteralNode` children through
+   `IdentityPrinter` (no formatting). It must instead call `with_inline_mode { visit(child) }`
+   and collect push-buffer output for those nodes.
+
+**Implementation Items:**
+
+```ruby
+# In render_attributes_inline: also visit ERB control-flow nodes inline
+def render_attributes_inline(open_tag) #: String
+  parts = open_tag.child_nodes.filter_map do |child|
+    case child
+    when Herb::AST::HTMLAttributeNode
+      " #{render_attribute(child)}"
+    when Herb::AST::ERBIfNode, Herb::AST::ERBBlockNode # extend as needed
+      captured = capture { with_inline_mode { visit(child) } }
+      " #{captured.join}"
+    end
+  end
+  parts.join
+end
+
+# In render_attribute_value_content: visit ERB nodes via push-buffer instead of IdentityPrinter
+def render_attribute_value_content(attribute_value) #: String
+  attribute_value.children.map do |child|
+    case child
+    when Herb::AST::LiteralNode
+      child.content
+    when Herb::AST::ERBIfNode, Herb::AST::ERBBlockNode # extend as needed
+      captured = capture { with_inline_mode { visit(child) } }
+      captured.join
+    else
+      ::Herb::Printer::IdentityPrinter.print(child)
+    end
+  end.join
+end
+```
+
+**After implementation**, update `describe "#visit_erb_if_node"` in the spec to use
+`.format` directly:
+
+```ruby
+describe ".format" do
+  context "with ERB if node in inline mode" do
+    context "with ERBIfNode directly in open tag" do
+      let(:source) { %(<div <% if disabled %>class="disabled"<% end %>></div>) }
+
+      it "renders condition tag, space, attribute, space before end, and end tag" do
+        expect(subject).to eq('<div <% if disabled %> class="disabled" <% end %>>')
+      end
+    end
+
+    context "with ERBIfNode in token-list attribute (class)" do
+      let(:source) { %(<div class="btn<%if active%>active<%end%>">) }
+
+      it "adds spaces in token-list context" do
+        expect(subject).to include('<div class="btn <% if active %> active <% end %>">')
+      end
+    end
+
+    context "with ERBIfNode in non-token-list attribute (id)" do
+      let(:source) { %(<div id="<%if cond%>active<%end%>">) }
+
+      it "does not add extra spaces" do
+        expect(subject).to include('<div id="<% if cond %>active<% end %>">')
+      end
+    end
+  end
+end
+```
+
+**Test Cases:**
+- ERBIfNode directly in HTML open tag rendered via `.format` with correct spacing
+- ERBIfNode in `class` attribute (token-list) adds spaces via `.format`
+- ERBIfNode in `data-controller` attribute (token-list) adds spaces via `.format`
+- ERBIfNode in `data-action` attribute (token-list) adds spaces via `.format`
+- ERBIfNode in `id` attribute (non-token-list) produces no extra spaces via `.format`
+
+**Estimate:** 2 hours
+
+**Dependencies:** Task 2.24, Task 2.35b (write-to-push migration must complete first)
 
 ---
 
