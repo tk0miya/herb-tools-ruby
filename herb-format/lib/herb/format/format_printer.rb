@@ -458,6 +458,56 @@ module Herb
       def format_multiline_attribute_value(lines) #: String
         "\n#{lines.map { |line| "  #{line}" }.join("\n")}\n"
       end
+
+      # -- ERB Tag Normalization --
+
+      # Format ERB content by normalizing whitespace.
+      # Adds a leading space and a trailing space (or newline for heredocs).
+      # Returns empty string when content is blank.
+      #
+      # @rbs content: String
+      def format_erb_content(content) #: String
+        trimmed_content = content.strip
+
+        # Heredoc support (TypeScript issue #476)
+        suffix = trimmed_content.start_with?("<<") ? "\n" : " "
+
+        trimmed_content.empty? ? "" : " #{trimmed_content}#{suffix}"
+      end
+
+      # Extract the string value from an optional token node.
+      # Returns empty string when the token is absent.
+      #
+      # @rbs token: untyped
+      def erb_token_value(token) #: String
+        token ? token.value : ""
+      end
+
+      # Reconstruct an ERB node as a string.
+      # When with_formatting is true, the content is normalized via format_erb_content.
+      #
+      # @rbs node: Herb::AST::ERBContentNode
+      # @rbs with_formatting: bool
+      def reconstruct_erb_node(node, with_formatting: true) #: String
+        open = erb_token_value(node.tag_opening)
+        close = erb_token_value(node.tag_closing)
+        content = erb_token_value(node.content)
+
+        inner = with_formatting ? format_erb_content(content) : content
+
+        open + inner + close
+      end
+
+      # Print an ERB node to the output buffer.
+      # In inline mode no indentation is added; otherwise the current indent is prepended.
+      #
+      # @rbs node: Herb::AST::ERBContentNode
+      def print_erb_node(node) #: void
+        indent_str = @inline_mode ? "" : indent
+        erb_text = reconstruct_erb_node(node, with_formatting: true)
+
+        push(indent_str + erb_text)
+      end
     end
   end
 end

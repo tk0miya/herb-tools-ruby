@@ -229,6 +229,32 @@ module Herb
       #
       # @rbs lines: Array[String]
       def format_multiline_attribute_value: (Array[String] lines) -> String
+
+      # Format ERB content by normalizing whitespace.
+      # Adds a leading space and a trailing space (or newline for heredocs).
+      # Returns empty string when content is blank.
+      #
+      # @rbs content: String
+      def format_erb_content: (String content) -> String
+
+      # Extract the string value from an optional token node.
+      # Returns empty string when the token is absent.
+      #
+      # @rbs token: untyped
+      def erb_token_value: (untyped token) -> String
+
+      # Reconstruct an ERB node as a string.
+      # When with_formatting is true, the content is normalized via format_erb_content.
+      #
+      # @rbs node: Herb::AST::ERBContentNode
+      # @rbs with_formatting: bool
+      def reconstruct_erb_node: (Herb::AST::ERBContentNode node, ?with_formatting: bool) -> String
+
+      # Print an ERB node to the output buffer.
+      # In inline mode no indentation is added; otherwise the current indent is prepended.
+      #
+      # @rbs node: Herb::AST::ERBContentNode
+      def print_erb_node: (Herb::AST::ERBContentNode node) -> void
     end
   end
 end

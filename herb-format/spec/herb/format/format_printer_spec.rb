@@ -743,4 +743,92 @@ RSpec.describe Herb::Format::FormatPrinter do
       end
     end
   end
+
+  describe "#print_erb_node" do
+    subject { printer.capture { printer.send(:print_erb_node, node) } }
+
+    let(:printer) do
+      Class.new(described_class) do
+        attr_accessor :inline_mode, :indent_level
+      end.new(indent_width:, max_line_length:, format_context:)
+    end
+
+    context "when not in inline mode" do
+      context "with output tag" do
+        let(:node) { Herb.parse("<%=@user.name%>").value.children.first }
+
+        it "normalizes spacing" do
+          expect(subject).to eq(["<%= @user.name %>"])
+        end
+
+        context "with extra whitespace in content" do
+          let(:node) { Herb.parse("<%=   @user.name   %>").value.children.first }
+
+          it "strips extra whitespace" do
+            expect(subject).to eq(["<%= @user.name %>"])
+          end
+        end
+
+        context "with indentation" do
+          before { printer.indent_level = 1 }
+
+          it "pushes with current indentation" do
+            expect(subject).to eq(["  <%= @user.name %>"])
+          end
+        end
+      end
+
+      context "with statement tag" do
+        let(:node) { Herb.parse("<%foo%>").value.children.first }
+
+        it "normalizes spacing" do
+          expect(subject).to eq(["<% foo %>"])
+        end
+      end
+
+      context "with whitespace-only content" do
+        let(:node) { Herb.parse("<% %>").value.children.first }
+
+        it "collapses to empty inner content" do
+          expect(subject).to eq(["<%%>"])
+        end
+      end
+
+      describe "heredoc content" do
+        context "with no extra whitespace" do
+          let(:node) { Herb.parse("<%=<<HEREDOC\ntext\nHEREDOC\n%>").value.children.first }
+
+          it "normalizes spacing and uses newline suffix" do
+            expect(subject).to eq(["<%= <<HEREDOC\ntext\nHEREDOC\n%>"])
+          end
+        end
+
+        context "with extra spaces around marker" do
+          let(:node) { Herb.parse("<%=  <<HEREDOC\ntext\nHEREDOC\n%>").value.children.first }
+
+          it "strips extra whitespace around marker and uses newline suffix" do
+            expect(subject).to eq(["<%= <<HEREDOC\ntext\nHEREDOC\n%>"])
+          end
+        end
+      end
+    end
+
+    context "when in inline mode" do
+      let(:node) { Herb.parse("<%=@user.name%>").value.children.first }
+
+      before { printer.inline_mode = true }
+
+      it "pushes the ERB tag without any indentation" do
+        expect(subject).to eq(["<%= @user.name %>"])
+      end
+
+      context "with indent level set" do
+        before { printer.indent_level = 2 }
+
+        it "ignores indent level and pushes without indentation" do
+          expect(subject).to eq(["<%= @user.name %>"])
+        end
+      end
+    end
+  end
 end
