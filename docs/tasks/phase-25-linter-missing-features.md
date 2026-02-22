@@ -283,18 +283,18 @@ require_relative "highlight/cli"                 # depends on: Highlighter
 **Verification:** `(cd herb-highlighter && ./bin/rspec)` should pass (0 examples, 0 failures).
 
 **Implementation Tasks:**
-- [ ] Create `herb-highlighter/` directory structure
-- [ ] Write `herb-highlighter.gemspec` (runtime dep: `herb` only)
-- [ ] Write `Gemfile` (dev deps: rspec, rubocop, rbs-inline, steep, rake)
-- [ ] Write `Rakefile` (spec + rubocop + steep tasks, same as herb-printer)
-- [ ] Write `Steepfile` and `rbs_collection.yaml`
-- [ ] Create `bin/` binstubs (rake, rbs, rbs-inline, rspec, rubocop, steep)
-- [ ] Create `exe/herb-highlight` (shebang + require + `CLI.start`)
-- [ ] Create `lib/herb/highlight.rb` (require_relative in load order)
-- [ ] Create `lib/herb/highlight/version.rb` (`VERSION = "0.1.0"`)
-- [ ] Create `spec/spec_helper.rb`
-- [ ] Verify: `(cd herb-highlighter && ./bin/rspec)` passes with 0 examples
-- [ ] Add `herb-highlighter` job to `.github/workflows/ci.yml` (same pattern as other gems)
+- [x] Create `herb-highlighter/` directory structure
+- [x] Write `herb-highlighter.gemspec` (runtime dep: `herb` only)
+- [x] Write `Gemfile` (dev deps: rspec, rubocop, rbs-inline, steep, rake)
+- [x] Write `Rakefile` (spec + rubocop + steep tasks, same as herb-printer)
+- [x] Write `Steepfile` and `rbs_collection.yaml`
+- [x] Create `bin/` binstubs (rake, rbs, rbs-inline, rspec, rubocop, steep)
+- [x] Create `exe/herb-highlight` (shebang + require + `CLI.start`)
+- [x] Create `lib/herb/highlight.rb` (require_relative in load order)
+- [x] Create `lib/herb/highlight/version.rb` (`VERSION = "0.1.0"`)
+- [x] Create `spec/spec_helper.rb`
+- [x] Verify: `(cd herb-highlighter && ./bin/rspec)` passes with 0 examples
+- [x] Add `herb-highlighter` job to `.github/workflows/ci.yml` (same pattern as other gems)
 
 ---
 

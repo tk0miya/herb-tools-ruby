@@ -1,0 +1,9 @@
+# frozen_string_literal: true
+
+require_relative "highlight/version"
+
+module Herb
+  module Highlight
+    class Error < StandardError; end
+  end
+end
