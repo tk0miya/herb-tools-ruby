@@ -158,6 +158,144 @@ RSpec.describe Herb::Format::FormatPrinter do
           expect(subject).to eq('<div class="<%= foo %>">content</div>')
         end
       end
+
+      context "with class attribute" do
+        context "with short class value" do
+          let(:source) { '<div class="foo bar">content</div>' }
+
+          it "keeps class attribute on same line" do
+            expect(subject).to eq('<div class="foo bar">content</div>')
+          end
+        end
+
+        context "with extra whitespace in class value" do
+          let(:source) { '<div class="  foo   bar  ">content</div>' }
+
+          it "normalizes whitespace in class attribute" do
+            expect(subject).to eq('<div class="foo bar">content</div>')
+          end
+        end
+
+        context "with ERB in class attribute and long value" do
+          let(:max_line_length) { 30 }
+          let(:source) { '<div class="flex items-center justify-between <%= active_class %>">content</div>' }
+
+          it "normalizes whitespace but does not wrap when ERB is present" do
+            expect(subject).to eq(
+              '<div class="flex items-center justify-between <%= active_class %>">content</div>'
+            )
+          end
+        end
+
+        context "with long class value exceeding max_line_length" do
+          let(:max_line_length) { 60 }
+          let(:source) do
+            '<div class="flex items-center justify-between px-4 py-2 bg-white shadow-md rounded-lg">content</div>'
+          end
+
+          it "wraps long class attribute across multiple lines" do
+            expect(subject).to eq(<<~EXPECTED.chomp)
+              <div class="
+                flex items-center justify-between px-4 py-2 bg-white
+                shadow-md rounded-lg
+              ">content</div>
+            EXPECTED
+          end
+        end
+
+        # Normalized: "flex items-center ... rounded-lg border-2" (82 chars > 80)
+        # → newline-wrapping path is taken
+        context "when class content has actual newlines and normalized length exceeds 80 chars" do
+          let(:source) do
+            '<div class="flex items-center' \
+              "\njustify-between px-4 py-2 bg-white shadow-md rounded-lg border-2\">content</div>"
+          end
+
+          it "wraps using original line breaks" do
+            expect(subject).to eq(<<~EXPECTED.chomp)
+              <div class="
+                flex items-center
+                justify-between px-4 py-2 bg-white shadow-md rounded-lg border-2
+              ">content</div>
+            EXPECTED
+          end
+        end
+
+        # Normalized: "foo bar baz" (11 chars ≤ 80) → newline-wrapping threshold not met
+        context "when class content has newlines but normalized length is within 80 chars" do
+          let(:source) { "<div class=\"foo\nbar\nbaz\">content</div>" }
+
+          it "normalizes without wrapping" do
+            expect(subject).to eq('<div class="foo bar baz">content</div>')
+          end
+        end
+
+        # normalized_content: "foo bar baz qux quux corge grault" (33 chars ≤ 60)
+        # → length-wrapping threshold not met even though line is long
+        context "when line exceeds max_line_length but normalized content is within 60 chars" do
+          let(:max_line_length) { 40 }
+          let(:source) do
+            <<~ERB
+              <section>
+                <article>
+                  <div class="foo bar baz qux quux corge grault">content</div>
+                </article>
+              </section>
+            ERB
+          end
+
+          it "does not wrap" do
+            expect(subject).to include(
+              '    <div class="foo bar baz qux quux corge grault">content</div>'
+            )
+          end
+        end
+
+        # normalized_content: 62 chars (> 60), indent_level: 0
+        # → all tokens fit in one line (62 < 64), no wrapping
+        context "when normalized content exceeds 60 chars and element is at the top level" do
+          let(:max_line_length) { 64 }
+          let(:source) do
+            '<div class="flex items-center justify-between px-4 py-2 bg-white shadow-md">content</div>'
+          end
+
+          it "does not wrap" do
+            expect(subject).to eq(
+              '<div class="flex items-center justify-between px-4 py-2 bg-white shadow-md">content</div>'
+            )
+          end
+        end
+
+        # normalized_content: 62 chars (> 60), indent_level: 2 (indent_width=2 → 4 spaces)
+        # → indent offset pushes "shadow-md" over max_line_length → wraps
+        context "when normalized content exceeds 60 chars and element is indented" do
+          let(:max_line_length) { 64 }
+          let(:source) do
+            <<~ERB
+              <section>
+                <article>
+                  <div class="flex items-center justify-between px-4 py-2 bg-white shadow-md">content</div>
+                </article>
+              </section>
+            ERB
+          end
+
+          it "wraps" do
+            expect(subject).to include(
+              "    <div class=\"\n  flex items-center justify-between px-4 py-2 bg-white\n  shadow-md\n\">content</div>"
+            )
+          end
+        end
+
+        context "when normalized content exceeds 60 chars but has no spaces (single unsplittable token)" do
+          let(:max_line_length) { 60 }
+          let(:source) { "<div class=\"#{'a' * 65}\">content</div>" }
+
+          it "does not wrap" do
+            expect(subject).to eq("<div class=\"#{'a' * 65}\">content</div>")
+          end
+        end
+      end
     end
 
     context "with ERB tags" do

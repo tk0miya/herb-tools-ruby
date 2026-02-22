@@ -25,6 +25,8 @@ module Herb
 
       attr_reader format_context: Context
 
+      attr_reader indent_level: Integer
+
       # Format the given input and return a formatted string.
       #
       # @rbs input: Herb::ParseResult | Herb::AST::Node
@@ -89,7 +91,7 @@ module Herb
 
       private
 
-      # Current indent string based on @indent_level.
+      # Current indent string based on indent_level.
       def indent: () -> String
 
       # Push line with indentation applied.
@@ -188,14 +190,45 @@ module Herb
       # @rbs attribute_value: Herb::AST::HTMLAttributeValueNode
       def render_attribute_value_content: (Herb::AST::HTMLAttributeValueNode attribute_value) -> String
 
-      # Render the class attribute.
-      # Stub implementation; Task 2.20 will add wrapping for long values.
+      # Render the class attribute with optional multiline wrapping for long values.
+      # Normalizes whitespace and wraps long class lists across multiple lines
+      # when the attribute would exceed max_line_length.
       #
       # @rbs name: String
       # @rbs content: String
       # @rbs open_quote: String
       # @rbs close_quote: String
       def render_class_attribute: (String name, String content, String open_quote, String close_quote) -> String
+
+      # Wrap class attribute by splitting on original newlines.
+      #
+      # @rbs content: String
+      # @rbs name: String
+      # @rbs open_quote: String
+      # @rbs close_quote: String
+      def wrap_class_by_newlines: (String content, String name, String open_quote, String close_quote) -> String?
+
+      # Wrap class attribute by breaking long token sequences into lines.
+      #
+      # @rbs normalized_content: String
+      # @rbs name: String
+      # @rbs open_quote: String
+      # @rbs close_quote: String
+      # @rbs current_indent: Integer
+      def wrap_class_by_length: (String normalized_content, String name, String open_quote, String close_quote, Integer current_indent) -> String?
+
+      # Break an array of tokens into lines that fit within max_line_length.
+      #
+      # @rbs tokens: Array[String]
+      # @rbs indent: Integer
+      def break_tokens_into_lines: (Array[String] tokens, Integer indent) -> Array[String]
+
+      # Format an array of lines as a multiline attribute value.
+      # Each line is indented with two spaces, and the result is wrapped
+      # with leading and trailing newlines.
+      #
+      # @rbs lines: Array[String]
+      def format_multiline_attribute_value: (Array[String] lines) -> String
     end
   end
 end
