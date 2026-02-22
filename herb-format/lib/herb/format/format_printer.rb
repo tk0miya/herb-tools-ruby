@@ -26,6 +26,24 @@ module Herb
       attr_reader :format_context #: Context
       attr_reader :indent_level #: Integer
 
+      # Return formatted output from the lines buffer.
+      #
+      def output #: String
+        @lines.join("\n")
+      end
+
+      # Current element being visited (top of element stack).
+      #
+      def current_element #: Herb::AST::HTMLElementNode?
+        @element_stack.last
+      end
+
+      # Current tag name (from top of element stack).
+      #
+      def current_tag_name #: String
+        current_element&.tag_name&.value || ""
+      end
+
       # Format the given input and return a formatted string.
       #
       # @rbs input: Herb::ParseResult | Herb::AST::Node
@@ -41,7 +59,7 @@ module Herb
           format_context:
         )
         printer.visit(node)
-        printer.context.output
+        printer.output
       end
 
       # @rbs @lines: Array[String]
@@ -52,6 +70,8 @@ module Herb
       # @rbs @current_attribute_name: String?
       # @rbs @element_formatting_analysis: Hash[Herb::AST::HTMLElementNode, ElementAnalysis]
       # @rbs @node_is_multiline: Hash[Herb::AST::Node, bool]
+      # @rbs @element_stack: Array[Herb::AST::HTMLElementNode]
+      # @rbs @elements_being_analyzed: Set[Herb::AST::HTMLElementNode]
 
       # @rbs indent_width: Integer
       # @rbs max_line_length: Integer
@@ -69,6 +89,8 @@ module Herb
         @current_attribute_name = nil
         @element_formatting_analysis = {}
         @node_is_multiline = {}
+        @element_stack = []
+        @elements_being_analyzed = Set.new
       end
 
       # -- Leaf nodes --
@@ -90,12 +112,23 @@ module Herb
 
       # -- HTML element nodes --
 
-      # Visit HTML element node. Handles void elements (no close tag) and
-      # preserved elements (content unchanged) specially.
+      # Visit HTML element node. Pushes/pops @element_stack around child visiting
+      # so that visit_html_open_tag_node and visit_html_close_tag_node can access
+      # the enclosing element via current_element. Populates @element_formatting_analysis
+      # using ElementAnalyzer before visiting children.
       #
       # @rbs override
-      def visit_html_element_node(node)
+      def visit_html_element_node(node) # rubocop:disable Metrics/AbcSize
         tag_name = node.tag_name&.value || ""
+
+        @element_stack.push(node)
+
+        unless @elements_being_analyzed.include?(node) || @element_formatting_analysis.key?(node)
+          @elements_being_analyzed.add(node)
+          analyzer = ElementAnalyzer.new(self, @max_line_length, @indent_width)
+          @element_formatting_analysis[node] = analyzer.analyze(node)
+          @elements_being_analyzed.delete(node)
+        end
 
         context.enter_tag(tag_name) do
           visit(node.open_tag)
@@ -105,27 +138,68 @@ module Herb
             visit(node.close_tag) if node.close_tag
           end
         end
+      ensure
+        @element_stack.pop
       end
 
       # Visit HTML open tag node.
-      # Outputs the opening tag structure: <tag_name attributes>
+      # Uses pre-computed ElementAnalysis to decide whether to render
+      # attributes inline or multiline.
       #
       # @rbs override
-      def visit_html_open_tag_node(node)
-        write(node.tag_opening.value)
-        write(node.tag_name.value)
-        write(render_attributes_inline(node))
-        write(node.tag_closing.value)
+      def visit_html_open_tag_node(node) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity
+        element = current_element
+        analysis = element && @element_formatting_analysis[element]
+
+        if analysis
+          tag_name = current_tag_name
+          all_children = node.child_nodes
+          has_attributes = all_children.any? { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+
+          if analysis.open_tag_inline || !has_attributes
+            inline_attrs = render_attributes_inline(node)
+            closing = node.tag_closing.value
+
+            if @inline_mode
+              push_to_last_line("<#{tag_name}#{inline_attrs}#{closing}")
+            else
+              push(indent + "<#{tag_name}#{inline_attrs}#{closing}")
+            end
+          else
+            is_void = VOID_ELEMENTS.include?(tag_name)
+            render_multiline_attributes(tag_name, all_children, is_void)
+          end
+        else
+          # Fallback: write as-is (handles edge cases where analysis is unavailable)
+          write(node.tag_opening.value)
+          write(node.tag_name.value)
+          write(render_attributes_inline(node))
+          write(node.tag_closing.value)
+        end
       end
 
       # Visit HTML close tag node.
-      # Outputs the closing tag structure: </tag_name>
+      # Appends inline (same line) when analysis says close_tag_inline,
+      # otherwise pushes to a new indented line.
       #
       # @rbs override
       def visit_html_close_tag_node(node)
-        write(node.tag_opening.value)
-        write(node.tag_name.value) if node.tag_name
-        write(node.tag_closing.value)
+        element = current_element
+        analysis = element && @element_formatting_analysis[element]
+        close_tag_inline = analysis&.close_tag_inline
+
+        closing = "</#{node.tag_name&.value}>"
+
+        if close_tag_inline
+          push_to_last_line(closing)
+        elsif analysis
+          push_with_indent(closing)
+        else
+          # Fallback: write as-is
+          write(node.tag_opening.value)
+          write(node.tag_name.value) if node.tag_name
+          write(node.tag_closing.value)
+        end
       end
 
       # Capture output to a temporary buffer.
@@ -152,6 +226,16 @@ module Herb
       end
 
       private
+
+      # Override write to route all output through the @lines buffer.
+      # Calls super to keep context.output updated, then appends to @lines
+      # so that format returns complete output via @lines.join("\n").
+      #
+      # @rbs text: String
+      def write(text) #: void
+        super
+        push_to_last_line(text)
+      end
 
       # Current indent string based on indent_level.
       #
@@ -225,19 +309,27 @@ module Herb
 
       # Visit the body of an HTML element. For preserved elements (script,
       # style, pre, textarea), content is output as-is using IdentityPrinter.
-      # For normal elements, content is formatted with increased indentation.
+      # For inline elements (element_content_inline=true), content is visited
+      # in inline mode (no extra indentation). For block elements, content is
+      # formatted with increased indentation.
       #
       # @rbs node: Herb::AST::HTMLElementNode
       def visit_element_body(node) #: void
         tag_name = node.tag_name&.value || ""
+        analysis = @element_formatting_analysis[node]
 
         if preserved_element?(tag_name)
           # Preserve content as-is for script, style, pre, textarea
           node.body.each do |child|
             write(::Herb::Printer::IdentityPrinter.print(child))
           end
+        elsif analysis&.element_content_inline
+          # Inline content: visit children without extra indentation
+          with_inline_mode do
+            node.body.each { visit(_1) }
+          end
         else
-          # Format body with increased indent
+          # Block content: format with increased indentation
           with_indent do
             node.body.each { visit(_1) }
           end
