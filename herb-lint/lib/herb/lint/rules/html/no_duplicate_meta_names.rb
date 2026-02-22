@@ -7,19 +7,45 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows duplicate <meta> elements with the same name attribute.
-        #
-        # Each meta name should only appear once in a document. Duplicate meta
-        # elements with the same name can cause unpredictable behavior as search
-        # engines and browsers may use different values.
+        # Description:
+        #   Warn when multiple `<meta>` tags share the same `name` or `http-equiv` attribute within
+        #   the same `<head>` block, unless they are wrapped in conditional comments.
         #
         # Good:
-        #   <meta name="description" content="Page description">
-        #   <meta name="viewport" content="width=device-width">
+        #   <head>
+        #     <meta name="description" content="Welcome to our site">
+        #     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        #   </head>
+        #
+        #   <head>
+        #     <% if mobile? %>
+        #       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        #     <% else %>
+        #       <meta name="viewport" content="width=1024">
+        #     <% end %>
+        #   </head>
         #
         # Bad:
-        #   <meta name="description" content="First">
-        #   <meta name="description" content="Second">
+        #   <head>
+        #     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        #     <meta name="viewport" content="width=1024">
+        #   </head>
+        #
+        #   <head>
+        #     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        #     <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        #   </head>
+        #
+        #   <head>
+        #     <meta name="viewport" content="width=1024">
+        #
+        #     <% if mobile? %>
+        #       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        #     <% else %>
+        #       <meta http-equiv="refresh" content="30">
+        #     <% end %>
+        #   </head>
+        #
         class NoDuplicateMetaNames < VisitorRule
           def self.rule_name = "html-no-duplicate-meta-names" #: String
           def self.description = "Disallow duplicate meta elements with the same name attribute" #: String

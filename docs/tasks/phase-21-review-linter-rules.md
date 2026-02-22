@@ -442,10 +442,10 @@ For each rule, complete the following 8 steps:
 - [x] Step 8: Apply original logic
 
 #### html/no-duplicate-meta-names
-- [ ] Step 1: Remove existing comment
-- [ ] Step 2: Check documentation
-- [ ] Step 3: Read Description and Examples
-- [ ] Step 4: Add Description and Examples as comments
+- [x] Step 1: Remove existing comment
+- [x] Step 2: Check documentation
+- [x] Step 3: Read Description and Examples
+- [x] Step 4: Add Description and Examples as comments
 - [ ] Step 5: Review and update test cases
 - [ ] Step 6: Check original implementation
 - [ ] Step 7: Compare and list differences
