@@ -349,11 +349,35 @@ module Herb
         end.join
       end
 
-      # Return normalized quote pair (always double quotes).
+      # Return normalized quote pair for an attribute value node.
+      # Single quotes are converted to double quotes unless the content contains
+      # a double quote character, in which case single quotes are preserved.
+      # Unquoted attribute values are given double quotes.
       #
-      # @rbs _attribute_value: Herb::AST::HTMLAttributeValueNode
-      def get_attribute_quotes(_attribute_value) #: [String, String]
-        ['"', '"']
+      # @rbs attribute_value: Herb::AST::HTMLAttributeValueNode
+      def get_attribute_quotes(attribute_value) #: [String, String]
+        open_quote = token_value(attribute_value.open_quote)
+        close_quote = token_value(attribute_value.close_quote)
+
+        case [open_quote, close_quote]
+        in ["'", "'"] if !get_html_text_content(attribute_value).include?('"')
+          ['"', '"']
+        in ["", ""] # rubocop:disable Lint/DuplicateBranch
+          ['"', '"']
+        else
+          [open_quote, close_quote]
+        end
+      end
+
+      # Extract plain text content from an attribute value node.
+      # Returns text from HTMLTextNode and LiteralNode children only
+      # (ERB nodes are excluded).
+      #
+      # @rbs attribute_value: Herb::AST::HTMLAttributeValueNode
+      def get_html_text_content(attribute_value) #: String
+        attribute_value.children.filter_map do |child|
+          child.content if child.is_a?(Herb::AST::HTMLTextNode) || child.is_a?(Herb::AST::LiteralNode)
+        end.join
       end
 
       # Render the content of an attribute value node.
@@ -479,7 +503,7 @@ module Herb
       # Returns empty string when the token is absent.
       #
       # @rbs token: untyped
-      def erb_token_value(token) #: String
+      def token_value(token) #: String
         token ? token.value : ""
       end
 
@@ -489,9 +513,9 @@ module Herb
       # @rbs node: Herb::AST::ERBContentNode
       # @rbs with_formatting: bool
       def reconstruct_erb_node(node, with_formatting: true) #: String
-        open = erb_token_value(node.tag_opening)
-        close = erb_token_value(node.tag_closing)
-        content = erb_token_value(node.content)
+        open = token_value(node.tag_opening)
+        close = token_value(node.tag_closing)
+        content = token_value(node.content)
 
         inner = with_formatting ? format_erb_content(content) : content
 
