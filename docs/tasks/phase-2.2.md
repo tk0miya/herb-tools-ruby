@@ -16,6 +16,7 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 - [ ] Task 2.26: ERB Block Node (visitERBBlockNode)
 - [ ] Task 2.27: ERB Other Control Flow (unless, case, for, while)
 - [ ] Task 2.28: ERB Comment Node (visitERBCommentNode)
+- [ ] Task 2.28b: Pending Tests for render_multiline_attributes (ERB nodes in attributes)
 
 ### Part F: Text Flow & Spacing (6 tasks)
 - [ ] Task 2.29: ContentUnit Data Structure
@@ -572,9 +573,34 @@ end
 
 ---
 
+### Task 2.28b: Pending Tests for render_multiline_attributes (ERB nodes in attributes)
+
+**Purpose:** Implement the four pending test contexts in `describe "#render_multiline_attributes"`
+that were deferred until ERB comment node support is available.
+
+**Location:** `herb-format/spec/herb/format/format_printer_spec.rb`
+
+**Test Cases to Implement:**
+
+- "with herb:disable comment in open tag" — verifies that the herb:disable comment is appended
+  inline to the opening line (expected output depends on `visit_erb_comment_node` in Task 2.28)
+- "with ERB tag in attribute value" — verifies the `visit(child)` branch for non-attribute,
+  non-whitespace, non-herb:disable children (e.g. `<div <%= dynamic_attr %>></div>`)
+- "with multiple herb:disable comments" — verifies that `herb_disable_comments.each` iterates
+  all comments and appends them all to the opening line
+- "with herb:disable comment and no other attributes" — verifies correct output with no attribute lines
+
+Remove the `pending` placeholder and replace each context with a `subject` and concrete `it` block.
+
+**Estimate:** 30 minutes
+
+**Dependencies:** Task 2.28
+
+---
+
 **Part E Summary:**
-- **Total Tasks:** 7 tasks
-- **Estimate:** 14-16 hours
+- **Total Tasks:** 8 tasks (2.22–2.28b)
+- **Estimate:** 14-17 hours
 - **Difficulty:** High (ERB if inline mode is most complex)
 
 ---

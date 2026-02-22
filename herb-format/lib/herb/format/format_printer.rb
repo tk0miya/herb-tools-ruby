@@ -13,6 +13,8 @@ module Herb
     # rules are added, visitor methods will be overridden to apply indentation,
     # line wrapping, attribute formatting, and other transformations.
     class FormatPrinter < ::Herb::Printer::Base # rubocop:disable Metrics/ClassLength
+      include FormatHelpers
+
       VOID_ELEMENTS = %w[
         area base br col embed hr img input link meta param source track wbr
       ].freeze
@@ -209,6 +211,17 @@ module Herb
         @indent_level -= 1
       end
 
+      # Temporarily enable inline mode for the duration of the block.
+      #
+      # @rbs &block: () -> void
+      def with_inline_mode(&) #: void
+        previous = @inline_mode
+        @inline_mode = true
+        yield
+      ensure
+        @inline_mode = previous
+      end
+
       # Visit the body of an HTML element. For preserved elements (script,
       # style, pre, textarea), content is output as-is using IdentityPrinter.
       # For normal elements, content is formatted with increased indentation.
@@ -260,6 +273,47 @@ module Herb
         return "" if attributes.empty?
 
         " #{attributes.map { render_attribute(_1) }.join(' ')}"
+      end
+
+      # Render attributes in multiline format (one attribute per line).
+      # Outputs:
+      #   <tag_name [herb:disable comments]
+      #     attr1="val1"
+      #     attr2="val2"
+      #   > (or /> for void elements)
+      #
+      # @rbs tag_name: String
+      # @rbs children: Array[Herb::AST::Node]
+      # @rbs is_void: bool
+      def render_multiline_attributes(tag_name, children, is_void) #: void # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+        opening_line = "<#{tag_name}"
+
+        herb_disable_comments = children.select { herb_disable_comment?(_1) }
+        if herb_disable_comments.any?
+          comment_output = capture do
+            herb_disable_comments.each do |comment|
+              with_inline_mode do
+                push(" ")
+                visit(comment)
+              end
+            end
+          end
+          opening_line += comment_output.join
+        end
+
+        push_with_indent(opening_line)
+
+        with_indent do
+          children.each do |child|
+            if child.is_a?(Herb::AST::HTMLAttributeNode)
+              push_with_indent(render_attribute(child))
+            elsif !child.is_a?(Herb::AST::WhitespaceNode) && !herb_disable_comment?(child)
+              visit(child)
+            end
+          end
+        end
+
+        push_with_indent(is_void ? "/>" : ">")
       end
 
       # Render a single attribute.

@@ -68,12 +68,13 @@ Part G: Integration & Testing                         ← Integration
 
 ### Part D: Attribute Formatting (5 tasks)
 - [x] Task 2.18: Attribute Inline Rendering
-- [ ] Task 2.19: Attribute Multiline Rendering
+- [x] Task 2.19: Attribute Multiline Rendering
 - [ ] Task 2.20: Class Attribute Formatting
 - [ ] Task 2.21: Quote Normalization
 - [ ] Task 2.21b: HTML Open/Close Tag Visitors
+- [ ] Task 2.21c: Migrate render_multiline_attributes Tests to Integration Tests
 
-**Progress: 13/22 tasks completed**
+**Progress: 14/22 tasks completed**
 
 ---
 
@@ -1428,9 +1429,52 @@ end
 
 ---
 
+### Task 2.21c: Migrate render_multiline_attributes Tests to Integration Tests
+
+**Purpose:** Replace the low-level unit tests for `#render_multiline_attributes` added in Task 2.19
+with integration tests using `FormatPrinter.format(...)`, now that `visit_html_open_tag_node`
+is implemented in Task 2.21b.
+
+**Location:** `herb-format/spec/herb/format/format_printer_spec.rb`
+
+**Migration:**
+
+```ruby
+# Before (Task 2.19 unit test)
+result = printer.capture { printer.render_multiline_attributes("button", children, false) }
+expect(result).to eq(["<button", '  type="submit"', ...])
+
+# After (Task 2.21c integration test)
+result = FormatPrinter.format(Herb.parse(source, track_whitespace: true), format_context:)
+expect(result).to eq(<<~ERB)
+  <button
+    type="submit"
+    class="btn"
+    disabled
+  >
+  </button>
+ERB
+```
+
+Test cases to migrate (within `describe "#render_multiline_attributes"`):
+
+- "with multiple attributes" → `<button type="submit" class="btn" disabled>`
+- "with no attributes" → `<div>` (may be formatted inline; use a source with long attributes as a substitute)
+- "with void element" → `<input type="text" name="email">`
+- "with indented context" → a nested element where indentation is applied
+- "with herb:disable comment" → `<div <%# herb:disable %> class="foo">`
+
+After migration, delete the original low-level `capture { render_multiline_attributes(...) }` tests.
+
+**Estimate:** 1 hour
+
+**Dependencies:** Task 2.21b
+
+---
+
 **Part D Summary:**
-- **Total Tasks:** 5 tasks (2.18–2.21b)
-- **Estimate:** 10-12 hours
+- **Total Tasks:** 6 tasks (2.18–2.21c)
+- **Estimate:** 11-13 hours
 - **Difficulty:** High (class attribute wrapping is complex; open/close tag dispatch)
 
 ---
