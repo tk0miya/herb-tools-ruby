@@ -28,15 +28,13 @@ RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when SVG elements have correct capitalization" do
+    # Good examples from documentation
+    context "when SVG linearGradient has correct capitalization" do
       let(:source) do
         <<~HTML
           <svg>
-            <clipPath id="clip">
-              <rect width="100" height="100"/>
-            </clipPath>
-            <linearGradient id="grad">
-              <stop offset="0%" stop-color="red"/>
+            <linearGradient id="grad1">
+              <stop offset="0%" stop-color="rgb(255,255,0)" />
             </linearGradient>
           </svg>
         HTML
@@ -47,54 +45,60 @@ RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
       end
     end
 
-    context "when multiple SVG elements have incorrect capitalization" do
+    context "when SVG clipPath and feGaussianBlur have correct capitalization" do
       let(:source) do
         <<~HTML
           <svg>
-            <clippath id="clip">
-              <rect width="100" height="100"/>
-            </clippath>
-            <lineargradient id="grad">
-              <stop offset="0%" stop-color="red"/>
+            <clipPath id="clip">
+              <rect width="100" height="100" />
+            </clipPath>
+            <feGaussianBlur stdDeviation="5" />
+          </svg>
+        HTML
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "when SVG linearGradient has incorrect lowercase capitalization" do
+      let(:source) do
+        <<~HTML
+          <svg>
+            <lineargradient id="grad1">
+              <stop offset="0%" stop-color="rgb(255,255,0)" />
             </lineargradient>
           </svg>
         HTML
       end
 
-      it "reports offenses for all incorrect elements" do
-        expect(subject.size).to eq(4)
+      it "reports an offense" do
+        expect(subject.size).to eq(2)
         expect(subject.map(&:message)).to contain_exactly(
-          "Opening SVG element 'clippath' should be 'clipPath'",
-          "Closing SVG element 'clippath' should be 'clipPath'",
-          "Opening SVG element 'lineargradient' should be 'linearGradient'",
-          "Closing SVG element 'lineargradient' should be 'linearGradient'"
+          "Opening SVG tag name `lineargradient` should use proper capitalization. Use `linearGradient` instead.",
+          "Closing SVG tag name `lineargradient` should use proper capitalization. Use `linearGradient` instead."
         )
       end
     end
 
-    context "when SVG filter elements are lowercase" do
+    context "when SVG CLIPPATH has incorrect uppercase capitalization" do
       let(:source) do
         <<~HTML
           <svg>
-            <filter>
-              <feblend in="SourceGraphic"/>
-              <fegaussianblur stdDeviation="5"/>
-              <femerge>
-                <femergenode/>
-              </femerge>
-            </filter>
+            <CLIPPATH id="clip">
+              <rect width="100" height="100" />
+            </CLIPPATH>
           </svg>
         HTML
       end
 
-      it "reports offenses for all incorrect filter elements" do
-        expect(subject.size).to eq(5)
+      it "reports an offense" do
+        expect(subject.size).to eq(2)
         expect(subject.map(&:message)).to contain_exactly(
-          "Opening SVG element 'feblend' should be 'feBlend'",
-          "Opening SVG element 'fegaussianblur' should be 'feGaussianBlur'",
-          "Opening SVG element 'femerge' should be 'feMerge'",
-          "Closing SVG element 'femerge' should be 'feMerge'",
-          "Opening SVG element 'femergenode' should be 'feMergeNode'"
+          "Opening SVG tag name `CLIPPATH` should use proper capitalization. Use `clipPath` instead.",
+          "Closing SVG tag name `CLIPPATH` should use proper capitalization. Use `clipPath` instead."
         )
       end
     end
@@ -144,8 +148,8 @@ RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
       it "reports offense only for incorrect element" do
         expect(subject.size).to eq(2)
         expect(subject.map(&:message)).to contain_exactly(
-          "Opening SVG element 'lineargradient' should be 'linearGradient'",
-          "Closing SVG element 'lineargradient' should be 'linearGradient'"
+          "Opening SVG tag name `lineargradient` should use proper capitalization. Use `linearGradient` instead.",
+          "Closing SVG tag name `lineargradient` should use proper capitalization. Use `linearGradient` instead."
         )
       end
     end
@@ -166,8 +170,8 @@ RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
       it "reports offense for nested elements" do
         expect(subject.size).to eq(2)
         expect(subject.map(&:message)).to contain_exactly(
-          "Opening SVG element 'clippath' should be 'clipPath'",
-          "Closing SVG element 'clippath' should be 'clipPath'"
+          "Opening SVG tag name `clippath` should use proper capitalization. Use `clipPath` instead.",
+          "Closing SVG tag name `clippath` should use proper capitalization. Use `clipPath` instead."
         )
       end
     end
@@ -183,7 +187,9 @@ RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Opening SVG element 'animatemotion' should be 'animateMotion'")
+        message = "Opening SVG tag name `animatemotion` should use proper capitalization. " \
+                  "Use `animateMotion` instead."
+        expect(subject.first.message).to eq(message)
       end
     end
   end

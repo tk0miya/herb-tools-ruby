@@ -7,31 +7,36 @@ module Herb
   module Lint
     module Rules
       module Svg
-        # Rule that enforces correct capitalization of SVG element names.
-        #
-        # SVG is case-sensitive and uses camelCase for many element names,
-        # unlike HTML which is case-insensitive. This rule ensures SVG elements
-        # use the correct capitalization.
+        # Description:
+        #   Enforces proper camelCase capitalization for SVG element names within SVG contexts.
         #
         # Good:
         #   <svg>
-        #     <clipPath id="clip">
-        #       <rect width="100" height="100"/>
-        #     </clipPath>
-        #     <linearGradient id="grad">
-        #       <stop offset="0%" stop-color="red"/>
+        #     <linearGradient id="grad1">
+        #       <stop offset="0%" stop-color="rgb(255,255,0)" />
         #     </linearGradient>
+        #   </svg>
+        #
+        #   <svg>
+        #     <clipPath id="clip">
+        #       <rect width="100" height="100" />
+        #     </clipPath>
+        #     <feGaussianBlur stdDeviation="5" />
         #   </svg>
         #
         # Bad:
         #   <svg>
-        #     <clippath id="clip">
-        #       <rect width="100" height="100"/>
-        #     </clippath>
-        #     <lineargradient id="grad">
-        #       <stop offset="0%" stop-color="red"/>
+        #     <lineargradient id="grad1">
+        #       <stop offset="0%" stop-color="rgb(255,255,0)" />
         #     </lineargradient>
         #   </svg>
+        #
+        #   <svg>
+        #     <CLIPPATH id="clip">
+        #       <rect width="100" height="100" />
+        #     </CLIPPATH>
+        #   </svg>
+        #
         class TagNameCapitalization < VisitorRule
           def self.rule_name = "svg-tag-name-capitalization" #: String
           def self.description = "Enforce correct capitalization of SVG element names" #: String
@@ -128,8 +133,10 @@ module Herb
             raw_tag = node.tag_name&.value
             return unless raw_tag && raw_tag != correct_name
 
+            message = "#{prefix} SVG tag name `#{raw_tag}` should use proper capitalization. " \
+                      "Use `#{correct_name}` instead."
             add_offense_with_autofix(
-              message: "#{prefix} SVG element '#{raw_tag}' should be '#{correct_name}'",
+              message:,
               location: node.tag_name.location,
               node:
             )
