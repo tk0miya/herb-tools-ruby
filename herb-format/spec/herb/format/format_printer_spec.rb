@@ -149,6 +149,22 @@ RSpec.describe Herb::Format::FormatPrinter do
             expect(subject).to eq('<div id="main" class="container"></div>')
           end
         end
+
+        context "with single-quoted attribute whose value contains a double quote" do
+          let(:source) { %(<div title='say "hello"'></div>) }
+
+          it "preserves single quotes to avoid breaking the attribute value" do
+            expect(subject).to eq(%(<div title='say "hello"'></div>))
+          end
+        end
+
+        context "with unquoted attribute" do
+          let(:source) { "<div class=foo></div>" }
+
+          it "adds double quotes" do
+            expect(subject).to eq('<div class="foo"></div>')
+          end
+        end
       end
 
       context "with ERB in attribute values" do
