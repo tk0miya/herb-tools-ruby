@@ -523,13 +523,13 @@ DEFAULT_THEME = "onedark" #: String
 - `DEFAULT_THEME == "onedark"`
 
 **Implementation Tasks:**
-- [ ] Create `lib/herb/highlight/themes.rb`
-- [ ] Implement module-level `@registry` and `.register`, `.find`, `.names`, `.valid?`
-- [ ] Implement `.custom?(input)` (file path heuristic: contains `/`, `\`, or ends with `.json`)
-- [ ] Implement `.load_custom(path)` (reads and JSON-parses file; raises on error)
-- [ ] Implement `.resolve(input)` (dispatches to `.load_custom` or `.find`)
-- [ ] Define `DEFAULT_THEME = "onedark"` constant
-- [ ] Write `spec/herb/highlight/themes_spec.rb`
+- [x] Create `lib/herb/highlight/themes.rb`
+- [x] Implement module-level `@registry` and `.register`, `.find`, `.names`, `.valid?`
+- [x] Implement `.custom?(input)` (file path heuristic: contains `/`, `\`, or ends with `.json`)
+- [x] Implement `.load_custom(path)` (reads and JSON-parses file; raises on error)
+- [x] Implement `.resolve(input)` (dispatches to `.load_custom` or `.find`)
+- [x] Define `DEFAULT_THEME = "onedark"` constant
+- [x] Write `spec/herb/highlight/themes_spec.rb`
 
 ---
 
@@ -1015,9 +1015,14 @@ After this step, `DetailedFormatter` produces colored output by default.
 - `DEFAULT_THEME = "onedark"`
 
 **Implementation Tasks (depends on Step 0):**
-- [ ] Port `onedark` theme into `Herb::Highlight::Themes`
+- [ ] Port `onedark` theme into `Herb::Highlight::Themes` using the private `register` method
+  - Use `Themes.send(:register, "onedark", { ... })` at the bottom of `themes.rb` (or in a separate file loaded by `highlight.rb`)
+  - Once registered, `Themes.required_keys` returns `onedark`'s keys, activating `load_custom` key validation
 - [ ] Set `onedark` as the default theme in `DetailedFormatter`
 - [ ] Write unit tests for `onedark` theme
+  - [ ] Verify `Themes.valid?("onedark")` returns true
+  - [ ] Verify `Themes.custom?("onedark")` returns false
+  - [ ] Verify `load_custom` raises on a custom theme missing required keys (validation now active)
 
 ---
 
