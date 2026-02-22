@@ -314,6 +314,16 @@ RSpec.describe Herb::Format::FormatPrinter do
       end
     end
 
+    context "with mixed HTML and ERB content" do
+      context "with ERB expression inside a div" do
+        let(:source) { "<div><%= @user.name %></div>" }
+
+        it "renders HTML tags and ERB in a unified output" do
+          expect(subject).to eq("<div>\n  <%= @user.name %></div>")
+        end
+      end
+    end
+
     context "with ERB tags" do
       context "with output tag without spaces" do
         let(:source) { "<%=@user.name%>" }
