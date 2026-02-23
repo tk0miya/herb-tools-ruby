@@ -47,6 +47,9 @@ module Herb
           end
         end
 
+        # @rbs @severity: String
+        # @rbs @matcher: Herb::Core::PatternMatcher
+
         # @rbs matcher: Herb::Core::PatternMatcher -- pattern matcher for include/exclude rules
         # @rbs severity: String?
         def initialize(matcher:, severity: nil) #: void
@@ -70,6 +73,7 @@ module Herb
         #
         # @rbs message: String -- description of the violation
         # @rbs location: Herb::Location -- location of the violation
+        # @rbs autofix_context: AutofixContext?
         def add_offense(message:, location:, autofix_context: nil) #: void
           @offenses << create_offense(message:, location:, autofix_context:)
         end

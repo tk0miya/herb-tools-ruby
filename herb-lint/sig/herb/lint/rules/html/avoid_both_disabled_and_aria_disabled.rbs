@@ -58,8 +58,9 @@ module Herb
           # @rbs node: Herb::HtmlElementNode
           def dynamic_disabled_attributes?: (Herb::HtmlElementNode node) -> bool
 
-          # @rbs node: Herb::HtmlElementNode, attribute_name: String -- Check if attribute value contains ERB
-          def attribute_has_erb_content?: (Herb::HtmlElementNode node, untyped attribute_name) -> bool
+          # @rbs node: Herb::HtmlElementNode
+          # @rbs attribute_name: String
+          def attribute_has_erb_content?: (Herb::HtmlElementNode node, String attribute_name) -> bool
         end
       end
     end

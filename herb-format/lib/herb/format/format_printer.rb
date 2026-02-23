@@ -45,7 +45,6 @@ module Herb
       end
 
       # @rbs @lines: Array[String]
-      # @rbs @indent_level: Integer
       # @rbs @string_line_count: Integer
       # @rbs @inline_mode: bool
       # @rbs @in_conditional_open_tag_context: bool

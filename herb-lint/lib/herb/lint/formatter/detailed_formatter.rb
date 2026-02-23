@@ -18,6 +18,8 @@ module Herb
 
         CONTEXT_LINES = 2 # Number of lines to show before and after the offense
 
+        # @rbs @summary_reporter: Herb::Lint::Reporter::SummaryReporter
+
         # @rbs io: IO
         # @rbs show_timing: bool -- when false, suppresses timing display
         def initialize(io: $stdout, show_timing: true) #: void

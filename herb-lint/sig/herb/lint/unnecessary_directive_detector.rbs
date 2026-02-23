@@ -11,6 +11,10 @@ module Herb
       # @rbs ignored_offenses: Array[Offense]
       def self.detect: (DirectiveParser::Directives directives, Array[Offense] ignored_offenses) -> Array[Offense]
 
+      @directives: DirectiveParser::Directives
+
+      @by_line: Hash[Integer, Array[String]]
+
       # @rbs directives: DirectiveParser::Directives
       # @rbs ignored_offenses: Array[Offense]
       def initialize: (DirectiveParser::Directives directives, Array[Offense] ignored_offenses) -> void

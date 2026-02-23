@@ -9,6 +9,8 @@ module Herb
       # Default theme name used when no theme is specified.
       DEFAULT_THEME: String
 
+      @themes: Hash[String, Hash[String, String?]]
+
       # Returns all built-in theme names.
       def self.names: () -> Array[String]
 

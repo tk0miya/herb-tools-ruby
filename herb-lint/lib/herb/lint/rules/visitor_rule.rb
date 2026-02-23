@@ -40,6 +40,9 @@ module Herb
           # Subclasses can override to reset state
         end
 
+        # @rbs @offenses: Array[Offense]
+        # @rbs @context: Context
+
         # Check the document for rule violations by visiting AST nodes.
         # @rbs override
         def check(document, context)

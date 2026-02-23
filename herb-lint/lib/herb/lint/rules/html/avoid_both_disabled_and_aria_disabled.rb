@@ -92,7 +92,8 @@ module Herb
             false
           end
 
-          # @rbs node: Herb::HtmlElementNode, attribute_name: String -- Check if attribute value contains ERB
+          # @rbs node: Herb::HtmlElementNode
+          # @rbs attribute_name: String
           def attribute_has_erb_content?(node, attribute_name) #: bool
             attr = find_attribute(node, attribute_name)
             return false unless attr

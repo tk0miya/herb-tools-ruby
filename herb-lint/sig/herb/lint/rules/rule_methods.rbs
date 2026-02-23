@@ -31,6 +31,10 @@ module Herb
           def enabled_by_default?: () -> bool
         end
 
+        @severity: String
+
+        @matcher: Herb::Core::PatternMatcher
+
         # @rbs matcher: Herb::Core::PatternMatcher -- pattern matcher for include/exclude rules
         # @rbs severity: String?
         def initialize: (matcher: Herb::Core::PatternMatcher, ?severity: String?) -> void
@@ -49,7 +53,8 @@ module Herb
         #
         # @rbs message: String -- description of the violation
         # @rbs location: Herb::Location -- location of the violation
-        def add_offense: (message: String, location: Herb::Location, ?autofix_context: untyped) -> void
+        # @rbs autofix_context: AutofixContext?
+        def add_offense: (message: String, location: Herb::Location, ?autofix_context: AutofixContext?) -> void
 
         # Add an offense with autofix context for the current rule.
         # Creates an AutofixContext from the given node and current rule instance,

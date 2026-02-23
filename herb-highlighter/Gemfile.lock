@@ -135,7 +135,7 @@ GEM
     rubocop-rake (0.7.1)
       lint_roller (~> 1.1)
       rubocop (>= 1.72.1)
-    rubocop-rbs_inline (1.5.0.pre.2)
+    rubocop-rbs_inline (1.5.0)
       lint_roller (~> 1.1)
       rbs-inline
       rubocop (>= 1.72.1, < 2.0)
@@ -196,7 +196,7 @@ DEPENDENCIES
   rubocop
   rubocop-numbered-params
   rubocop-rake
-  rubocop-rbs_inline (>= 1.5.0.pre.2)
+  rubocop-rbs_inline
   rubocop-rspec
   steep
 

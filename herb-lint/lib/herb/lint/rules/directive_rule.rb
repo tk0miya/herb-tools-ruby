@@ -32,6 +32,9 @@ module Herb
         # @rbs!
         #   extend RuleMethods::ClassMethods
 
+        # @rbs @offenses: Array[Offense]
+        # @rbs @context: Context
+
         # Check the document for rule violations by iterating over parsed directives.
         # @rbs override
         def check(document, context) # rubocop:disable Lint/UnusedMethodArgument

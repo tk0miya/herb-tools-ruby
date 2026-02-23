@@ -32,6 +32,12 @@ module Herb
 
           CONDITIONAL: Symbol
 
+          @control_flow_attributes: Set[String]
+
+          @current_branch_attributes: Set[String]
+
+          @tag_attributes: Set[String]
+
           # @rbs override
           def on_new_investigation: ...
 

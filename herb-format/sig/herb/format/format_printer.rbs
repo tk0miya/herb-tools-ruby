@@ -34,23 +34,21 @@ module Herb
       # @rbs ignore_errors: bool
       def self.format: (Herb::ParseResult | Herb::AST::Node input, format_context: Context, ?ignore_errors: bool) -> String
 
-      @lines: Array[String]
-
-      @indent_level: Integer
-
-      @string_line_count: Integer
-
-      @inline_mode: bool
-
-      @in_conditional_open_tag_context: bool
-
-      @current_attribute_name: String?
-
-      @element_stack: Array[Herb::AST::HTMLElementNode]
+      @node_is_multiline: Hash[Herb::AST::Node, bool]
 
       @element_formatting_analysis: Hash[Herb::AST::HTMLElementNode, ElementAnalysis?]
 
-      @node_is_multiline: Hash[Herb::AST::Node, bool]
+      @element_stack: Array[Herb::AST::HTMLElementNode]
+
+      @current_attribute_name: String?
+
+      @in_conditional_open_tag_context: bool
+
+      @inline_mode: bool
+
+      @string_line_count: Integer
+
+      @lines: Array[String]
 
       # @rbs indent_width: Integer
       # @rbs max_line_length: Integer

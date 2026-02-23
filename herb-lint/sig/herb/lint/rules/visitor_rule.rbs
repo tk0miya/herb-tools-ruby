@@ -34,6 +34,10 @@ module Herb
         # @rbs override
         def on_new_investigation: ...
 
+        @offenses: Array[Offense]
+
+        @context: Context
+
         # Check the document for rule violations by visiting AST nodes.
         # @rbs override
         def check: ...

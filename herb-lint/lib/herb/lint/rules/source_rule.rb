@@ -22,6 +22,9 @@ module Herb
         # @rbs!
         #   extend RuleMethods::ClassMethods
 
+        # @rbs @offenses: Array[Offense]
+        # @rbs @context: Context
+
         # @rbs override
         def check(_parse_result, context)
           @offenses = []

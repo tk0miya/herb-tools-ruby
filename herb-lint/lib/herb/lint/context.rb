@@ -10,6 +10,8 @@ module Herb
       attr_reader :config #: Herb::Config::LinterConfig
       attr_reader :directives #: DirectiveParser::Directives
 
+      # @rbs @rule_registry: RuleRegistry?
+
       # @rbs file_path: String -- path to the file being linted
       # @rbs source: String -- source code content of the file
       # @rbs config: Herb::Config::LinterConfig -- linter configuration
