@@ -7,23 +7,40 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows positive tabindex values.
-        #
-        # Using a positive tabindex value is an accessibility anti-pattern.
-        # It disrupts the natural tab order of the page, making navigation
-        # confusing for keyboard and assistive technology users.
+        # Description:
+        #   Prevent using positive values for the `tabindex` attribute. Only `tabindex="0"` (to make elements
+        #   focusable) and `tabindex="-1"` (to remove from tab order) should be used.
         #
         # Good:
-        #   <button tabindex="0">Click</button>
-        #   <button tabindex="-1">Click</button>
+        #   <!-- Natural tab order (no tabindex needed) -->
+        #   <button>First</button>
+        #   <button>Second</button>
+        #   <button>Third</button>
+        #
+        #   <!-- Make non-interactive element focusable -->
+        #   <div tabindex="0" role="button">Custom button</div>
+        #
+        #   <!-- Remove from tab order but keep programmatically focusable -->
+        #   <button tabindex="-1">Skip this in tab order</button>
+        #
+        #   <!-- Zero tabindex to ensure focusability -->
+        #   <span tabindex="0" role="button">Focusable span</span>
         #
         # Bad:
-        #   <button tabindex="1">Click</button>
-        #   <div tabindex="5">Content</div>
+        #   <button tabindex="3">Third in tab order</button>
+        #
+        #   <button tabindex="1">First in tab order</button>
+        #
+        #   <button tabindex="2">Second in tab order</button>
+        #
+        #   <input tabindex="5" type="text" autocomplete="off">
+        #
+        #   <button tabindex="10">Submit</button>
+        #
         class NoPositiveTabIndex < VisitorRule
           def self.rule_name = "html-no-positive-tab-index" #: String
           def self.description = "Disallow positive tabindex values" #: String
-          def self.default_severity = "warning" #: String
+          def self.default_severity = "error" #: String
           def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
 
@@ -33,7 +50,9 @@ module Herb
               value = attribute_value(node)
               if positive_tabindex?(value)
                 add_offense(
-                  message: "Avoid positive tabindex value '#{value}' (disrupts natural tab order)",
+                  message: "Do not use positive `tabindex` values as they are error prone and can severely " \
+                           "disrupt navigation experience for keyboard users. Use `tabindex=\"0\"` to make an " \
+                           "element focusable or `tabindex=\"-1\"` to remove it from the tab sequence.",
                   location: node.location
                 )
               end
