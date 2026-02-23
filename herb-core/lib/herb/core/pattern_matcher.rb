@@ -23,6 +23,10 @@ module Herb
     #   matcher.match?("app/views/users/show.html.erb")  # => true
     #   matcher.match?("lib/views/index.html.erb")       # => false
     class PatternMatcher
+      # @rbs @includes: Array[String]
+      # @rbs @excludes: Array[String]
+      # @rbs @only: Array[String]
+
       # @rbs includes: Array[String] -- glob patterns to include
       # @rbs excludes: Array[String] -- glob patterns to exclude
       # @rbs only: Array[String] -- glob patterns to exclusively match

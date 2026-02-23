@@ -36,7 +36,10 @@ module Herb
       Directives = Data.define(
         :ignore_file,      #: bool
         :disable_comments  #: Hash[Integer, DisableComment]
-      ) do
+      )
+
+      # :nodoc:
+      class Directives
         # Returns whether the file should be ignored entirely.
         def ignore_file? #: bool
           ignore_file

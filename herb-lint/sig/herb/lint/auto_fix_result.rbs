@@ -20,5 +20,12 @@ module Herb
 
       def members: () -> [ :source, :fixed, :unfixed ]
     end
+
+    # :nodoc:
+    class AutoFixResult
+      def fixed_count: () -> Integer
+
+      def unfixed_count: () -> Integer
+    end
   end
 end

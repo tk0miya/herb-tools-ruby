@@ -10,7 +10,10 @@ module Herb
       :source,  #: String
       :fixed,   #: Array[Offense]
       :unfixed  #: Array[Offense]
-    ) do
+    )
+
+    # :nodoc:
+    class AutoFixResult
       def fixed_count = fixed.size #: Integer
       def unfixed_count = unfixed.size #: Integer
     end

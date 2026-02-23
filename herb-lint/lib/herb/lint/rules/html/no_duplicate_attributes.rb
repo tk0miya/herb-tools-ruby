@@ -31,6 +31,10 @@ module Herb
           LOOP = :loop #: Symbol
           CONDITIONAL = :conditional #: Symbol
 
+          # @rbs @tag_attributes: Set[String]
+          # @rbs @current_branch_attributes: Set[String]
+          # @rbs @control_flow_attributes: Set[String]
+
           # @rbs override
           def on_new_investigation
             @control_flow_stack = [] #: Array[[Symbol, bool]]

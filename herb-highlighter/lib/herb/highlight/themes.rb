@@ -11,7 +11,9 @@ module Herb
       # Default theme name used when no theme is specified.
       DEFAULT_THEME = "onedark" #: String
 
-      @themes = {} #: Hash[String, Hash[String, String?]]
+      # @rbs @themes: Hash[String, Hash[String, String?]]
+
+      @themes = {}
 
       class << self
         # Returns all built-in theme names.

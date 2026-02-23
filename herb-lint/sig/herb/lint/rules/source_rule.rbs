@@ -19,6 +19,10 @@ module Herb
 
         extend RuleMethods::ClassMethods
 
+        @offenses: Array[Offense]
+
+        @context: Context
+
         # @rbs override
         def check: ...
 

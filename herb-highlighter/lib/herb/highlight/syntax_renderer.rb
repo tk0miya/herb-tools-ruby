@@ -21,6 +21,8 @@ module Herb
         raise super self nil true false and or not
       ].freeze #: Array[String]
 
+      # @rbs @theme: Hash[String, String?]?
+
       # @rbs theme_name: String? -- looked up via Themes; nil = plain text
       # @rbs theme: Hash[String, String?]? -- pre-resolved theme (for testing; takes priority over theme_name)
       def initialize(theme_name: nil, theme: nil) #: void

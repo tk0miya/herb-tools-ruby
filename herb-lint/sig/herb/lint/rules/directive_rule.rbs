@@ -29,6 +29,10 @@ module Herb
 
         extend RuleMethods::ClassMethods
 
+        @offenses: Array[Offense]
+
+        @context: Context
+
         # Check the document for rule violations by iterating over parsed directives.
         # @rbs override
         def check: ...

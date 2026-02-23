@@ -36,6 +36,8 @@ module Herb
           def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
 
+          # @rbs @context: Context
+
           private
 
           # @rbs override

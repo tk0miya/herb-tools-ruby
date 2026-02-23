@@ -10,6 +10,9 @@ module Herb
       attr_reader :duration #: Integer?
       attr_reader :message #: String?
 
+      # @rbs @completed: bool
+      # @rbs @files_with_offenses_count: Integer?
+
       # @rbs results: Array[LintResult]
       # @rbs rule_count: Integer
       # @rbs start_time: Time? -- when linting started, or nil if not tracked

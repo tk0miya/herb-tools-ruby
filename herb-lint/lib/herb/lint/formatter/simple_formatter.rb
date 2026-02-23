@@ -15,6 +15,8 @@ module Herb
         include ConsoleUtils
         include StringUtils
 
+        # @rbs @summary_reporter: Herb::Lint::Reporter::SummaryReporter
+
         # @rbs io: IO
         # @rbs show_timing: bool -- when false, suppresses timing display
         def initialize(io: $stdout, show_timing: true) #: void

@@ -11,6 +11,8 @@ module Herb
 
         include StringUtils
 
+        @summary_reporter: Herb::Lint::Reporter::SummaryReporter
+
         # @rbs io: IO
         # @rbs show_timing: bool -- when false, suppresses timing display
         def initialize: (?io: IO, ?show_timing: bool) -> void

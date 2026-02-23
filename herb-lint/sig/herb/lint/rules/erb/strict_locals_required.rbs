@@ -65,6 +65,8 @@ module Herb
 
           def self.enabled_by_default?: () -> bool
 
+          @context: Context
+
           @locals_definition_found: bool
 
           # @rbs override

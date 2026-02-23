@@ -67,6 +67,24 @@ module Herb
         def members: () -> [ :ignore_file, :disable_comments ]
       end
 
+      # :nodoc:
+      class Directives
+        # Returns whether the file should be ignored entirely.
+        def ignore_file?: () -> bool
+
+        # Returns whether a rule is disabled on a given line.
+        #
+        # @rbs line: Integer -- 1-based line number
+        # @rbs rule_name: String -- the rule name to check
+        def disabled_at?: (Integer line, String rule_name) -> bool
+
+        # Filter offenses by disable comments.
+        # Returns a tuple of [kept_offenses, ignored_offenses].
+        #
+        # @rbs offenses: Array[Herb::Lint::Offense]
+        def filter_offenses: (Array[Herb::Lint::Offense] offenses) -> [ Array[Herb::Lint::Offense], Array[Herb::Lint::Offense] ]
+      end
+
       # Parse all directives from a template.
       #
       # @rbs parse_result: Herb::ParseResult -- parsed document

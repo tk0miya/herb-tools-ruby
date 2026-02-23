@@ -13,6 +13,9 @@ module Herb
         new(directives, ignored_offenses).detect
       end
 
+      # @rbs @directives: DirectiveParser::Directives
+      # @rbs @by_line: Hash[Integer, Array[String]]
+
       # @rbs directives: DirectiveParser::Directives
       # @rbs ignored_offenses: Array[Offense]
       def initialize(directives, ignored_offenses) #: void
