@@ -109,7 +109,7 @@ RSpec.describe Herb::Lint::Rules::Erb::NoSilentTagInAttributeName do
 
       it "reports an offense for each attribute" do
         expect(subject.size).to eq(2)
-        expect(subject.all? { |o| o.rule_name == "erb-no-silent-tag-in-attribute-name" }).to be true
+        expect(subject.all? { _1.rule_name == "erb-no-silent-tag-in-attribute-name" }).to be true
       end
     end
 

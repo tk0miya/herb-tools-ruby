@@ -59,7 +59,7 @@ RSpec.describe Herb::Lint::AutofixHelpers do
       let(:element) { parse_result.value.children.first }
       let(:open_tag) { element.open_tag }
       let(:attribute) do
-        open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+        open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
       end
 
       it "returns the children array" do
@@ -132,7 +132,7 @@ RSpec.describe Herb::Lint::AutofixHelpers do
       let(:div) { parse_result.value.children.first }
       let(:open_tag) { div.open_tag }
       let(:attribute) do
-        open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+        open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
       end
 
       it "returns nil" do
@@ -211,18 +211,18 @@ RSpec.describe Herb::Lint::AutofixHelpers do
       let(:element) { parse_result.value.children.first }
       let(:open_tag) { element.open_tag }
       let(:old_attr) do
-        open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+        open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
       end
       let(:new_attr) do
         new_source = '<div id="bar"></div>'
         new_parse = Herb.parse(new_source, track_whitespace: true)
         new_element = new_parse.value.children.first
-        new_element.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+        new_element.open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
       end
 
       it "replaces the attribute and returns true" do
         expect(subject).to be(true)
-        attributes = open_tag.children.select { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+        attributes = open_tag.children.select { _1.is_a?(Herb::AST::HTMLAttributeNode) }
         expect(attributes).to include(new_attr)
         expect(attributes).not_to include(old_attr)
       end
@@ -447,7 +447,7 @@ RSpec.describe Herb::Lint::AutofixHelpers do
       let(:parse_result) { Herb.parse(source, track_whitespace: true) }
       let(:element) { parse_result.value.children.first }
       let(:original_attr) do
-        element.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+        element.open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
       end
 
       it "creates a new attribute node with same attributes" do
@@ -477,10 +477,10 @@ RSpec.describe Herb::Lint::AutofixHelpers do
       let(:parse_result) { Herb.parse(source, track_whitespace: true) }
       let(:element) { parse_result.value.children.first }
       let(:original_attr) do
-        element.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) && c.name.children.first.content == "class" }
+        element.open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) && _1.name.children.first.content == "class" }
       end
       let(:new_attr) do
-        element.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) && c.name.children.first.content == "id" }
+        element.open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) && _1.name.children.first.content == "id" }
       end
       let(:new_name_node) { new_attr.name }
       let(:new_value_node) { new_attr.value }

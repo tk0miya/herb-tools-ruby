@@ -159,8 +159,8 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeEqualsSpacing do
       let(:source) { '<div class ="container"></div>' }
       let(:expected) { '<div class="container"></div>' }
       let(:node) do
-        div = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
-        div.open_tag.children.find { |n| n.is_a?(Herb::AST::HTMLAttributeNode) }
+        div = document.value.children.find { _1.is_a?(Herb::AST::HTMLElementNode) }
+        div.open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
       end
 
       it "removes the space before =" do
@@ -174,8 +174,8 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeEqualsSpacing do
       let(:source) { '<img src= "/logo.png" alt="Logo">' }
       let(:expected) { '<img src="/logo.png" alt="Logo">' }
       let(:node) do
-        img = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
-        img.open_tag.children.find { |n| n.is_a?(Herb::AST::HTMLAttributeNode) }
+        img = document.value.children.find { _1.is_a?(Herb::AST::HTMLElementNode) }
+        img.open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
       end
 
       it "removes the space after =" do
@@ -189,8 +189,8 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeEqualsSpacing do
       let(:source) { '<input type = "text" autocomplete="off">' }
       let(:expected) { '<input type="text" autocomplete="off">' }
       let(:node) do
-        input = document.value.children.find { |n| n.is_a?(Herb::AST::HTMLElementNode) }
-        input.open_tag.children.find { |n| n.is_a?(Herb::AST::HTMLAttributeNode) }
+        input = document.value.children.find { _1.is_a?(Herb::AST::HTMLElementNode) }
+        input.open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
       end
 
       it "removes spaces on both sides of =" do

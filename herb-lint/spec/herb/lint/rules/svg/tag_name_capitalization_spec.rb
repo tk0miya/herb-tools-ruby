@@ -223,7 +223,7 @@ RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
 
       it "fixes the tag name capitalization" do
         svg = document.value.children.first
-        clippath = svg.body.find { |c| c.is_a?(Herb::AST::HTMLElementNode) && c.tag_name.value == "clippath" }
+        clippath = svg.body.find { _1.is_a?(Herb::AST::HTMLElementNode) && _1.tag_name.value == "clippath" }
 
         expect(subject.autofix(clippath.open_tag, document)).to be(true)
         expect(subject.autofix(clippath.close_tag, document)).to be(true)
@@ -252,7 +252,7 @@ RSpec.describe Herb::Lint::Rules::Svg::TagNameCapitalization do
 
       it "fixes self-closing tag capitalization" do
         svg = document.value.children.first
-        animatemotion = svg.body.find { |c| c.is_a?(Herb::AST::HTMLElementNode) && c.tag_name.value == "animatemotion" }
+        animatemotion = svg.body.find { _1.is_a?(Herb::AST::HTMLElementNode) && _1.tag_name.value == "animatemotion" }
 
         expect(subject.autofix(animatemotion.open_tag, document)).to be(true)
 

@@ -45,7 +45,7 @@ RSpec.describe Herb::Format::FormatHelpers do
       let(:node) do
         ast = Herb.parse('<div class=" "></div>', track_whitespace: true).value
         element_node = ast.children.first
-        attribute_node = element_node.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+        attribute_node = element_node.open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
         attribute_node.value.children.first
       end
 
@@ -56,7 +56,7 @@ RSpec.describe Herb::Format::FormatHelpers do
       let(:node) do
         ast = Herb.parse('<div class="foo"></div>', track_whitespace: true).value
         element_node = ast.children.first
-        attribute_node = element_node.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+        attribute_node = element_node.open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
         attribute_node.value.children.first
       end
 
@@ -80,7 +80,7 @@ RSpec.describe Herb::Format::FormatHelpers do
       let(:node) do
         ast = Herb.parse("<div class='foo'></div>", track_whitespace: true).value
         element_node = ast.children.first
-        element_node.open_tag.children.find { |c| c.is_a?(Herb::AST::WhitespaceNode) }
+        element_node.open_tag.children.find { _1.is_a?(Herb::AST::WhitespaceNode) }
       end
 
       it { is_expected.to be false }
@@ -108,7 +108,7 @@ RSpec.describe Herb::Format::FormatHelpers do
       let(:node) do
         ast = Herb.parse('<div class=" "></div>', track_whitespace: true).value
         element_node = ast.children.first
-        attribute_node = element_node.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+        attribute_node = element_node.open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
         attribute_node.value.children.first
       end
 
@@ -119,7 +119,7 @@ RSpec.describe Herb::Format::FormatHelpers do
       let(:node) do
         ast = Herb.parse('<div class="foo"></div>', track_whitespace: true).value
         element_node = ast.children.first
-        attribute_node = element_node.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+        attribute_node = element_node.open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
         attribute_node.value.children.first
       end
 
@@ -372,7 +372,7 @@ RSpec.describe Herb::Format::FormatHelpers do
 
       it "returns all element nodes" do
         expect(subject.length).to eq(2)
-        expect(subject.all? { |n| n.is_a?(Herb::AST::HTMLElementNode) }).to be true
+        expect(subject.all? { _1.is_a?(Herb::AST::HTMLElementNode) }).to be true
       end
     end
 
@@ -385,7 +385,7 @@ RSpec.describe Herb::Format::FormatHelpers do
 
       it "excludes whitespace nodes" do
         expect(subject.length).to eq(2)
-        expect(subject.all? { |n| n.is_a?(Herb::AST::HTMLElementNode) }).to be true
+        expect(subject.all? { _1.is_a?(Herb::AST::HTMLElementNode) }).to be true
       end
     end
 
@@ -915,7 +915,7 @@ RSpec.describe Herb::Format::FormatHelpers do
     context "when child is a WhitespaceNode" do
       let(:child) do
         ast = Herb.parse("<div class='foo'></div>", track_whitespace: true).value
-        ast.children.first.open_tag.children.find { |c| c.is_a?(Herb::AST::WhitespaceNode) }
+        ast.children.first.open_tag.children.find { _1.is_a?(Herb::AST::WhitespaceNode) }
       end
 
       it { is_expected.to be false }

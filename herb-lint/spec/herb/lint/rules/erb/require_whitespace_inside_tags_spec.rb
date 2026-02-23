@@ -257,7 +257,7 @@ RSpec.describe Herb::Lint::Rules::Erb::RequireWhitespaceInsideTags do
       let(:source) { "<%case value %><%when 1 %>one<% end %>" }
 
       it "reports an offense for the case tag" do
-        offenses = subject.select { |o| o.message.include?("whitespace") }
+        offenses = subject.select { _1.message.include?("whitespace") }
         expect(offenses.size).to be >= 1
       end
     end
@@ -340,7 +340,7 @@ RSpec.describe Herb::Lint::Rules::Erb::RequireWhitespaceInsideTags do
       let(:expected) { "<% value %>\n<p>content</p>\n<%= other %>\n" }
 
       it "can fix each tag independently" do
-        nodes = document.value.children.select { |n| n.is_a?(Herb::AST::ERBContentNode) }
+        nodes = document.value.children.select { _1.is_a?(Herb::AST::ERBContentNode) }
         expect(nodes.size).to eq(2)
 
         result1 = described_class.new(matcher: build(:pattern_matcher)).autofix(nodes[0], document)

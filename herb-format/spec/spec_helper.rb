@@ -6,7 +6,7 @@ require "herb/format"
 FactoryBot.find_definitions
 
 # Load shared test helpers from spec/support
-Dir[File.join(__dir__, "support", "**", "*.rb")].each { |f| require f }
+Dir[File.join(__dir__, "support", "**", "*.rb")].each { require _1 }
 
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods

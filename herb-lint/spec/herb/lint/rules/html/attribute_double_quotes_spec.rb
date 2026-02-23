@@ -159,7 +159,7 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeDoubleQuotes do
       let(:source) { "<div class='container'>text</div>" }
       let(:expected) { '<div class="container">text</div>' }
       let(:node) do
-        document.value.children.first.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+        document.value.children.first.open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
       end
 
       it "replaces single quotes with double quotes" do
@@ -173,7 +173,7 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeDoubleQuotes do
       let(:source) { '<div class="container" id=\'main\'>text</div>' }
       let(:expected) { '<div class="container" id="main">text</div>' }
       let(:node) do
-        document.value.children.first.open_tag.children.select { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }.last
+        document.value.children.first.open_tag.children.select { _1.is_a?(Herb::AST::HTMLAttributeNode) }.last
       end
 
       it "replaces single quotes with double quotes only on the single-quoted attribute" do
@@ -187,7 +187,7 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeDoubleQuotes do
       let(:source) { "<div class='container' id='main'>text</div>" }
       let(:expected) { '<div class="container" id="main">text</div>' }
       let(:node) do
-        document.value.children.first.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+        document.value.children.first.open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
       end
 
       it "replaces single quotes with double quotes on the first attribute" do

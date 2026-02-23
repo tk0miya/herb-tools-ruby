@@ -77,7 +77,7 @@ RSpec.describe Herb::Lint::Rules::VisitorRule do
 
           def visit_html_element_node(node)
             if node.tag_name.value == "img"
-              attrs = node.open_tag.children.select { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+              attrs = node.open_tag.children.select { _1.is_a?(Herb::AST::HTMLAttributeNode) }
               has_alt = attrs.any? do |attr|
                 attr.name.children.first.content == "alt"
               end

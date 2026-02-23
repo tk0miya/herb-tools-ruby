@@ -59,7 +59,7 @@ module Herb
         #
         # @rbs offenses: Array[Herb::Lint::Offense]
         def filter_offenses(offenses) #: [Array[Herb::Lint::Offense], Array[Herb::Lint::Offense]]
-          offenses.partition { |offense| !disabled_at?(offense.line, offense.rule_name) }
+          offenses.partition { !disabled_at?(_1.line, _1.rule_name) }
         end
       end
 

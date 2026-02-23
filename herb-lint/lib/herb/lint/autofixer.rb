@@ -107,7 +107,7 @@ module Herb
         current_source = source
 
         # Sort by end_offset descending (apply from end to start to preserve offsets)
-        sorted_offenses = offenses.sort_by { |o| -(o.autofix_context&.end_offset || 0) }
+        sorted_offenses = offenses.sort_by { -(_1.autofix_context&.end_offset || 0) }
 
         sorted_offenses.each do |offense|
           context = offense.autofix_context

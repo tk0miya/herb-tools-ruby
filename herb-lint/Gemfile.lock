@@ -159,6 +159,9 @@ GEM
     rubocop-factory_bot (2.28.0)
       lint_roller (~> 1.1)
       rubocop (~> 1.72, >= 1.72.1)
+    rubocop-numbered-params (1.0.0)
+      lint_roller (~> 1.0)
+      rubocop (>= 1.72.1)
     rubocop-rake (0.7.1)
       lint_roller (~> 1.1)
       rubocop (>= 1.72.1)
@@ -227,6 +230,7 @@ DEPENDENCIES
   rspec
   rubocop
   rubocop-factory_bot
+  rubocop-numbered-params
   rubocop-rake
   rubocop-rbs_inline (>= 1.5.0.pre.2)
   rubocop-rspec

@@ -45,7 +45,7 @@ module Herb
 
       private
 
-      def generate_unified_diff #: String # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
+      def generate_unified_diff #: String # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         original_lines = original.lines
         formatted_lines = formatted.lines
 
@@ -61,8 +61,8 @@ module Herb
           old_start = hunk.first.position + 1
           new_start = hunk.first.position + 1
 
-          old_length = hunk.count { |change| ["-", "!"].include?(change.action) }
-          new_length = hunk.count { |change| ["+", "!"].include?(change.action) }
+          old_length = hunk.count { ["-", "!"].include?(_1.action) }
+          new_length = hunk.count { ["+", "!"].include?(_1.action) }
 
           output << "@@ -#{old_start},#{old_length} +#{new_start},#{new_length} @@"
 

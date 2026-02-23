@@ -37,7 +37,7 @@ RSpec.describe Herb::Lint::Rules::HerbDirective::DisableCommentValidRuleName do
         Herb::Lint::Rules::Html::ImgRequireAlt,
         Herb::Lint::Rules::Html::NoSelfClosing,
         Herb::Lint::Rules::Html::TagNameLowercase
-      ].each { |rule_class| registry.register(rule_class) }
+      ].each { registry.register(_1) }
       registry
     end
     let(:context) { build(:context, source:, config:, rule_registry:) }

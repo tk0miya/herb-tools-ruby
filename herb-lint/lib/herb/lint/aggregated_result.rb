@@ -94,7 +94,7 @@ module Herb
 
       # Returns the number of files that have offenses.
       def files_with_offenses_count #: Integer
-        @files_with_offenses_count ||= results.count { |r| r.offense_count.positive? }
+        @files_with_offenses_count ||= results.count { _1.offense_count.positive? }
       end
     end
   end

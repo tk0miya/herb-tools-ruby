@@ -791,7 +791,7 @@ module Herb
       # @rbs old_node: Herb::AST::Node -- the structural child to replace
       # @rbs new_node: Herb::AST::Node -- the replacement node
       def replace_structural_child(parse_result, parent, old_node, new_node) #: bool
-        attr = STRUCTURAL_ATTRIBUTES.find { |a| parent.respond_to?(a) && parent.send(a).equal?(old_node) }
+        attr = STRUCTURAL_ATTRIBUTES.find { parent.respond_to?(_1) && parent.send(_1).equal?(old_node) }
         return false unless attr
 
         new_parent = copy_erb_node(parent, attr => new_node)

@@ -84,7 +84,7 @@ module Herb
         return true if element.body.empty?
 
         # Has non-inline child → false
-        has_non_inline_child = element.body.any? { |child| !inline_node?(child) }
+        has_non_inline_child = element.body.any? { !inline_node?(_1) }
         return false if has_non_inline_child
 
         tag_name = get_tag_name(element)

@@ -21,7 +21,7 @@ RSpec.describe Herb::Lint::NodeLocator do
       let(:element) { parse_result.value.children.first }
       let(:open_tag) { element.open_tag }
       let(:attribute) do
-        open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+        open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
       end
 
       it "returns the open tag node as parent" do

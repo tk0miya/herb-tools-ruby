@@ -190,7 +190,7 @@ RSpec.describe Herb::Lint::Rules::Html::BooleanAttributesNoValue do
       let(:source) { '<input disabled="disabled">' }
       let(:expected) { "<input disabled>" }
       let(:node) do
-        document.value.children.first.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+        document.value.children.first.open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
       end
 
       it "removes the value" do
