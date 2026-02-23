@@ -7,21 +7,39 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that enforces consistent self-closing style for void elements.
-        #
-        # Void elements (e.g., br, img, input) cannot have children, so
-        # a trailing slash is unnecessary. This rule enforces omitting
-        # the self-closing slash for consistency.
+        # Description:
+        #   Disallow self-closing syntax (`<tag />`) in HTML for all elements.
+        #   In HTML5, the trailing slash in a start tag is obsolete and has no effect. Non-void elements
+        #   require explicit end tags, and void elements are self-contained without the slash.
         #
         # Good:
+        #   <span></span>
+        #   <div></div>
+        #   <section></section>
+        #   <custom-element></custom-element>
+        #
+        #   <img src="/logo.png" alt="Logo">
+        #   <input type="text" autocomplete="off">
         #   <br>
-        #   <img src="photo.jpg">
-        #   <input type="text">
+        #   <hr>
         #
         # Bad:
-        #   <br/>
-        #   <img src="photo.jpg" />
-        #   <input type="text" />
+        #   <span />
+        #
+        #   <div />
+        #
+        #   <section />
+        #
+        #   <custom-element />
+        #
+        #   <img src="/logo.png" alt="Logo" />
+        #
+        #   <input type="text" autocomplete="off" />
+        #
+        #   <br />
+        #
+        #   <hr />
+        #
         class NoSelfClosing < VisitorRule
           VOID_ELEMENTS = %w[
             area
@@ -41,17 +59,19 @@ module Herb
           ].freeze #: Array[String]
 
           def self.rule_name = "html-no-self-closing" #: String
-          def self.description = "Consistent self-closing style for void elements" #: String
+          def self.description = "Disallow self-closing syntax (`<tag />`) in HTML for all elements." #: String
           def self.default_severity = "error" #: String
           def self.safe_autofixable? = true #: bool
           def self.unsafe_autofixable? = false #: bool
 
           # @rbs override
           def visit_html_element_node(node)
-            if void_element?(node) && self_closing?(node)
+            if self_closing?(node)
+              tag = tag_name(node)
+              instead = void_element?(node) ? "<#{tag}>" : "<#{tag}></#{tag}>"
               add_offense_with_autofix(
-                message: "Void element '#{tag_name(node)}' should not have a self-closing slash",
-                location: node.open_tag.tag_closing.location,
+                message: "Use `#{instead}` instead of self-closing `<#{tag} />` for HTML compatibility.",
+                location: node.open_tag.location,
                 node:
               )
             end
@@ -66,7 +86,14 @@ module Herb
             children = open_tag.children.dup
             children.pop if children.last.is_a?(Herb::AST::WhitespaceNode)
             new_open_tag = copy_html_open_tag_node(open_tag, tag_closing:, children:)
-            replace_node(parse_result, open_tag, new_open_tag)
+
+            if void_element?(node)
+              replace_node(parse_result, open_tag, new_open_tag)
+            else
+              close_tag = build_close_tag(tag_name(node))
+              new_node = copy_html_element_node(node, open_tag: new_open_tag, close_tag:)
+              replace_node(parse_result, node, new_node)
+            end
           end
 
           private
