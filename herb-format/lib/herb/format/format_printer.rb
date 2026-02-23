@@ -727,6 +727,65 @@ module Herb
           push(indent + erb_text)
         end
       end
+
+      # Visit ERB comment node (<%# ... %>).
+      # Normalizes single-line comments and formats multi-line comments as blocks.
+      #
+      # Single-line: <%#Comment%> -> <%# Comment %>
+      # Multi-line:
+      #   <%#
+      #     line1
+      #     line2
+      #   %>
+      #
+      # @rbs node: Herb::AST::ERBContentNode
+      def visit_erb_comment_node(node) #: void # rubocop:disable Metrics/MethodLength
+        open = node.tag_opening&.value || "<%#"
+        content = node.content&.value || ""
+        close = node.tag_closing&.value || "%>"
+
+        content_lines = content.split("\n", -1)
+        content_trimmed_lines = content.strip.split("\n")
+
+        # Single-line comment
+        if content_lines.length == 1 && content_trimmed_lines.length == 1
+          starts_with_space = content[0] == " "
+          before = starts_with_space ? "" : " "
+
+          if @inline_mode
+            push(open + before + content.rstrip + " " + close)
+          else
+            push_with_indent(open + before + content.rstrip + " " + close)
+          end
+
+          return
+        end
+
+        # Multi-line but single trimmed line
+        if content_trimmed_lines.length == 1
+          if @inline_mode
+            push(open + " " + content.strip + " " + close)
+          else
+            push_with_indent(open + " " + content.strip + " " + close)
+          end
+
+          return
+        end
+
+        # Multi-line comment
+        first_line_empty = content_lines[0].strip.empty?
+        dedented_content = dedent(first_line_empty ? content : content.lstrip)
+
+        push_with_indent(open)
+
+        with_indent do
+          dedented_content.split("\n").each do |line|
+            push_with_indent(line)
+          end
+        end
+
+        push_with_indent(close)
+      end
     end
   end
 end

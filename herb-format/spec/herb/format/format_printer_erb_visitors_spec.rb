@@ -267,5 +267,96 @@ RSpec.describe Herb::Format::FormatPrinter do
         end
       end
     end
+
+    context "with ERBContentNode (comment)" do
+      let(:node) { Herb.parse(source, track_whitespace: true).value.children.first }
+
+      context "when inline_mode is false" do
+        before { printer.inline_mode = false }
+
+        context "with single-line comment without leading space" do
+          let(:source) { "<%#Comment%>" }
+
+          it "normalizes spacing" do
+            expect(subject).to eq(["<%# Comment %>"])
+          end
+        end
+
+        context "with single-line comment with leading space" do
+          let(:source) { "<%# Comment %>" }
+
+          it "preserves leading space and normalizes trailing" do
+            expect(subject).to eq(["<%# Comment %>"])
+          end
+        end
+
+        context "with single-line comment with trailing whitespace" do
+          let(:source) { "<%# Comment   %>" }
+
+          it "strips trailing whitespace from comment content" do
+            expect(subject).to eq(["<%# Comment %>"])
+          end
+        end
+
+        context "with multi-line but single trimmed line" do
+          let(:source) { "<%#\n  hello  \n%>" }
+
+          it "collapses to a single line" do
+            expect(subject).to eq(["<%# hello %>"])
+          end
+        end
+
+        context "with multi-line comment (first line empty)" do
+          let(:source) { "<%#\n  hello\n  world\n%>" }
+
+          it "outputs block format with dedented content" do
+            expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+              <%#
+                hello
+                world
+              %>
+            EXPECTED
+          end
+        end
+
+        context "with indentation" do
+          let(:source) { "<%# Comment %>" }
+
+          before { printer.indent_level = 1 }
+
+          it "applies current indentation" do
+            expect(subject).to eq(["  <%# Comment %>"])
+          end
+        end
+      end
+
+      context "when inline_mode is true" do
+        before { printer.inline_mode = true }
+
+        context "with single-line comment" do
+          let(:source) { "<%#Comment%>" }
+
+          it "normalizes spacing without indentation" do
+            expect(subject).to eq(["<%# Comment %>"])
+          end
+        end
+
+        context "with single-line comment with leading space" do
+          let(:source) { "<%# Comment %>" }
+
+          it "preserves leading space" do
+            expect(subject).to eq(["<%# Comment %>"])
+          end
+        end
+
+        context "with multi-line but single trimmed line" do
+          let(:source) { "<%#\n  hello  \n%>" }
+
+          it "collapses to a single line" do
+            expect(subject).to eq(["<%# hello %>"])
+          end
+        end
+      end
+    end
   end
 end

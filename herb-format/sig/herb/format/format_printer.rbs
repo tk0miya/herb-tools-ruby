@@ -328,6 +328,12 @@ module Herb
       #
       # @rbs node: Herb::AST::ERBContentNode
       def print_erb_node: (Herb::AST::ERBContentNode node) -> void
+
+      # Visit ERB comment node (<%# ... %>).
+      # Normalizes single-line comments and formats multi-line comments as blocks.
+      #
+      # @rbs node: Herb::AST::ERBContentNode
+      def visit_erb_comment_node: (Herb::AST::ERBContentNode node) -> void
     end
   end
 end

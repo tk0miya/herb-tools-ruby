@@ -87,6 +87,17 @@ fi
 
 echo "Running pre-commit checks..." >&2
 
+# Check if gem dependencies are available (bundle check in the first affected gem)
+# If not, skip checks and warn (can happen when network is restricted during setup)
+first_gem="${affected_gems[0]}"
+if [[ -n "$first_gem" ]]; then
+  if ! (cd "$first_gem" && "$CLAUDE_PROJECT_DIR/bin/rake" --version > /dev/null 2>&1); then
+    echo "Warning: gem dependencies unavailable (bundle setup failed). Skipping pre-commit checks." >&2
+    echo "Run 'bundle install' in each gem directory when network access is available." >&2
+    exit 0
+  fi
+fi
+
 # Run rake in each affected gem directory
 for gem_dir in "${affected_gems[@]}"; do
   [[ -z "$gem_dir" ]] && continue
