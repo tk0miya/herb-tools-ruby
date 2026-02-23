@@ -41,8 +41,6 @@ module Herb
 
         @offenses: Array[Offense]
 
-        @context: Context
-
         # Check the document for rule violations.
         #
         # @rbs document: Herb::ParseResult -- parsed document to check

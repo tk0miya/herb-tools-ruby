@@ -43,7 +43,6 @@ module Herb
           def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
 
-          # @rbs @context: Context
           # @rbs @first_locals_line: Integer?
 
           # @rbs override
@@ -120,7 +119,7 @@ module Herb
 
           # Check if the current file is a partial (basename starts with underscore).
           def partial_file? #: bool
-            File.basename(@context.file_path).start_with?("_")
+            File.basename(context.file_path).start_with?("_")
           end
 
           # Track first locals declaration line. Returns true if a declaration was already seen.

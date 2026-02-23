@@ -33,7 +33,6 @@ module Herb
         #   extend RuleMethods::ClassMethods
 
         # @rbs @offenses: Array[Offense]
-        # @rbs @context: Context
 
         # Check the document for rule violations by iterating over parsed directives.
         # @rbs override
@@ -49,6 +48,8 @@ module Herb
         end
 
         private
+
+        attr_reader :context #: Context
 
         # Compute the source location for a rule name within a disable comment.
         #
