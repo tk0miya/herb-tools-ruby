@@ -71,7 +71,7 @@ Part G: Integration & Testing                         ← Integration
 - [x] Task 2.19: Attribute Multiline Rendering
 - [x] Task 2.20: Class Attribute Formatting
 - [x] Task 2.21: Quote Normalization
-- [ ] Task 2.21b: HTML Open/Close Tag Visitors
+- [x] Task 2.21b: HTML Open/Close Tag Visitors
 - [ ] Task 2.21c: Migrate render_multiline_attributes Tests to Integration Tests
 
 **Progress: 15/22 tasks completed**

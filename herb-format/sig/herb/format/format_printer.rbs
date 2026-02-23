@@ -34,21 +34,23 @@ module Herb
       # @rbs ignore_errors: bool
       def self.format: (Herb::ParseResult | Herb::AST::Node input, format_context: Context, ?ignore_errors: bool) -> String
 
-      @node_is_multiline: Hash[Herb::AST::Node, bool]
-
-      @element_formatting_analysis: Hash[Herb::AST::HTMLElementNode, ElementAnalysis]
-
-      @current_attribute_name: String?
-
-      @in_conditional_open_tag_context: bool
-
-      @inline_mode: bool
-
-      @string_line_count: Integer
+      @lines: Array[String]
 
       @indent_level: Integer
 
-      @lines: Array[String]
+      @string_line_count: Integer
+
+      @inline_mode: bool
+
+      @in_conditional_open_tag_context: bool
+
+      @current_attribute_name: String?
+
+      @element_stack: Array[Herb::AST::HTMLElementNode]
+
+      @element_formatting_analysis: Hash[Herb::AST::HTMLElementNode, ElementAnalysis?]
+
+      @node_is_multiline: Hash[Herb::AST::Node, bool]
 
       # @rbs indent_width: Integer
       # @rbs max_line_length: Integer
@@ -64,20 +66,26 @@ module Herb
       # @rbs override
       def visit_whitespace_node: ...
 
-      # Visit HTML element node. Handles void elements (no close tag) and
-      # preserved elements (content unchanged) specially.
+      # Visit HTML element node.
+      # Pushes/pops @element_stack around child visiting so that open and close
+      # tag visitors can access the enclosing element via current_element.
+      # Pre-computes ElementAnalysis for non-preserved elements.
       #
       # @rbs override
       def visit_html_element_node: ...
 
       # Visit HTML open tag node.
-      # Outputs the opening tag structure: <tag_name attributes>
+      # Dispatches to inline or multiline rendering based on pre-computed
+      # ElementAnalysis. Falls back to push_to_last_line for preserved elements
+      # and during recursive analysis captures.
       #
       # @rbs override
       def visit_html_open_tag_node: ...
 
       # Visit HTML close tag node.
-      # Outputs the closing tag structure: </tag_name>
+      # Appends inline when analysis says close_tag_inline or when in inline mode.
+      # Otherwise pushes to a new indented line.
+      # Falls back to push_to_last_line for preserved elements (no analysis).
       #
       # @rbs override
       def visit_html_close_tag_node: ...
@@ -112,6 +120,13 @@ module Herb
       def visit_erb_if_node: ...
 
       private
+
+      # Return the element currently being visited (top of element stack).
+      # Raises if called outside of visit_html_element_node context.
+      def current_element: () -> Herb::AST::HTMLElementNode
+
+      # Return the tag name of the current element.
+      def current_tag_name: () -> String
 
       # Current indent string based on indent_level.
       def indent: () -> String
@@ -150,9 +165,11 @@ module Herb
       # @rbs &block: () -> void
       def with_inline_mode: () { () -> void } -> void
 
-      # Visit the body of an HTML element. For preserved elements (script,
-      # style, pre, textarea), content is output as-is using IdentityPrinter.
-      # For normal elements, content is formatted with increased indentation.
+      # Visit the body of an HTML element.
+      # For preserved elements (script, style, pre, textarea), content is output
+      # as-is using IdentityPrinter. For elements with inline content analysis,
+      # body is rendered in inline mode. For block elements, content is formatted
+      # with increased indentation.
       #
       # @rbs node: Herb::AST::HTMLElementNode
       def visit_element_body: (Herb::AST::HTMLElementNode node) -> void
@@ -310,7 +327,8 @@ module Herb
       def reconstruct_erb_node: (Herb::AST::ERBContentNode node, ?with_formatting: bool) -> String
 
       # Print an ERB node to the output buffer.
-      # In inline mode no indentation is added; otherwise the current indent is prepended.
+      # In inline mode, appends to the last line without a newline separator.
+      # Otherwise, pushes a new line with the current indent prepended.
       #
       # @rbs node: Herb::AST::ERBContentNode
       def print_erb_node: (Herb::AST::ERBContentNode node) -> void
