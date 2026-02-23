@@ -322,6 +322,69 @@ RSpec.describe Herb::Format::FormatPrinter do
           expect(subject).to include("\n>")
         end
       end
+
+      context "when open tag attributes exceed max_line_length" do
+        let(:max_line_length) { 30 }
+        let(:source) { '<button type="submit" class="btn" disabled></button>' }
+
+        it "renders each attribute on its own indented line" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <button
+              type="submit"
+              class="btn"
+              disabled
+            >
+            </button>
+          ERB
+        end
+      end
+
+      context "when open tag of a void element exceeds max_line_length" do
+        let(:max_line_length) { 20 }
+        let(:source) { '<input type="text" name="email">' }
+
+        it "renders each attribute on its own indented line with />" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <input
+              type="text"
+              name="email"
+            />
+          ERB
+        end
+      end
+
+      context "when open tag of a nested element exceeds max_line_length" do
+        let(:max_line_length) { 20 }
+        let(:source) { '<section><div class="foo" id="bar"></div></section>' }
+
+        it "applies correct indentation to multiline attributes within the nested context" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <section>
+              <div
+                class="foo"
+                id="bar"
+              >
+              </div>
+            </section>
+          ERB
+        end
+      end
+
+      context "with ERB expression node directly in open tag" do
+        let(:max_line_length) { 20 }
+        let(:source) { '<div class="foo" id="bar" <%= dynamic_attr %>></div>' }
+
+        it "visits ERB expression nodes within multiline attribute rendering" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <div
+              class="foo"
+              id="bar"
+              <%= dynamic_attr %>
+            >
+            </div>
+          ERB
+        end
+      end
     end
 
     context "with mixed HTML and ERB content" do

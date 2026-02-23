@@ -63,8 +63,20 @@ module Herb
 
       # Should render inline? Check attribute count and line length.
       #
+      # Elements with a single HTML attribute (or none) are always rendered inline —
+      # the class attribute value wrapping handles long class values as a separate concern.
+      # Elements with multiple HTML attributes are rendered inline only when the
+      # normalized single-line open tag fits within max_line_length at the current indent.
+      #
       # @rbs element: Herb::AST::HTMLElementNode
       def should_render_inline?: (Herb::AST::HTMLElementNode element) -> bool
+
+      # Compute the normalized single-line string representation of an attribute.
+      # Does not apply class value wrapping — whitespace is collapsed to a single space.
+      # Used by should_render_inline? for line-length checks only.
+      #
+      # @rbs attribute: Herb::AST::HTMLAttributeNode
+      def inline_attribute_str: (Herb::AST::HTMLAttributeNode attribute) -> String
 
       # Is this node inline (can appear on the same line as surrounding content)?
       #

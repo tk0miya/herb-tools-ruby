@@ -33,7 +33,8 @@ module Herb
         if content_preserving?(tag_name)
           ElementAnalysis.new(open_tag_inline: false, element_content_inline: false, close_tag_inline: false)
         elsif element.is_void
-          ElementAnalysis.new(open_tag_inline: true, element_content_inline: true, close_tag_inline: true)
+          open_tag_inline = should_render_open_tag_inline?(element)
+          ElementAnalysis.new(open_tag_inline:, element_content_inline: true, close_tag_inline: true)
         else
           open_tag_inline = should_render_open_tag_inline?(element)
           element_content_inline = should_render_element_content_inline?(element, open_tag_inline)
@@ -142,11 +143,43 @@ module Herb
 
       # Should render inline? Check attribute count and line length.
       #
+      # Elements with a single HTML attribute (or none) are always rendered inline —
+      # the class attribute value wrapping handles long class values as a separate concern.
+      # Elements with multiple HTML attributes are rendered inline only when the
+      # normalized single-line open tag fits within max_line_length at the current indent.
+      #
       # @rbs element: Herb::AST::HTMLElementNode
-      def should_render_inline?(element) #: bool # rubocop:disable Lint/UnusedMethodArgument
-        # TODO: Implement proper attribute count and line length check
-        # (requires accessible capture method on printer)
-        true
+      def should_render_inline?(element) #: bool
+        attributes = element.open_tag.child_nodes.select { _1.is_a?(Herb::AST::HTMLAttributeNode) }
+
+        # Single attribute (or none) → always inline.
+        # Class attribute value wrapping handles long values separately.
+        return true if attributes.length <= 1
+
+        # Multiple attributes: check if the normalized single-line tag fits.
+        tag_name = get_tag_name(element)
+        tag_closing = element.open_tag.tag_closing&.value || ">"
+
+        attrs_str = attributes.map { " #{inline_attribute_str(_1)}" }.join
+        open_tag_str = "<#{tag_name}#{attrs_str}#{tag_closing}"
+
+        indent_size = @printer.indent_level * @indent_width
+        open_tag_str.length + indent_size <= @max_line_length
+      end
+
+      # Compute the normalized single-line string representation of an attribute.
+      # Does not apply class value wrapping — whitespace is collapsed to a single space.
+      # Used by should_render_inline? for line-length checks only.
+      #
+      # @rbs attribute: Herb::AST::HTMLAttributeNode
+      def inline_attribute_str(attribute) #: String
+        name = get_attribute_name(attribute)
+        return name if attribute.value.nil?
+
+        open_quote, close_quote = get_attribute_quotes(attribute.value)
+        raw = render_attribute_value_content(attribute.value)
+        content = raw.gsub(/[ \t\n\r]+/, " ").strip
+        "#{name}=#{open_quote}#{content}#{close_quote}"
       end
 
       # Is this node inline (can appear on the same line as surrounding content)?

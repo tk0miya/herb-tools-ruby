@@ -219,32 +219,6 @@ module Herb
       # @rbs attribute: Herb::AST::HTMLAttributeNode
       def render_attribute: (Herb::AST::HTMLAttributeNode attribute) -> String
 
-      # Extract the attribute name as a string.
-      #
-      # @rbs attribute: Herb::AST::HTMLAttributeNode
-      def get_attribute_name: (Herb::AST::HTMLAttributeNode attribute) -> String
-
-      # Return normalized quote pair for an attribute value node.
-      # Single quotes are converted to double quotes unless the content contains
-      # a double quote character, in which case single quotes are preserved.
-      # Unquoted attribute values are given double quotes.
-      #
-      # @rbs attribute_value: Herb::AST::HTMLAttributeValueNode
-      def get_attribute_quotes: (Herb::AST::HTMLAttributeValueNode attribute_value) -> [ String, String ]
-
-      # Extract plain text content from an attribute value node.
-      # Returns text from HTMLTextNode and LiteralNode children only
-      # (ERB nodes are excluded).
-      #
-      # @rbs attribute_value: Herb::AST::HTMLAttributeValueNode
-      def get_html_text_content: (Herb::AST::HTMLAttributeValueNode attribute_value) -> String
-
-      # Render the content of an attribute value node.
-      # Handles literal content and embedded ERB nodes.
-      #
-      # @rbs attribute_value: Herb::AST::HTMLAttributeValueNode
-      def render_attribute_value_content: (Herb::AST::HTMLAttributeValueNode attribute_value) -> String
-
       # Render the class attribute with optional multiline wrapping for long values.
       # Normalizes whitespace and wraps long class lists across multiple lines
       # when the attribute would exceed max_line_length.
@@ -340,12 +314,6 @@ module Herb
       #
       # @rbs content: String
       def format_erb_content: (String content) -> String
-
-      # Extract the string value from an optional token node.
-      # Returns empty string when the token is absent.
-      #
-      # @rbs token: untyped
-      def token_value: (untyped token) -> String
 
       # Reconstruct an ERB node as a string.
       # When with_formatting is true, the content is normalized via format_erb_content.
