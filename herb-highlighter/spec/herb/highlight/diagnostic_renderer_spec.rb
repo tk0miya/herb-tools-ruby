@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Herb::Highlight::DiagnosticRenderer do
-  # Helper to strip ANSI escape sequences from a string
   def strip_ansi(str)
     str.gsub(/\e\[[^m]*m/, "")
   end
@@ -20,14 +19,15 @@ RSpec.describe Herb::Highlight::DiagnosticRenderer do
 
   let(:plain_syntax_renderer) { Herb::Highlight::SyntaxRenderer.new }
 
+  # Subject: offense at line 4, column 8, end_column 10, context_lines 2, tty off
   describe "#render" do
     subject(:rendered) do
       described_class.new(syntax_renderer: plain_syntax_renderer, context_lines: 2, tty: false)
                      .render(source_lines, line: 4, column: 8, end_line: 4, end_column: 10)
     end
 
-    it "outputs the correct number of lines (context + offense + caret)" do
-      # lines 2..6 = 5 source lines + 1 caret line = 6 output lines
+    it "outputs the correct number of lines (context + offense + pointer)" do
+      # lines 2..6 = 5 source lines + 1 pointer line = 6 output lines
       expect(rendered.lines.count).to eq(6)
     end
 
@@ -47,47 +47,65 @@ RSpec.describe Herb::Highlight::DiagnosticRenderer do
       expect(plain).to include('<div class="foo">')
     end
 
-    it "includes correct line numbers" do
+    it "uses the arrow prefix on the offense line" do
       plain = strip_ansi(rendered)
-      expect(plain).to include("2 |")
-      expect(plain).to include("3 |")
-      expect(plain).to include("4 |")
-      expect(plain).to include("5 |")
-      expect(plain).to include("6 |")
+      expect(plain).to include("  → ")
     end
 
-    it "right-justifies line numbers" do
+    it "uses 4-space prefix on context lines" do
       plain = strip_ansi(rendered)
-      # All numbers should be padded to the same width (1 char for single-digit)
-      expect(plain).to match(/  \d \|/)
+      lines = plain.lines.reject { |l| l.include?('<div class="foo">') || l.include?("~") }
+      expect(lines).to all(start_with("    "))
     end
 
-    it "appends a caret row after the offense line" do
+    it "uses '│' as separator" do
       plain = strip_ansi(rendered)
-      lines = plain.lines
-      # offense line is at index 2 (lines 2,3,4,caret,5,6 = offense at position 2, caret at 3)
-      offense_index = lines.index { |l| l.include?('<div class="foo">') }
-      caret_line = lines[offense_index + 1]
-      expect(caret_line).to include("^")
+      expect(plain).to include("│")
     end
 
-    it "places the caret at the correct column" do
+    it "uses 3-digit right-justified line numbers" do
       plain = strip_ansi(rendered)
-      lines = plain.lines
-      offense_index = lines.index { |l| l.include?('<div class="foo">') }
-      caret_line = lines[offense_index + 1]
-      # The caret row is "  <width spaces> | <column-1 spaces>^^^"
-      # column=8 → 7 spaces before the first ^, plus 1 space from " | " = 8 spaces after |
-      expect(caret_line).to match(/\| {8}\^/)
+      expect(plain).to match(/  2 │/)
+      expect(plain).to match(/  3 │/)
+      expect(plain).to match(/  4 │/)
+      expect(plain).to match(/  5 │/)
+      expect(plain).to match(/  6 │/)
     end
 
-    it "produces correct caret length for multi-column offense" do
+    it "appends a pointer row after the offense line" do
       plain = strip_ansi(rendered)
       lines = plain.lines
       offense_index = lines.index { |l| l.include?('<div class="foo">') }
-      caret_line = lines[offense_index + 1]
-      # end_column=10, column=8 → length = (10-8)+1 = 3
-      expect(caret_line).to include("^^^")
+      pointer_line = lines[offense_index + 1]
+      expect(pointer_line).to include("~")
+    end
+
+    it "places the pointer at the correct column" do
+      plain = strip_ansi(rendered)
+      lines = plain.lines
+      offense_index = lines.index { |l| l.include?('<div class="foo">') }
+      pointer_line = lines[offense_index + 1]
+      # TypeScript: pointerSpacing = adjustedColumn + 2 = (column - 1) + 2 = column + 1
+      # column=8 → 9 spaces after │
+      expect(pointer_line).to match(/│ {9}~/)
+    end
+
+    it "produces correct pointer length for multi-column offense" do
+      plain = strip_ansi(rendered)
+      lines = plain.lines
+      offense_index = lines.index { |l| l.include?('<div class="foo">') }
+      pointer_line = lines[offense_index + 1]
+      # TypeScript: Math.max(1, end.column - start.column) = Math.max(1, 10 - 8) = 2
+      expect(pointer_line).to match(/~~/)
+      expect(pointer_line).not_to match(/~~~/)
+    end
+
+    it "pointer row starts with 8 spaces then │" do
+      plain = strip_ansi(rendered)
+      lines = plain.lines
+      offense_index = lines.index { |l| l.include?('<div class="foo">') }
+      pointer_line = lines[offense_index + 1]
+      expect(pointer_line).to start_with("        │")
     end
   end
 
@@ -99,6 +117,12 @@ RSpec.describe Herb::Highlight::DiagnosticRenderer do
 
     it "contains no ANSI escape codes" do
       expect(rendered).not_to match(/\e\[/)
+    end
+
+    it "still uses structural characters (→, │, ~)" do
+      expect(rendered).to include("  → ")
+      expect(rendered).to include("│")
+      expect(rendered).to include("~")
     end
   end
 
@@ -119,15 +143,13 @@ RSpec.describe Herb::Highlight::DiagnosticRenderer do
                      .render(source_lines, line: 1, column: 1)
     end
 
-    it "does not include lines before line 1" do
+    it "first output line is line 1" do
       plain = strip_ansi(rendered)
-      lines = plain.lines
-      # First line should be line 1
-      expect(lines.first).to include("1 |")
+      expect(plain.lines.first).to match(/  1 │/)
     end
 
-    it "includes correct number of lines (line 1 + 2 context after + caret)" do
-      # lines 1..3 = 3 source lines + 1 caret = 4 output lines
+    it "includes correct number of lines (line 1 + 2 context after + pointer)" do
+      # lines 1..3 = 3 source lines + 1 pointer = 4 output lines
       expect(rendered.lines.count).to eq(4)
     end
   end
@@ -140,11 +162,11 @@ RSpec.describe Herb::Highlight::DiagnosticRenderer do
 
     it "does not include lines after the last line" do
       plain = strip_ansi(rendered)
-      expect(plain).not_to include("8 |")
+      expect(plain).not_to match(/  8 │/)
     end
 
-    it "includes correct number of lines (2 context before + last line + caret)" do
-      # lines 5..7 = 3 source lines + 1 caret = 4 output lines
+    it "includes correct number of lines (2 context before + last line + pointer)" do
+      # lines 5..7 = 3 source lines + 1 pointer = 4 output lines
       expect(rendered.lines.count).to eq(4)
     end
   end
@@ -155,10 +177,9 @@ RSpec.describe Herb::Highlight::DiagnosticRenderer do
                      .render(source_lines, line: 1, column: 2)
     end
 
-    it "produces a caret of length 1" do
-      lines = rendered.lines
-      caret_line = lines[1]
-      expect(caret_line.gsub(/\s/, "")).to eq("|^")
+    it "produces a pointer of length 1" do
+      pointer_line = rendered.lines[1]
+      expect(pointer_line.gsub(/[^│~]/, "")).to eq("│~")
     end
   end
 
@@ -168,12 +189,12 @@ RSpec.describe Herb::Highlight::DiagnosticRenderer do
                      .render(source_lines, line: 2, column: 1, end_line: 3, end_column: 5)
     end
 
-    it "renders a caret of length 1 for multi-line offense" do
+    it "renders a pointer of length 1 for multi-line offense" do
       lines = rendered.lines
       offense_index = lines.index { |l| strip_ansi(l).include?("<body>") }
-      caret_line = lines[offense_index + 1]
-      caret_part = caret_line.split("|").last&.strip
-      expect(caret_part).to eq("^")
+      pointer_line = lines[offense_index + 1]
+      pointer_part = pointer_line.split("│").last&.strip
+      expect(pointer_part).to eq("~")
     end
   end
 
