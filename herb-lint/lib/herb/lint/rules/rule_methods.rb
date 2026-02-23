@@ -59,7 +59,6 @@ module Herb
         end
 
         # @rbs @offenses: Array[Offense]
-        # @rbs @context: Context
 
         # Check the document for rule violations.
         #

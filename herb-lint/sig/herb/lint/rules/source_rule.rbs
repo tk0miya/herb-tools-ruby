@@ -21,8 +21,6 @@ module Herb
 
         @offenses: Array[Offense]
 
-        @context: Context
-
         # @rbs override
         def check: ...
 
@@ -50,6 +48,8 @@ module Herb
         def on_new_investigation: ...
 
         private
+
+        attr_reader context: Context
 
         @source: String
 

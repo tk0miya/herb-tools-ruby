@@ -41,7 +41,6 @@ module Herb
         end
 
         # @rbs @offenses: Array[Offense]
-        # @rbs @context: Context
 
         # Check the document for rule violations by visiting AST nodes.
         # @rbs override
@@ -52,6 +51,10 @@ module Herb
           document.visit(self)
           @offenses
         end
+
+        private
+
+        attr_reader :context #: Context
       end
     end
   end

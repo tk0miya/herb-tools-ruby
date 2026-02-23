@@ -36,15 +36,13 @@ module Herb
           def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
 
-          # @rbs @context: Context
-
           private
 
           # @rbs override
           def check_disable_comment(comment)
             return unless comment.match
 
-            valid_names = @context.valid_rule_names
+            valid_names = context.valid_rule_names
             return if valid_names.empty?
 
             comment.rule_name_details.each do |detail|

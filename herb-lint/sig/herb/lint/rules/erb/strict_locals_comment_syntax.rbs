@@ -43,8 +43,6 @@ module Herb
 
           def self.unsafe_autofixable?: () -> bool
 
-          @context: Context
-
           @first_locals_line: Integer?
 
           # @rbs override

@@ -23,7 +23,6 @@ module Herb
         #   extend RuleMethods::ClassMethods
 
         # @rbs @offenses: Array[Offense]
-        # @rbs @context: Context
 
         # @rbs override
         def check(_parse_result, context)
@@ -68,6 +67,8 @@ module Herb
         end
 
         private
+
+        attr_reader :context #: Context
 
         # @rbs @source: String
 

@@ -64,7 +64,6 @@ module Herb
           def self.unsafe_autofixable? = false #: bool
           def self.enabled_by_default? = false #: bool
 
-          # @rbs @context: Context
           # @rbs @locals_definition_found: bool
 
           # @rbs override
@@ -105,7 +104,7 @@ module Herb
 
           # Check if the current file is a partial (basename starts with underscore)
           def partial_file? #: bool
-            file_path = @context.file_path
+            file_path = context.file_path
             basename = File.basename(file_path)
             basename.start_with?("_")
           end
