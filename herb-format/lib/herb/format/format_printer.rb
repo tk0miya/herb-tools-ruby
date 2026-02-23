@@ -50,7 +50,8 @@ module Herb
       # @rbs @inline_mode: bool
       # @rbs @in_conditional_open_tag_context: bool
       # @rbs @current_attribute_name: String?
-      # @rbs @element_formatting_analysis: Hash[Herb::AST::HTMLElementNode, ElementAnalysis]
+      # @rbs @element_stack: Array[Herb::AST::HTMLElementNode]
+      # @rbs @element_formatting_analysis: Hash[Herb::AST::HTMLElementNode, ElementAnalysis?]
       # @rbs @node_is_multiline: Hash[Herb::AST::Node, bool]
 
       # @rbs indent_width: Integer
@@ -67,6 +68,7 @@ module Herb
         @inline_mode = false
         @in_conditional_open_tag_context = false
         @current_attribute_name = nil
+        @element_stack = []
         @element_formatting_analysis = {}
         @node_is_multiline = {}
       end
@@ -90,14 +92,27 @@ module Herb
 
       # -- HTML element nodes --
 
-      # Visit HTML element node. Handles void elements (no close tag) and
-      # preserved elements (content unchanged) specially.
+      # Visit HTML element node.
+      # Pushes/pops @element_stack around child visiting so that open and close
+      # tag visitors can access the enclosing element via current_element.
+      # Pre-computes ElementAnalysis for non-preserved elements.
       #
       # @rbs override
-      def visit_html_element_node(node)
+      def visit_html_element_node(node) # rubocop:disable Metrics/AbcSize
         tag_name = node.tag_name&.value || ""
 
+        @element_stack.push(node)
+
         context.enter_tag(tag_name) do
+          # Pre-compute analysis for non-preserved elements.
+          # Use key? guard to break infinite recursion when ElementAnalyzer calls
+          # capture { @printer.visit(element) } for inline-length checks.
+          unless preserved_element?(tag_name) || @element_formatting_analysis.key?(node)
+            @element_formatting_analysis[node] = nil # registers key now so recursive visit skips re-analysis
+            analyzer = ElementAnalyzer.new(self, max_line_length, indent_width)
+            @element_formatting_analysis[node] = analyzer.analyze(node)
+          end
+
           visit(node.open_tag)
 
           unless node.is_void
@@ -105,27 +120,56 @@ module Herb
             visit(node.close_tag) if node.close_tag
           end
         end
+      ensure
+        @element_stack.pop
       end
 
       # Visit HTML open tag node.
-      # Outputs the opening tag structure: <tag_name attributes>
+      # Dispatches to inline or multiline rendering based on pre-computed
+      # ElementAnalysis. Falls back to push_to_last_line for preserved elements
+      # and during recursive analysis captures.
       #
       # @rbs override
-      def visit_html_open_tag_node(node)
-        push_to_last_line(node.tag_opening.value)
-        push_to_last_line(node.tag_name.value)
-        push_to_last_line(render_attributes_inline(node))
-        push_to_last_line(node.tag_closing.value)
+      def visit_html_open_tag_node(node) # rubocop:disable Metrics/AbcSize
+        analysis = @element_formatting_analysis[current_element]
+
+        if analysis
+          inline_attrs = render_attributes_inline(node)
+          tag_str = "<#{current_tag_name}#{inline_attrs}#{node.tag_closing.value}"
+
+          if analysis.open_tag_inline
+            if @inline_mode
+              push_to_last_line(tag_str)
+            else
+              push(indent + tag_str)
+            end
+          else
+            render_multiline_attributes(current_tag_name, node.child_nodes, void_element?(current_tag_name))
+          end
+        else
+          # Fallback: used for preserved elements and during recursive analysis captures
+          push_to_last_line(node.tag_opening.value)
+          push_to_last_line(node.tag_name.value)
+          push_to_last_line(render_attributes_inline(node))
+          push_to_last_line(node.tag_closing.value)
+        end
       end
 
       # Visit HTML close tag node.
-      # Outputs the closing tag structure: </tag_name>
+      # Appends inline when analysis says close_tag_inline or when in inline mode.
+      # Otherwise pushes to a new indented line.
+      # Falls back to push_to_last_line for preserved elements (no analysis).
       #
       # @rbs override
-      def visit_html_close_tag_node(node)
-        push_to_last_line(node.tag_opening.value)
-        push_to_last_line(node.tag_name.value) if node.tag_name
-        push_to_last_line(node.tag_closing.value)
+      def visit_html_close_tag_node(_node)
+        analysis = @element_formatting_analysis[current_element]
+        closing = "</#{current_tag_name}>"
+
+        if !analysis || analysis.close_tag_inline || @inline_mode
+          push_to_last_line(closing)
+        else
+          push_with_indent(closing)
+        end
       end
 
       # Return the formatted output string.
@@ -197,6 +241,19 @@ module Herb
 
       private
 
+      # Return the element currently being visited (top of element stack).
+      # Raises if called outside of visit_html_element_node context.
+      #
+      def current_element #: Herb::AST::HTMLElementNode
+        @element_stack.last || raise("current_element called outside of element context")
+      end
+
+      # Return the tag name of the current element.
+      #
+      def current_tag_name #: String
+        current_element.tag_name&.value || ""
+      end
+
       # Current indent string based on indent_level.
       #
       def indent #: String
@@ -267,12 +324,14 @@ module Herb
         @inline_mode = previous
       end
 
-      # Visit the body of an HTML element. For preserved elements (script,
-      # style, pre, textarea), content is output as-is using IdentityPrinter.
-      # For normal elements, content is formatted with increased indentation.
+      # Visit the body of an HTML element.
+      # For preserved elements (script, style, pre, textarea), content is output
+      # as-is using IdentityPrinter. For elements with inline content analysis,
+      # body is rendered in inline mode. For block elements, content is formatted
+      # with increased indentation.
       #
       # @rbs node: Herb::AST::HTMLElementNode
-      def visit_element_body(node) #: void
+      def visit_element_body(node) #: void # rubocop:disable Metrics/PerceivedComplexity
         tag_name = node.tag_name&.value || ""
 
         if preserved_element?(tag_name)
@@ -281,9 +340,16 @@ module Herb
             push_to_last_line(::Herb::Printer::IdentityPrinter.print(child))
           end
         else
-          # Format body with increased indent
-          with_indent do
-            node.body.each { visit(_1) }
+          analysis = @element_formatting_analysis[node]
+
+          if analysis&.element_content_inline
+            # Render inline: visit all children appended to the current line
+            with_inline_mode { node.body.each { visit(_1) } }
+          else
+            # Block: indent and visit each child on its own line
+            with_indent do
+              node.body.each { visit(_1) }
+            end
           end
         end
       end
@@ -631,14 +697,18 @@ module Herb
       end
 
       # Print an ERB node to the output buffer.
-      # In inline mode no indentation is added; otherwise the current indent is prepended.
+      # In inline mode, appends to the last line without a newline separator.
+      # Otherwise, pushes a new line with the current indent prepended.
       #
       # @rbs node: Herb::AST::ERBContentNode
       def print_erb_node(node) #: void
-        indent_str = @inline_mode ? "" : indent
         erb_text = reconstruct_erb_node(node, with_formatting: true)
 
-        push(indent_str + erb_text)
+        if @inline_mode
+          push_to_last_line(erb_text)
+        else
+          push(indent + erb_text)
+        end
       end
     end
   end

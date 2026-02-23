@@ -30,37 +30,11 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "with HTML elements" do
-      context "with simple elements" do
-        context "with text content" do
-          let(:source) { "<div>Hello</div>" }
-
-          it "outputs opening tag, text content, and closing tag" do
-            expect(subject).to eq("<div>Hello</div>")
-          end
-        end
-
-        context "with basic content" do
-          let(:source) { "<div>content</div>" }
-
-          it "outputs opening tag, content, and closing tag" do
-            expect(subject).to eq("<div>content</div>")
-          end
-        end
-      end
-
       context "with void elements" do
         let(:source) { "<br>" }
 
         it "outputs void element without closing tag" do
           expect(subject).to eq("<br>")
-        end
-      end
-
-      context "with nested elements" do
-        let(:source) { "<div><p>nested</p></div>" }
-
-        it "outputs both opening and closing tags for nested elements" do
-          expect(subject).to eq("<div><p>nested</p></div>")
         end
       end
 
@@ -94,6 +68,40 @@ RSpec.describe Herb::Format::FormatPrinter do
 
           it "preserves style content with original formatting" do
             expect(subject).to include("\n  .foo { color: red; }\n")
+          end
+        end
+      end
+
+      context "with block elements" do
+        context "when element content is inline" do
+          let(:source) { "<p>Hello</p>" }
+
+          it "appends closing tag on the same line as content" do
+            expect(subject).to eq("<p>Hello</p>")
+          end
+        end
+
+        context "when element content is block" do
+          let(:source) { "<div><p>nested</p></div>" }
+
+          it "indents block child and puts close tag on its own line" do
+            expect(subject).to eq("<div>\n  <p>nested</p>\n</div>")
+          end
+        end
+
+        context "with deeply nested block elements" do
+          let(:source) { "<section><div><p>text</p></div></section>" }
+
+          it "indents each level correctly" do
+            expect(subject).to eq("<section>\n  <div>\n    <p>text</p>\n  </div>\n</section>")
+          end
+        end
+
+        context "with deeply nested inline elements" do
+          let(:source) { "<div><span>inline</span></div>" }
+
+          it "keeps inline child on the same line as parent" do
+            expect(subject).to eq("<div><span>inline</span></div>")
           end
         end
       end
@@ -289,7 +297,8 @@ RSpec.describe Herb::Format::FormatPrinter do
 
           it "wraps" do
             expect(subject).to include(
-              "    <div class=\"\n  flex items-center justify-between px-4 py-2 bg-white\n  shadow-md\n\">content</div>"
+              "    <div class=\"\n  flex items-center justify-between px-4 py-2 bg-white\n  " \
+              "shadow-md\n\">content</div>"
             )
           end
         end
@@ -303,14 +312,24 @@ RSpec.describe Herb::Format::FormatPrinter do
           end
         end
       end
+
+      context "when open tag has ERB control flow spanning multiple lines" do
+        # multi-line ERB if in open tag makes open_tag_inline=false → render_multiline_attributes
+        let(:source) { "<div\n<% if condition %>\nclass=\"active\"\n<% end %>\n>content</div>" }
+
+        it "uses multiline attribute rendering (tag and > on separate lines)" do
+          expect(subject).to include("<div\n")
+          expect(subject).to include("\n>")
+        end
+      end
     end
 
     context "with mixed HTML and ERB content" do
       context "with ERB expression inside a div" do
         let(:source) { "<div><%= @user.name %></div>" }
 
-        it "renders HTML tags and ERB in a unified output" do
-          expect(subject).to eq("<div>\n  <%= @user.name %></div>")
+        it "renders ERB inline when it is the only child" do
+          expect(subject).to eq("<div><%= @user.name %></div>")
         end
       end
     end
