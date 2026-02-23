@@ -1,0 +1,74 @@
+# Generated from lib/herb/highlight/syntax_renderer.rb with RBS::Inline
+
+module Herb
+  module Highlight
+    # Token-level ERB/HTML syntax highlighting.
+    # Takes a single line of source text, tokenizes it with Herb.lex(), and returns
+    # the same text with ANSI codes injected around each token.
+    # Mirrors TypeScript SyntaxRenderer.
+    #
+    # Fallback: returns source unchanged (no ANSI codes) when:
+    # - No theme was given (theme_name: nil and theme: nil)
+    # - Theme name not found in registry
+    # - Herb.lex(source) result has errors
+    class SyntaxRenderer
+      # Ruby keywords to highlight specially inside ERB content.
+      RUBY_KEYWORDS: Array[String]
+
+      # @rbs theme_name: String? -- looked up via Themes; nil = plain text
+      # @rbs theme: Hash[String, String?]? -- pre-resolved theme (for testing; takes priority over theme_name)
+      def initialize: (?theme_name: String?, ?theme: Hash[String, String?]?) -> void
+
+      # Applies syntax highlighting to a single line of ERB/HTML source.
+      # Returns source unchanged if no theme is set or if lexing fails.
+      #
+      # @rbs source: String
+      def render: (String source) -> String
+
+      private
+
+      # Returns the initial parser state hash.
+      def initial_state: () -> Hash[Symbol, untyped]
+
+      # Selects the appropriate theme color for the current token given the current state.
+      # Called BEFORE state is updated so that attribute name/value detection works correctly.
+      #
+      # @rbs state: Hash[Symbol, untyped]
+      # @rbs token_type: String
+      def contextual_color: (Hash[Symbol, untyped] state, String token_type) -> String?
+
+      # @rbs token_type: String
+      def comment_delimiter?: (String token_type) -> bool
+
+      # @rbs token_type: String
+      def erb_token?: (String token_type) -> bool
+
+      # Determines the color for an IDENTIFIER token based on current state.
+      # Uses pre-update state: tag_name.empty? detects the element name identifier.
+      #
+      # @rbs state: Hash[Symbol, untyped]
+      def identifier_color: (Hash[Symbol, untyped] state) -> String?
+
+      # Updates the state machine based on the current token.
+      # Called after color is determined for the current token.
+      #
+      # @rbs state: Hash[Symbol, untyped]
+      # @rbs token_type: String
+      # @rbs token_text: String
+      def update_state: (Hash[Symbol, untyped] state, String token_type, String token_text) -> void
+
+      # Renders a single token with the given color, with special handling for ERB content.
+      #
+      # @rbs token_type: String
+      # @rbs token_text: String
+      # @rbs color: String?
+      def render_token: (String token_type, String token_text, String? color) -> String
+
+      # Colorizes Ruby code inside ERB tags.
+      # Splits the code into tokens and colorizes Ruby keywords and identifiers.
+      #
+      # @rbs code: String
+      def highlight_ruby_code: (String code) -> String
+    end
+  end
+end
