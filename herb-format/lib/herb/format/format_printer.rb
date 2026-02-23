@@ -239,6 +239,30 @@ module Herb
         end
       end
 
+      # Visit ERB block node (each, map, etc.).
+      # Prints the opening ERB tag, then visits the body with increased indentation,
+      # delegating to text-flow or element-children visitors based on context.
+      # Finally visits the end node.
+      #
+      # @rbs override
+      def visit_erb_block_node(node)
+        track_boundary(node) do
+          print_erb_node(node)
+
+          with_indent do
+            has_text_flow = in_text_flow_context?(nil, node.body)
+
+            if has_text_flow
+              visit_text_flow_children(node.body)
+            else
+              visit_element_children(node.body, nil)
+            end
+          end
+
+          visit(node.end_node) if node.end_node
+        end
+      end
+
       private
 
       # Return the element currently being visited (top of element stack).
@@ -646,6 +670,58 @@ module Herb
 
         visit(node.subsequent) if node.subsequent
         visit(node.end_node) if node.end_node
+      end
+
+      # Check if children form a text flow context.
+      # Returns true when: non-empty text content exists, non-text children
+      # exist, and all non-text children are inline elements or ERB content nodes.
+      #
+      # @rbs _parent: Herb::AST::Node?
+      # @rbs children: Array[Herb::AST::Node]
+      def in_text_flow_context?(_parent, children) #: bool # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+        has_text_content = children.any? do |child|
+          child.is_a?(Herb::AST::HTMLTextNode) && !child.content.strip.empty?
+        end
+
+        non_text_children = children.reject do |child|
+          child.is_a?(Herb::AST::HTMLTextNode)
+        end
+
+        return false unless has_text_content
+        return false if non_text_children.empty?
+
+        non_text_children.all? do |child|
+          next true if child.is_a?(Herb::AST::ERBContentNode)
+
+          if child.is_a?(Herb::AST::HTMLElementNode)
+            tag_name = get_tag_name(child)
+            inline_element?(tag_name)
+          else
+            false
+          end
+        end
+      end
+
+      # Visit children in text flow mode.
+      # Delegates to build_and_wrap_text_flow for inline content wrapping.
+      # Note: Full implementation provided in Task 2.34 (Part F).
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      def visit_text_flow_children(children) #: void
+        children.each { visit(_1) }
+      end
+
+      # Visit children as block elements, skipping pure whitespace nodes.
+      # Note: Full implementation provided in Task 2.34 (Part F).
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      # @rbs _parent: Herb::AST::HTMLElementNode?
+      def visit_element_children(children, _parent) #: void
+        children.each do |child|
+          next if pure_whitespace_node?(child)
+
+          visit(child)
+        end
       end
 
       # Check whether the printer is currently rendering inside a token-list attribute.
