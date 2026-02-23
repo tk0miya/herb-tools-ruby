@@ -650,16 +650,16 @@ Split pattern: `code.split(/(\s+|[^\w\s]+)/)`  — preserves separators so rejoi
 - Named colors produce correct ANSI codes
 
 **Implementation Tasks:**
-- [ ] Create `lib/herb/highlight/syntax_renderer.rb`
-- [ ] Implement `initialize(theme_name: nil, theme: nil)` with theme resolution
-- [ ] Implement `render(source)` with `Herb.lex()` and plain-text fallback
-- [ ] Implement `initial_state` hash
-- [ ] Implement `update_state(state, token, token_text)` — all token type transitions
-- [ ] Implement `contextual_color(state, token, token_text)` — color selection logic
-- [ ] Implement `render_token(token, token_text, color)` — special-casing `TOKEN_ERB_CONTENT`
-- [ ] Define `RUBY_KEYWORDS` constant
-- [ ] Implement `highlight_ruby_code(code)` — keyword + identifier coloring via `Color.colorize`
-- [ ] Write `spec/herb/highlight/syntax_renderer_spec.rb`
+- [x] Create `lib/herb/highlight/syntax_renderer.rb`
+- [x] Implement `initialize(theme_name: nil, theme: nil)` with theme resolution
+- [x] Implement `render(source)` with `Herb.lex()` and plain-text fallback
+- [x] Implement `initial_state` hash
+- [x] Implement `update_state(state, token, token_text)` — all token type transitions
+- [x] Implement `contextual_color(state, token, token_text)` — color selection logic
+- [x] Implement `render_token(token, token_text, color)` — special-casing `TOKEN_ERB_CONTENT`
+- [x] Define `RUBY_KEYWORDS` constant
+- [x] Implement `highlight_ruby_code(code)` — keyword + identifier coloring via `Color.colorize`
+- [x] Write `spec/herb/highlight/syntax_renderer_spec.rb`
 
 ---
 
