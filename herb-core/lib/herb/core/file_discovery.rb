@@ -46,7 +46,7 @@ module Herb
         result = Set.new
         include_patterns.each do |pattern|
           full_pattern = File.join(base_dir, pattern)
-          Dir.glob(full_pattern).each { |file| result << file if File.file?(file) && !excluded?(file) }
+          Dir.glob(full_pattern).each { result << _1 if File.file?(_1) && !excluded?(_1) }
         end
         result
       end

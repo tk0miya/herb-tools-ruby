@@ -294,7 +294,7 @@ RSpec.describe Herb::Lint::Rules::Erb::NoExtraWhitespaceInsideTags do
     context "when fixing a tag with surrounding content" do
       let(:source) { "<p>before</p><%  value  %><p>after</p>" }
       let(:expected) { "<p>before</p><% value %><p>after</p>" }
-      let(:node) { document.value.children.find { |n| n.is_a?(Herb::AST::ERBContentNode) } }
+      let(:node) { document.value.children.find { _1.is_a?(Herb::AST::ERBContentNode) } }
 
       it "removes extra whitespace without affecting surrounding content" do
         expect(subject).to be(true)

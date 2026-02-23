@@ -614,7 +614,7 @@ module Herb
       #
       # @rbs lines: Array[String]
       def format_multiline_attribute_value(lines) #: String
-        "\n#{lines.map { |line| "  #{line}" }.join("\n")}\n"
+        "\n#{lines.map { "  #{_1}" }.join("\n")}\n"
       end
 
       # -- ERB Control Flow --

@@ -100,7 +100,7 @@ module Herb
             value = attr.value
             return false unless value
 
-            value.children.any? { |child| child.class.name&.include?("ERB") }
+            value.children.any? { _1.class.name&.include?("ERB") }
           end
         end
       end

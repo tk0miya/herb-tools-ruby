@@ -172,7 +172,7 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeValuesRequireQuotes do
       let(:source) { "<div class=foo>text</div>" }
       let(:expected) { '<div class="foo">text</div>' }
       let(:node) do
-        document.value.children.first.open_tag.children.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
+        document.value.children.first.open_tag.children.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
       end
 
       it "adds double quotes around the value" do
@@ -186,7 +186,7 @@ RSpec.describe Herb::Lint::Rules::Html::AttributeValuesRequireQuotes do
       let(:source) { '<div class="foo" id=bar>text</div>' }
       let(:expected) { '<div class="foo" id="bar">text</div>' }
       let(:node) do
-        document.value.children.first.open_tag.children.select { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }.last
+        document.value.children.first.open_tag.children.select { _1.is_a?(Herb::AST::HTMLAttributeNode) }.last
       end
 
       it "adds double quotes only to the unquoted attribute" do

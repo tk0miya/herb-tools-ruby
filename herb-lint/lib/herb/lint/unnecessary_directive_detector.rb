@@ -17,7 +17,7 @@ module Herb
       # @rbs ignored_offenses: Array[Offense]
       def initialize(directives, ignored_offenses) #: void
         @directives = directives
-        @by_line = ignored_offenses.group_by(&:line).transform_values { |offenses| offenses.map(&:rule_name) }
+        @by_line = ignored_offenses.group_by(&:line).transform_values { _1.map(&:rule_name) }
       end
 
       def detect #: Array[Offense]

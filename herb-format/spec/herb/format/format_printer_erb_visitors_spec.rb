@@ -25,7 +25,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:node) do
             element = parse_result.value.children.first
             open_tag = element.open_tag
-            open_tag.child_nodes.find { |c| c.is_a?(Herb::AST::ERBIfNode) }
+            open_tag.child_nodes.find { _1.is_a?(Herb::AST::ERBIfNode) }
           end
 
           it "renders condition tag, space, attribute, space before end, and end tag" do
@@ -36,8 +36,8 @@ RSpec.describe Herb::Format::FormatPrinter do
         context "with LiteralNode statements in token-list attribute" do
           let(:node) do
             open_tag = parse_result.value.children.first
-            attr = open_tag.child_nodes.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
-            attr.value.children.find { |c| c.is_a?(Herb::AST::ERBIfNode) }
+            attr = open_tag.child_nodes.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
+            attr.value.children.find { _1.is_a?(Herb::AST::ERBIfNode) }
           end
 
           context "with class attribute" do
@@ -74,8 +74,8 @@ RSpec.describe Herb::Format::FormatPrinter do
         context "with LiteralNode statements in non-token-list attribute" do
           let(:node) do
             open_tag = parse_result.value.children.first
-            attr = open_tag.child_nodes.find { |c| c.is_a?(Herb::AST::HTMLAttributeNode) }
-            attr.value.children.find { |c| c.is_a?(Herb::AST::ERBIfNode) }
+            attr = open_tag.child_nodes.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
+            attr.value.children.find { _1.is_a?(Herb::AST::ERBIfNode) }
           end
 
           context "with id attribute" do

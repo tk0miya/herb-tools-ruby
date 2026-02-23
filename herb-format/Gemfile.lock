@@ -140,6 +140,9 @@ GEM
     rubocop-factory_bot (2.28.0)
       lint_roller (~> 1.1)
       rubocop (~> 1.72, >= 1.72.1)
+    rubocop-numbered-params (1.0.0)
+      lint_roller (~> 1.0)
+      rubocop (>= 1.72.1)
     rubocop-rake (0.7.1)
       lint_roller (~> 1.1)
       rubocop (>= 1.72.1)
@@ -197,6 +200,7 @@ DEPENDENCIES
   rspec
   rubocop
   rubocop-factory_bot
+  rubocop-numbered-params
   rubocop-rake
   rubocop-rbs_inline (>= 1.5.0.pre.2)
   rubocop-rspec
@@ -259,6 +263,7 @@ CHECKSUMS
   rubocop (1.84.0) sha256=88dec310153bb685a879f5a7cdb601f6287b8f0ee675d9dc63a17c7204c4190a
   rubocop-ast (1.49.0) sha256=49c3676d3123a0923d333e20c6c2dbaaae2d2287b475273fddee0c61da9f71fd
   rubocop-factory_bot (2.28.0) sha256=4b17fc02124444173317e131759d195b0d762844a71a29fe8139c1105d92f0cb
+  rubocop-numbered-params (1.0.0) sha256=6271a39c4751fb3e0b79b0aab26c407f2e4927aeef80c74622a6eaa373d7828a
   rubocop-rake (0.7.1) sha256=3797f2b6810c3e9df7376c26d5f44f3475eda59eb1adc38e6f62ecf027cbae4d
   rubocop-rbs_inline (1.5.0.pre.2) sha256=c95df8d7afff4341642c31afc59c9c9a26e2da8a78ad684a52fd4622de04c602
   rubocop-rspec (3.9.0) sha256=8fa70a3619408237d789aeecfb9beef40576acc855173e60939d63332fdb55e2

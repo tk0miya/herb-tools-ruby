@@ -441,7 +441,7 @@ module Herb
         prev_index = find_previous_meaningful_sibling(siblings, index)
         return false unless prev_index
 
-        ((index + 1)...siblings.length).any? { |i| non_whitespace_node?(siblings[i]) }
+        ((index + 1)...siblings.length).any? { non_whitespace_node?(siblings[_1]) }
       end
     end
   end

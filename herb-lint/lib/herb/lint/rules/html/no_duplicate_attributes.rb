@@ -234,7 +234,7 @@ module Herb
             control_flow_stack.pop
 
             if control_flow_type == CONDITIONAL && !was_already_in_control_flow
-              @control_flow_attributes.each { |attr| @tag_attributes.add(attr) }
+              @control_flow_attributes.each { @tag_attributes.add(_1) }
             end
 
             @current_branch_attributes = saved_branch_attributes

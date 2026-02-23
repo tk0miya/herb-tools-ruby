@@ -32,7 +32,7 @@ module Herb
         def report(aggregated_result) #: void
           return io.puts(aggregated_result.message) unless aggregated_result.completed?
 
-          results_with_offenses = aggregated_result.results.select { |r| r.offense_count.positive? }
+          results_with_offenses = aggregated_result.results.select { _1.offense_count.positive? }
 
           results_with_offenses.each_with_index do |result, index|
             print_file_header(result, index + 1, results_with_offenses.size)

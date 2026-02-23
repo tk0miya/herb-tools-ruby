@@ -35,22 +35,22 @@ module Herb
 
       # Returns the count of errors.
       def error_count #: Integer
-        unfixed_offenses.count { |offense| offense.severity == "error" }
+        unfixed_offenses.count { _1.severity == "error" }
       end
 
       # Returns the count of warnings.
       def warning_count #: Integer
-        unfixed_offenses.count { |offense| offense.severity == "warning" }
+        unfixed_offenses.count { _1.severity == "warning" }
       end
 
       # Returns the count of info-level offenses.
       def info_count #: Integer
-        unfixed_offenses.count { |offense| offense.severity == "info" }
+        unfixed_offenses.count { _1.severity == "info" }
       end
 
       # Returns the count of hint-level offenses.
       def hint_count #: Integer
-        unfixed_offenses.count { |offense| offense.severity == "hint" }
+        unfixed_offenses.count { _1.severity == "hint" }
       end
 
       # Returns the total number of offenses.
