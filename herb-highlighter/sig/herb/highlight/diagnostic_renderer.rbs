@@ -1,0 +1,59 @@
+# Generated from lib/herb/highlight/diagnostic_renderer.rb with RBS::Inline
+
+module Herb
+  module Highlight
+    # Renders source code context around a single offense.
+    # Shows N context lines before and after the offense line, each prefixed with
+    # a formatted line number. Appends a caret row below the offense line.
+    # Mirrors TypeScript DiagnosticRenderer.
+    #
+    # This class does NOT render the offense header (location, message, rule name).
+    # The header is the formatter's responsibility.
+    class DiagnosticRenderer
+      # @rbs syntax_renderer: SyntaxRenderer
+      # @rbs context_lines: Integer
+      # @rbs tty: bool -- when false, no ANSI codes are emitted
+      def initialize: (?syntax_renderer: SyntaxRenderer, ?context_lines: Integer, ?tty: bool) -> void
+
+      # Renders source context for a single offense.
+      #
+      # @rbs source_lines: Array[String]
+      # @rbs line: Integer -- 1-based offense line number
+      # @rbs column: Integer -- 1-based offense column
+      # @rbs end_line: Integer? -- 1-based end line (nil = same as line)
+      # @rbs end_column: Integer? -- 1-based end column (nil = single char)
+      def render: (Array[String] source_lines, line: Integer, column: Integer, ?end_line: Integer?, ?end_column: Integer?) -> String
+
+      private
+
+      # @rbs source_lines: Array[String]
+      # @rbs line: Integer
+      def line_number_width: (Array[String] source_lines, Integer line) -> Integer
+
+      # @rbs source_lines: Array[String]
+      # @rbs num: Integer
+      # @rbs offense_line: Integer
+      # @rbs width: Integer
+      def render_line: (Array[String] source_lines, Integer num, Integer offense_line, Integer width) -> String
+
+      # @rbs width: Integer
+      # @rbs column: Integer
+      # @rbs line: Integer
+      # @rbs end_line: Integer?
+      # @rbs end_column: Integer?
+      def caret_row: (Integer width, Integer column, Integer line, Integer? end_line, Integer? end_column) -> String
+
+      # @rbs column: Integer
+      # @rbs line: Integer
+      # @rbs end_line: Integer?
+      # @rbs end_column: Integer?
+      def caret_length: (Integer column, Integer line, Integer? end_line, Integer? end_column) -> Integer
+
+      # Applies color if TTY mode is enabled.
+      #
+      # @rbs text: String
+      # @rbs color: String
+      def colorize: (String text, String color) -> String
+    end
+  end
+end
