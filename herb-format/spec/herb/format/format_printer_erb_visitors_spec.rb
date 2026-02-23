@@ -89,22 +89,26 @@ RSpec.describe Herb::Format::FormatPrinter do
 
     context "with ERBContentNode" do
       context "with indentation" do
-        let(:source) { "<% items.each do |item| %><%=@user.name%><% end %>" }
+        let(:source) { "<div><p>text</p><%= @user.name %></div>" }
 
         it "applies current indentation" do
-          expect(subject).to eq(<<~EXPECTED.chomp)
-            <% items.each do |item| %>
-              <%= @user.name %>
-            <% end %>
-          EXPECTED
+          expect(subject).to include("  <%= @user.name %>")
         end
       end
 
-      context "when in inline context" do
-        let(:source) { "<span><%=@user.name%></span>" }
+      context "when in inline mode" do
+        let(:source) { "<span><%= @user.name %></span>" }
 
         it "does not add indentation" do
           expect(subject).to eq("<span><%= @user.name %></span>")
+        end
+
+        context "with surrounding block elements that increase indent level" do
+          let(:source) { "<div><p>text</p><span><%= @user.name %></span></div>" }
+
+          it "ignores indent level" do
+            expect(subject).to include("<span><%= @user.name %></span>")
+          end
         end
       end
     end
@@ -215,6 +219,8 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "with ERBUnlessNode" do
+      let(:node) { parse_result.value.children.first }
+
       context "with basic unless block" do
         let(:source) { "<% unless user.admin? %><%= text %><% end %>" }
 
@@ -257,6 +263,8 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "with ERBForNode" do
+      let(:node) { parse_result.value.children.first }
+
       context "with basic for loop" do
         let(:source) { "<% for i in 1..10 %><%= i %><% end %>" }
 
@@ -285,6 +293,8 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "with ERBWhileNode" do
+      let(:node) { parse_result.value.children.first }
+
       context "with basic while loop" do
         let(:source) { "<% while cond %><%= text %><% end %>" }
 
@@ -299,6 +309,8 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "with ERBUntilNode" do
+      let(:node) { parse_result.value.children.first }
+
       context "with basic until loop" do
         let(:source) { "<% until cond %><%= text %><% end %>" }
 
@@ -313,6 +325,8 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "with ERBCaseNode" do
+      let(:node) { parse_result.value.children.first }
+
       context "with when clauses" do
         let(:source) { "<% case x %><% when 1 %><%= one %><% when 2 %><%= two %><% end %>" }
 
@@ -345,6 +359,8 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "with ERBCaseMatchNode" do
+      let(:node) { parse_result.value.children.first }
+
       context "with in clauses" do
         let(:source) { "<% case x %><% in 1 %><%= one %><% in 2 %><%= two %><% end %>" }
 
@@ -390,14 +406,27 @@ RSpec.describe Herb::Format::FormatPrinter do
         end
       end
     end
+  end
+
+  describe ".visit" do
+    subject { printer.capture { printer.visit(node) } }
+
+    let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+    let(:printer) do
+      Class.new(described_class) do
+        attr_accessor :current_attribute_name, :indent_level, :inline_mode
+      end.new(indent_width:, max_line_length:, format_context:)
+    end
 
     context "with ERBCommentNode" do
-      context "when at document level" do
+      let(:node) { parse_result.value.children.first }
+
+      context "when inline_mode is false" do
         context "with single-line comment without spaces" do
           let(:source) { "<%#comment%>" }
 
           it "normalizes to <%# content %> format" do
-            expect(subject).to eq("<%# comment %>")
+            expect(subject.join).to eq("<%# comment %>")
           end
         end
 
@@ -405,7 +434,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<%#  comment  %>" }
 
           it "normalizes spacing to exactly one space" do
-            expect(subject).to eq("<%# comment %>")
+            expect(subject.join).to eq("<%# comment %>")
           end
         end
 
@@ -413,7 +442,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<%# comment %>" }
 
           it "preserves normalized format" do
-            expect(subject).to eq("<%# comment %>")
+            expect(subject.join).to eq("<%# comment %>")
           end
         end
 
@@ -421,7 +450,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<%#%>" }
 
           it "outputs empty comment" do
-            expect(subject).to eq("<%#%>")
+            expect(subject.join).to eq("<%#%>")
           end
         end
 
@@ -429,7 +458,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<%#\n  comment\n%>" }
 
           it "collapses to single-line format" do
-            expect(subject).to eq("<%# comment %>")
+            expect(subject.join).to eq("<%# comment %>")
           end
         end
 
@@ -437,7 +466,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<%#\n  line1\n  line2\n%>" }
 
           it "formats as block with opening tag, indented content, and closing tag" do
-            expect(subject).to eq(<<~EXPECTED.chomp)
+            expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
               <%#
                 line1
                 line2
@@ -450,7 +479,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<%#\n    line1\n    line2\n    line3\n%>" }
 
           it "dedents and reformats as block" do
-            expect(subject).to eq(<<~EXPECTED.chomp)
+            expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
               <%#
                 line1
                 line2
@@ -464,7 +493,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<%#\n  line1\n\n  line2\n%>" }
 
           it "preserves internal blank lines" do
-            expect(subject).to eq(<<~EXPECTED.chomp)
+            expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
               <%#
                 line1
 
@@ -473,83 +502,68 @@ RSpec.describe Herb::Format::FormatPrinter do
             EXPECTED
           end
         end
-      end
 
-      context "with indented context" do
-        context "with single-line comment" do
-          let(:source) { "<% items.each do |item| %><%#comment%><% end %>" }
+        context "with indented context" do
+          before { printer.indent_level = 1 }
 
-          it "adds indentation" do
-            expect(subject).to eq(<<~EXPECTED.chomp)
-              <% items.each do |item| %>
-                <%# comment %>
-              <% end %>
-            EXPECTED
+          context "with single-line comment" do
+            let(:source) { "<%#comment%>" }
+
+            it "adds indentation" do
+              expect(subject.join).to eq("  <%# comment %>")
+            end
           end
-        end
 
-        context "with multi-line comment" do
-          let(:source) { "<% items.each do |item| %><%#\n  line1\n  line2\n%><% end %>" }
+          context "with multi-line comment" do
+            let(:source) { "<%#\n  line1\n  line2\n%>" }
 
-          it "applies indentation to all parts" do
-            expect(subject).to eq(<<~EXPECTED.chomp)
-              <% items.each do |item| %>
-                <%#
-                  line1
-                  line2
-                %>
-              <% end %>
-            EXPECTED
+            it "applies indentation to all parts" do
+              expect(subject.join("\n")).to eq("  <%#\n    line1\n    line2\n  %>")
+            end
           end
-        end
 
-        context "with multi-line comment with internal blank lines" do
-          let(:source) { "<% items.each do |item| %><%#\n  line1\n\n  line2\n%><% end %>" }
+          context "with multi-line comment with internal blank lines" do
+            let(:source) { "<%#\n  line1\n\n  line2\n%>" }
 
-          it "preserves internal blank lines with indentation" do
-            expect(subject).to eq(<<~EXPECTED.chomp)
-              <% items.each do |item| %>
-                <%#
-                  line1
-
-                  line2
-                %>
-              <% end %>
-            EXPECTED
+            it "preserves internal blank lines with indentation" do
+              expect(subject.join("\n")).to eq("  <%#\n    line1\n\n    line2\n  %>")
+            end
           end
         end
       end
 
-      context "when in inline context" do
+      context "when inline_mode is true" do
+        before { printer.inline_mode = true }
+
         context "with single-line comment" do
-          let(:source) { "<span><%#comment%></span>" }
+          let(:source) { "<%#comment%>" }
 
           it "normalizes inline" do
-            expect(subject).to eq("<span><%# comment %></span>")
+            expect(subject.join).to eq("<%# comment %>")
           end
         end
 
         context "with empty comment" do
-          let(:source) { "<span><%#%></span>" }
+          let(:source) { "<%#%>" }
 
           it "outputs empty comment inline" do
-            expect(subject).to eq("<span><%#%></span>")
+            expect(subject.join).to eq("<%#%>")
           end
         end
 
         context "with multi-line comment having single content line" do
-          let(:source) { "<span><%#\n  comment\n%></span>" }
+          let(:source) { "<%#\n  comment\n%>" }
 
           it "collapses to single-line inline" do
-            expect(subject).to eq("<span><%# comment %></span>")
+            expect(subject.join).to eq("<%# comment %>")
           end
         end
 
         context "with true multi-line comment" do
-          let(:source) { "<span><%#\n  line1\n  line2\n%></span>" }
+          let(:source) { "<%#\n  line1\n  line2\n%>" }
 
           it "collapses all lines to single inline format" do
-            expect(subject).to eq("<span><%# line1 line2 %></span>")
+            expect(subject.join).to eq("<%# line1 line2 %>")
           end
         end
       end

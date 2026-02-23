@@ -341,6 +341,7 @@ module Herb
       def visit_erb_if_inline: (Herb::AST::ERBIfNode node) -> void
 
       # Visit a single statement child of an ERBIfNode in inline mode.
+      # WhitespaceNodes (inter-tag formatting whitespace) are skipped.
       # HTMLAttributeNodes are rendered as attribute strings.
       # Text content is pushed directly. Other nodes are visited normally.
       # In token-list attribute context, a space is added before each child.
