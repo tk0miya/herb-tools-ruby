@@ -116,6 +116,26 @@ RSpec.describe Herb::Format::ElementAnalyzer do
       it { expect(subject.open_tag_inline).to be(true) }
     end
 
+    context "when open tag attributes exceed max_line_length" do
+      let(:analyzer) { described_class.new(printer, 20, printer.indent_width) }
+      let(:element) { parse_element('<button type="submit" class="btn" disabled></button>') }
+
+      it { expect(subject.open_tag_inline).to be(false) }
+    end
+
+    context "with a void element whose open tag fits within max_line_length" do
+      let(:element) { parse_element("<br>") }
+
+      it { expect(subject.open_tag_inline).to be(true) }
+    end
+
+    context "with a void element whose open tag exceeds max_line_length" do
+      let(:analyzer) { described_class.new(printer, 20, printer.indent_width) }
+      let(:element) { parse_element('<input type="text" name="email">') }
+
+      it { expect(subject.open_tag_inline).to be(false) }
+    end
+
     context "with ERB content node (non-control-flow) in open tag" do
       let(:element) { parse_element("<div <%= condition %>></div>") }
 

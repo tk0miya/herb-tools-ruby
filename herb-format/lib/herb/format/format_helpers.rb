@@ -334,6 +334,68 @@ module Herb
       end
 
       # ============================================================
+      # Attribute Helpers
+      # ============================================================
+
+      # Extract the attribute name as a string.
+      #
+      # @rbs attribute: Herb::AST::HTMLAttributeNode
+      def get_attribute_name(attribute) #: String
+        attribute.name.children.map do |child|
+          child.is_a?(Herb::AST::LiteralNode) ? child.content : ::Herb::Printer::IdentityPrinter.print(child)
+        end.join
+      end
+
+      # Return normalized quote pair for an attribute value node.
+      # Single quotes are converted to double quotes unless the content contains
+      # a double quote character, in which case single quotes are preserved.
+      # Unquoted attribute values are given double quotes.
+      #
+      # @rbs attribute_value: Herb::AST::HTMLAttributeValueNode
+      def get_attribute_quotes(attribute_value) #: [String, String]
+        open_quote = token_value(attribute_value.open_quote)
+        close_quote = token_value(attribute_value.close_quote)
+
+        case [open_quote, close_quote]
+        in ["'", "'"] if !get_html_text_content(attribute_value).include?('"')
+          ['"', '"']
+        in ["", ""] # rubocop:disable Lint/DuplicateBranch
+          ['"', '"']
+        else
+          [open_quote, close_quote]
+        end
+      end
+
+      # Extract plain text content from an attribute value node.
+      # Returns text from HTMLTextNode and LiteralNode children only
+      # (ERB nodes are excluded).
+      #
+      # @rbs attribute_value: Herb::AST::HTMLAttributeValueNode
+      def get_html_text_content(attribute_value) #: String
+        attribute_value.children.filter_map do |child|
+          child.content if child.is_a?(Herb::AST::HTMLTextNode) || child.is_a?(Herb::AST::LiteralNode)
+        end.join
+      end
+
+      # Render the content of an attribute value node.
+      # Handles literal content and embedded ERB nodes.
+      #
+      # @rbs attribute_value: Herb::AST::HTMLAttributeValueNode
+      def render_attribute_value_content(attribute_value) #: String
+        attribute_value.children.map do |child|
+          child.is_a?(Herb::AST::LiteralNode) ? child.content : ::Herb::Printer::IdentityPrinter.print(child)
+        end.join
+      end
+
+      # Extract the string value from an optional token node.
+      # Returns empty string when the token is absent.
+      #
+      # @rbs token: untyped
+      def token_value(token) #: String
+        token ? token.value : ""
+      end
+
+      # ============================================================
       # Text & Punctuation Helpers
       # ============================================================
 
