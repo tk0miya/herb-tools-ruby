@@ -110,6 +110,24 @@ module Herb
         Herb::AST::WhitespaceNode.new("AST_WHITESPACE_NODE", ws_loc, [], ws_token)
       end
 
+      # Build a new HTMLCloseTagNode from scratch using only a tag name string.
+      # This is useful when adding a missing close tag during autofix operations.
+      #
+      # @rbs tag_name_str: String -- the tag name for the close tag (e.g. "div")
+      def build_close_tag(tag_name_str) #: Herb::AST::HTMLCloseTagNode
+        position = Herb::Position.new(0, 0)
+        location = Herb::Location.new(position, position)
+        range = Herb::Range.new(0, 0)
+
+        tag_opening = Herb::Token.new("</", range, location, "TOKEN_HTML_TAG_START_CLOSE")
+        tag_name_token = Herb::Token.new(tag_name_str, range, location, "TOKEN_IDENTIFIER")
+        tag_closing = Herb::Token.new(">", range, location, "TOKEN_HTML_TAG_END")
+
+        Herb::AST::HTMLCloseTagNode.new(
+          "AST_HTML_CLOSE_TAG_NODE", location, [], tag_opening, tag_name_token, [], tag_closing
+        )
+      end
+
       # Create a new token by copying an existing token with optional attribute overrides.
       # This is useful for creating modified tokens during autofix operations.
       #

@@ -4,21 +4,38 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that enforces consistent self-closing style for void elements.
-        #
-        # Void elements (e.g., br, img, input) cannot have children, so
-        # a trailing slash is unnecessary. This rule enforces omitting
-        # the self-closing slash for consistency.
+        # Description:
+        #   Disallow self-closing syntax (`<tag />`) in HTML for all elements.
+        #   In HTML5, the trailing slash in a start tag is obsolete and has no effect. Non-void elements
+        #   require explicit end tags, and void elements are self-contained without the slash.
         #
         # Good:
+        #   <span></span>
+        #   <div></div>
+        #   <section></section>
+        #   <custom-element></custom-element>
+        #
+        #   <img src="/logo.png" alt="Logo">
+        #   <input type="text" autocomplete="off">
         #   <br>
-        #   <img src="photo.jpg">
-        #   <input type="text">
+        #   <hr>
         #
         # Bad:
-        #   <br/>
-        #   <img src="photo.jpg" />
-        #   <input type="text" />
+        #   <span />
+        #
+        #   <div />
+        #
+        #   <section />
+        #
+        #   <custom-element />
+        #
+        #   <img src="/logo.png" alt="Logo" />
+        #
+        #   <input type="text" autocomplete="off" />
+        #
+        #   <br />
+        #
+        #   <hr />
         class NoSelfClosing < VisitorRule
           VOID_ELEMENTS: Array[String]
 
