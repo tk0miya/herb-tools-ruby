@@ -167,4 +167,115 @@ RSpec.describe Herb::Format::FormatPrinter do
       end
     end
   end
+
+  describe "#visit_erb_block_node" do
+    subject { printer.capture { printer.visit(node) } }
+
+    let(:parse_result) { Herb.parse(source, track_whitespace: true) }
+    let(:printer) do
+      described_class.new(indent_width:, max_line_length:, format_context:)
+    end
+    let(:node) { parse_result.value.children.first }
+
+    context "when body contains no text content (block mode)" do
+      context "with ERB output expression in body" do
+        let(:source) { "<% users.each do |user| %><%= user.name %><% end %>" }
+
+        it "indents the body and places the end tag on its own line" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% users.each do |user| %>
+              <%= user.name %>
+            <% end %>
+          EXPECTED
+        end
+      end
+
+      context "with nested each blocks" do
+        let(:source) { "<% users.each do |user| %><% user.posts.each do |post| %><%= post.title %><% end %><% end %>" }
+
+        it "indents each level of nesting" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% users.each do |user| %>
+              <% user.posts.each do |post| %>
+                <%= post.title %>
+              <% end %>
+            <% end %>
+          EXPECTED
+        end
+      end
+
+      context "with only whitespace between tags" do
+        let(:source) { "<% items.each do |item| %>   <% end %>" }
+
+        it "skips whitespace and produces no body output" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% items.each do |item| %>
+            <% end %>
+          EXPECTED
+        end
+      end
+
+      context "with only plain text in body" do
+        let(:source) { "<% items.each do |item| %>Hello world<% end %>" }
+
+        it "places end tag on its own line" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% items.each do |item| %>Hello world
+            <% end %>
+          EXPECTED
+        end
+      end
+
+      context "with text and a block-level element in body" do
+        let(:source) { "<% items.each do |item| %>Hello <div>block</div><% end %>" }
+
+        it "places the block element on its own line" do
+          expect(subject.join("\n")).to eq(
+            "<% items.each do |item| %>Hello \n  " \
+            "<div>block</div>\n" \
+            "<% end %>"
+          )
+        end
+      end
+
+      context "with text and a control-flow ERB node in body" do
+        let(:source) { "<% items.each do |item| %>Hello <% if cond %>yes<% end %><% end %>" }
+
+        it "places end tag on its own line" do
+          expect(subject.join("\n")).to eq(
+            "<% items.each do |item| %>Hello \n  " \
+            "<% if cond %>yes\n  " \
+            "<% end %>\n" \
+            "<% end %>"
+          )
+        end
+      end
+    end
+
+    context "when body contains text mixed with ERB (text flow mode)" do
+      context "with ERB output followed by text in body" do
+        let(:source) { "<% items.each do |item| %><%= item %> item<% end %>" }
+
+        it "visits ERB and text children in sequence" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% items.each do |item| %>
+              <%= item %> item
+            <% end %>
+          EXPECTED
+        end
+      end
+
+      context "with text and an inline element in body" do
+        let(:source) { "<% items.each do |item| %>Hello <strong>item</strong>!<% end %>" }
+
+        it "visits text and inline element children in sequence" do
+          expect(subject.join("\n")).to eq(
+            "<% items.each do |item| %>Hello \n  " \
+            "<strong>item</strong>!\n" \
+            "<% end %>"
+          )
+        end
+      end
+    end
+  end
 end
