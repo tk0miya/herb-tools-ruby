@@ -362,6 +362,13 @@ module Herb
       # @rbs children: Array[Herb::AST::Node]
       def in_text_flow_context?: (untyped _parent, Array[Herb::AST::Node] children) -> bool
 
+      # Build content units from children nodes for text flow processing.
+      # Each node is classified into a ContentUnit with type, atomicity, and
+      # flow-breaking properties. Used by build_and_wrap_text_flow (Task 2.31).
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      def build_content_units_with_nodes: (Array[Herb::AST::Node] children) -> Array[ContentUnitWithNode]
+
       # Visit children in text flow mode.
       # Delegates to build_and_wrap_text_flow for inline content wrapping.
       # Note: Full implementation provided in Task 2.34 (Part F).
@@ -375,6 +382,33 @@ module Herb
       # @rbs children: Array[Herb::AST::Node]
       # @rbs _parent: Herb::AST::HTMLElementNode?
       def visit_element_children: (Array[Herb::AST::Node] children, untyped _parent) -> void
+
+      # Build a ContentUnitWithNode for a text node.
+      #
+      # @rbs child: Herb::AST::HTMLTextNode
+      def process_text_node: (Herb::AST::HTMLTextNode child) -> ContentUnitWithNode
+
+      # Build a ContentUnitWithNode for an HTML element node.
+      # Inline elements are rendered atomically via capture; block elements break the flow.
+      #
+      # @rbs child: Herb::AST::HTMLElementNode
+      def process_element_node: (Herb::AST::HTMLElementNode child) -> ContentUnitWithNode
+
+      # Build a ContentUnitWithNode for an ERB content node.
+      # Determines is_herb_disable by inspecting the node's comment marker.
+      # The _children, _index, and _last_processed_index parameters are reserved
+      # for future lookahead processing (e.g. collapsing adjacent ERB nodes).
+      #
+      # @rbs _children: Array[Herb::AST::Node]
+      # @rbs child: Herb::AST::ERBContentNode
+      # @rbs _index: Integer
+      # @rbs _last_processed_index: Integer
+      def process_erb_content_node: (untyped _children, Herb::AST::ERBContentNode child, untyped _index, untyped _last_processed_index) -> ContentUnitWithNode
+
+      # Render an ERB content node as a formatted string.
+      #
+      # @rbs node: Herb::AST::ERBContentNode
+      def render_erb_as_string: (Herb::AST::ERBContentNode node) -> String
 
       # Check whether the printer is currently rendering inside a token-list attribute.
       # Token-list attributes (e.g., class, data-controller, data-action) separate

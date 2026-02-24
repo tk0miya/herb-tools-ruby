@@ -20,11 +20,12 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 
 ### Part F: Text Flow & Spacing (6 tasks)
 - [x] Task 2.29: ContentUnit Data Structure
-- [ ] Task 2.30: buildContentUnitsWithNodes
+- [x] Task 2.30: buildContentUnitsWithNodes
 - [ ] Task 2.31: buildAndWrapTextFlow
 - [ ] Task 2.32: flushWords (Word Wrapping)
 - [ ] Task 2.33: Spacing Logic ("Rule of Three")
 - [ ] Task 2.34: visitTextFlowChildren & visitElementChildren
+- [ ] Task 2.34b: Remove build_content_units_with_nodes unit tests (superseded by .format integration tests)
 
 ### Part G: Integration & Testing (5 tasks)
 - [ ] Task 2.35: Wire Up All Components
@@ -1103,8 +1104,31 @@ end
 
 ---
 
+### Task 2.34b: Remove build_content_units_with_nodes unit tests (superseded by .format integration tests)
+
+**Purpose:** The unit tests added in Task 2.30 for `#build_content_units_with_nodes` and its
+helpers (`process_text_node`, `process_element_node`, etc.) verify internal classification
+logic. Once text flow formatting is exercised end-to-end through `.format` (Task 2.31–2.34),
+the observable outcomes (correct line wrapping, inline element placement, block element
+separation) provide stronger coverage. At that point, the private-method unit tests become
+redundant and should be removed.
+
+**Location:** `herb-format/spec/herb/format/format_printer_html_helpers_spec.rb`
+
+**Items to remove:**
+- `describe "#build_content_units_with_nodes"` and all its contexts
+
+**Prerequisite:** Confirm that each removed test case is covered by a `.format` integration
+test (added in Task 2.36 or Task 2.34).
+
+**Estimate:** 30 minutes
+
+**Dependencies:** Task 2.34, Task 2.36
+
+---
+
 **Part F Summary:**
-- **Total Tasks:** 6 tasks
+- **Total Tasks:** 7 tasks (including 2.34b)
 - **Estimate:** 13-15 hours
 - **Difficulty:** Highest (text flow + spacing logic)
 
