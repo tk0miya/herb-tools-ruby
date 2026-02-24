@@ -2,35 +2,20 @@
 
 This directory contains implementation tasks for herb-tools-ruby.
 
-## MVP Status: ✅ Complete
-
-The MVP (Minimum Viable Product) has been completed with:
-
-- ✅ Basic `.herb.yml` loading (linter.rules section only)
-- ✅ Simple file discovery (`**/*.html.erb` patterns only)
-- ✅ Initial rule implementations (html-img-require-alt, html-attribute-double-quotes, html-no-duplicate-ids)
-- ✅ Basic CLI (`herb-lint <path>`, `--version`, `--help`)
-- ✅ SimpleFormatter (text output only)
-- ✅ Inline directives (`herb:disable`, `herb:linter ignore`)
-
-Phases 1-14, 19, 20, and 23 have been completed and their task files have been removed from this directory. The completed work is documented in the git history and reflected in the current implementation.
-
 ## herb-lint Implementation Phases
 
-### Remaining Phases
+### Active Phases
 
 | Phase | File | Tasks | Description | Status |
 |-------|------|-------|-------------|--------|
-| Phase 21 | [phase-21-review-linter-rules.md](./phase-21-review-linter-rules.md) | 408 | Review and update all linter rules | 🚧 |
-| Phase 24 | [phase-24-typescript-alignment.md](./phase-24-typescript-alignment.md) | 24 | TypeScript implementation alignment | 🚧 23/24 |
-
-**Remaining Total: ~432 tasks**
+| Phase 21 | [phase-21-review-linter-rules.md](./phase-21-review-linter-rules.md) | 413 | Review and update all linter rules | 🚧 357/413 |
+| Phase 25 | [phase-25-linter-missing-features.md](./phase-25-linter-missing-features.md) | TBD | herb-lint missing features implementation | 📋 |
 
 Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
 ### Phase Overview (herb-lint)
 
-### Phase 21: Review Linter Rules (408 tasks)
+#### Phase 21: Review Linter Rules (413 tasks)
 
 | Category | Rules | Tasks per rule |
 |----------|-------|----------------|
@@ -40,50 +25,12 @@ Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 | SVG | 1 | 8 steps each |
 | Parser | 1 | 8 steps each |
 
-### Phase 24: TypeScript Alignment (24 tasks)
+#### Phase 25: herb-lint Missing Features
 
-| Part | Tasks | Description |
-|------|-------|-------------|
-| Part A | 2 | Missing rules (herb-disable-comment-unnecessary, html-no-space-in-tag) |
-| Part B | 2 | Autofix alignment (erb-no-extra-newline) |
-| Part C | 17 | Severity alignment (16 rules + policy decision) |
-| Part D | 3 | Documentation + enabled-by-default alignment (5 rules) |
+Features that exist in the TypeScript reference implementation but are missing in Ruby:
 
-**Key Discovery:** 5 rules are disabled by default in TypeScript:
-- `erb-strict-locals-required`
-- `html-navigation-has-label`
-- `html-no-block-inside-inline`
-- `html-no-space-in-tag`
-- `html-no-title-attribute`
-
-## How to Proceed
-
-1. Open the current phase's task file
-2. Implement tasks from top to bottom
-3. Test according to each task's verification method
-4. Check off completed tasks (`- [ ]` → `- [x]`)
-5. Move to the next phase when all tasks are complete
-
-## Completed Phases (herb-lint)
-
-The following phases have been completed and their task files removed:
-
-- **Phases 1-9**: MVP implementation (basic linter, config, file discovery, inline directives)
-- **Phase 8**: Rule expansion (6 rules)
-- **Phase 10**: Formatters & validation
-- **Phase 11**: HTML rule expansion (23 rules)
-- **Phase 12**: ERB rule expansion (12 rules)
-- **Phase 13**: SVG & parser rules (2 rules)
-- **Phase 14**: herb-printer gem
-- **Phase 16**: Rule autofix expansion (12 fixable rules with autofix implementation)
-- **Phase 18**: Source Rule introduction (SourceRule base class, autofix source phase, rule migrations)
-- **Phase 19**: Rule naming alignment
-- **Phase 20**: factory_bot introduction
-- **Phase 23**: JSON formatter completion (info/hint severities, ignored offenses, rule count)
-
-All completed work is documented in the git history and reflected in the current implementation.
-
-**Note:** Phase 14 (herb-printer gem) is a prerequisite for herb-format implementation.
+- `DetailedFormatter` (default output format with syntax highlighting and code snippets)
+- Additional missing features from TypeScript analysis
 
 ## herb-format Implementation Phases
 
@@ -145,6 +92,14 @@ Parts A-D (FormatHelpers, Core Patterns, ElementAnalyzer, Attribute Formatting) 
 | Part C | 1 | --stdin handler |
 | Part D | 1 | Check mode and reporting |
 | Part E | 4 | Executable and integration tests |
+
+## How to Proceed
+
+1. Open the current phase's task file
+2. Implement tasks from top to bottom
+3. Test according to each task's verification method
+4. Check off completed tasks (`- [ ]` → `- [x]`)
+5. Move to the next phase when all tasks are complete
 
 ## Unscheduled Tasks (Low Priority)
 
