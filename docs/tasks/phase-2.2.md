@@ -19,7 +19,7 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 - [ ] Task 2.28b: Pending Tests for render_multiline_attributes (ERB nodes in attributes)
 
 ### Part F: Text Flow & Spacing (6 tasks)
-- [ ] Task 2.29: ContentUnit Data Structure
+- [x] Task 2.29: ContentUnit Data Structure
 - [ ] Task 2.30: buildContentUnitsWithNodes
 - [ ] Task 2.31: buildAndWrapTextFlow
 - [ ] Task 2.32: flushWords (Word Wrapping)
