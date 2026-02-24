@@ -9,13 +9,13 @@ module Herb
     class ElementAnalyzer
       include FormatHelpers
 
-      @printer: FormatPrinter
-
-      @max_line_length: Integer
+      @in_conditional_open_tag_context: bool
 
       @indent_width: Integer
 
-      @in_conditional_open_tag_context: bool
+      @max_line_length: Integer
+
+      @printer: FormatPrinter
 
       # @rbs printer: FormatPrinter
       # @rbs max_line_length: Integer
@@ -70,6 +70,12 @@ module Herb
       #
       # @rbs element: Herb::AST::HTMLElementNode
       def should_render_inline?: (Herb::AST::HTMLElementNode element) -> bool
+
+      # Render the content of an attribute value node using IdentityPrinter.
+      # Used only for line-length estimation in should_render_inline?.
+      #
+      # @rbs attribute_value: Herb::AST::HTMLAttributeValueNode
+      def render_attribute_value_content: (Herb::AST::HTMLAttributeValueNode attribute_value) -> String
 
       # Compute the normalized single-line string representation of an attribute.
       # Does not apply class value wrapping — whitespace is collapsed to a single space.

@@ -377,16 +377,6 @@ module Herb
         end.join
       end
 
-      # Render the content of an attribute value node.
-      # Handles literal content and embedded ERB nodes.
-      #
-      # @rbs attribute_value: Herb::AST::HTMLAttributeValueNode
-      def render_attribute_value_content(attribute_value) #: String
-        attribute_value.children.map do |child|
-          child.is_a?(Herb::AST::LiteralNode) ? child.content : ::Herb::Printer::IdentityPrinter.print(child)
-        end.join
-      end
-
       # Extract the string value from an optional token node.
       # Returns empty string when the token is absent.
       #

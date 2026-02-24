@@ -194,12 +194,6 @@ module Herb
       # @rbs attribute_value: Herb::AST::HTMLAttributeValueNode
       def get_html_text_content: (Herb::AST::HTMLAttributeValueNode attribute_value) -> String
 
-      # Render the content of an attribute value node.
-      # Handles literal content and embedded ERB nodes.
-      #
-      # @rbs attribute_value: Herb::AST::HTMLAttributeValueNode
-      def render_attribute_value_content: (Herb::AST::HTMLAttributeValueNode attribute_value) -> String
-
       # Extract the string value from an optional token node.
       # Returns empty string when the token is absent.
       #

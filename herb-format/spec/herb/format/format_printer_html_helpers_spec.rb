@@ -114,22 +114,4 @@ RSpec.describe Herb::Format::FormatPrinter do
       it { is_expected.to be false }
     end
   end
-
-  describe "#render_multiline_attributes" do
-    context "with herb:disable comment in open tag" do
-      pending "implement after Task 2.28 (ERB Comment Node) — tracked in Task 2.28b"
-    end
-
-    context "with ERB tag in attribute value" do
-      pending "implement after Task 2.28 (ERB Comment Node) — tracked in Task 2.28b"
-    end
-
-    context "with multiple herb:disable comments" do
-      pending "implement after Task 2.28 (ERB Comment Node) — tracked in Task 2.28b"
-    end
-
-    context "with herb:disable comment and no other attributes" do
-      pending "implement after Task 2.28 (ERB Comment Node) — tracked in Task 2.28b"
-    end
-  end
 end

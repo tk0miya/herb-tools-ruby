@@ -385,6 +385,51 @@ RSpec.describe Herb::Format::FormatPrinter do
           ERB
         end
       end
+
+      context "with herb:disable comment in open tag" do
+        let(:max_line_length) { 20 }
+        let(:source) { '<div <%# herb:disable rule-name %> class="foo" id="bar">content</div>' }
+
+        it "appends the herb:disable comment inline to the opening line" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <div <%# herb:disable rule-name %>
+              class="foo"
+              id="bar"
+            >content
+            </div>
+          ERB
+        end
+      end
+
+      context "with multiple herb:disable comments in open tag" do
+        let(:max_line_length) { 20 }
+        let(:source) { '<div <%# herb:disable a %> <%# herb:disable b %> class="foo" id="bar">content</div>' }
+
+        it "appends all herb:disable comments to the opening line" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <div <%# herb:disable a %> <%# herb:disable b %>
+              class="foo"
+              id="bar"
+            >content
+            </div>
+          ERB
+        end
+      end
+
+      context "with herb:disable comment and no other attributes in open tag" do
+        let(:source) { "<div\n<%# herb:disable rule-name %>\n<% if condition %>\n<% end %>\n>content</div>" }
+
+        it "appends the herb:disable comment to the opening line with no attribute lines" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <div <%# herb:disable rule-name %>
+              <% if condition %>
+
+              <% end %>
+            >content
+            </div>
+          ERB
+        end
+      end
     end
 
     context "with mixed HTML and ERB content" do
