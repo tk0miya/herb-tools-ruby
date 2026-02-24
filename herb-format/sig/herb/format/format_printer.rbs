@@ -316,6 +316,15 @@ module Herb
       # @rbs lines: Array[String]
       def format_multiline_attribute_value: (Array[String] lines) -> String
 
+      # Visit ERB comment node (<%# ... %>).
+      # Handles comment formatting for both single and multi-line comments.
+      # Single-line or collapsible multi-line: normalizes to <%# content %>.
+      # True multi-line: formats as block with opening <%#, indented content lines,
+      # and closing %> on its own line.
+      #
+      # @rbs node: Herb::AST::ERBContentNode
+      def visit_erb_comment_node: (Herb::AST::ERBContentNode node) -> void
+
       # Visit ERB if node in inline mode (inside attributes).
       # Handles conditional rendering of attributes in open tags.
       # In token-list attributes (e.g., class, data-controller, data-action),

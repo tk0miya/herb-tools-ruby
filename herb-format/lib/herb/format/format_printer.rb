@@ -698,6 +698,40 @@ module Herb
 
       # -- ERB Control Flow --
 
+      # Visit ERB comment node (<%# ... %>).
+      # Handles comment formatting for both single and multi-line comments.
+      # Single-line or collapsible multi-line: normalizes to <%# content %>.
+      # True multi-line: formats as block with opening <%#, indented content lines,
+      # and closing %> on its own line.
+      #
+      # @rbs node: Herb::AST::ERBContentNode
+      def visit_erb_comment_node(node) #: void # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+        content = token_value(node.content)
+        content_trimmed_lines = content.split("\n").map(&:strip).reject(&:empty?)
+
+        case content_trimmed_lines.length
+        when 0
+          formatted = "<%#%>"
+          @inline_mode ? push_to_last_line(formatted) : push_with_indent(formatted)
+        when 1
+          formatted = "<%# #{content_trimmed_lines.first} %>"
+          @inline_mode ? push_to_last_line(formatted) : push_with_indent(formatted)
+        else
+          if @inline_mode
+            push_to_last_line("<%# #{content_trimmed_lines.join(' ')} %>")
+          else
+            content_lines = content.split("\n")
+            first_line_empty = content_lines.first&.strip&.empty?
+            dedented_lines = dedent(first_line_empty ? content : content.lstrip).split("\n")
+            dedented_lines.shift while dedented_lines.first&.strip&.empty?
+            dedented_lines.pop while dedented_lines.last&.strip&.empty?
+            push_with_indent("<%#")
+            with_indent { dedented_lines.each { push_with_indent(_1) } }
+            push_with_indent("%>")
+          end
+        end
+      end
+
       # Visit ERB if node in inline mode (inside attributes).
       # Handles conditional rendering of attributes in open tags.
       # In token-list attributes (e.g., class, data-controller, data-action),

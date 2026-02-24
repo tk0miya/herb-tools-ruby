@@ -456,5 +456,156 @@ RSpec.describe Herb::Format::FormatPrinter do
         end
       end
     end
+
+    context "with ERBCommentNode" do
+      let(:node) { parse_result.value.children.first }
+
+      context "when inline_mode is false" do
+        context "with single-line comment without spaces" do
+          let(:source) { "<%#comment%>" }
+
+          it "normalizes to <%# content %> format" do
+            expect(subject.join).to eq("<%# comment %>")
+          end
+        end
+
+        context "with single-line comment with extra spaces" do
+          let(:source) { "<%#  comment  %>" }
+
+          it "normalizes spacing to exactly one space" do
+            expect(subject.join).to eq("<%# comment %>")
+          end
+        end
+
+        context "with single-line comment already normalized" do
+          let(:source) { "<%# comment %>" }
+
+          it "preserves normalized format" do
+            expect(subject.join).to eq("<%# comment %>")
+          end
+        end
+
+        context "with empty comment" do
+          let(:source) { "<%#%>" }
+
+          it "outputs empty comment" do
+            expect(subject.join).to eq("<%#%>")
+          end
+        end
+
+        context "with multi-line comment having single content line" do
+          let(:source) { "<%#\n  comment\n%>" }
+
+          it "collapses to single-line format" do
+            expect(subject.join).to eq("<%# comment %>")
+          end
+        end
+
+        context "with true multi-line comment" do
+          let(:source) { "<%#\n  line1\n  line2\n%>" }
+
+          it "formats as block with opening tag, indented content, and closing tag" do
+            expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+              <%#
+                line1
+                line2
+              %>
+            EXPECTED
+          end
+        end
+
+        context "with multi-line comment and extra whitespace" do
+          let(:source) { "<%#\n    line1\n    line2\n    line3\n%>" }
+
+          it "dedents and reformats as block" do
+            expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+              <%#
+                line1
+                line2
+                line3
+              %>
+            EXPECTED
+          end
+        end
+
+        context "with multi-line comment with internal blank lines" do
+          let(:source) { "<%#\n  line1\n\n  line2\n%>" }
+
+          it "preserves internal blank lines" do
+            expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+              <%#
+                line1
+
+                line2
+              %>
+            EXPECTED
+          end
+        end
+
+        context "with indented context" do
+          before { printer.indent_level = 1 }
+
+          context "with single-line comment" do
+            let(:source) { "<%#comment%>" }
+
+            it "adds indentation" do
+              expect(subject.join).to eq("  <%# comment %>")
+            end
+          end
+
+          context "with multi-line comment" do
+            let(:source) { "<%#\n  line1\n  line2\n%>" }
+
+            it "applies indentation to all parts" do
+              expect(subject.join("\n")).to eq("  <%#\n    line1\n    line2\n  %>")
+            end
+          end
+
+          context "with multi-line comment with internal blank lines" do
+            let(:source) { "<%#\n  line1\n\n  line2\n%>" }
+
+            it "preserves internal blank lines with indentation" do
+              expect(subject.join("\n")).to eq("  <%#\n    line1\n\n    line2\n  %>")
+            end
+          end
+        end
+      end
+
+      context "when inline_mode is true" do
+        before { printer.inline_mode = true }
+
+        context "with single-line comment" do
+          let(:source) { "<%#comment%>" }
+
+          it "normalizes inline" do
+            expect(subject.join).to eq("<%# comment %>")
+          end
+        end
+
+        context "with empty comment" do
+          let(:source) { "<%#%>" }
+
+          it "outputs empty comment inline" do
+            expect(subject.join).to eq("<%#%>")
+          end
+        end
+
+        context "with multi-line comment having single content line" do
+          let(:source) { "<%#\n  comment\n%>" }
+
+          it "collapses to single-line inline" do
+            expect(subject.join).to eq("<%# comment %>")
+          end
+        end
+
+        context "with true multi-line comment" do
+          let(:source) { "<%#\n  line1\n  line2\n%>" }
+
+          it "collapses all lines to single inline format" do
+            expect(subject.join).to eq("<%# line1 line2 %>")
+          end
+        end
+      end
+    end
   end
 end
