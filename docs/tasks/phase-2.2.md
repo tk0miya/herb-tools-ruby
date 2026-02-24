@@ -15,7 +15,7 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 - [x] Task 2.25: ERB If Node - Block Mode
 - [x] Task 2.26: ERB Block Node (visitERBBlockNode)
 - [x] Task 2.27: ERB Other Control Flow (unless, case, for, while)
-- [ ] Task 2.28: ERB Comment Node (visitERBCommentNode)
+- [x] Task 2.28: ERB Comment Node (visitERBCommentNode)
 - [ ] Task 2.28b: Pending Tests for render_multiline_attributes (ERB nodes in attributes)
 
 ### Part F: Text Flow & Spacing (6 tasks)
@@ -35,7 +35,7 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 - [ ] Task 2.38: Performance & Edge Cases
 - [ ] Task 2.39: Full Verification
 
-**Progress: 6/19 tasks completed**
+**Progress: 7/19 tasks completed**
 
 ---
 
