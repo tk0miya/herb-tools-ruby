@@ -185,16 +185,16 @@ end
 
 **Location:** `herb-format/lib/herb/format/rewriter_registry.rb`
 
-- [ ] Create RewriterRegistry class
-- [ ] Implement register(rewriter_class) method
-- [ ] Implement get(name) method returning rewriter class or nil
-- [ ] Implement registered?(name) predicate
-- [ ] Implement all() method returning all registered rewriters
-- [ ] Implement rewriter_names() method
-- [ ] Implement load_builtin_rewriters() method
-- [ ] Add validation for rewriter classes
-- [ ] Add RBS inline type annotations
-- [ ] Create spec file
+- [x] Create RewriterRegistry class
+- [x] Implement register(rewriter_class) method
+- [x] Implement get(name) method returning rewriter class or nil
+- [x] Implement registered?(name) predicate
+- [x] Implement all() method returning all registered rewriters
+- [x] Implement rewriter_names() method
+- [x] Implement load_builtin_rewriters() method
+- [x] Add validation for rewriter classes
+- [x] Add RBS inline type annotations
+- [x] Create spec file
 
 **Interface:**
 ```ruby
@@ -392,6 +392,7 @@ end
 - [ ] Normalize whitespace in attribute values
 - [ ] Add RBS inline type annotations
 - [ ] Create spec file
+- [ ] Update load_builtin_rewriters in RewriterRegistry to require and register NormalizeAttributes
 
 **Interface:**
 ```ruby
@@ -498,6 +499,7 @@ end
 - [ ] Sort attributes alphabetically by name
 - [ ] Add RBS inline type annotations
 - [ ] Create spec file
+- [ ] Update load_builtin_rewriters in RewriterRegistry to require and register SortAttributes
 
 **Interface:**
 ```ruby
@@ -598,6 +600,7 @@ end
 - [ ] Sort Tailwind CSS classes according to recommended order
 - [ ] Add RBS inline type annotations
 - [ ] Create spec file
+- [ ] Update load_builtin_rewriters in RewriterRegistry to require and register TailwindClassSorter
 
 **Interface:**
 ```ruby
