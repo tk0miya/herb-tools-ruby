@@ -7,18 +7,27 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that enforces lowercase tag names.
-        #
-        # HTML tag names are case-insensitive, but lowercase is the standard
-        # convention for modern HTML. This rule ensures consistency.
+        # Description:
+        #   Enforce that all HTML tag names are written in lowercase.
         #
         # Good:
-        #   <div></div>
-        #   <span>text</span>
+        #   <div class="container"></div>
+        #
+        #   <input type="text" name="username" autocomplete="off">
+        #
+        #   <span>Label</span>
+        #
+        #   <%= content_tag(:div, "Hello world!") %>
         #
         # Bad:
-        #   <DIV></DIV>
-        #   <Span>text</Span>
+        #   <DIV class="container"></DIV>
+        #
+        #   <Input type="text" name="username" autocomplete="off">
+        #
+        #   <Span>Label</Span>
+        #
+        #   <%= content_tag(:DiV, "Hello world!") %> <!-- TODO -->
+        #
         class TagNameLowercase < VisitorRule
           def self.rule_name = "html-tag-name-lowercase" #: String
           def self.description = "Enforce lowercase tag names" #: String
@@ -30,7 +39,10 @@ module Herb
           def visit_html_element_node(node)
             check_open_tag(node)
             check_close_tag(node)
-            super
+            # For SVG elements, skip visiting children since SVG tag names are
+            # case-sensitive (e.g. linearGradient, clipPath). Only the <svg>
+            # element itself is subject to this rule.
+            super unless tag_name(node) == "svg"
           end
 
           # @rbs node: Herb::AST::HTMLOpenTagNode | Herb::AST::HTMLCloseTagNode
@@ -56,7 +68,7 @@ module Herb
             return unless node.open_tag
 
             add_offense_with_autofix(
-              message: "Tag name '#{tag}' should be lowercase",
+              message: "Opening tag name `<#{tag}>` should be lowercase. Use `<#{tag.downcase}>` instead.",
               location: node.tag_name.location,
               node: node.open_tag
             )
@@ -72,7 +84,7 @@ module Herb
             return if lowercase?(tag)
 
             add_offense_with_autofix(
-              message: "Tag name '#{tag}' should be lowercase",
+              message: "Closing tag name `</#{tag}>` should be lowercase. Use `</#{tag.downcase}>` instead.",
               location: close_tag.tag_name.location,
               node: close_tag
             )
