@@ -844,6 +844,33 @@ module Herb
         end
       end
 
+      # Build content units from children nodes for text flow processing.
+      # Each node is classified into a ContentUnit with type, atomicity, and
+      # flow-breaking properties. Used by build_and_wrap_text_flow (Task 2.31).
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      def build_content_units_with_nodes(children) #: Array[ContentUnitWithNode]
+        result = []
+        last_processed_index = -1
+
+        children.each_with_index do |child, index|
+          next if index <= last_processed_index
+
+          unit_with_node = case child
+                           when Herb::AST::HTMLTextNode
+                             process_text_node(child)
+                           when Herb::AST::ERBContentNode
+                             process_erb_content_node(children, child, index, last_processed_index)
+                           when Herb::AST::HTMLElementNode
+                             process_element_node(child)
+                           end
+          # Other nodes (WhitespaceNode, etc.) are skipped
+          result << unit_with_node if unit_with_node
+        end
+
+        result
+      end
+
       # Visit children in text flow mode.
       # Delegates to build_and_wrap_text_flow for inline content wrapping.
       # Note: Full implementation provided in Task 2.34 (Part F).
@@ -864,6 +891,59 @@ module Herb
 
           visit(child)
         end
+      end
+
+      # Build a ContentUnitWithNode for a text node.
+      #
+      # @rbs child: Herb::AST::HTMLTextNode
+      def process_text_node(child) #: ContentUnitWithNode
+        unit = ContentUnit.new(content: child.content, type: :text, is_atomic: false, breaks_flow: false)
+        ContentUnitWithNode.new(unit:, node: child)
+      end
+
+      # Build a ContentUnitWithNode for an HTML element node.
+      # Inline elements are rendered atomically via capture; block elements break the flow.
+      #
+      # @rbs child: Herb::AST::HTMLElementNode
+      def process_element_node(child) #: ContentUnitWithNode
+        unit = if inline_element?(get_tag_name(child))
+                 ContentUnit.new(
+                   content: capture { visit(child) }.join,
+                   type: :inline,
+                   is_atomic: true,
+                   breaks_flow: false
+                 )
+               else
+                 ContentUnit.new(content: "", type: :block, is_atomic: true, breaks_flow: true)
+               end
+        ContentUnitWithNode.new(unit:, node: child)
+      end
+
+      # Build a ContentUnitWithNode for an ERB content node.
+      # Determines is_herb_disable by inspecting the node's comment marker.
+      # The _children, _index, and _last_processed_index parameters are reserved
+      # for future lookahead processing (e.g. collapsing adjacent ERB nodes).
+      #
+      # @rbs _children: Array[Herb::AST::Node]
+      # @rbs child: Herb::AST::ERBContentNode
+      # @rbs _index: Integer
+      # @rbs _last_processed_index: Integer
+      def process_erb_content_node(_children, child, _index, _last_processed_index) #: ContentUnitWithNode
+        unit = ContentUnit.new(
+          content: render_erb_as_string(child),
+          type: :erb,
+          is_atomic: true,
+          breaks_flow: false,
+          is_herb_disable: herb_disable_comment?(child)
+        )
+        ContentUnitWithNode.new(unit:, node: child)
+      end
+
+      # Render an ERB content node as a formatted string.
+      #
+      # @rbs node: Herb::AST::ERBContentNode
+      def render_erb_as_string(node) #: String
+        reconstruct_erb_node(node, with_formatting: true)
       end
 
       # Check whether the printer is currently rendering inside a token-list attribute.
