@@ -267,5 +267,194 @@ RSpec.describe Herb::Format::FormatPrinter do
         end
       end
     end
+
+    context "with ERBUnlessNode" do
+      let(:node) { parse_result.value.children.first }
+
+      context "with basic unless block" do
+        let(:source) { "<% unless user.admin? %><%= text %><% end %>" }
+
+        it "indents statements and places end tag on its own line" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% unless user.admin? %>
+              <%= text %>
+            <% end %>
+          EXPECTED
+        end
+      end
+
+      context "with nested unless blocks" do
+        let(:source) { "<% unless outer %><% unless inner %><%= text %><% end %><% end %>" }
+
+        it "indents each level of nesting" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% unless outer %>
+              <% unless inner %>
+                <%= text %>
+              <% end %>
+            <% end %>
+          EXPECTED
+        end
+      end
+
+      context "with else clause" do
+        let(:source) { "<% unless cond %><%= a %><% else %><%= b %><% end %>" }
+
+        it "renders unless, else, and end with correct indentation" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% unless cond %>
+              <%= a %>
+            <% else %>
+              <%= b %>
+            <% end %>
+          EXPECTED
+        end
+      end
+    end
+
+    context "with ERBForNode" do
+      let(:node) { parse_result.value.children.first }
+
+      context "with basic for loop" do
+        let(:source) { "<% for i in 1..10 %><%= i %><% end %>" }
+
+        it "indents the body and places the end tag on its own line" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% for i in 1..10 %>
+              <%= i %>
+            <% end %>
+          EXPECTED
+        end
+      end
+
+      context "with nested for loops" do
+        let(:source) { "<% for i in list %><% for j in i.items %><%= j %><% end %><% end %>" }
+
+        it "indents each level of nesting" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% for i in list %>
+              <% for j in i.items %>
+                <%= j %>
+              <% end %>
+            <% end %>
+          EXPECTED
+        end
+      end
+    end
+
+    context "with ERBWhileNode" do
+      let(:node) { parse_result.value.children.first }
+
+      context "with basic while loop" do
+        let(:source) { "<% while cond %><%= text %><% end %>" }
+
+        it "indents the body and places the end tag on its own line" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% while cond %>
+              <%= text %>
+            <% end %>
+          EXPECTED
+        end
+      end
+    end
+
+    context "with ERBUntilNode" do
+      let(:node) { parse_result.value.children.first }
+
+      context "with basic until loop" do
+        let(:source) { "<% until cond %><%= text %><% end %>" }
+
+        it "indents the body and places the end tag on its own line" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% until cond %>
+              <%= text %>
+            <% end %>
+          EXPECTED
+        end
+      end
+    end
+
+    context "with ERBCaseNode" do
+      let(:node) { parse_result.value.children.first }
+
+      context "with when clauses" do
+        let(:source) { "<% case x %><% when 1 %><%= one %><% when 2 %><%= two %><% end %>" }
+
+        it "renders case tag, when clauses with indented statements, and end tag" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% case x %>
+            <% when 1 %>
+              <%= one %>
+            <% when 2 %>
+              <%= two %>
+            <% end %>
+          EXPECTED
+        end
+      end
+
+      context "with else clause" do
+        let(:source) { "<% case x %><% when 1 %><%= one %><% else %><%= other %><% end %>" }
+
+        it "renders case tag, when clause, else clause, and end tag" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% case x %>
+            <% when 1 %>
+              <%= one %>
+            <% else %>
+              <%= other %>
+            <% end %>
+          EXPECTED
+        end
+      end
+    end
+
+    context "with ERBCaseMatchNode" do
+      let(:node) { parse_result.value.children.first }
+
+      context "with in clauses" do
+        let(:source) { "<% case x %><% in 1 %><%= one %><% in 2 %><%= two %><% end %>" }
+
+        it "renders case tag, in clauses with indented statements, and end tag" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% case x %>
+            <% in 1 %>
+              <%= one %>
+            <% in 2 %>
+              <%= two %>
+            <% end %>
+          EXPECTED
+        end
+      end
+
+      context "with else clause" do
+        let(:source) { "<% case x %><% in 1 %><%= one %><% else %><%= other %><% end %>" }
+
+        it "renders case tag, in clause, else clause, and end tag" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% case x %>
+            <% in 1 %>
+              <%= one %>
+            <% else %>
+              <%= other %>
+            <% end %>
+          EXPECTED
+        end
+      end
+
+      context "with pattern matching in clauses" do
+        let(:source) { "<% case x %><% in [Integer => n] %><%= n %><% in String %><%= x %><% end %>" }
+
+        it "renders case tag, in clauses with indented statements, and end tag" do
+          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            <% case x %>
+            <% in [Integer => n] %>
+              <%= n %>
+            <% in String %>
+              <%= x %>
+            <% end %>
+          EXPECTED
+        end
+      end
+    end
   end
 end
