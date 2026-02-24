@@ -263,6 +263,136 @@ module Herb
         end
       end
 
+      # Visit ERB unless node.
+      # Prints the unless tag, visits statements with increased indentation,
+      # optionally visits else_clause, then visits end_node.
+      #
+      # @rbs override
+      def visit_erb_unless_node(node)
+        track_boundary(node) do
+          print_erb_node(node)
+
+          with_indent do
+            node.statements.each { visit(_1) }
+          end
+
+          visit(node.else_clause) if node.else_clause
+          visit(node.end_node) if node.end_node
+        end
+      end
+
+      # Visit ERB else node.
+      # Prints the else tag and visits statements.
+      # In inline mode, visits statements without indentation; otherwise with indentation.
+      #
+      # @rbs override
+      def visit_erb_else_node(node)
+        print_erb_node(node)
+
+        if @inline_mode
+          node.statements.each { visit(_1) }
+        else
+          with_indent do
+            node.statements.each { visit(_1) }
+          end
+        end
+      end
+
+      # Visit ERB case node.
+      # Prints the case tag, visits each when condition (conditions),
+      # optionally visits else_clause, then visits end_node.
+      #
+      # @rbs override
+      def visit_erb_case_node(node)
+        track_boundary(node) do
+          print_erb_node(node)
+
+          with_indent do
+            node.children.each { visit(_1) }
+          end
+
+          node.conditions.each { visit(_1) }
+
+          visit(node.else_clause) if node.else_clause
+          visit(node.end_node) if node.end_node
+        end
+      end
+
+      # Visit ERB when node (inside case).
+      # Prints the when tag and visits statements with increased indentation.
+      #
+      # @rbs override
+      def visit_erb_when_node(node)
+        print_erb_node(node)
+
+        with_indent do
+          node.statements.each { visit(_1) }
+        end
+      end
+
+      # Visit ERB case/in node (pattern matching).
+      # Prints the case tag, visits direct children (content between case and first in),
+      # visits each in condition, optionally visits else_clause, then visits end_node.
+      #
+      # @rbs override
+      def visit_erb_case_match_node(node)
+        track_boundary(node) do
+          print_erb_node(node)
+
+          with_indent do
+            node.children.each { visit(_1) }
+          end
+
+          node.conditions.each { visit(_1) }
+
+          visit(node.else_clause) if node.else_clause
+          visit(node.end_node) if node.end_node
+        end
+      end
+
+      # Visit ERB in node (inside case/in pattern matching).
+      # Prints the in tag and visits statements with increased indentation.
+      #
+      # @rbs override
+      def visit_erb_in_node(node)
+        print_erb_node(node)
+
+        with_indent do
+          node.statements.each { visit(_1) }
+        end
+      end
+
+      # Visit ERB for node.
+      # Prints the for tag, visits statements with increased indentation,
+      # then visits end_node.
+      #
+      # @rbs override
+      def visit_erb_for_node(node)
+        track_boundary(node) do
+          print_erb_node(node)
+
+          with_indent do
+            node.statements.each { visit(_1) }
+          end
+
+          visit(node.end_node) if node.end_node
+        end
+      end
+
+      # Visit ERB while node (same pattern as for).
+      #
+      # @rbs override
+      def visit_erb_while_node(node)
+        visit_erb_for_node(node)
+      end
+
+      # Visit ERB until node (same pattern as for).
+      #
+      # @rbs override
+      def visit_erb_until_node(node)
+        visit_erb_for_node(node)
+      end
+
       private
 
       # Return the element currently being visited (top of element stack).

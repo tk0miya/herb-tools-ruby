@@ -127,6 +127,63 @@ module Herb
       # @rbs override
       def visit_erb_block_node: ...
 
+      # Visit ERB unless node.
+      # Prints the unless tag, visits statements with increased indentation,
+      # optionally visits else_clause, then visits end_node.
+      #
+      # @rbs override
+      def visit_erb_unless_node: ...
+
+      # Visit ERB else node.
+      # Prints the else tag and visits statements.
+      # In inline mode, visits statements without indentation; otherwise with indentation.
+      #
+      # @rbs override
+      def visit_erb_else_node: ...
+
+      # Visit ERB case node.
+      # Prints the case tag, visits each when condition (conditions),
+      # optionally visits else_clause, then visits end_node.
+      #
+      # @rbs override
+      def visit_erb_case_node: ...
+
+      # Visit ERB when node (inside case).
+      # Prints the when tag and visits statements with increased indentation.
+      #
+      # @rbs override
+      def visit_erb_when_node: ...
+
+      # Visit ERB case/in node (pattern matching).
+      # Prints the case tag, visits direct children (content between case and first in),
+      # visits each in condition, optionally visits else_clause, then visits end_node.
+      #
+      # @rbs override
+      def visit_erb_case_match_node: ...
+
+      # Visit ERB in node (inside case/in pattern matching).
+      # Prints the in tag and visits statements with increased indentation.
+      #
+      # @rbs override
+      def visit_erb_in_node: ...
+
+      # Visit ERB for node.
+      # Prints the for tag, visits statements with increased indentation,
+      # then visits end_node.
+      #
+      # @rbs override
+      def visit_erb_for_node: ...
+
+      # Visit ERB while node (same pattern as for).
+      #
+      # @rbs override
+      def visit_erb_while_node: ...
+
+      # Visit ERB until node (same pattern as for).
+      #
+      # @rbs override
+      def visit_erb_until_node: ...
+
       private
 
       # Return the element currently being visited (top of element stack).
