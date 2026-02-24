@@ -1,0 +1,42 @@
+# Generated from lib/herb/format/rewriter_registry.rb with RBS::Inline
+
+module Herb
+  module Format
+    # Central registry for rewriter classes (Registry Pattern).
+    class RewriterRegistry
+      @rewriters: Hash[String, singleton(Rewriters::Base)]
+
+      def initialize: () -> void
+
+      # Register a rewriter class.
+      #
+      # @rbs rewriter_class: singleton(Rewriters::Base)
+      def register: (singleton(Rewriters::Base) rewriter_class) -> void
+
+      # Get a rewriter class by name.
+      #
+      # @rbs name: String
+      def get: (String name) -> singleton(Rewriters::Base)?
+
+      # Check if a rewriter is registered.
+      #
+      # @rbs name: String
+      def registered?: (String name) -> bool
+
+      # Get all registered rewriter classes.
+      def all: () -> Array[singleton(Rewriters::Base)]
+
+      # Get all registered rewriter names.
+      def rewriter_names: () -> Array[String]
+
+      # Load built-in rewriters.
+      # TODO: require and register built-in rewriters once implemented (Tasks 4.3-4.5)
+      def load_builtin_rewriters: () -> void
+
+      private
+
+      # @rbs rewriter_class: singleton(Rewriters::Base)
+      def validate_rewriter_class: (singleton(Rewriters::Base) rewriter_class) -> bool
+    end
+  end
+end
