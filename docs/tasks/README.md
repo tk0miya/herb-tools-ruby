@@ -89,26 +89,27 @@ All completed work is documented in the git history and reflected in the current
 
 | Phase | File | Tasks | Description | Status |
 |-------|------|-------|-------------|--------|
-| Phase 2 | [phase-2-formatter-engine.md](./phase-2-formatter-engine.md) | 12 | Core formatting engine (HTML, ERB, whitespace) | 📋 |
+| Phase 2 | [phase-2.2.md](./phase-2.2.md) | 19 | FormatPrinter Parts E-G (ERB, Text Flow, Integration) | 🚧 |
 | Phase 3 | [phase-3-formatter-core.md](./phase-3-formatter-core.md) | 6 | FormatIgnore, Formatter, FormatterFactory | 📋 |
 | Phase 4 | [phase-4-formatter-rewriters.md](./phase-4-formatter-rewriters.md) | 9 | Rewriter system (base, registry, built-ins, custom loader) | 📋 |
 | Phase 5 | [phase-5-formatter-runner.md](./phase-5-formatter-runner.md) | 4 | Runner and batch file processing | 📋 |
 | Phase 6 | [phase-6-formatter-cli.md](./phase-6-formatter-cli.md) | 9 | CLI (options, --init, --stdin, --check, reporting) | 📋 |
 
-**Total: ~40 tasks**
+**Total: ~47 tasks**
 
 Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
 ### Phase Overview (herb-format)
 
-#### Phase 2: FormatPrinter (12 tasks)
+#### Phase 2: FormatPrinter Parts E-G (19 tasks remaining)
+
+Parts A-D (FormatHelpers, Core Patterns, ElementAnalyzer, Attribute Formatting) are complete.
 
 | Part | Tasks | Description |
 |------|-------|-------------|
-| Part A | 1 | FormatPrinter foundation |
-| Part B | 4 | HTML formatting (document, text, elements, attributes, comments) |
-| Part C | 4 | ERB formatting (content, blocks, control flow, exception handling) |
-| Part D | 3 | Integration and refinement |
+| Part E | 7 | ERB formatting (tag normalization, if/block/control flow, comments) |
+| Part F | 6 | Text flow and spacing (word wrapping, spacing logic) |
+| Part G | 6 | Integration and testing (wire-up, integration tests, verification) |
 
 #### Phase 3: Formatter Core (6 tasks)
 
