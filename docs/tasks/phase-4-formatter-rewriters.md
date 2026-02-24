@@ -37,13 +37,13 @@ This phase implements the rewriter system for transforming ASTs before and after
 
 **Location:** `herb-format/lib/herb/format/rewriters/base.rb`
 
-- [ ] Create Rewriters module
-- [ ] Create Base class extending or using Herb::Visitor
-- [ ] Define class methods: rewriter_name, description, phase
-- [ ] Define instance method: rewrite(ast, context)
-- [ ] Add helper method: traverse(node, &block) for AST modification
-- [ ] Add RBS inline type annotations
-- [ ] Create spec file
+- [x] Create Rewriters module
+- [x] Create Base class extending or using Herb::Visitor
+- [x] Define class methods: rewriter_name, description, phase
+- [x] Define instance method: rewrite(ast, context)
+- [x] Add helper method: traverse(node, &block) for AST modification
+- [x] Add RBS inline type annotations
+- [x] Create spec file
 
 **Interface:**
 ```ruby

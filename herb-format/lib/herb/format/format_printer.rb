@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+require_relative "context"
+require_relative "element_analysis"
+require_relative "element_analyzer"
+require_relative "format_helpers"
+
 module Herb
   module Format
     # Core formatting printer that traverses AST and produces formatted output.

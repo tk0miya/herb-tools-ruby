@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require_relative "element_analysis"
+require_relative "format_helpers"
+
 module Herb
   module Format
     # Analyzes HTMLElementNode to determine formatting decisions.
