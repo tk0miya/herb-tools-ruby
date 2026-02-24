@@ -574,22 +574,25 @@ The `class` attribute on any element can be formatted:
 
 ## Implementation Notes
 
-### ElementFormattingAnalysis
+### ElementAnalysis
 
-The TypeScript implementation uses a 3-field analysis structure:
+The Ruby implementation uses a 3-field `Data` struct:
 
-```typescript
-{
-  openTagInline: boolean,      // Should open tag be on same line as parent?
-  elementContentInline: boolean, // Should content be inline?
-  closeTagInline: boolean      // Should close tag be on same line?
-}
+```ruby
+ElementAnalysis = Data.define(
+  :open_tag_inline,        # bool - render open tag on one line?
+  :element_content_inline, # bool - render element body inline?
+  :close_tag_inline        # bool - append close tag to same line?
+)
 ```
 
 This allows fine-grained control:
 - `{ true, true, true }` - Fully inline: `<p>text</p>`
 - `{ false, false, false }` - Block format with newlines
-- Mixed values allow partial inline formatting
+- `{ true, false, false }` - Inline open tag, block content
+
+Analysis is performed by `ElementAnalyzer#analyze`, which is called once per element
+before visiting its children. Results are cached in `@element_formatting_analysis`.
 
 ### Future Enhancements
 

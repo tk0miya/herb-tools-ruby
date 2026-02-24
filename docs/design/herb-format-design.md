@@ -23,6 +23,9 @@ herb-format/
 │           ├── format_result.rb
 │           ├── aggregated_result.rb
 │           ├── format_printer.rb
+│           ├── format_helpers.rb
+│           ├── element_analysis.rb
+│           ├── element_analyzer.rb
 │           ├── rewriter_registry.rb
 │           ├── custom_rewriter_loader.rb
 │           ├── errors.rb
@@ -65,6 +68,9 @@ Herb::Format
 ├── FormatResult         # Format result for a single file
 ├── AggregatedResult     # Aggregated result for multiple files
 ├── FormatPrinter        # AST formatting (extends Printer::Base)
+├── FormatHelpers        # Constants and helper functions for formatting decisions
+├── ElementAnalysis      # Data structure for element formatting decisions
+├── ElementAnalyzer      # Analyzes HTMLElementNode to determine inline/block layout
 ├── RewriterRegistry     # Rewriter registration and lookup (Registry Pattern)
 ├── CustomRewriterLoader # Custom rewriter loading
 ├── Errors               # Custom exceptions
@@ -409,12 +415,15 @@ Extends `Herb::Printer::Base` (which extends `Herb::Visitor`) to leverage the st
 
 ```rbs
 class Herb::Format::FormatPrinter < Herb::Printer::Base
+  include FormatHelpers
+
   VOID_ELEMENTS: Array[String]
   PRESERVED_ELEMENTS: Array[String]
 
   attr_reader indent_width: Integer
   attr_reader max_line_length: Integer
   attr_reader format_context: Context
+  attr_reader indent_level: Integer
 
   def self.format: (
     Herb::ParseResult | Herb::AST::Node input,
@@ -428,34 +437,66 @@ class Herb::Format::FormatPrinter < Herb::Printer::Base
     format_context: Context
   ) -> void
 
+  def formatted_output: () -> String
+
+  # Capture output into a temporary buffer and return it
+  def capture: () { () -> void } -> Array[String]
+
   # Visitor method overrides for each node type
-  def visit_literal_node: ...
-  def visit_html_text_node: ...
-  def visit_whitespace_node: ...
-  def visit_html_attribute_node: ...
-  def visit_html_element_node: ...
-  def visit_html_open_tag_node: ...
-  def visit_html_close_tag_node: ...
-  def visit_html_comment_node: ...
-  def visit_html_doctype_node: ...
-  def visit_erb_*_node: ...
+  def visit_literal_node: (Herb::AST::LiteralNode node) -> void
+  def visit_html_text_node: (Herb::AST::HTMLTextNode node) -> void
+  def visit_whitespace_node: (Herb::AST::WhitespaceNode node) -> void
+  def visit_html_element_node: (Herb::AST::HTMLElementNode node) -> void
+  def visit_html_open_tag_node: (Herb::AST::HTMLOpenTagNode node) -> void
+  def visit_html_close_tag_node: (Herb::AST::HTMLCloseTagNode node) -> void
+  def visit_erb_content_node: (Herb::AST::ERBContentNode node) -> void
+  def visit_erb_end_node: (Herb::AST::ERBEndNode node) -> void
+  def visit_erb_if_node: (Herb::AST::ERBIfNode node) -> void
+  def visit_erb_block_node: (Herb::AST::ERBBlockNode node) -> void
+  def visit_erb_unless_node: (Herb::AST::ERBUnlessNode node) -> void
+  def visit_erb_else_node: (Herb::AST::ERBElseNode node) -> void
+  def visit_erb_case_node: (Herb::AST::ERBCaseNode node) -> void
+  def visit_erb_when_node: (Herb::AST::ERBWhenNode node) -> void
+  def visit_erb_case_match_node: (Herb::AST::ERBCaseMatchNode node) -> void
+  def visit_erb_in_node: (Herb::AST::ERBInNode node) -> void
+  def visit_erb_for_node: (Herb::AST::ERBForNode node) -> void
+  def visit_erb_while_node: (Herb::AST::ERBWhileNode node) -> void
+  def visit_erb_until_node: (Herb::AST::ERBUntilNode node) -> void
 
   private
 
+  def current_element: () -> Herb::AST::HTMLElementNode?
+  def current_tag_name: () -> String
+  def indent: () -> String
+  def push_with_indent: (String line) -> void
+  def push_to_last_line: (String text) -> void
+  def push: (String line) -> void
+  def track_boundary: (Herb::AST::Node node) { () -> void } -> void
+  def with_indent: () { () -> void } -> void
+  def with_inline_mode: () { () -> void } -> void
+  def visit_element_body: (Herb::AST::HTMLElementNode node) -> void
   def indent_string: (?Integer level) -> String
   def void_element?: (String tag_name) -> bool
   def preserved_element?: (String tag_name) -> bool
-  def print_erb_tag: (Herb::AST::Node node) -> void
-  def nodes_before_token: (Array[Herb::AST::Node] children, Herb::Token token) -> Array[Herb::AST::Node]
-  def nodes_after_token: (Array[Herb::AST::Node] children, Herb::Token token) -> Array[Herb::AST::Node]
+  def render_attributes_inline: (Herb::AST::HTMLOpenTagNode open_tag) -> String
+  def render_multiline_attributes: (String tag_name, Array[Herb::AST::Node] children, bool is_void) -> void
+  def render_attribute: (Herb::AST::HTMLAttributeNode attribute) -> String
+  def render_class_attribute: (String name, String content, String open_quote, String close_quote) -> String
+  def format_erb_content: (String content) -> String
+  def reconstruct_erb_node: (Herb::AST::Node node, ?with_formatting: bool) -> String
+  def print_erb_node: (Herb::AST::Node node) -> void
 end
 ```
 
 **Design Notes:**
-- Inherits `Printer::Base` which provides `visit(node)`, `write(text)`, and `context` (PrintContext)
-- PrintContext manages output accumulation, indent level, column tracking, and tag stack
-- All AST node types have visitor methods; unoverridden nodes default to `visit_child_nodes`
-- ERB node visitors are generated dynamically via `define_method`
+- Inherits `Printer::Base` which provides `visit(node)` and `write(text)`
+- Includes `FormatHelpers` for all classification and analysis helper methods
+- Uses `@lines` array (not PrintContext) for output accumulation; `formatted_output` joins them
+- `@indent_level` and `@inline_mode` manage formatting context during traversal
+- `@element_stack` tracks the current nesting path for open/close tag visitors
+- `@element_formatting_analysis` caches `ElementAnalysis` results per element node
+- `capture` enables pre-rendering elements to measure their length for inline/block decisions
+- ERB control flow nodes (if/unless/case/for/while/until/block) use `visit_erb_if_node`-style dispatch
 
 **Formatting Rules (to be implemented):**
 - **Indentation**: Uses spaces (configurable width), indents nested elements
@@ -465,6 +506,121 @@ end
 - **ERB Tags**: Consistent spacing inside ERB tags (`<%= %>` not `<%=  %>`)
 - **Void Elements**: Omits closing slash (`<br>` not `<br/>`)
 - **Preserved Content**: Does not reformat `<pre>`, `<code>`, `<script>`, `<style>` content
+
+### Herb::Format::FormatHelpers
+
+**Responsibility:** Provides constants and helper functions used by `FormatPrinter` and `ElementAnalyzer` to classify nodes, analyze element content, and make formatting decisions. Included as a module (not instantiated).
+
+```rbs
+module Herb::Format::FormatHelpers
+  # Constants
+  INLINE_ELEMENTS: Set[String]             # 26 inline HTML elements
+  CONTENT_PRESERVING_ELEMENTS: Set[String] # script, style, pre, textarea
+  SPACEABLE_CONTAINERS: Set[String]        # div, section, article, etc.
+  TOKEN_LIST_ATTRIBUTES: Set[String]       # class, data-controller, data-action
+  FORMATTABLE_ATTRIBUTES: Hash[String, Array[String]]
+  ASCII_WHITESPACE: Regexp
+
+  # Node type detection
+  def pure_whitespace_node?: (Herb::AST::Node node) -> bool
+  def non_whitespace_node?: (Herb::AST::Node node) -> bool
+  def inline_element?: (String tag_name) -> bool
+  def content_preserving?: (String tag_name) -> bool
+  def block_level_node?: (Herb::AST::Node node) -> bool
+  def line_breaking_element?: (Herb::AST::Node node) -> bool
+  def erb_node?: (Herb::AST::Node node) -> bool
+  def erb_control_flow_node?: (Herb::AST::Node node) -> bool
+  def herb_disable_comment?: (Herb::AST::Node node) -> bool
+
+  # Sibling and child analysis
+  def find_previous_meaningful_sibling: (Array[Herb::AST::Node] siblings, Integer current_index) -> Integer?
+  def whitespace_between?: (Array[Herb::AST::Node] children, Integer start_index, Integer end_index) -> bool
+  def filter_significant_children: (Array[Herb::AST::Node] body) -> Array[Herb::AST::Node]
+  def count_adjacent_inline_elements: (Array[Herb::AST::Node] children) -> Integer
+
+  # Content analysis
+  def multiline_text_content?: (Array[Herb::AST::Node] children) -> bool
+  def all_nested_elements_inline?: (Array[Herb::AST::Node] children) -> bool
+  def mixed_text_and_inline_content?: (Array[Herb::AST::Node] children) -> bool
+  def complex_erb_control_flow?: (Array[Herb::AST::Node] children) -> bool
+
+  # Positioning and spacing
+  def should_append_to_last_line?: (Herb::AST::Node child, Array[Herb::AST::Node] siblings, Integer index) -> bool
+  def should_preserve_user_spacing?: (Herb::AST::Node child, Array[Herb::AST::Node] siblings, Integer index) -> bool
+
+  # Text and punctuation
+  def needs_space_between?: (String current_line, String word) -> bool
+  def closing_punctuation?: (String word) -> bool
+  def opening_punctuation?: (String word) -> bool
+  def ends_with_erb_tag?: (String text) -> bool
+  def starts_with_erb_tag?: (String text) -> bool
+
+  # Attribute helpers
+  def get_attribute_name: (Herb::AST::HTMLAttributeNode attribute) -> String
+  def get_attribute_quotes: (Herb::AST::HTMLAttributeValueNode attribute_value) -> [String, String]
+  def get_html_text_content: (Herb::AST::HTMLAttributeValueNode attribute_value) -> String
+  def render_attribute_value_content: (Herb::AST::HTMLAttributeValueNode attribute_value) -> String
+
+  # Utility
+  def dedent: (String text) -> String
+  def get_tag_name: (Herb::AST::HTMLElementNode element_node) -> String
+end
+```
+
+### Herb::Format::ElementAnalysis
+
+**Responsibility:** Immutable data structure holding the three formatting decisions for an `HTMLElementNode`. Created by `ElementAnalyzer#analyze`.
+
+```rbs
+class Herb::Format::ElementAnalysis < Data
+  attr_reader open_tag_inline: bool          # Render open tag on one line (no attribute wrapping)?
+  attr_reader element_content_inline: bool   # Render element body inline (no newlines)?
+  attr_reader close_tag_inline: bool         # Append close tag to same line as last content?
+
+  def fully_inline?: () -> bool   # true when all three fields are true
+  def block_format?: () -> bool   # true when element_content_inline is false
+end
+```
+
+**Combinations:**
+- `{ true, true, true }` — Fully inline: `<p>text</p>`
+- `{ false, false, false }` — Block with multiline attributes: open tag wraps, body indented, close tag on own line
+- `{ true, false, false }` — Block content: `<div>\n  ...\n</div>`
+
+### Herb::Format::ElementAnalyzer
+
+**Responsibility:** Analyzes a single `HTMLElementNode` and returns an `ElementAnalysis` with the three formatting decisions. Uses `FormatPrinter#capture` internally to pre-render elements for length measurement.
+
+```rbs
+class Herb::Format::ElementAnalyzer
+  include FormatHelpers
+
+  def initialize: (
+    FormatPrinter printer,
+    Integer max_line_length,
+    Integer indent_width
+  ) -> void
+
+  def analyze: (Herb::AST::HTMLElementNode element) -> ElementAnalysis
+
+  private
+
+  def should_render_open_tag_inline?: (Herb::AST::HTMLElementNode element) -> bool
+  def should_render_element_content_inline?: (Herb::AST::HTMLElementNode element, bool open_tag_inline) -> bool
+  def should_render_close_tag_inline?: (Herb::AST::HTMLElementNode element, bool element_content_inline) -> bool
+  def inline_node?: (Herb::AST::Node node) -> bool
+  def should_render_inline?: (Herb::AST::HTMLElementNode element) -> bool
+  def has_multiline_attributes?: (Herb::AST::HTMLOpenTagNode open_tag) -> bool
+end
+```
+
+**Analysis Logic:**
+1. Content-preserving elements (`<pre>`, `<script>`, etc.) → all `false`
+2. Void elements → `open_tag_inline` from line-length check, others `true`
+3. Other elements:
+   - `open_tag_inline`: false if conditional context, complex ERB, or exceeds `max_line_length`
+   - `element_content_inline`: false unless open tag is inline and all children are inline nodes
+   - `close_tag_inline`: mirrors `element_content_inline`
 
 ### Herb::Format::RewriterRegistry
 
