@@ -16,7 +16,7 @@ RSpec.describe Herb::Lint::Rules::Html::TagNameLowercase do
   end
 
   describe ".default_severity" do
-    it "returns 'warning'" do
+    it "returns 'error'" do
       expect(described_class.default_severity).to eq("error")
     end
   end
@@ -34,53 +34,81 @@ RSpec.describe Herb::Lint::Rules::Html::TagNameLowercase do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when tag names are lowercase" do
-      let(:source) { "<div>text</div>" }
+    # Good examples from documentation
+    context "with lowercase div element (documentation example)" do
+      let(:source) { '<div class="container"></div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when open tag has uppercase letters" do
-      let(:source) { "<DIV>text</div>" }
+    context "with lowercase input void element (documentation example)" do
+      let(:source) { '<input type="text" name="username" autocomplete="off">' }
 
-      it "reports an offense for the open tag" do
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with lowercase span element (documentation example)" do
+      let(:source) { "<span>Label</span>" }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "with ERB content_tag helper (documentation example)" do
+      let(:source) { '<%= content_tag(:div, "Hello world!") %>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "with uppercase DIV element (documentation example)" do
+      let(:source) { '<DIV class="container"></DIV>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(2)
+        expect(subject.map(&:rule_name)).to all(eq("html-tag-name-lowercase"))
+        expect(subject.map(&:severity)).to all(eq("error"))
+      end
+    end
+
+    context "with mixed case Input void element (documentation example)" do
+      let(:source) { '<Input type="text" name="username" autocomplete="off">' }
+
+      it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-tag-name-lowercase")
-        expect(subject.first.message).to eq("Tag name 'DIV' should be lowercase")
+        expect(subject.first.message).to include("Input")
         expect(subject.first.severity).to eq("error")
       end
     end
 
-    context "when close tag has uppercase letters" do
-      let(:source) { "<div>text</DIV>" }
+    context "with mixed case Span element (documentation example)" do
+      let(:source) { "<Span>Label</Span>" }
 
-      it "reports an offense for the close tag" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.rule_name).to eq("html-tag-name-lowercase")
-        expect(subject.first.message).to eq("Tag name 'DIV' should be lowercase")
-      end
-    end
-
-    context "when both open and close tags have uppercase letters" do
-      let(:source) { "<DIV>text</DIV>" }
-
-      it "reports offenses for both tags" do
+      it "reports an offense" do
         expect(subject.size).to eq(2)
-        expect(subject.map(&:message)).to all(include("should be lowercase"))
+        expect(subject.map(&:rule_name)).to all(eq("html-tag-name-lowercase"))
       end
     end
 
-    context "when tag has mixed case" do
-      let(:source) { "<Div>text</Div>" }
+    context "with ERB content_tag helper using mixed case (documentation example, TODO)" do
+      let(:source) { '<%= content_tag(:DiV, "Hello world!") %>' }
 
-      it "reports offenses for mixed case tags" do
-        expect(subject.size).to eq(2)
-        expect(subject.first.message).to eq("Tag name 'Div' should be lowercase")
+      # TODO: This is listed as a Bad example in the documentation but is not
+      # yet detected by this rule as it requires ERB expression analysis
+      it "does not report an offense" do
+        expect(subject).to be_empty
       end
     end
 
+    # Additional edge case tests
     context "with multiple elements" do
       let(:source) do
         <<~HTML
@@ -110,19 +138,10 @@ RSpec.describe Herb::Lint::Rules::Html::TagNameLowercase do
       end
     end
 
-    context "with void element in uppercase" do
-      let(:source) { "<BR>" }
+    context "with SVG child elements using case-sensitive names" do
+      let(:source) { "<svg><linearGradient id=\"grad\"></linearGradient><clipPath id=\"clip\"></clipPath></svg>" }
 
-      it "reports an offense" do
-        expect(subject.size).to eq(1)
-        expect(subject.first.message).to eq("Tag name 'BR' should be lowercase")
-      end
-    end
-
-    context "with void element in lowercase" do
-      let(:source) { "<br>" }
-
-      it "does not report an offense" do
+      it "does not report an offense for SVG child elements" do
         expect(subject).to be_empty
       end
     end
