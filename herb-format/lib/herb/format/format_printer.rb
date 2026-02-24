@@ -533,10 +533,16 @@ module Herb
       #
       # @rbs open_tag: Herb::AST::HTMLOpenTagNode
       def render_attributes_inline(open_tag) #: String
-        attributes = open_tag.child_nodes.select { _1.is_a?(Herb::AST::HTMLAttributeNode) }
-        return "" if attributes.empty?
-
-        " #{attributes.map { render_attribute(_1) }.join(' ')}"
+        parts = open_tag.child_nodes.filter_map do |child|
+          case child
+          when Herb::AST::HTMLAttributeNode
+            " #{render_attribute(child)}"
+          when Herb::AST::ERBIfNode, Herb::AST::ERBBlockNode
+            captured = capture { with_inline_mode { visit(child) } }
+            " #{captured.join}"
+          end
+        end
+        parts.join
       end
 
       # Render attributes in multiline format (one attribute per line).
@@ -578,6 +584,24 @@ module Herb
         end
 
         push_with_indent(is_void ? "/>" : ">")
+      end
+
+      # Render the content of an attribute value node.
+      # Formats ERB control flow nodes inline using the push-based visitor.
+      # Other non-literal nodes fall back to IdentityPrinter.
+      #
+      # @rbs attribute_value: Herb::AST::HTMLAttributeValueNode
+      def render_attribute_value_content(attribute_value) #: String
+        attribute_value.children.map do |child|
+          case child
+          when Herb::AST::LiteralNode
+            child.content
+          when Herb::AST::ERBIfNode, Herb::AST::ERBBlockNode
+            capture { with_inline_mode { visit(child) } }.join
+          else
+            ::Herb::Printer::IdentityPrinter.print(child)
+          end
+        end.join
       end
 
       # Render a single attribute.

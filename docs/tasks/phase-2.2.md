@@ -16,7 +16,7 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 - [x] Task 2.26: ERB Block Node (visitERBBlockNode)
 - [x] Task 2.27: ERB Other Control Flow (unless, case, for, while)
 - [x] Task 2.28: ERB Comment Node (visitERBCommentNode)
-- [ ] Task 2.28b: Pending Tests for render_multiline_attributes (ERB nodes in attributes)
+- [x] Task 2.28b: Pending Tests for render_multiline_attributes (ERB nodes in attributes)
 
 ### Part F: Text Flow & Spacing (6 tasks)
 - [ ] Task 2.29: ContentUnit Data Structure
@@ -29,13 +29,13 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 ### Part G: Integration & Testing (5 tasks)
 - [ ] Task 2.35: Wire Up All Components
 - [x] Task 2.35b: Migrate write-based visitors to push (output unification)
-- [ ] Task 2.35c: Migrate visit_erb_if_node tests to use `.format` as entry point
+- [x] Task 2.35c: Migrate visit_erb_if_node tests to use `.format` as entry point
 - [ ] Task 2.36: Integration Tests
 - [ ] Task 2.37: TypeScript Output Comparison
 - [ ] Task 2.38: Performance & Edge Cases
 - [ ] Task 2.39: Full Verification
 
-**Progress: 7/19 tasks completed**
+**Progress: 9/19 tasks completed**
 
 ---
 
