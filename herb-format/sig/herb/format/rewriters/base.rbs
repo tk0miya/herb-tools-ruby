@@ -1,0 +1,44 @@
+# Generated from lib/herb/format/rewriters/base.rb with RBS::Inline
+
+module Herb
+  module Format
+    module Rewriters
+      # Abstract base class defining the rewriter interface.
+      #
+      # All rewriters must implement:
+      # - self.rewriter_name: () -> String (kebab-case identifier)
+      # - self.description: () -> String (human-readable description)
+      # - self.phase: () -> phase (:pre or :post)
+      # - rewrite: (Herb::AST::Node, Context) -> Herb::AST::Node
+      class Base
+        type phase = :pre | :post
+
+        attr_reader options: Hash[Symbol, untyped]
+
+        def self.rewriter_name: () -> String
+
+        def self.description: () -> String
+
+        def self.phase: () -> phase
+
+        # @rbs options: Hash[Symbol, untyped]
+        def initialize: (?options: Hash[Symbol, untyped]) -> void
+
+        # Transform AST and return modified AST.
+        #
+        # @rbs ast: Herb::AST::Node
+        # @rbs context: Context
+        def rewrite: (Herb::AST::Node ast, Context context) -> Herb::AST::Node
+
+        private
+
+        # Traverse AST and apply transformations via block.
+        # The block receives each node and can return a replacement node or nil.
+        #
+        # @rbs node: Herb::AST::Node
+        # @rbs block: Proc
+        def traverse: (Herb::AST::Node node) { (Herb::AST::Node) -> Herb::AST::Node? } -> Herb::AST::Node
+      end
+    end
+  end
+end
