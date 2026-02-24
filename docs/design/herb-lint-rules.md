@@ -96,24 +96,24 @@ Currently unused in herb-lint, reserved for:
 
 ## Autofix Capabilities
 
-### Safe Autofix (16 rules support this)
+### Safe Autofix (13 rules support this)
 
 Changes that are **guaranteed to preserve behavior**:
 
-**ERB Rules (5 rules):**
+**ERB Rules (6 rules):**
 - `erb-comment-syntax` - Convert `<% # comment %>` to `<%# comment %>`
+- `erb-no-extra-newline` - Remove extra newlines between ERB blocks
 - `erb-no-extra-whitespace-inside-tags` - Normalize whitespace
 - `erb-require-whitespace-inside-tags` - Add required whitespace
 - `erb-right-trim` - Add right-trim `-%>` where needed
 - `erb-require-trailing-newline` - Add/normalize trailing newline
 
-**HTML Rules (10 rules):**
+**HTML Rules (6 rules):**
 - `html-attribute-double-quotes` - Change single to double quotes
 - `html-attribute-equals-spacing` - Remove spaces around `=`
 - `html-attribute-values-require-quotes` - Add quotes to unquoted values
 - `html-boolean-attributes-no-value` - Remove values from boolean attrs
 - `html-no-self-closing` - Convert self-closing to proper void element syntax
-- `html-no-space-in-tag` - Remove illegal spaces in tags
 - `html-tag-name-lowercase` - Convert tag names to lowercase
 
 **SVG Rules (1 rule):**
@@ -126,7 +126,7 @@ Currently **no unsafe autofixes** are implemented. Unsafe fixes would be used fo
 - Changes requiring semantic understanding
 - Fixes with multiple valid approaches
 
-### Non-Fixable Rules (34 rules)
+### Non-Fixable Rules (37 rules)
 
 Rules that **cannot be automatically fixed**:
 - Require semantic understanding (e.g., `html-img-require-alt`)
@@ -375,9 +375,9 @@ html-no-title-attribute: off
 
 ### Quick Reference: Autofix Support
 
-**Safe autofix available (17 rules):**
+**Safe autofix available (13 rules):**
 - All ERB fixable rules (6)
-- All HTML fixable rules (10)
+- All HTML fixable rules (6)
 - SVG capitalization (1)
 
 Use `herb-lint --fix` to apply all safe fixes automatically.

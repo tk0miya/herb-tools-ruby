@@ -255,7 +255,7 @@ The Ruby implementation provides **50 built-in rules** organized into 5 categori
 
 **Key Highlights:**
 - Most rules use `error` severity by default (aligned with TypeScript implementation)
-- 16 rules support safe autofix
+- 13 rules support safe autofix
 - 5 rules are disabled by default (opt-in): `erb-strict-locals-required`, `html-navigation-has-label`, `html-no-block-inside-inline`, `html-no-space-in-tag`, `html-no-title-attribute`
 
 **For a complete list of all rules with detailed descriptions, severity levels, and autofix support, see:**
