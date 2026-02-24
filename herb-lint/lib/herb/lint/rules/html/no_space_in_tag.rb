@@ -7,10 +7,50 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows extra whitespace inside HTML tags,
-        # including spaces between the tag name and attributes,
-        # between consecutive attributes, trailing spaces before `>`,
-        # incorrect spacing around `/>`, and multiline indentation.
+        # Description:
+        #   Enforce consistent spacing within HTML opening and closing tags. This rule ensures:
+        #   - Exactly one space between tag name and first attribute
+        #   - Exactly one space between attributes
+        #   - No extra spaces before the closing `>` in non-self-closing tags
+        #   - Exactly one space before `/>` in self-closing tags
+        #   - No whitespace in closing tags (e.g., `</div>`)
+        #   - Consistent indentation in multiline tags
+        #
+        # Good:
+        #   <div class="foo"></div>
+        #
+        #   <img src="/logo.png" alt="Logo">
+        #
+        #   <input class="foo" name="bar">
+        #
+        #   <div class="foo" data-x="bar"></div>
+        #
+        #   <div
+        #     class="foo"
+        #     data-x="bar"
+        #   >
+        #     foo
+        #   </div>
+        #
+        # Bad:
+        #   <div  class="foo"></div>
+        #
+        #   <div class="foo" ></div>
+        #
+        #   <img  alt="Logo" src="/logo.png">
+        #
+        #   <div class="foo"      data-x="bar"></div>
+        #
+        #   <div
+        #      class="foo"
+        #       data-x="bar"
+        #   >
+        #     foo
+        #   </div>
+        #
+        #   <div >
+        #   </  div>
+        #
         class NoSpaceInTag < VisitorRule
           EXTRA_SPACE_NO_SPACE = "Extra space detected where there should be no space."
           EXTRA_SPACE_SINGLE_SPACE = "Extra space detected where there should be a single space."
@@ -19,7 +59,7 @@ module Herb
 
           def self.rule_name = "html-no-space-in-tag" #: String
           def self.description = "Disallow extra whitespace inside HTML tags" #: String
-          def self.default_severity = "warning" #: String
+          def self.default_severity = "error" #: String
           # TODO: enable and fix autofix (matching TypeScript implementation)
           def self.safe_autofixable? = false #: bool
           def self.unsafe_autofixable? = false #: bool
@@ -45,7 +85,7 @@ module Herb
 
           # @rbs node: Herb::AST::HTMLOpenTagNode
           def self_closing?(node) #: bool
-            node.tag_closing&.value == "/>"
+            node.tag_closing&.value&.include?("/")
           end
 
           # Check all whitespace nodes in a single-line tag
@@ -72,7 +112,11 @@ module Herb
             return if last_child.is_a?(Herb::AST::WhitespaceNode)
 
             # Self-closing tag needs space before />
-            add_offense(message: NO_SPACE_SINGLE_SPACE, location: node.tag_closing.location)
+            # Report at last non-whitespace child, matching TypeScript implementation:
+            #   lastNonWhitespace?.location ?? node.tag_name?.location ?? node.location
+            last_non_whitespace = node.children.reject { _1.is_a?(Herb::AST::WhitespaceNode) }.last
+            location = last_non_whitespace&.location || node.tag_name&.location || node.location
+            add_offense(message: NO_SPACE_SINGLE_SPACE, location:)
           end
 
           # Check non-trailing whitespace (between elements)
@@ -88,8 +132,8 @@ module Herb
           # @rbs node: Herb::AST::HTMLOpenTagNode
           # @rbs whitespace: Herb::AST::WhitespaceNode
           def check_trailing_whitespace(node, whitespace) #: void
-            # Self-closing tags need exactly 1 space before />
-            return if self_closing?(node) && whitespace.value.value.length == 1
+            # Self-closing tags need exactly one space (matching TypeScript: content === ' ')
+            return if self_closing?(node) && whitespace.value.value == " "
 
             # Regular tags should have no trailing whitespace, or self-closing with wrong spacing
             add_offense(message: EXTRA_SPACE_NO_SPACE, location: whitespace.location)

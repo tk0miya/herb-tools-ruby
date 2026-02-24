@@ -4,10 +4,49 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows extra whitespace inside HTML tags,
-        # including spaces between the tag name and attributes,
-        # between consecutive attributes, trailing spaces before `>`,
-        # incorrect spacing around `/>`, and multiline indentation.
+        # Description:
+        #   Enforce consistent spacing within HTML opening and closing tags. This rule ensures:
+        #   - Exactly one space between tag name and first attribute
+        #   - Exactly one space between attributes
+        #   - No extra spaces before the closing `>` in non-self-closing tags
+        #   - Exactly one space before `/>` in self-closing tags
+        #   - No whitespace in closing tags (e.g., `</div>`)
+        #   - Consistent indentation in multiline tags
+        #
+        # Good:
+        #   <div class="foo"></div>
+        #
+        #   <img src="/logo.png" alt="Logo">
+        #
+        #   <input class="foo" name="bar">
+        #
+        #   <div class="foo" data-x="bar"></div>
+        #
+        #   <div
+        #     class="foo"
+        #     data-x="bar"
+        #   >
+        #     foo
+        #   </div>
+        #
+        # Bad:
+        #   <div  class="foo"></div>
+        #
+        #   <div class="foo" ></div>
+        #
+        #   <img  alt="Logo" src="/logo.png">
+        #
+        #   <div class="foo"      data-x="bar"></div>
+        #
+        #   <div
+        #      class="foo"
+        #       data-x="bar"
+        #   >
+        #     foo
+        #   </div>
+        #
+        #   <div >
+        #   </  div>
         class NoSpaceInTag < VisitorRule
           EXTRA_SPACE_NO_SPACE: ::String
 
