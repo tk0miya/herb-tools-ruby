@@ -6,108 +6,64 @@ RSpec.describe Herb::Format::FormatPrinter do
   let(:source) { "" }
   let(:format_context) { build(:context, source:, indent_width:, max_line_length:) }
 
-  describe ".visit" do
-    subject { printer.capture { printer.visit(node) } }
+  describe ".format" do
+    subject { described_class.format(ast, format_context:) }
 
-    let(:parse_result) { Herb.parse(source, track_whitespace: true) }
-    let(:printer) do
-      Class.new(described_class) do
-        attr_accessor :current_attribute_name, :indent_level, :inline_mode
-      end.new(indent_width:, max_line_length:, format_context:)
-    end
+    let(:ast) { Herb.parse(source, track_whitespace: true) }
 
     context "with ERBIfNode" do
-      context "when inline_mode is true" do
-        before { printer.inline_mode = true }
-
+      context "when in attribute context" do
         context "with HTMLAttributeNode statements (non-token-list context)" do
           let(:source) { '<div <% if disabled %>class="disabled"<% end %>></div>' }
-          let(:node) do
-            element = parse_result.value.children.first
-            open_tag = element.open_tag
-            open_tag.child_nodes.find { _1.is_a?(Herb::AST::ERBIfNode) }
-          end
 
           it "renders condition tag, space, attribute, space before end, and end tag" do
-            expect(subject.join).to eq('<% if disabled %> class="disabled" <% end %>')
+            expect(subject).to eq('<div <% if disabled %> class="disabled" <% end %>></div>')
           end
         end
 
         context "with LiteralNode statements in token-list attribute" do
-          let(:node) do
-            open_tag = parse_result.value.children.first
-            attr = open_tag.child_nodes.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
-            attr.value.children.find { _1.is_a?(Herb::AST::ERBIfNode) }
-          end
-
           context "with class attribute" do
-            let(:source) { '<div class="btn<%if active%>active<%end%>">' }
-
-            before { printer.current_attribute_name = "class" }
+            let(:source) { '<div class="btn<%if active%>active<%end%>"></div>' }
 
             it "adds spaces before statement content and before end tag" do
-              expect(subject.join).to eq("<% if active %> active <% end %>")
+              expect(subject).to eq('<div class="btn<% if active %> active <% end %>"></div>')
             end
           end
 
           context "with data-controller attribute" do
-            let(:source) { '<div data-controller="btn<%if active%>active<%end%>">' }
-
-            before { printer.current_attribute_name = "data-controller" }
+            let(:source) { '<div data-controller="btn<%if active%>active<%end%>"></div>' }
 
             it "adds spaces before statement content and before end tag" do
-              expect(subject.join).to eq("<% if active %> active <% end %>")
+              expect(subject).to eq('<div data-controller="btn<% if active %> active <% end %>"></div>')
             end
           end
 
           context "with data-action attribute" do
-            let(:source) { '<div data-action="btn<%if active%>active<%end%>">' }
-
-            before { printer.current_attribute_name = "data-action" }
+            let(:source) { '<div data-action="btn<%if active%>active<%end%>"></div>' }
 
             it "adds spaces before statement content and before end tag" do
-              expect(subject.join).to eq("<% if active %> active <% end %>")
+              expect(subject).to eq('<div data-action="btn<% if active %> active <% end %>"></div>')
             end
           end
         end
 
         context "with LiteralNode statements in non-token-list attribute" do
-          let(:node) do
-            open_tag = parse_result.value.children.first
-            attr = open_tag.child_nodes.find { _1.is_a?(Herb::AST::HTMLAttributeNode) }
-            attr.value.children.find { _1.is_a?(Herb::AST::ERBIfNode) }
-          end
-
           context "with id attribute" do
-            let(:source) { '<div id="<%if cond%>active<%end%>">' }
-
-            before { printer.current_attribute_name = "id" }
+            let(:source) { '<div id="<%if cond%>active<%end%>"></div>' }
 
             it "does not add extra spaces" do
-              expect(subject.join).to eq("<% if cond %>active<% end %>")
-            end
-          end
-
-          context "with nil current_attribute_name" do
-            let(:source) { '<div id="<%if cond%>active<%end%>">' }
-
-            it "does not add extra spaces" do
-              expect(subject.join).to eq("<% if cond %>active<% end %>")
+              expect(subject).to eq('<div id="<% if cond %>active<% end %>"></div>')
             end
           end
         end
       end
 
-      context "when inline_mode is false" do
-        before { printer.inline_mode = false }
-
-        let(:node) { parse_result.value.children.first }
-
+      context "when at document level" do
         context "with basic if block" do
           let(:source) { "<% if user.admin? %><%= link_to \"Admin\", admin_path %><% end %>" }
 
           it "indents statements and places end tag on its own line" do
-            expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            expect(subject).to eq(<<~EXPECTED.chomp)
               <% if user.admin? %>
                 <%= link_to "Admin", admin_path %>
               <% end %>
@@ -119,7 +75,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<% if outer %><% if inner %><%= text %><% end %><% end %>" }
 
           it "indents each level of nesting" do
-            expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            expect(subject).to eq(<<~EXPECTED.chomp)
               <% if outer %>
                 <% if inner %>
                   <%= text %>
@@ -133,43 +89,33 @@ RSpec.describe Herb::Format::FormatPrinter do
 
     context "with ERBContentNode" do
       context "with indentation" do
-        let(:node) { Herb.parse("<%=@user.name%>").value.children.first }
-
-        before { printer.indent_level = 1 }
+        let(:source) { "<% items.each do |item| %><%=@user.name%><% end %>" }
 
         it "applies current indentation" do
-          expect(subject).to eq(["  <%= @user.name %>"])
+          expect(subject).to eq(<<~EXPECTED.chomp)
+            <% items.each do |item| %>
+              <%= @user.name %>
+            <% end %>
+          EXPECTED
         end
       end
 
-      context "when in inline mode" do
-        let(:node) { Herb.parse("<%=@user.name%>").value.children.first }
-
-        before { printer.inline_mode = true }
+      context "when in inline context" do
+        let(:source) { "<span><%=@user.name%></span>" }
 
         it "does not add indentation" do
-          expect(subject).to eq(["<%= @user.name %>"])
-        end
-
-        context "with indent level set" do
-          before { printer.indent_level = 2 }
-
-          it "ignores indent level" do
-            expect(subject).to eq(["<%= @user.name %>"])
-          end
+          expect(subject).to eq("<span><%= @user.name %></span>")
         end
       end
     end
 
     context "with ERBBlockNode" do
-      let(:node) { parse_result.value.children.first }
-
       context "when body contains no text content (block mode)" do
         context "with ERB output expression in body" do
           let(:source) { "<% users.each do |user| %><%= user.name %><% end %>" }
 
           it "indents the body and places the end tag on its own line" do
-            expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            expect(subject).to eq(<<~EXPECTED.chomp)
               <% users.each do |user| %>
                 <%= user.name %>
               <% end %>
@@ -183,7 +129,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           end
 
           it "indents each level of nesting" do
-            expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            expect(subject).to eq(<<~EXPECTED.chomp)
               <% users.each do |user| %>
                 <% user.posts.each do |post| %>
                   <%= post.title %>
@@ -197,7 +143,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<% items.each do |item| %>   <% end %>" }
 
           it "skips whitespace and produces no body output" do
-            expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            expect(subject).to eq(<<~EXPECTED.chomp)
               <% items.each do |item| %>
               <% end %>
             EXPECTED
@@ -208,7 +154,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<% items.each do |item| %>Hello world<% end %>" }
 
           it "places end tag on its own line" do
-            expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            expect(subject).to eq(<<~EXPECTED.chomp)
               <% items.each do |item| %>Hello world
               <% end %>
             EXPECTED
@@ -219,7 +165,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<% items.each do |item| %>Hello <div>block</div><% end %>" }
 
           it "places the block element on its own line" do
-            expect(subject.join("\n")).to eq(
+            expect(subject).to eq(
               "<% items.each do |item| %>Hello \n  " \
               "<div>block</div>\n" \
               "<% end %>"
@@ -231,7 +177,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<% items.each do |item| %>Hello <% if cond %>yes<% end %><% end %>" }
 
           it "places end tag on its own line" do
-            expect(subject.join("\n")).to eq(
+            expect(subject).to eq(
               "<% items.each do |item| %>Hello \n  " \
               "<% if cond %>yes\n  " \
               "<% end %>\n" \
@@ -246,7 +192,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<% items.each do |item| %><%= item %> item<% end %>" }
 
           it "visits ERB and text children in sequence" do
-            expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            expect(subject).to eq(<<~EXPECTED.chomp)
               <% items.each do |item| %>
                 <%= item %> item
               <% end %>
@@ -258,7 +204,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<% items.each do |item| %>Hello <strong>item</strong>!<% end %>" }
 
           it "visits text and inline element children in sequence" do
-            expect(subject.join("\n")).to eq(
+            expect(subject).to eq(
               "<% items.each do |item| %>Hello \n  " \
               "<strong>item</strong>!\n" \
               "<% end %>"
@@ -269,13 +215,11 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "with ERBUnlessNode" do
-      let(:node) { parse_result.value.children.first }
-
       context "with basic unless block" do
         let(:source) { "<% unless user.admin? %><%= text %><% end %>" }
 
         it "indents statements and places end tag on its own line" do
-          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+          expect(subject).to eq(<<~EXPECTED.chomp)
             <% unless user.admin? %>
               <%= text %>
             <% end %>
@@ -287,7 +231,7 @@ RSpec.describe Herb::Format::FormatPrinter do
         let(:source) { "<% unless outer %><% unless inner %><%= text %><% end %><% end %>" }
 
         it "indents each level of nesting" do
-          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+          expect(subject).to eq(<<~EXPECTED.chomp)
             <% unless outer %>
               <% unless inner %>
                 <%= text %>
@@ -301,7 +245,7 @@ RSpec.describe Herb::Format::FormatPrinter do
         let(:source) { "<% unless cond %><%= a %><% else %><%= b %><% end %>" }
 
         it "renders unless, else, and end with correct indentation" do
-          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+          expect(subject).to eq(<<~EXPECTED.chomp)
             <% unless cond %>
               <%= a %>
             <% else %>
@@ -313,13 +257,11 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "with ERBForNode" do
-      let(:node) { parse_result.value.children.first }
-
       context "with basic for loop" do
         let(:source) { "<% for i in 1..10 %><%= i %><% end %>" }
 
         it "indents the body and places the end tag on its own line" do
-          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+          expect(subject).to eq(<<~EXPECTED.chomp)
             <% for i in 1..10 %>
               <%= i %>
             <% end %>
@@ -331,7 +273,7 @@ RSpec.describe Herb::Format::FormatPrinter do
         let(:source) { "<% for i in list %><% for j in i.items %><%= j %><% end %><% end %>" }
 
         it "indents each level of nesting" do
-          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+          expect(subject).to eq(<<~EXPECTED.chomp)
             <% for i in list %>
               <% for j in i.items %>
                 <%= j %>
@@ -343,13 +285,11 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "with ERBWhileNode" do
-      let(:node) { parse_result.value.children.first }
-
       context "with basic while loop" do
         let(:source) { "<% while cond %><%= text %><% end %>" }
 
         it "indents the body and places the end tag on its own line" do
-          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+          expect(subject).to eq(<<~EXPECTED.chomp)
             <% while cond %>
               <%= text %>
             <% end %>
@@ -359,13 +299,11 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "with ERBUntilNode" do
-      let(:node) { parse_result.value.children.first }
-
       context "with basic until loop" do
         let(:source) { "<% until cond %><%= text %><% end %>" }
 
         it "indents the body and places the end tag on its own line" do
-          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+          expect(subject).to eq(<<~EXPECTED.chomp)
             <% until cond %>
               <%= text %>
             <% end %>
@@ -375,13 +313,11 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "with ERBCaseNode" do
-      let(:node) { parse_result.value.children.first }
-
       context "with when clauses" do
         let(:source) { "<% case x %><% when 1 %><%= one %><% when 2 %><%= two %><% end %>" }
 
         it "renders case tag, when clauses with indented statements, and end tag" do
-          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+          expect(subject).to eq(<<~EXPECTED.chomp)
             <% case x %>
             <% when 1 %>
               <%= one %>
@@ -396,7 +332,7 @@ RSpec.describe Herb::Format::FormatPrinter do
         let(:source) { "<% case x %><% when 1 %><%= one %><% else %><%= other %><% end %>" }
 
         it "renders case tag, when clause, else clause, and end tag" do
-          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+          expect(subject).to eq(<<~EXPECTED.chomp)
             <% case x %>
             <% when 1 %>
               <%= one %>
@@ -409,13 +345,11 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "with ERBCaseMatchNode" do
-      let(:node) { parse_result.value.children.first }
-
       context "with in clauses" do
         let(:source) { "<% case x %><% in 1 %><%= one %><% in 2 %><%= two %><% end %>" }
 
         it "renders case tag, in clauses with indented statements, and end tag" do
-          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+          expect(subject).to eq(<<~EXPECTED.chomp)
             <% case x %>
             <% in 1 %>
               <%= one %>
@@ -430,7 +364,7 @@ RSpec.describe Herb::Format::FormatPrinter do
         let(:source) { "<% case x %><% in 1 %><%= one %><% else %><%= other %><% end %>" }
 
         it "renders case tag, in clause, else clause, and end tag" do
-          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+          expect(subject).to eq(<<~EXPECTED.chomp)
             <% case x %>
             <% in 1 %>
               <%= one %>
@@ -445,7 +379,7 @@ RSpec.describe Herb::Format::FormatPrinter do
         let(:source) { "<% case x %><% in [Integer => n] %><%= n %><% in String %><%= x %><% end %>" }
 
         it "renders case tag, in clauses with indented statements, and end tag" do
-          expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+          expect(subject).to eq(<<~EXPECTED.chomp)
             <% case x %>
             <% in [Integer => n] %>
               <%= n %>
@@ -458,14 +392,12 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "with ERBCommentNode" do
-      let(:node) { parse_result.value.children.first }
-
-      context "when inline_mode is false" do
+      context "when at document level" do
         context "with single-line comment without spaces" do
           let(:source) { "<%#comment%>" }
 
           it "normalizes to <%# content %> format" do
-            expect(subject.join).to eq("<%# comment %>")
+            expect(subject).to eq("<%# comment %>")
           end
         end
 
@@ -473,7 +405,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<%#  comment  %>" }
 
           it "normalizes spacing to exactly one space" do
-            expect(subject.join).to eq("<%# comment %>")
+            expect(subject).to eq("<%# comment %>")
           end
         end
 
@@ -481,7 +413,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<%# comment %>" }
 
           it "preserves normalized format" do
-            expect(subject.join).to eq("<%# comment %>")
+            expect(subject).to eq("<%# comment %>")
           end
         end
 
@@ -489,7 +421,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<%#%>" }
 
           it "outputs empty comment" do
-            expect(subject.join).to eq("<%#%>")
+            expect(subject).to eq("<%#%>")
           end
         end
 
@@ -497,7 +429,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<%#\n  comment\n%>" }
 
           it "collapses to single-line format" do
-            expect(subject.join).to eq("<%# comment %>")
+            expect(subject).to eq("<%# comment %>")
           end
         end
 
@@ -505,7 +437,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<%#\n  line1\n  line2\n%>" }
 
           it "formats as block with opening tag, indented content, and closing tag" do
-            expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            expect(subject).to eq(<<~EXPECTED.chomp)
               <%#
                 line1
                 line2
@@ -518,7 +450,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<%#\n    line1\n    line2\n    line3\n%>" }
 
           it "dedents and reformats as block" do
-            expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            expect(subject).to eq(<<~EXPECTED.chomp)
               <%#
                 line1
                 line2
@@ -532,7 +464,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { "<%#\n  line1\n\n  line2\n%>" }
 
           it "preserves internal blank lines" do
-            expect(subject.join("\n")).to eq(<<~EXPECTED.chomp)
+            expect(subject).to eq(<<~EXPECTED.chomp)
               <%#
                 line1
 
@@ -541,68 +473,83 @@ RSpec.describe Herb::Format::FormatPrinter do
             EXPECTED
           end
         end
+      end
 
-        context "with indented context" do
-          before { printer.indent_level = 1 }
+      context "with indented context" do
+        context "with single-line comment" do
+          let(:source) { "<% items.each do |item| %><%#comment%><% end %>" }
 
-          context "with single-line comment" do
-            let(:source) { "<%#comment%>" }
-
-            it "adds indentation" do
-              expect(subject.join).to eq("  <%# comment %>")
-            end
+          it "adds indentation" do
+            expect(subject).to eq(<<~EXPECTED.chomp)
+              <% items.each do |item| %>
+                <%# comment %>
+              <% end %>
+            EXPECTED
           end
+        end
 
-          context "with multi-line comment" do
-            let(:source) { "<%#\n  line1\n  line2\n%>" }
+        context "with multi-line comment" do
+          let(:source) { "<% items.each do |item| %><%#\n  line1\n  line2\n%><% end %>" }
 
-            it "applies indentation to all parts" do
-              expect(subject.join("\n")).to eq("  <%#\n    line1\n    line2\n  %>")
-            end
+          it "applies indentation to all parts" do
+            expect(subject).to eq(<<~EXPECTED.chomp)
+              <% items.each do |item| %>
+                <%#
+                  line1
+                  line2
+                %>
+              <% end %>
+            EXPECTED
           end
+        end
 
-          context "with multi-line comment with internal blank lines" do
-            let(:source) { "<%#\n  line1\n\n  line2\n%>" }
+        context "with multi-line comment with internal blank lines" do
+          let(:source) { "<% items.each do |item| %><%#\n  line1\n\n  line2\n%><% end %>" }
 
-            it "preserves internal blank lines with indentation" do
-              expect(subject.join("\n")).to eq("  <%#\n    line1\n\n    line2\n  %>")
-            end
+          it "preserves internal blank lines with indentation" do
+            expect(subject).to eq(<<~EXPECTED.chomp)
+              <% items.each do |item| %>
+                <%#
+                  line1
+
+                  line2
+                %>
+              <% end %>
+            EXPECTED
           end
         end
       end
 
-      context "when inline_mode is true" do
-        before { printer.inline_mode = true }
-
+      context "when in inline context" do
         context "with single-line comment" do
-          let(:source) { "<%#comment%>" }
+          let(:source) { "<span><%#comment%></span>" }
 
           it "normalizes inline" do
-            expect(subject.join).to eq("<%# comment %>")
+            expect(subject).to eq("<span><%# comment %></span>")
           end
         end
 
         context "with empty comment" do
-          let(:source) { "<%#%>" }
+          let(:source) { "<span><%#%></span>" }
 
           it "outputs empty comment inline" do
-            expect(subject.join).to eq("<%#%>")
+            expect(subject).to eq("<span><%#%></span>")
           end
         end
 
         context "with multi-line comment having single content line" do
-          let(:source) { "<%#\n  comment\n%>" }
+          let(:source) { "<span><%#\n  comment\n%></span>" }
 
           it "collapses to single-line inline" do
-            expect(subject.join).to eq("<%# comment %>")
+            expect(subject).to eq("<span><%# comment %></span>")
           end
         end
 
         context "with true multi-line comment" do
-          let(:source) { "<%#\n  line1\n  line2\n%>" }
+          let(:source) { "<span><%#\n  line1\n  line2\n%></span>" }
 
           it "collapses all lines to single inline format" do
-            expect(subject.join).to eq("<%# line1 line2 %>")
+            expect(subject).to eq("<span><%# line1 line2 %></span>")
           end
         end
       end
