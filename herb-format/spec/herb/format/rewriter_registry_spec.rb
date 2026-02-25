@@ -112,9 +112,9 @@ RSpec.describe Herb::Format::RewriterRegistry do
       expect { subject }.not_to raise_error
     end
 
-    it "registers no built-in rewriters" do
+    it "registers TailwindClassSorter" do
       subject
-      expect(registry.all).to be_empty
+      expect(registry.registered?("tailwind-class-sorter")).to be true
     end
   end
 end

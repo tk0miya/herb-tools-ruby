@@ -45,6 +45,7 @@ module Herb
 
       # Load built-in rewriters.
       def load_builtin_rewriters #: void
+        register(Rewriters::TailwindClassSorter)
       end
 
       private

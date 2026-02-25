@@ -51,15 +51,15 @@ This phase implements the rewriter system for transforming ASTs before and after
 
 **Reference:** `@herb-tools/rewriter` built-in `tailwind-class-sorter`
 
-- [ ] Create TailwindClassSorter class extending Base
-- [ ] Implement rewriter_name returning "tailwind-class-sorter"
-- [ ] Implement description
-- [ ] Implement phase returning :post
-- [ ] Implement rewrite(ast, context) method
-- [ ] Sort Tailwind CSS classes according to recommended order
-- [ ] Add RBS inline type annotations
-- [ ] Create spec file
-- [ ] Register in load_builtin_rewriters
+- [x] Create TailwindClassSorter class extending Base
+- [x] Implement rewriter_name returning "tailwind-class-sorter"
+- [x] Implement description
+- [x] Implement phase returning :post
+- [x] Implement rewrite(ast, context) method
+- [x] Sort Tailwind CSS classes according to recommended order
+- [x] Add RBS inline type annotations
+- [x] Create spec file
+- [x] Register in load_builtin_rewriters
 
 **Interface:**
 ```ruby
@@ -216,7 +216,7 @@ end
 |------|------|-------------|--------|
 | 4.1 | A | Rewriter Base class | ✅ Done |
 | 4.2 | A | RewriterRegistry | ✅ Done |
-| 4.3 | B | TailwindClassSorter rewriter | Todo |
+| 4.3 | B | TailwindClassSorter rewriter | ✅ Done |
 | 4.4 | C | CustomRewriterLoader | Todo |
 | 4.5-4.7 | D | Integration and verification | Todo |
 
