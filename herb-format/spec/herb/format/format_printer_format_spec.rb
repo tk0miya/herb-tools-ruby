@@ -317,9 +317,195 @@ RSpec.describe Herb::Format::FormatPrinter do
         # multi-line ERB if in open tag makes open_tag_inline=false → render_multiline_attributes
         let(:source) { "<div\n<% if condition %>\nclass=\"active\"\n<% end %>\n>content</div>" }
 
-        it "uses multiline attribute rendering (tag and > on separate lines)" do
-          expect(subject).to include("<div\n")
-          expect(subject).to include("\n>")
+        it "renders conditional attribute with correct syntax and indentation" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <div
+              <% if condition %>
+              class="active"
+              <% end %>
+            >content
+            </div>
+          ERB
+        end
+      end
+
+      context "when open tag has ERB if with disabled attribute" do
+        let(:source) { "<div\n<% if disabled %>\nclass=\"disabled\"\n<% end %>\n></div>" }
+
+        it "renders class attribute with quotes and correct indentation" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <div
+              <% if disabled %>
+              class="disabled"
+              <% end %>
+            >
+            </div>
+          ERB
+        end
+      end
+
+      context "when open tag has ERB if-else with conditional attributes" do
+        let(:source) { "<div\n<% if active %>\nclass=\"active\"\n<% else %>\nclass=\"inactive\"\n<% end %>\n></div>" }
+
+        it "renders both branches with correct attribute syntax" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <div
+              <% if active %>
+              class="active"
+              <% else %>
+              class="inactive"
+              <% end %>
+            >
+            </div>
+          ERB
+        end
+      end
+
+      context "when open tag has ERB unless with conditional attribute" do
+        let(:source) { "<div\n<% unless enabled %>\nclass=\"disabled\"\n<% end %>\n></div>" }
+
+        it "renders unless conditional attribute with correct syntax and indentation" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <div
+              <% unless enabled %>
+              class="disabled"
+              <% end %>
+            >
+            </div>
+          ERB
+        end
+      end
+
+      context "when open tag has ERB unless-else with conditional attributes" do
+        let(:source) do
+          "<div\n<% unless enabled %>\nclass=\"disabled\"\n<% else %>\nclass=\"enabled\"\n<% end %>\n></div>"
+        end
+
+        it "renders unless-else branches with correct attribute syntax" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <div
+              <% unless enabled %>
+              class="disabled"
+              <% else %>
+              class="enabled"
+              <% end %>
+            >
+            </div>
+          ERB
+        end
+      end
+
+      context "when open tag has ERB for loop with conditional attribute" do
+        let(:source) { "<div\n<% for cls in classes %>\nclass=\"<%= cls %>\"\n<% end %>\n></div>" }
+
+        it "preserves the for block and attribute (does not silently drop content)" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <div
+              <% for cls in classes %>
+              class="<%= cls %>"
+              <% end %>
+            >
+            </div>
+          ERB
+        end
+      end
+
+      context "when open tag has ERB while loop with conditional attribute" do
+        let(:source) { "<div\n<% while condition %>\nclass=\"active\"\n<% end %>\n></div>" }
+
+        it "preserves the while block and attribute" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <div
+              <% while condition %>
+              class="active"
+              <% end %>
+            >
+            </div>
+          ERB
+        end
+      end
+
+      context "when open tag has ERB case/when with conditional attributes" do
+        let(:source) do
+          parts = ["<div", "<% case role %>", "<% when :admin %>", "class=\"admin\"",
+                   "<% when :user %>", "class=\"user\"", "<% end %>", "></div>"]
+          parts.join("\n")
+        end
+
+        it "renders each when branch with its attribute" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <div
+              <% case role %>
+              <% when :admin %>
+              class="admin"
+              <% when :user %>
+              class="user"
+              <% end %>
+            >
+            </div>
+          ERB
+        end
+      end
+
+      context "when open tag has ERB case/when/else with conditional attributes" do
+        let(:source) do
+          "<div\n<% case role %>\n<% when :admin %>\nclass=\"admin\"\n<% else %>\nclass=\"guest\"\n<% end %>\n></div>"
+        end
+
+        it "renders when branch and else branch with their attributes" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <div
+              <% case role %>
+              <% when :admin %>
+              class="admin"
+              <% else %>
+              class="guest"
+              <% end %>
+            >
+            </div>
+          ERB
+        end
+      end
+
+      context "when open tag has ERB case/in with conditional attributes" do
+        let(:source) do
+          parts = ["<div", "<% case val %>", "<% in :foo %>", "class=\"foo\"",
+                   "<% in :bar %>", "class=\"bar\"", "<% end %>", "></div>"]
+          parts.join("\n")
+        end
+
+        it "renders each in branch with its attribute" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <div
+              <% case val %>
+              <% in :foo %>
+              class="foo"
+              <% in :bar %>
+              class="bar"
+              <% end %>
+            >
+            </div>
+          ERB
+        end
+      end
+
+      context "when open tag has ERB case/in/else with conditional attributes" do
+        let(:source) do
+          "<div\n<% case val %>\n<% in :foo %>\nclass=\"foo\"\n<% else %>\nclass=\"default\"\n<% end %>\n></div>"
+        end
+
+        it "renders in branch and else branch with their attributes" do
+          expect(subject).to eq(<<~ERB.chomp)
+            <div
+              <% case val %>
+              <% in :foo %>
+              class="foo"
+              <% else %>
+              class="default"
+              <% end %>
+            >
+            </div>
+          ERB
         end
       end
 

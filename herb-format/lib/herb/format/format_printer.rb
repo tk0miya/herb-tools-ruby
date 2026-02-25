@@ -582,6 +582,15 @@ module Herb
           children.each do |child|
             if child.is_a?(Herb::AST::HTMLAttributeNode)
               push_with_indent(render_attribute(child))
+            elsif child.is_a?(Herb::AST::ERBCaseNode) || child.is_a?(Herb::AST::ERBCaseMatchNode)
+              render_case_attribute_block(child)
+            elsif erb_control_flow_node?(child)
+              stmts = child.respond_to?(:statements) ? child.statements : child.body
+              if stmts.any? { _1.is_a?(Herb::AST::HTMLAttributeNode) }
+                render_conditional_attribute_block(child)
+              else
+                visit(child)
+              end
             elsif !child.is_a?(Herb::AST::WhitespaceNode) && !herb_disable_comment?(child)
               visit(child)
             end
@@ -589,6 +598,66 @@ module Herb
         end
 
         push_with_indent(is_void ? "/>" : ">")
+      end
+
+      # Render an ERB conditional/block node that appears inside an open tag's
+      # attribute list (multiline format).
+      # Prints the opening ERB tag, renders each HTMLAttributeNode statement
+      # using render_attribute (preserving name="value" syntax), skips
+      # whitespace, and finally prints the end node—all at the current indent.
+      # Recurses into subsequent (else/elsif) branches for ERBIfNode, and
+      # into else_clause for ERBUnlessNode.
+      #
+      # @rbs node: Herb::AST::ERBIfNode | Herb::AST::ERBUnlessNode | Herb::AST::ERBBlockNode
+      #   | Herb::AST::ERBElseNode | Herb::AST::ERBForNode | Herb::AST::ERBWhileNode | Herb::AST::ERBUntilNode
+      def render_conditional_attribute_block(node) #: void
+        push_with_indent(reconstruct_erb_node(node))
+        render_conditional_attribute_statements(node)
+        case node
+        when Herb::AST::ERBIfNode
+          render_conditional_attribute_block(node.subsequent) if node.subsequent
+        when Herb::AST::ERBUnlessNode
+          render_conditional_attribute_block(node.else_clause) if node.else_clause
+        end
+        push_with_indent(reconstruct_erb_node(node.end_node)) if node.respond_to?(:end_node) && node.end_node
+      end
+
+      # Render the statements of a conditional attribute block.
+      # HTMLAttributeNodes are rendered with render_attribute; whitespace is skipped.
+      #
+      # @rbs node: Herb::AST::ERBIfNode | Herb::AST::ERBUnlessNode | Herb::AST::ERBBlockNode
+      #   | Herb::AST::ERBElseNode | Herb::AST::ERBForNode | Herb::AST::ERBWhileNode | Herb::AST::ERBUntilNode
+      #   | Herb::AST::ERBWhenNode | Herb::AST::ERBInNode
+      def render_conditional_attribute_statements(node) #: void
+        stmts = node.respond_to?(:statements) ? node.statements : node.body
+        stmts.each do |stmt|
+          case stmt
+          when Herb::AST::HTMLAttributeNode
+            push_with_indent(render_attribute(stmt))
+          when Herb::AST::WhitespaceNode
+            # skip whitespace-only nodes inside conditional attribute blocks
+          else
+            visit(stmt)
+          end
+        end
+      end
+
+      # Render an ERBCaseNode that appears inside an open tag's attribute list.
+      # Prints the case tag, each when/in condition with its attribute statements,
+      # an optional else branch, and the end tag—all at the current indent.
+      #
+      # @rbs node: Herb::AST::ERBCaseNode | Herb::AST::ERBCaseMatchNode
+      def render_case_attribute_block(node) #: void
+        push_with_indent(reconstruct_erb_node(node))
+        node.conditions.each do |condition|
+          push_with_indent(reconstruct_erb_node(condition))
+          render_conditional_attribute_statements(condition)
+        end
+        if node.else_clause
+          push_with_indent(reconstruct_erb_node(node.else_clause))
+          render_conditional_attribute_statements(node.else_clause)
+        end
+        push_with_indent(reconstruct_erb_node(node.end_node)) if node.end_node
       end
 
       # Render the content of an attribute value node.
