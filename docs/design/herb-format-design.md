@@ -31,8 +31,6 @@ herb-format/
 │           ├── errors.rb
 │           └── rewriters/
 │               ├── base.rb
-│               ├── normalize_attributes.rb
-│               ├── sort_attributes.rb
 │               └── tailwind_class_sorter.rb
 ├── exe/
 │   └── herb-format
@@ -76,8 +74,6 @@ Herb::Format
 ├── Errors               # Custom exceptions
 └── Rewriters            # Rewriter implementations
     ├── Base
-    ├── NormalizeAttributes
-    ├── SortAttributes
     └── TailwindClassSorter
 ```
 
@@ -646,9 +642,10 @@ end
 ```
 
 **Built-in Rewriters:**
-- `normalize-attributes` (pre) - Normalize attribute formatting
-- `sort-attributes` (post) - Alphabetically sort attributes
-- `tailwind-class-sorter` (post) - Sort Tailwind CSS classes
+
+| Rewriter | Phase | Description | Status |
+|----------|-------|-------------|--------|
+| `tailwind-class-sorter` | post | Sort Tailwind CSS classes | Planned (Phase 4) |
 
 ### Herb::Format::CustomRewriterLoader
 
@@ -726,54 +723,6 @@ end
 - `:post` - Runs after formatting rules (final transformations)
 
 ## Rewriter Implementation Examples
-
-### Example: Rewriters::NormalizeAttributes
-
-**Purpose:** Normalize attribute formatting before main formatting pass.
-
-**Interface:**
-```rbs
-class Herb::Format::Rewriters::NormalizeAttributes < Base
-  def self.rewriter_name: () -> String  # "normalize-attributes"
-  def self.description: () -> String
-  def self.phase: () -> Symbol  # :pre
-
-  def rewrite: (Herb::AST::Document ast, Context context) -> Herb::AST::Document
-
-  private
-
-  def normalize_attribute: (Herb::AST::HTMLAttributeNode node) -> void
-end
-```
-
-**Responsibilities:**
-- Convert single quotes to double quotes
-- Normalize whitespace in attribute values
-- Run in pre phase before formatting
-
-### Example: Rewriters::SortAttributes
-
-**Purpose:** Alphabetically sort HTML attributes.
-
-**Interface:**
-```rbs
-class Herb::Format::Rewriters::SortAttributes < Base
-  def self.rewriter_name: () -> String  # "sort-attributes"
-  def self.description: () -> String
-  def self.phase: () -> Symbol  # :post
-
-  def rewrite: (Herb::AST::Document ast, Context context) -> Herb::AST::Document
-
-  private
-
-  def sort_element_attributes: (Herb::AST::HTMLElementNode node) -> void
-  def attribute_sort_key: (Herb::AST::HTMLAttributeNode attr) -> String
-end
-```
-
-**Responsibilities:**
-- Sort attributes alphabetically by name
-- Run in post phase after formatting
 
 ### Example: Rewriters::TailwindClassSorter
 

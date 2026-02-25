@@ -108,9 +108,13 @@ RSpec.describe Herb::Format::RewriterRegistry do
   describe "#load_builtin_rewriters" do
     subject { registry.load_builtin_rewriters }
 
-    # TODO: add tests for built-in rewriters once implemented (Tasks 4.3-4.5)
     it "does not raise an error" do
       expect { subject }.not_to raise_error
+    end
+
+    it "registers no built-in rewriters" do
+      subject
+      expect(registry.all).to be_empty
     end
   end
 end

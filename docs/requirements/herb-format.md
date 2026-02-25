@@ -254,8 +254,6 @@ formatter:
 | Rewriter | Phase | Description |
 |----------|-------|-------------|
 | `tailwind-class-sorter` | post | Sort Tailwind CSS classes |
-| `normalize-attributes` | pre | Normalize attribute formatting |
-| `sort-attributes` | post | Alphabetically sort attributes |
 
 ### Custom Rewriters
 
