@@ -44,7 +44,6 @@ module Herb
       end
 
       # Load built-in rewriters.
-      # TODO: require and register built-in rewriters once implemented (Tasks 4.3-4.5)
       def load_builtin_rewriters #: void
       end
 
