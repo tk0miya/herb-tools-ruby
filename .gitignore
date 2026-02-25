@@ -1,4 +1,5 @@
 # Claude Code
+.claude/agent-memory/
 .claude/settings.local.json
 
 # Ruby
