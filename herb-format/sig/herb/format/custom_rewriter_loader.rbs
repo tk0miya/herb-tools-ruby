@@ -1,0 +1,30 @@
+# Generated from lib/herb/format/custom_rewriter_loader.rb with RBS::Inline
+
+module Herb
+  module Format
+    # Loads custom rewriter implementations from configured paths.
+    class CustomRewriterLoader
+      DEFAULT_PATH: String
+
+      attr_reader config: Herb::Config::FormatterConfig
+
+      attr_reader registry: RewriterRegistry
+
+      # @rbs config: Herb::Config::FormatterConfig
+      # @rbs registry: RewriterRegistry
+      def initialize: (Herb::Config::FormatterConfig config, RewriterRegistry registry) -> void
+
+      def load: () -> void
+
+      private
+
+      # @rbs path: String
+      def load_rewriters_from: (String path) -> void
+
+      # @rbs file_path: String
+      def require_rewriter_file: (String file_path) -> void
+
+      def auto_register_rewriters: () -> void
+    end
+  end
+end

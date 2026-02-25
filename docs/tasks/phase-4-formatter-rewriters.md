@@ -105,14 +105,14 @@ end
 
 **Reference:** `@herb-tools/rewriter` custom rewriter loading
 
-- [ ] Create CustomRewriterLoader class
-- [ ] Add initialize with config and registry
-- [ ] Implement load() method
-- [ ] Load rewriters from .herb/rewriters/*.rb
-- [ ] Auto-register loaded rewriter classes
-- [ ] Handle load errors gracefully
-- [ ] Add RBS inline type annotations
-- [ ] Create spec file
+- [x] Create CustomRewriterLoader class
+- [x] Add initialize with config and registry
+- [x] Implement load() method
+- [x] Load rewriters from .herb/rewriters/*.rb
+- [x] Auto-register loaded rewriter classes
+- [x] Handle load errors gracefully
+- [x] Add RBS inline type annotations
+- [x] Create spec file
 
 **Interface:**
 ```ruby
@@ -217,7 +217,7 @@ end
 | 4.1 | A | Rewriter Base class | ✅ Done |
 | 4.2 | A | RewriterRegistry | ✅ Done |
 | 4.3 | B | TailwindClassSorter rewriter | ✅ Done |
-| 4.4 | C | CustomRewriterLoader | Todo |
+| 4.4 | C | CustomRewriterLoader | ✅ Done |
 | 4.5-4.7 | D | Integration and verification | Todo |
 
 ## Design Notes
