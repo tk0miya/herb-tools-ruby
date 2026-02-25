@@ -270,6 +270,33 @@ module Herb
       # @rbs is_void: bool
       def render_multiline_attributes: (String tag_name, Array[Herb::AST::Node] children, bool is_void) -> void
 
+      # Render an ERB conditional/block node that appears inside an open tag's
+      # attribute list (multiline format).
+      # Prints the opening ERB tag, renders each HTMLAttributeNode statement
+      # using render_attribute (preserving name="value" syntax), skips
+      # whitespace, and finally prints the end node—all at the current indent.
+      # Recurses into subsequent (else/elsif) branches for ERBIfNode, and
+      # into else_clause for ERBUnlessNode.
+      #
+      # @rbs node: Herb::AST::ERBIfNode | Herb::AST::ERBUnlessNode | Herb::AST::ERBBlockNode
+      #   | Herb::AST::ERBElseNode | Herb::AST::ERBForNode | Herb::AST::ERBWhileNode | Herb::AST::ERBUntilNode
+      def render_conditional_attribute_block: (Herb::AST::ERBIfNode | Herb::AST::ERBUnlessNode | Herb::AST::ERBBlockNode | Herb::AST::ERBElseNode | Herb::AST::ERBForNode | Herb::AST::ERBWhileNode | Herb::AST::ERBUntilNode node) -> void
+
+      # Render the statements of a conditional attribute block.
+      # HTMLAttributeNodes are rendered with render_attribute; whitespace is skipped.
+      #
+      # @rbs node: Herb::AST::ERBIfNode | Herb::AST::ERBUnlessNode | Herb::AST::ERBBlockNode
+      #   | Herb::AST::ERBElseNode | Herb::AST::ERBForNode | Herb::AST::ERBWhileNode | Herb::AST::ERBUntilNode
+      #   | Herb::AST::ERBWhenNode | Herb::AST::ERBInNode
+      def render_conditional_attribute_statements: (Herb::AST::ERBIfNode | Herb::AST::ERBUnlessNode | Herb::AST::ERBBlockNode | Herb::AST::ERBElseNode | Herb::AST::ERBForNode | Herb::AST::ERBWhileNode | Herb::AST::ERBUntilNode | Herb::AST::ERBWhenNode | Herb::AST::ERBInNode node) -> void
+
+      # Render an ERBCaseNode that appears inside an open tag's attribute list.
+      # Prints the case tag, each when/in condition with its attribute statements,
+      # an optional else branch, and the end tag—all at the current indent.
+      #
+      # @rbs node: Herb::AST::ERBCaseNode | Herb::AST::ERBCaseMatchNode
+      def render_case_attribute_block: (Herb::AST::ERBCaseNode | Herb::AST::ERBCaseMatchNode node) -> void
+
       # Render the content of an attribute value node.
       # Formats ERB control flow nodes inline using the push-based visitor.
       # Other non-literal nodes fall back to IdentityPrinter.

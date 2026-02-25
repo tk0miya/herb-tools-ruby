@@ -571,6 +571,15 @@ RSpec.describe Herb::Format::FormatHelpers do
       it { is_expected.to be true }
     end
 
+    context "with ERB case/in node" do
+      let(:node) do
+        ast = Herb.parse("<% case val %><% in :foo %><% end %>", track_whitespace: true).value
+        ast.children.first
+      end
+
+      it { is_expected.to be true }
+    end
+
     context "with ERB content node" do
       let(:node) do
         ast = Herb.parse("<%= @user %>", track_whitespace: true).value

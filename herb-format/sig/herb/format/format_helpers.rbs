@@ -32,6 +32,9 @@ module Herb
       # Used for normalizing whitespace in text content.
       ASCII_WHITESPACE: Regexp
 
+      # ERB node types that represent control flow constructs (if/unless/case/for/while/etc.).
+      ERB_CONTROL_FLOW_TYPES: Array[singleton(Herb::AST::Node)]
+
       # Check if a node is pure whitespace (HTMLTextNode with only whitespace).
       # Note: WhitespaceNode is NOT considered "pure whitespace".
       #

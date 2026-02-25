@@ -45,6 +45,18 @@ module Herb
       # Used for normalizing whitespace in text content.
       ASCII_WHITESPACE = /[ \t\n\r]+/ #: Regexp
 
+      # ERB node types that represent control flow constructs (if/unless/case/for/while/etc.).
+      ERB_CONTROL_FLOW_TYPES = [
+        Herb::AST::ERBIfNode,
+        Herb::AST::ERBUnlessNode,
+        Herb::AST::ERBCaseNode,
+        Herb::AST::ERBCaseMatchNode,
+        Herb::AST::ERBBlockNode,
+        Herb::AST::ERBForNode,
+        Herb::AST::ERBWhileNode,
+        Herb::AST::ERBUntilNode
+      ].freeze #: Array[singleton(Herb::AST::Node)]
+
       # ============================================================
       # Node Type Detection
       # ============================================================
@@ -137,10 +149,7 @@ module Herb
       #
       # @rbs node: Herb::AST::Node
       def erb_control_flow_node?(node) #: bool
-        node.is_a?(Herb::AST::ERBIfNode) ||
-          node.is_a?(Herb::AST::ERBUnlessNode) ||
-          node.is_a?(Herb::AST::ERBCaseNode) ||
-          node.is_a?(Herb::AST::ERBBlockNode)
+        ERB_CONTROL_FLOW_TYPES.any? { node.is_a?(_1) }
       end
 
       # Check if a node is a herb:disable comment (<%# herb:disable %>).
