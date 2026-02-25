@@ -4,23 +4,45 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows empty attribute values.
+        # Description:
+        #   Warn when certain restricted attributes are present but have an empty string as their value.
+        #   These attributes are required to have meaningful values to function properly, and leaving
+        #   them empty is typically either a mistake or unnecessary.
         #
-        # Empty attribute values are typically mistakes and should either
-        # be removed or given a meaningful value. Some attributes like
-        # `alt=""` are semantically valid (indicates a decorative image)
-        # and are allowed.
+        #   In most cases, if the value is not available, it's better to omit the attribute entirely.
         #
         # Good:
-        #   <div class="container">
-        #   <img alt="">
+        #   <div id="header"></div>
+        #   <img src="/logo.png" alt="Company logo">
+        #   <input type="text" name="email" autocomplete="off">
+        #
+        #   <!-- Dynamic attributes with meaningful values -->
+        #   <div data-<%= key %>="<%= value %>" aria-<%= prop %>="<%= description %>">
+        #     Dynamic content
+        #   </div>
+        #
+        #   <!-- if no class should be set, omit it completely -->
+        #   <div>Plain div</div>
         #
         # Bad:
-        #   <div class="">
-        #   <input type="">
+        #   <div id=""></div>
+        #   <img src="" alt="Company logo">
+        #   <input name="" autocomplete="off">
+        #
+        #   <div data-config="">Content</div>
+        #   <button aria-label="">×</button>
+        #
+        #   <div class="">Plain div</div>
+        #
+        #   <!-- Dynamic attribute names with empty static values -->
+        #   <div data-<%= key %>="" aria-<%= prop %>="   ">
+        #     Problematic dynamic attributes
+        #   </div>
         class NoEmptyAttributes < VisitorRule
           # Attributes where an empty value is semantically valid.
-          ALLOWED_EMPTY_ATTRIBUTES: Array[String]
+          RESTRICTED_ATTRIBUTES: Set[String]
+
+          OUTPUT_TAG_OPENINGS: Set[String]
 
           def self.rule_name: () -> String
 
@@ -33,18 +55,30 @@ module Herb
           def self.unsafe_autofixable?: () -> bool
 
           # @rbs override
-          def visit_html_element_node: ...
+          def visit_html_attribute_node: ...
 
           private
 
-          # @rbs node: Herb::AST::HTMLElementNode
-          def check_empty_attributes: (Herb::AST::HTMLElementNode node) -> void
+          # @rbs node: Herb::AST::HTMLAttributeNode
+          def check_empty_attribute: (Herb::AST::HTMLAttributeNode node) -> void
 
-          # Check if an attribute has an explicit but empty value.
+          # @rbs name: String
+          def restricted_attribute?: (String name) -> bool
+
+          # @rbs name: String
+          def data_attribute?: (String name) -> bool
+
+          # Check if an attribute has an explicit but empty (or whitespace-only) value
+          # and the value does not contain ERB output content.
           # Boolean attributes (no value) return false.
           #
           # @rbs node: Herb::AST::HTMLAttributeNode
           def empty_value?: (Herb::AST::HTMLAttributeNode node) -> bool
+
+          # Check if a node tree contains any ERB output content or non-whitespace literal text.
+          #
+          # @rbs node: Herb::AST::HTMLAttributeValueNode
+          def contains_output_content?: (Herb::AST::HTMLAttributeValueNode node) -> bool
         end
       end
     end
