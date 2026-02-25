@@ -55,8 +55,10 @@ GEM
     erb (6.0.1)
     factory_bot (6.5.6)
       activesupport (>= 6.1.0)
+    ffi (1.17.3-arm64-darwin)
     ffi (1.17.3-x86_64-linux-gnu)
     fileutils (1.8.0)
+    herb (0.8.9-arm64-darwin)
     herb (0.8.9-x86_64-linux-gnu)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
@@ -185,6 +187,7 @@ GEM
     uri (1.1.1)
 
 PLATFORMS
+  arm64-darwin-24
   x86_64-linux-gnu
 
 DEPENDENCIES
@@ -220,8 +223,10 @@ CHECKSUMS
   drb (2.2.3) sha256=0b00d6fdb50995fe4a45dea13663493c841112e4068656854646f418fda13373
   erb (6.0.1) sha256=28ecdd99c5472aebd5674d6061e3c6b0a45c049578b071e5a52c2a7f13c197e5
   factory_bot (6.5.6) sha256=12beb373214dccc086a7a63763d6718c49769d5606f0501e0a4442676917e077
+  ffi (1.17.3-arm64-darwin) sha256=0c690555d4cee17a7f07c04d59df39b2fba74ec440b19da1f685c6579bb0717f
   ffi (1.17.3-x86_64-linux-gnu) sha256=3746b01f677aae7b16dc1acb7cb3cc17b3e35bdae7676a3f568153fb0e2c887f
   fileutils (1.8.0) sha256=8c6b1df54e2540bdb2f39258f08af78853aa70bad52b4d394bbc6424593c6e02
+  herb (0.8.9-arm64-darwin) sha256=d045cce47bbec4d27a413fc4758e75bdd748a40430293b20bbb59789c02cad81
   herb (0.8.9-x86_64-linux-gnu) sha256=0315fef432649bb1aa139d01e7acad66f78b0abd5aa6d1e03ca5fe1bde224b14
   herb-config (0.1.0)
   herb-core (0.1.0)
