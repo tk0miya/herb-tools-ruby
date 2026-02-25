@@ -134,6 +134,7 @@ Each gem's binstubs use that gem's Gemfile, ensuring proper dependency resolutio
 # Documents for coding agents
 
 * [Coding Conventions](docs/CODING_CONVENTIONS.md) - Ruby style, testing, type annotations
+* [Herb AST Reference](docs/herb-ast-reference.md) - All 28 node types, Token vs Node properties, common patterns
 
 ## Dependencies
 
