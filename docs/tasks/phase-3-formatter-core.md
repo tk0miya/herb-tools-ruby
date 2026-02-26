@@ -404,13 +404,13 @@ end
 
 **Location:** `herb-format/lib/herb/format/formatter_factory.rb`
 
-- [ ] Create FormatterFactory class
-- [ ] Add initialize with config and rewriter_registry
-- [ ] Implement create() method returning configured Formatter
-- [ ] Implement private build_pre_rewriters() method
-- [ ] Implement private build_post_rewriters() method
-- [ ] Add RBS inline type annotations
-- [ ] Create spec file
+- [x] Create FormatterFactory class
+- [x] Add initialize with config and rewriter_registry
+- [x] Implement create() method returning configured Formatter
+- [x] Implement private build_pre_rewriters() method
+- [x] Implement private build_post_rewriters() method
+- [x] Add RBS inline type annotations
+- [x] Create spec file
 
 **Interface:**
 ```ruby
