@@ -19,16 +19,24 @@ This phase implements the Runner class that orchestrates formatting across multi
 
 - Phase 1 complete (Foundation)
 - Phase 2 complete (FormatPrinter)
-- Phase 3 complete (Formatter Core)
-- Phase 4 complete (Rewriters)
+- Phase 3 Task 3.3 complete (FormatterFactory)
+- Phase 4 Task 4.11 complete (Herb::Rewriter::Registry in herb-rewriter)
 - herb-core gem available (FileDiscovery)
 
 ## Design Principles
 
 1. **Reuse file discovery** - Leverage herb-core's FileDiscovery
 2. **Factory pattern** - Use FormatterFactory for formatter creation
-3. **Registry pattern** - Load rewriters via RewriterRegistry
+3. **Config-driven rewriter loading** - FormatterFactory auto-loads rewriters by requiring
+   names listed in `config.rewriter_pre` and `config.rewriter_post`
 4. **Error resilience** - Continue processing on individual file errors
+
+## Design Note: CustomRewriterLoader removal
+
+`CustomRewriterLoader` (which loaded Ruby files from `.herb/rewriters/*.rb`) has been
+removed. Rewriters are now specified explicitly in `.herb.yml` as gem names or require
+paths under `formatter.rewriter.pre` / `formatter.rewriter.post`. `FormatterFactory`
+is responsible for resolving and loading those names before instantiating rewriters.
 
 ---
 
@@ -40,7 +48,7 @@ This phase implements the Runner class that orchestrates formatting across multi
 
 - [ ] Create Runner class
 - [ ] Add initialize with config, check, write, force parameters
-- [ ] Set up rewriter registry and load rewriters
+- [ ] Create `Herb::Rewriter::Registry` instance and pass to FormatterFactory
 - [ ] Create formatter via FormatterFactory
 - [ ] Implement run(files) method
 - [ ] Add RBS inline type annotations
@@ -58,10 +66,13 @@ module Herb
     # @rbs check: bool
     # @rbs write: bool
     # @rbs force: bool
-    # @rbs rewriter_registry: RewriterRegistry
+    # @rbs rewriter_registry: Herb::Rewriter::Registry
     # @rbs formatter: Formatter
     class Runner
-      attr_reader :config, :check, :write, :force
+      attr_reader :config   #: Herb::Config::FormatterConfig
+      attr_reader :check    #: bool
+      attr_reader :write    #: bool
+      attr_reader :force    #: bool
 
       # @rbs config: Herb::Config::FormatterConfig
       # @rbs check: bool
@@ -73,23 +84,24 @@ module Herb
         @check = check
         @write = write
         @force = force
-        @rewriter_registry = RewriterRegistry.new
-        setup_rewriters
+        @rewriter_registry = Herb::Rewriter::Registry.new
         @formatter = build_formatter
       end
 
       # Run formatting on files and return aggregated result.
       #
       # Processing flow:
-      # 1. Setup: Load built-in and custom rewriters via RewriterRegistry
-      # 2. File Discovery: Use Herb::Core::FileDiscovery to find target files
-      # 3. Formatter Creation: Build Formatter instance via FormatterFactory
-      # 4. Per-File Processing:
+      # 1. File Discovery: Use Herb::Core::FileDiscovery to find target files
+      #    (or use provided files, filtered by exclude patterns)
+      # 2. Formatter Creation: Build Formatter instance via FormatterFactory
+      #    FormatterFactory auto-loads rewriters by requiring names from
+      #    config.rewriter_pre and config.rewriter_post
+      # 3. Per-File Processing:
       #    - Read source file
       #    - Execute formatting via Formatter
       #    - If write mode: update file
       #    - Collect results
-      # 5. Aggregation: Combine results into AggregatedResult
+      # 4. Aggregation: Combine results into AggregatedResult
       #
       # @rbs files: Array[String]?
       # @rbs return: AggregatedResult
@@ -101,14 +113,6 @@ module Herb
       end
 
       private
-
-      # @rbs return: void
-      def setup_rewriters
-        @rewriter_registry.load_builtin_rewriters
-
-        custom_loader = CustomRewriterLoader.new(config, @rewriter_registry)
-        custom_loader.load
-      end
 
       # @rbs return: Formatter
       def build_formatter
@@ -126,20 +130,20 @@ module Herb
         if files.nil? || files.empty?
           # Use config patterns
           discovery = Herb::Core::FileDiscovery.new(
-            include_patterns: config.include,
-            exclude_patterns: config.exclude
+            include_patterns: config.include_patterns,
+            exclude_patterns: config.exclude_patterns
           )
           discovery.discover
         else
           # Use provided files, filter by exclude patterns
-          files.select { |file| !excluded?(file) }
+          files.reject { |file| excluded?(file) }
         end
       end
 
       # @rbs file: String
       # @rbs return: bool
       def excluded?(file)
-        config.exclude.any? { |pattern| File.fnmatch?(pattern, file, File::FNM_PATHNAME) }
+        config.exclude_patterns.any? { |pattern| File.fnmatch?(pattern, file, File::FNM_PATHNAME) }
       end
 
       # Format a single file.
@@ -180,17 +184,17 @@ end
 **Test Cases:**
 ```ruby
 RSpec.describe Herb::Format::Runner do
-  let(:config) { build(:formatter_config, include: ["**/*.html.erb"], exclude: ["vendor/**"]) }
+  let(:config) { build(:formatter_config) }
   let(:runner) { described_class.new(config: config) }
 
   describe "#initialize" do
-    it "sets up rewriter registry" do
-      expect(runner.instance_variable_get(:@rewriter_registry)).to be_a(Herb::Format::RewriterRegistry)
+    it "sets up a Herb::Rewriter::Registry" do
+      expect(runner.instance_variable_get(:@rewriter_registry)).to be_a(Herb::Rewriter::Registry)
     end
 
-    it "loads built-in rewriters" do
+    it "resolves built-in rewriters from registry" do
       registry = runner.instance_variable_get(:@rewriter_registry)
-      expect(registry.registered?("normalize-attributes")).to be true
+      expect(registry.registered?("tailwind-class-sorter")).to be true
     end
 
     it "creates formatter via factory" do
@@ -201,17 +205,12 @@ RSpec.describe Herb::Format::Runner do
 
   describe "#run" do
     context "with no files" do
-      it "discovers files from config patterns" do
-        # Create temporary test files
+      it "returns an AggregatedResult" do
         Dir.mktmpdir do |dir|
           Dir.chdir(dir) do
-            FileUtils.mkdir_p("app/views")
-            File.write("app/views/test.html.erb", "<div>test</div>")
-
             result = runner.run
 
             expect(result).to be_a(Herb::Format::AggregatedResult)
-            expect(result.file_count).to be >= 0 # May or may not match depending on patterns
           end
         end
       end
@@ -230,14 +229,20 @@ RSpec.describe Herb::Format::Runner do
       end
 
       it "excludes files matching exclude patterns" do
+        config_with_exclude = Herb::Config::FormatterConfig.new(
+          "formatter" => { "enabled" => true, "exclude" => ["vendor/**"] }
+        )
+        runner_with_exclude = described_class.new(config: config_with_exclude)
+
         Dir.mktmpdir do |dir|
-          FileUtils.mkdir_p(File.join(dir, "vendor"))
-          file_path = File.join(dir, "vendor/test.html.erb")
-          File.write(file_path, "<div>test</div>")
+          # Use relative path so fnmatch pattern matching works
+          Dir.chdir(dir) do
+            FileUtils.mkdir_p("vendor")
+            File.write("vendor/test.html.erb", "<div>test</div>")
 
-          result = runner.run([file_path])
-
-          expect(result.file_count).to eq(0)
+            result = runner_with_exclude.run(["vendor/test.html.erb"])
+            expect(result.file_count).to eq(0)
+          end
         end
       end
     end
@@ -429,5 +434,6 @@ end
 
 - [herb-format Design](../design/herb-format-design.md)
 - [herb-core Design](../design/herb-core-design.md)
+- [Phase 3: Formatter Core](./phase-3-formatter-core.md)
 - [Phase 4: Rewriters](./phase-4-formatter-rewriters.md)
 - [Phase 6: CLI](./phase-6-formatter-cli.md)
