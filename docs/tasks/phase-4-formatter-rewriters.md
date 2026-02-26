@@ -219,7 +219,7 @@ end
 | 4.3 | B | TailwindClassSorter rewriter (herb-format) | ✅ Done (move to herb-rewriter, see 4.9) |
 | 4.4 | C | CustomRewriterLoader | → redesigned in separate task |
 | 4.5-4.7 | D | Integration and verification | → superseded by 4.16-4.17 |
-| 4.8 | E | Scaffold herb-rewriter gem | Todo |
+| 4.8 | E | Scaffold herb-rewriter gem | ✅ Done |
 | 4.9 | E | Implement ASTRewriter + TailwindClassSorter in herb-rewriter | Todo |
 | 4.10 | E | Create StringRewriter in herb-rewriter | Todo |
 | 4.11 | E | Move RewriterRegistry to herb-rewriter | Todo |
@@ -349,17 +349,17 @@ herb-rewriter/
 
 **Checklist:**
 
-- [ ] Create directory structure above
-- [ ] `herb-rewriter.gemspec`: `spec.name = "herb-rewriter"`, `spec.add_dependency "herb"`
-- [ ] `Gemfile`: `gemspec` + same dev deps as `herb-printer`
-- [ ] `Rakefile`: copy from `herb-printer` (spec, rubocop, steep tasks)
-- [ ] `Steepfile`: copy from `herb-printer`
-- [ ] `bin/`: copy binstubs from `herb-printer/bin/`; update `Gemfile` path references
-- [ ] `lib/herb/rewriter/version.rb`: `Herb::Rewriter::VERSION = "0.1.0"`
-- [ ] `lib/herb/rewriter.rb`: `require` all sub-files
-- [ ] `spec/spec_helper.rb`: copy from `herb-printer`
-- [ ] `rbs_collection.yaml`: copy from `herb-printer`
-- [ ] Run `cd herb-rewriter && ./bin/bundle install`
+- [x] Create directory structure above
+- [x] `herb-rewriter.gemspec`: `spec.name = "herb-rewriter"`, `spec.add_dependency "herb"`
+- [x] `Gemfile`: `gemspec` + same dev deps as `herb-printer`
+- [x] `Rakefile`: copy from `herb-printer` (spec, rubocop, steep tasks)
+- [x] `Steepfile`: copy from `herb-printer`
+- [x] `bin/`: copy binstubs from `herb-printer/bin/`; update `Gemfile` path references
+- [x] `lib/herb/rewriter/version.rb`: `Herb::Rewriter::VERSION = "0.1.0"`
+- [x] `lib/herb/rewriter.rb`: `require` all sub-files
+- [x] `spec/spec_helper.rb`: copy from `herb-printer`
+- [x] `rbs_collection.yaml`: copy from `herb-printer`
+- [x] Run `cd herb-rewriter && ./bin/bundle install`
 
 **Verification:**
 - `cd herb-rewriter && ./bin/rspec` — runs (zero examples, no failures)

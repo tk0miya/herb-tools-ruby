@@ -1,0 +1,7 @@
+# Generated from lib/herb/rewriter/version.rb with RBS::Inline
+
+module Herb
+  module Rewriter
+    VERSION: ::String
+  end
+end
