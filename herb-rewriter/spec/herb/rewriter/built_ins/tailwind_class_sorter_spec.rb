@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require "herb/printer"
 
-RSpec.describe Herb::Format::Rewriters::TailwindClassSorter do
+RSpec.describe Herb::Rewriter::BuiltIns::TailwindClassSorter do
   let(:rewriter) { described_class.new }
-  let(:context) { instance_double(Herb::Format::Context) }
+  let(:context) { nil }
 
   describe ".rewriter_name" do
     subject { described_class.rewriter_name }
@@ -19,12 +20,6 @@ RSpec.describe Herb::Format::Rewriters::TailwindClassSorter do
       expect(subject).to be_a(String)
       expect(subject).not_to be_empty
     end
-  end
-
-  describe ".phase" do
-    subject { described_class.phase }
-
-    it { is_expected.to eq(:post) }
   end
 
   describe "#initialize" do

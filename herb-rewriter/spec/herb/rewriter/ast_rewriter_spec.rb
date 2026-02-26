@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Herb::Format::Rewriters::Base do
+RSpec.describe Herb::Rewriter::ASTRewriter do
   describe ".rewriter_name" do
     it "raises NotImplementedError" do
       expect { described_class.rewriter_name }.to raise_error(NotImplementedError)
@@ -12,12 +12,6 @@ RSpec.describe Herb::Format::Rewriters::Base do
   describe ".description" do
     it "raises NotImplementedError" do
       expect { described_class.description }.to raise_error(NotImplementedError)
-    end
-  end
-
-  describe ".phase" do
-    it "returns :post by default" do
-      expect(described_class.phase).to eq(:post)
     end
   end
 
@@ -38,10 +32,10 @@ RSpec.describe Herb::Format::Rewriters::Base do
   end
 
   describe "#rewrite" do
-    subject { described_class.new.rewrite(ast, formatting_context) }
+    subject { described_class.new.rewrite(ast, context) }
 
     let(:ast) { instance_double(Herb::AST::DocumentNode) }
-    let(:formatting_context) { instance_double(Herb::Format::Context) }
+    let(:context) { nil }
 
     it "raises NotImplementedError" do
       expect { subject }.to raise_error(NotImplementedError)

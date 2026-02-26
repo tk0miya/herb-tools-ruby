@@ -220,7 +220,7 @@ end
 | 4.4 | C | CustomRewriterLoader | → redesigned in separate task |
 | 4.5-4.7 | D | Integration and verification | → superseded by 4.16-4.17 |
 | 4.8 | E | Scaffold herb-rewriter gem | ✅ Done |
-| 4.9 | E | Implement ASTRewriter + TailwindClassSorter in herb-rewriter | Todo |
+| 4.9 | E | Implement ASTRewriter + TailwindClassSorter in herb-rewriter | ✅ Done |
 | 4.10 | E | Create StringRewriter in herb-rewriter | Todo |
 | 4.11 | E | Move RewriterRegistry to herb-rewriter | Todo |
 | 4.12 | E | Update herb-format to depend on herb-rewriter | Todo |
@@ -377,13 +377,13 @@ herb-rewriter/
 `Rewriters::Base` in herb-format already has the correct interface for an AST rewriter.
 Port it to `herb-rewriter` with the renamed class and namespace, then remove it from herb-format.
 
-- [ ] Create `herb-rewriter/lib/herb/rewriter/ast_rewriter.rb`; class `Herb::Rewriter::ASTRewriter`
-- [ ] Remove `def self.phase` (being an ASTRewriter implies pre phase)
-- [ ] Move `herb-format/.../tailwind_class_sorter.rb` to `herb-rewriter/.../built_ins/tailwind_class_sorter.rb`
-- [ ] Update `TailwindClassSorter`: namespace `Herb::Rewriter::BuiltIns`, inherit `< Herb::Rewriter::ASTRewriter`, remove `def self.phase = :post`
-- [ ] Create `herb-rewriter/.../built_ins/index.rb` to require the built-in
-- [ ] Move specs to `herb-rewriter/spec/herb/rewriter/`
-- [ ] Delete `herb-format/lib/herb/format/rewriters/base.rb` and its spec
+- [x] Create `herb-rewriter/lib/herb/rewriter/ast_rewriter.rb`; class `Herb::Rewriter::ASTRewriter`
+- [x] Remove `def self.phase` (being an ASTRewriter implies pre phase)
+- [x] Move `herb-format/.../tailwind_class_sorter.rb` to `herb-rewriter/.../built_ins/tailwind_class_sorter.rb`
+- [x] Update `TailwindClassSorter`: namespace `Herb::Rewriter::BuiltIns`, inherit `< Herb::Rewriter::ASTRewriter`, remove `def self.phase = :post`
+- [x] Create `herb-rewriter/.../built_ins/index.rb` to require the built-in
+- [x] Move specs to `herb-rewriter/spec/herb/rewriter/`
+- [x] Delete `herb-format/lib/herb/format/rewriters/base.rb` and its spec
 
 **Verification:**
 - `cd herb-rewriter && ./bin/rspec spec/herb/rewriter/`

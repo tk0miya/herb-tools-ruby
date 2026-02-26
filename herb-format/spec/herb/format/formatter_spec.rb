@@ -72,7 +72,7 @@ RSpec.describe Herb::Format::Formatter do
     end
 
     context "with pre-rewriters" do
-      let(:rewriter) { Herb::Format::Rewriters::TailwindClassSorter.new }
+      let(:rewriter) { Herb::Rewriter::BuiltIns::TailwindClassSorter.new }
       let(:formatter_with_rewriter) { described_class.new([rewriter], [], config) }
       let(:source) { '<div class="text-sm flex p-4">hello</div>' }
 

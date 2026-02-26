@@ -8,6 +8,7 @@ gemspec
 gem "herb-config", path: "../herb-config"
 gem "herb-core", path: "../herb-core"
 gem "herb-printer", path: "../herb-printer"
+gem "herb-rewriter", path: "../herb-rewriter"
 
 gem "factory_bot"
 gem "irb"

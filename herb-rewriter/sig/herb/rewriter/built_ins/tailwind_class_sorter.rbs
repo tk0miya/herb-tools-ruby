@@ -1,0 +1,65 @@
+# Generated from lib/herb/rewriter/built_ins/tailwind_class_sorter.rb with RBS::Inline
+
+module Herb
+  module Rewriter
+    module BuiltIns
+      # Sort Tailwind CSS classes according to recommended order.
+      #
+      # This rewriter traverses HTML class attributes and sorts Tailwind CSS
+      # class names by their functional category (layout, spacing, typography,
+      # etc.). The sort order approximates the order used by prettier-plugin-tailwindcss.
+      #
+      # Note: Herb AST nodes are immutable. This rewriter defines sorting
+      # logic via tailwind_sort_key, which will be connected to AST
+      # transformation once mutable AST support is available.
+      class TailwindClassSorter < ASTRewriter
+        # Tailwind CSS class prefix-to-category mapping.
+        # Lower numbers sort earlier in the recommended order.
+        CLASS_GROUPS: Hash[String, Integer]
+
+        def self.rewriter_name: () -> String
+
+        def self.description: () -> String
+
+        # @rbs override
+        def rewrite: ...
+
+        private
+
+        # Sort the classes in a class attribute.
+        #
+        # Only purely static class attributes (all LiteralNode children) are
+        # sorted. Attributes containing ERB interpolation are left unchanged.
+        #
+        # HTMLAttributeValueNode#children is a mutable Array, so sorted content
+        # is applied in place by replacing children with a re-parsed LiteralNode.
+        #
+        # @rbs attr: Herb::AST::HTMLAttributeNode
+        def sort_class_attribute: (Herb::AST::HTMLAttributeNode attr) -> void
+
+        # Re-parse a class string to produce a fresh LiteralNode with the
+        # given content. Returns nil if parsing fails.
+        #
+        # @rbs content: String
+        def reparse_literal_node: (String content) -> Herb::AST::LiteralNode?
+
+        # Return the sort priority for a Tailwind CSS class name.
+        # Lower numbers sort earlier in the recommended order.
+        # Classes with unknown prefixes receive priority 999 and sort last.
+        #
+        # @rbs class_name: String
+        def tailwind_sort_key: (String class_name) -> Integer
+
+        # Check if an attribute node is a class attribute.
+        #
+        # @rbs attr: Herb::AST::HTMLAttributeNode
+        def class_attribute?: (Herb::AST::HTMLAttributeNode attr) -> bool
+
+        # Sort a space-separated string of Tailwind CSS class names.
+        #
+        # @rbs classes: String
+        def sort_classes: (String classes) -> String
+      end
+    end
+  end
+end
