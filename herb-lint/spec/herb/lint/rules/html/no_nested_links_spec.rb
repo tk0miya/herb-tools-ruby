@@ -28,36 +28,66 @@ RSpec.describe Herb::Lint::Rules::Html::NoNestedLinks do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when anchor is not nested" do
-      let(:source) { '<a href="/page">Link</a>' }
+    # Good examples from documentation
+    context "when anchors are separate, non-nested" do
+      let(:source) do
+        <<~HTML
+          <a href="/products">View products</a>
+          <a href="/about">About us</a>
+        HTML
+      end
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when multiple anchors are siblings" do
-      let(:source) { '<a href="/first">First</a><a href="/second">Second</a>' }
+    context "when erb link_to block helper is used without nesting" do
+      let(:source) do
+        <<~ERB
+          <%= link_to "View products", products_path %>
+          <%= link_to about_path do %>
+            About us
+          <% end %>
+        ERB
+      end
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
+    # Bad examples from documentation
     context "when anchor is nested inside another anchor" do
       let(:source) do
         <<~HTML
-          <a href="/outer">
-            <a href="/inner">Nested link</a>
+          <a href="/products">
+            View <a href="/special-offer">special offer</a>
           </a>
         HTML
       end
 
-      it "reports an offense for the inner anchor" do
+      it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-no-nested-links")
-        expect(subject.first.message).to eq("Nested anchor element found inside another anchor element")
+        expect(subject.first.message).to eq("Nested `<a>` elements are not allowed. Links cannot contain other links.")
         expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when erb link_to helpers are nested (bad example from documentation)" do
+      # NOTE: This is a Bad example from documentation, but the rule cannot detect
+      # ERB `link_to` helpers as `<a>` elements at parse time (static analysis limitation).
+      let(:source) do
+        <<~ERB
+          <%= link_to "Products", products_path do %>
+            <%= link_to "Special offer", offer_path %> <!-- TODO -->
+          <% end %>
+        ERB
+      end
+
+      it "does not report an offense (ERB link_to nesting is not detectable at parse time)" do
+        expect(subject).to be_empty
       end
     end
 

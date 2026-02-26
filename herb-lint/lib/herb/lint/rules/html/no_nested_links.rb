@@ -7,19 +7,28 @@ module Herb
   module Lint
     module Rules
       module Html
-        # Rule that disallows nesting of anchor elements.
-        #
-        # Nesting anchor elements is invalid HTML and causes unpredictable
-        # behavior across browsers. Each anchor should be a separate,
-        # non-nested element.
+        # Description:
+        #   Disallow placing one `<a>` element inside another `<a>` element. Links must not contain
+        #   other links as descendants.
         #
         # Good:
-        #   <a href="/page">Link</a>
+        #   <a href="/products">View products</a>
+        #   <a href="/about">About us</a>
+        #
+        #   <%= link_to "View products", products_path %>
+        #   <%= link_to about_path do %>
+        #     About us
+        #   <% end %>
         #
         # Bad:
-        #   <a href="/outer">
-        #     <a href="/inner">Nested link</a>
+        #   <a href="/products">
+        #     View <a href="/special-offer">special offer</a>
         #   </a>
+        #
+        #   <%= link_to "Products", products_path do %>
+        #     <%= link_to "Special offer", offer_path %> <!-- TODO -->
+        #   <% end %>
+        #
         class NoNestedLinks < VisitorRule
           def self.rule_name = "html-no-nested-links" #: String
           def self.description = "Disallow nesting of anchor elements" #: String
@@ -40,7 +49,7 @@ module Herb
             if anchor_element?(node)
               if @anchor_depth.positive?
                 add_offense(
-                  message: "Nested anchor element found inside another anchor element",
+                  message: "Nested `<a>` elements are not allowed. Links cannot contain other links.",
                   location: node.location
                 )
               end
