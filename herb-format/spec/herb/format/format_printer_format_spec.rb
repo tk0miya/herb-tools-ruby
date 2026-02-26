@@ -681,9 +681,9 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "with text flow" do
-      # Text flow (build_and_wrap_text_flow) is currently invoked from ERB block nodes
-      # whose body contains a mix of text and inline/ERB children.
-      # Wiring into HTML element bodies (visit_element_body) is Task 2.34.
+      # Text flow (build_and_wrap_text_flow) is invoked from ERB block nodes and HTML
+      # element bodies where the content is a mix of text and inline/ERB children.
+      # Wiring into HTML element bodies (visit_element_body) is Task 2.35.
       # Basic ERBBlockNode text flow cases are covered in format_printer_erb_visitors_spec.rb.
 
       context "with ERB block containing text and multiple inline elements" do
@@ -755,6 +755,72 @@ RSpec.describe Herb::Format::FormatPrinter do
               Hello world <%# herb:disable rule-name %>
             <% end %>
           EXPECTED
+        end
+      end
+
+      context "with HTML element containing only text" do
+        let(:source) { "<p>This is a fairly long line of text that wraps</p>" }
+
+        it { is_expected.to include("This is a fairly long line of text that wraps") }
+      end
+
+      context "with HTML element containing inline elements" do
+        let(:source) { "<p>Hello <strong>world</strong> today</p>" }
+
+        it { is_expected.to eq("<p>Hello <strong>world</strong> today</p>") }
+      end
+
+      context "with HTML element containing ERB content" do
+        let(:source) { "<p>Hello <%= @name %></p>" }
+
+        it { is_expected.to eq("<p>Hello <%= @name %></p>") }
+      end
+    end
+
+    context "with element children" do
+      # visit_element_children is currently called from visit_erb_block_node.
+      # Tests use ERB block nodes to exercise this path.
+      # Sibling spacing (should_add_spacing_between_siblings?) integration tests
+      # are deferred to Task 2.36.
+
+      context "with whitespace nodes" do
+        context "when body has only whitespace around content" do
+          let(:source) { "<% foo.each do |x| %>   \n   <p>content</p>   \n   <% end %>" }
+
+          it "strips surrounding whitespace-only nodes" do
+            expect(subject).to eq(<<~EXPECTED.chomp)
+              <% foo.each do |x| %>
+                <p>content</p>
+              <% end %>
+            EXPECTED
+          end
+        end
+
+        context "when whitespace contains a double newline" do
+          let(:source) { "<% foo.each do |x| %><p>first</p>\n\n<p>second</p><% end %>" }
+
+          it "preserves the blank line between elements" do
+            expect(subject).to eq(<<~EXPECTED.chomp)
+              <% foo.each do |x| %>
+                <p>first</p>
+
+                <p>second</p>
+              <% end %>
+            EXPECTED
+          end
+        end
+
+        context "when whitespace contains a single newline" do
+          let(:source) { "<% foo.each do |x| %><p>first</p>\n<p>second</p><% end %>" }
+
+          it "does not insert a blank line for a single newline" do
+            expect(subject).to eq(<<~EXPECTED.chomp)
+              <% foo.each do |x| %>
+                <p>first</p>
+                <p>second</p>
+              <% end %>
+            EXPECTED
+          end
         end
       end
     end

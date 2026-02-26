@@ -415,12 +415,13 @@ module Herb
       # @rbs children: Array[Herb::AST::Node]
       def visit_text_flow_children: (Array[Herb::AST::Node] children) -> void
 
-      # Visit children as block elements, skipping pure whitespace nodes.
-      # Note: Full implementation provided in Task 2.34 (Part F).
+      # Visit children as block elements.
+      # Adds spacing between siblings when appropriate, preserves user-intentional
+      # blank lines, and skips pure whitespace nodes.
       #
       # @rbs children: Array[Herb::AST::Node]
-      # @rbs _parent: Herb::AST::HTMLElementNode?
-      def visit_element_children: (Array[Herb::AST::Node] children, untyped _parent) -> void
+      # @rbs parent: Herb::AST::HTMLElementNode?
+      def visit_element_children: (Array[Herb::AST::Node] children, Herb::AST::HTMLElementNode? parent) -> void
 
       # Build a content unit for a text node.
       #

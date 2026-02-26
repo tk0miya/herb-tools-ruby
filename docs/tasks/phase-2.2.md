@@ -24,7 +24,7 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 - [x] Task 2.31: buildAndWrapTextFlow
 - [x] Task 2.32: flushWords (Word Wrapping)
 - [x] Task 2.33: Spacing Logic ("Rule of Three")
-- [ ] Task 2.34: visitTextFlowChildren & visitElementChildren
+- [x] Task 2.34: visitTextFlowChildren & visitElementChildren
 - [ ] Task 2.34b: Remove build_content_units_with_nodes unit tests (superseded by .format integration tests)
 - [ ] Task 2.34c: Replace should_add_spacing_between_siblings? unit tests with integration tests
 
