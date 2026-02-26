@@ -1,0 +1,42 @@
+# Generated from lib/herb/format/format_ignore.rb with RBS::Inline
+
+module Herb
+  module Format
+    # Detects `<%# herb:formatter ignore %>` directives in a parsed AST.
+    #
+    # The TypeScript reference implementation (format-ignore.ts) handles formatter
+    # directive detection within the formatter package itself. The Ruby implementation
+    # follows this same pattern, keeping the ignore detection logic self-contained.
+    module FormatIgnore
+      FORMATTER_IGNORE_COMMENT: ::String
+
+      # Check if the AST contains a herb:formatter ignore directive.
+      # Traverses ERB comment nodes looking for an exact match.
+      #
+      # @rbs document: Herb::AST::DocumentNode
+      def self.ignore?: (Herb::AST::DocumentNode document) -> bool
+
+      # Check if a single node is a herb:formatter ignore comment.
+      # Returns true only for ERB comment nodes (<%# ... %>) whose content
+      # exactly matches the ignore directive.
+      #
+      # @rbs node: Herb::AST::Node
+      def self.ignore_comment?: (Herb::AST::Node node) -> bool
+
+      # Internal Visitor subclass that traverses the AST to detect
+      # the ignore directive. Stops traversal entirely once found.
+      # :nodoc:
+      class IgnoreDetector < Herb::Visitor
+        attr_reader ignore_directive_found: bool
+
+        def initialize: () -> void
+
+        # @rbs node: Herb::AST::Node
+        def visit_child_nodes: (Herb::AST::Node node) -> void
+
+        # @rbs node: Herb::AST::ERBContentNode
+        def visit_erb_content_node: (Herb::AST::ERBContentNode node) -> void
+      end
+    end
+  end
+end
