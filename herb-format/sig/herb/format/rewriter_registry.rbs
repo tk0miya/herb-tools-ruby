@@ -8,31 +8,28 @@ module Herb
 
       def initialize: () -> void
 
-      # Register a rewriter class.
-      #
-      # @rbs rewriter_class: singleton(Rewriters::Base)
-      def register: (singleton(Rewriters::Base) rewriter_class) -> void
-
       # Get a rewriter class by name.
       #
       # @rbs name: String
       def get: (String name) -> singleton(Rewriters::Base)?
 
-      # Check if a rewriter is registered.
-      #
-      # @rbs name: String
-      def registered?: (String name) -> bool
-
-      # Get all registered rewriter classes.
-      def all: () -> Array[singleton(Rewriters::Base)]
-
-      # Get all registered rewriter names.
-      def rewriter_names: () -> Array[String]
-
       # Load built-in rewriters.
       def load_builtin_rewriters: () -> void
 
+      # Load and register custom rewriters from the given require names.
+      # Each name is passed to Kernel#require. Any newly defined rewriter classes
+      # are automatically discovered via ObjectSpace and registered.
+      # @rbs names: Array[String] -- require names (gem names or file paths)
+      def load_custom_rewriters: (Array[String] names) -> void
+
       private
+
+      # @rbs rewriter_class: singleton(Rewriters::Base)
+      def register: (singleton(Rewriters::Base) rewriter_class) -> void
+
+      # Returns all currently loaded rewriter subclasses via ObjectSpace.
+      # Used to detect newly defined rewriters after requiring custom rewriter files.
+      def all_rewriter_subclasses: () -> Array[singleton(Rewriters::Base)]
 
       # @rbs rewriter_class: singleton(Rewriters::Base)
       def validate_rewriter_class: (singleton(Rewriters::Base) rewriter_class) -> bool

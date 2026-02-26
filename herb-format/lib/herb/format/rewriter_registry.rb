@@ -10,15 +10,6 @@ module Herb
         @rewriters = {}
       end
 
-      # Register a rewriter class.
-      #
-      # @rbs rewriter_class: singleton(Rewriters::Base)
-      def register(rewriter_class) #: void
-        validate_rewriter_class(rewriter_class)
-        name = rewriter_class.rewriter_name
-        @rewriters[name] = rewriter_class
-      end
-
       # Get a rewriter class by name.
       #
       # @rbs name: String
@@ -26,29 +17,39 @@ module Herb
         @rewriters[name]
       end
 
-      # Check if a rewriter is registered.
-      #
-      # @rbs name: String
-      def registered?(name) #: bool
-        @rewriters.key?(name)
-      end
-
-      # Get all registered rewriter classes.
-      def all #: Array[singleton(Rewriters::Base)]
-        @rewriters.values
-      end
-
-      # Get all registered rewriter names.
-      def rewriter_names #: Array[String]
-        @rewriters.keys
-      end
-
       # Load built-in rewriters.
       def load_builtin_rewriters #: void
         register(Rewriters::TailwindClassSorter)
       end
 
+      # Load and register custom rewriters from the given require names.
+      # Each name is passed to Kernel#require. Any newly defined rewriter classes
+      # are automatically discovered via ObjectSpace and registered.
+      # @rbs names: Array[String] -- require names (gem names or file paths)
+      def load_custom_rewriters(names) #: void
+        return if names.empty?
+
+        before = all_rewriter_subclasses
+        names.each { require _1 }
+        (all_rewriter_subclasses - before).each { register(_1) }
+      end
+
       private
+
+      # @rbs rewriter_class: singleton(Rewriters::Base)
+      def register(rewriter_class) #: void
+        validate_rewriter_class(rewriter_class)
+        name = rewriter_class.rewriter_name
+        @rewriters[name] = rewriter_class
+      end
+
+      # Returns all currently loaded rewriter subclasses via ObjectSpace.
+      # Used to detect newly defined rewriters after requiring custom rewriter files.
+      def all_rewriter_subclasses #: Array[singleton(Rewriters::Base)]
+        ObjectSpace.each_object(Class)
+                   .select { _1 < Rewriters::Base }
+                   .to_a
+      end
 
       # @rbs rewriter_class: singleton(Rewriters::Base)
       def validate_rewriter_class(rewriter_class) #: bool
