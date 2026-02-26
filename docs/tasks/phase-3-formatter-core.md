@@ -35,13 +35,13 @@ This phase implements the FormatIgnore directive detection, the core Formatter c
 
 **Location:** `herb-format/lib/herb/format/format_ignore.rb`
 
-- [ ] Create FormatIgnore module
-- [ ] Define FORMATTER_IGNORE_COMMENT constant
-- [ ] Implement self.ignore?(document) class method
-- [ ] Implement self.ignore_comment?(node) helper method
-- [ ] Create IgnoreDetector visitor class
-- [ ] Add RBS inline type annotations
-- [ ] Create spec file with comprehensive tests
+- [x] Create FormatIgnore module
+- [x] Define FORMATTER_IGNORE_COMMENT constant
+- [x] Implement self.ignore?(document) class method
+- [x] Implement self.ignore_comment?(node) helper method
+- [x] Create IgnoreDetector visitor class
+- [x] Add RBS inline type annotations
+- [x] Create spec file with comprehensive tests
 
 **Interface:**
 ```ruby
