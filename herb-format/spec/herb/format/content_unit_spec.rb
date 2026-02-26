@@ -29,20 +29,4 @@ RSpec.describe Herb::Format::ContentUnit do
       end
     end
   end
-
-  describe Herb::Format::ContentUnitWithNode do
-    describe "#initialize" do
-      context "with a unit and an AST node" do
-        subject { described_class.new(unit:, node:) }
-
-        let(:unit) { Herb::Format::ContentUnit.new(content: "<%= x %>", type: :erb, is_atomic: true) }
-        let(:node) { Herb.parse("<%= x %>", track_whitespace: true).value.children.first }
-
-        it "stores unit and node" do
-          expect(subject.unit).to eq(unit)
-          expect(subject.node).not_to be_nil
-        end
-      end
-    end
-  end
 end

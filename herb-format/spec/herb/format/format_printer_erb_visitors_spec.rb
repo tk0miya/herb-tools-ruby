@@ -191,7 +191,7 @@ RSpec.describe Herb::Format::FormatPrinter do
         context "with ERB output followed by text in body" do
           let(:source) { "<% items.each do |item| %><%= item %> item<% end %>" }
 
-          it "visits ERB and text children in sequence" do
+          it "wraps ERB and text as a single indented flow line" do
             expect(subject).to eq(<<~EXPECTED.chomp)
               <% items.each do |item| %>
                 <%= item %> item
@@ -203,12 +203,12 @@ RSpec.describe Herb::Format::FormatPrinter do
         context "with text and an inline element in body" do
           let(:source) { "<% items.each do |item| %>Hello <strong>item</strong>!<% end %>" }
 
-          it "visits text and inline element children in sequence" do
-            expect(subject).to eq(
-              "<% items.each do |item| %>Hello \n  " \
-              "<strong>item</strong>!\n" \
-              "<% end %>"
-            )
+          it "wraps text and inline element as a single indented flow line" do
+            expect(subject).to eq(<<~EXPECTED.chomp)
+              <% items.each do |item| %>
+                Hello <strong>item</strong>!
+              <% end %>
+            EXPECTED
           end
         end
       end

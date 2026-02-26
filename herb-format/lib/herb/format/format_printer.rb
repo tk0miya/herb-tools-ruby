@@ -916,7 +916,7 @@ module Herb
       # flow-breaking properties. Used by build_and_wrap_text_flow (Task 2.31).
       #
       # @rbs children: Array[Herb::AST::Node]
-      def build_content_units_with_nodes(children) #: Array[ContentUnitWithNode]
+      def build_content_units_with_nodes(children) #: Array[content_unit_with_node]
         result = []
         last_processed_index = -1
 
@@ -939,12 +939,11 @@ module Herb
       end
 
       # Visit children in text flow mode.
-      # Delegates to build_and_wrap_text_flow for inline content wrapping.
-      # Note: Full implementation provided in Task 2.34 (Part F).
+      # Builds content units and wraps text across lines respecting max_line_length.
       #
       # @rbs children: Array[Herb::AST::Node]
       def visit_text_flow_children(children) #: void
-        children.each { visit(_1) }
+        build_and_wrap_text_flow(children)
       end
 
       # Visit children as block elements, skipping pure whitespace nodes.
@@ -960,22 +959,24 @@ module Herb
         end
       end
 
-      # Build a ContentUnitWithNode for a text node.
+      # Build a content unit for a text node.
       #
       # @rbs child: Herb::AST::HTMLTextNode
-      def process_text_node(child) #: ContentUnitWithNode
+      def process_text_node(child) #: content_unit_with_node
         unit = ContentUnit.new(content: child.content, type: :text, is_atomic: false, breaks_flow: false)
-        ContentUnitWithNode.new(unit:, node: child)
+        [unit, child]
       end
 
-      # Build a ContentUnitWithNode for an HTML element node.
-      # Inline elements are rendered atomically via capture; block elements break the flow.
+      # Build a content unit for an HTML element node.
+      # Inline elements are rendered atomically via capture in inline mode so that
+      # indentation is not prepended to the captured string.
+      # Block elements break the text flow.
       #
       # @rbs child: Herb::AST::HTMLElementNode
-      def process_element_node(child) #: ContentUnitWithNode
+      def process_element_node(child) #: content_unit_with_node
         unit = if inline_element?(get_tag_name(child))
                  ContentUnit.new(
-                   content: capture { visit(child) }.join,
+                   content: capture { with_inline_mode { visit(child) } }.join,
                    type: :inline,
                    is_atomic: true,
                    breaks_flow: false
@@ -983,10 +984,10 @@ module Herb
                else
                  ContentUnit.new(content: "", type: :block, is_atomic: true, breaks_flow: true)
                end
-        ContentUnitWithNode.new(unit:, node: child)
+        [unit, child]
       end
 
-      # Build a ContentUnitWithNode for an ERB content node.
+      # Build a content unit for an ERB content node.
       # Determines is_herb_disable by inspecting the node's comment marker.
       # The _children, _index, and _last_processed_index parameters are reserved
       # for future lookahead processing (e.g. collapsing adjacent ERB nodes).
@@ -995,7 +996,7 @@ module Herb
       # @rbs child: Herb::AST::ERBContentNode
       # @rbs _index: Integer
       # @rbs _last_processed_index: Integer
-      def process_erb_content_node(_children, child, _index, _last_processed_index) #: ContentUnitWithNode
+      def process_erb_content_node(_children, child, _index, _last_processed_index) #: content_unit_with_node
         unit = ContentUnit.new(
           content: render_erb_as_string(child),
           type: :erb,
@@ -1003,7 +1004,7 @@ module Herb
           breaks_flow: false,
           is_herb_disable: herb_disable_comment?(child)
         )
-        ContentUnitWithNode.new(unit:, node: child)
+        [unit, child]
       end
 
       # Render an ERB content node as a formatted string.
@@ -1011,6 +1012,86 @@ module Herb
       # @rbs node: Herb::AST::ERBContentNode
       def render_erb_as_string(node) #: String
         reconstruct_erb_node(node, with_formatting: true)
+      end
+
+      # Build content units from children and wrap text across lines.
+      # Flow-breaking (block) nodes are flushed and visited separately.
+      # Atomic units (ERB, inline elements) are added to the word buffer as-is.
+      # Text nodes are split into words with space tracking via process_text_unit.
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      def build_and_wrap_text_flow(children) #: void
+        units_with_nodes = build_content_units_with_nodes(children)
+        words = [] #: Array[{ word: String, is_herb_disable: bool }]
+
+        units_with_nodes.each do |(unit, node)|
+          if unit.breaks_flow
+            flush_words(words)
+            visit(node) if node
+          elsif unit.is_atomic
+            words << { word: unit.content, is_herb_disable: unit.is_herb_disable }
+          else
+            process_text_unit(words, unit.content)
+          end
+        end
+
+        flush_words(words)
+      end
+
+      # Process a text content string into the word accumulator.
+      # Normalizes whitespace runs to single spaces and splits on word boundaries.
+      # Spacing between units is handled entirely by flush_words via needs_space_between?.
+      #
+      # @rbs words: Array[{ word: String, is_herb_disable: bool }]
+      # @rbs text: String
+      def process_text_unit(words, text) #: void
+        normalized = text.gsub(ASCII_WHITESPACE, " ").strip
+        return if normalized.empty?
+
+        normalized.split.each do |w|
+          words << { word: w, is_herb_disable: false }
+        end
+      end
+
+      # Flush accumulated words to the output buffer with line-wrapping.
+      # Words are joined with spaces (via needs_space_between?) and wrapped
+      # when the line would exceed wrap_width. herb:disable units are never
+      # used as a wrap point. Clears the words array after flushing.
+      #
+      # @rbs words: Array[{ word: String, is_herb_disable: bool }]
+      def flush_words(words) #: void
+        return if words.empty?
+
+        wrap_width = @max_line_length - indent.length
+        current_line = ""
+
+        words.each { current_line = append_word_to_line(current_line, _1, wrap_width) }
+
+        push_with_indent(current_line.rstrip) unless current_line.strip.empty?
+
+        words.clear
+      end
+
+      # Append a word to the current line or wrap to a new line.
+      # Returns the updated current line. When wrapping occurs, the previous
+      # line is pushed to the output buffer and the word starts a new line.
+      #
+      # @rbs current_line: String
+      # @rbs word_hash: { word: String, is_herb_disable: bool }
+      # @rbs wrap_width: Integer
+      def append_word_to_line(current_line, word_hash, wrap_width) #: String
+        word = word_hash[:word]
+        return word if current_line.empty?
+
+        needs_space = needs_space_between?(current_line.rstrip, word.lstrip)
+        test_line = current_line + (needs_space ? " " : "") + word
+
+        if test_line.rstrip.length > wrap_width && !word_hash[:is_herb_disable]
+          push_with_indent(current_line.rstrip)
+          word
+        else
+          test_line
+        end
       end
 
       # Check whether the printer is currently rendering inside a token-list attribute.

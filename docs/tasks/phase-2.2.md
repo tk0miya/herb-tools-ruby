@@ -21,8 +21,8 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 ### Part F: Text Flow & Spacing (6 tasks)
 - [x] Task 2.29: ContentUnit Data Structure
 - [x] Task 2.30: buildContentUnitsWithNodes
-- [ ] Task 2.31: buildAndWrapTextFlow
-- [ ] Task 2.32: flushWords (Word Wrapping)
+- [x] Task 2.31: buildAndWrapTextFlow
+- [x] Task 2.32: flushWords (Word Wrapping)
 - [ ] Task 2.33: Spacing Logic ("Rule of Three")
 - [ ] Task 2.34: visitTextFlowChildren & visitElementChildren
 - [ ] Task 2.34b: Remove build_content_units_with_nodes unit tests (superseded by .format integration tests)
@@ -36,7 +36,7 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 - [ ] Task 2.38: Performance & Edge Cases
 - [ ] Task 2.39: Full Verification
 
-**Progress: 9/19 tasks completed**
+**Progress: 11/19 tasks completed**
 
 ---
 
