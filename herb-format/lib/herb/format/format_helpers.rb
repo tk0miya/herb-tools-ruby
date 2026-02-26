@@ -8,6 +8,8 @@ module Herb
     # FormatPrinter to make formatting decisions, analyze nodes, and determine
     # layout strategies.
     module FormatHelpers # rubocop:disable Metrics/ModuleLength
+      include Herb::Core::AST
+
       # ============================================================
       # Constants
       # ============================================================
@@ -136,20 +138,6 @@ module Herb
       # @rbs child: Herb::AST::HTMLTextNode
       def non_empty_text_node?(child) #: bool
         !child.content.strip.empty?
-      end
-
-      # Check if a node is an ERB node.
-      #
-      # @rbs node: Herb::AST::Node
-      def erb_node?(node) #: bool
-        node.class.name.include?("ERB")
-      end
-
-      # Check if a node is an ERB control flow node.
-      #
-      # @rbs node: Herb::AST::Node
-      def erb_control_flow_node?(node) #: bool
-        ERB_CONTROL_FLOW_TYPES.any? { node.is_a?(_1) }
       end
 
       # Check if a node is a herb:disable comment (<%# herb:disable %>).

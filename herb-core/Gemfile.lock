@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     herb-core (0.1.0)
+      herb
 
 GEM
   remote: https://rubygems.org/
@@ -41,6 +42,17 @@ GEM
     ffi (1.17.3-x86_64-linux-gnu)
     ffi (1.17.3-x86_64-linux-musl)
     fileutils (1.8.0)
+    herb (0.8.10)
+    herb (0.8.10-aarch64-linux-gnu)
+    herb (0.8.10-aarch64-linux-musl)
+    herb (0.8.10-arm-linux-gnu)
+    herb (0.8.10-arm-linux-musl)
+    herb (0.8.10-arm64-darwin)
+    herb (0.8.10-x86-linux-gnu)
+    herb (0.8.10-x86-linux-musl)
+    herb (0.8.10-x86_64-darwin)
+    herb (0.8.10-x86_64-linux-gnu)
+    herb (0.8.10-x86_64-linux-musl)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     io-console (0.8.2)
@@ -170,6 +182,7 @@ PLATFORMS
   x86-linux-gnu
   x86-linux-musl
   x86_64-darwin
+  x86_64-linux
   x86_64-linux-gnu
   x86_64-linux-musl
 

@@ -608,8 +608,7 @@ module Herb
       # Recurses into subsequent (else/elsif) branches for ERBIfNode, and
       # into else_clause for ERBUnlessNode.
       #
-      # @rbs node: Herb::AST::ERBIfNode | Herb::AST::ERBUnlessNode | Herb::AST::ERBBlockNode
-      #   | Herb::AST::ERBElseNode | Herb::AST::ERBForNode | Herb::AST::ERBWhileNode | Herb::AST::ERBUntilNode
+      # @rbs node: Herb::Core::AST::erb_control_flow_node | Herb::AST::ERBElseNode
       def render_conditional_attribute_block(node) #: void
         push_with_indent(reconstruct_erb_node(node))
         render_conditional_attribute_statements(node)
@@ -625,8 +624,7 @@ module Herb
       # Render the statements of a conditional attribute block.
       # HTMLAttributeNodes are rendered with render_attribute; whitespace is skipped.
       #
-      # @rbs node: Herb::AST::ERBIfNode | Herb::AST::ERBUnlessNode | Herb::AST::ERBBlockNode
-      #   | Herb::AST::ERBElseNode | Herb::AST::ERBForNode | Herb::AST::ERBWhileNode | Herb::AST::ERBUntilNode
+      # @rbs node: Herb::Core::AST::erb_control_flow_node | Herb::AST::ERBElseNode
       #   | Herb::AST::ERBWhenNode | Herb::AST::ERBInNode
       def render_conditional_attribute_statements(node) #: void
         stmts = node.respond_to?(:statements) ? node.statements : node.body

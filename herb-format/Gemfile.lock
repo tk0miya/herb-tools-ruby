@@ -9,6 +9,7 @@ PATH
   remote: ../herb-core
   specs:
     herb-core (0.1.0)
+      herb
 
 PATH
   remote: ../herb-printer
