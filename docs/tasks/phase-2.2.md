@@ -25,14 +25,14 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 - [x] Task 2.32: flushWords (Word Wrapping)
 - [x] Task 2.33: Spacing Logic ("Rule of Three")
 - [x] Task 2.34: visitTextFlowChildren & visitElementChildren
-- [ ] Task 2.34b: Remove build_content_units_with_nodes unit tests (superseded by .format integration tests)
-- [ ] Task 2.34c: Replace should_add_spacing_between_siblings? unit tests with integration tests
 
 ### Part G: Integration & Testing (5 tasks)
 - [ ] Task 2.35: Wire Up All Components
 - [x] Task 2.35b: Migrate write-based visitors to push (output unification)
 - [x] Task 2.35c: Migrate visit_erb_if_node tests to use `.format` as entry point
 - [ ] Task 2.36: Integration Tests
+- [ ] Task 2.34b: Remove build_content_units_with_nodes unit tests (superseded by .format integration tests)
+- [ ] Task 2.34c: Replace should_add_spacing_between_siblings? unit tests with integration tests
 - [ ] Task 2.37: TypeScript Output Comparison
 - [ ] Task 2.38: Performance & Edge Cases
 - [ ] Task 2.39: Full Verification
@@ -1103,68 +1103,8 @@ end
 
 **Dependencies:** Task 2.31, Task 2.33
 
----
-
-### Task 2.34b: Remove build_content_units_with_nodes unit tests (superseded by .format integration tests)
-
-**Purpose:** The unit tests added in Task 2.30 for `#build_content_units_with_nodes` and its
-helpers (`process_text_node`, `process_element_node`, etc.) verify internal classification
-logic. Once text flow formatting is exercised end-to-end through `.format` (Task 2.31–2.34),
-the observable outcomes (correct line wrapping, inline element placement, block element
-separation) provide stronger coverage. At that point, the private-method unit tests become
-redundant and should be removed.
-
-**Location:** `herb-format/spec/herb/format/format_printer_html_helpers_spec.rb`
-
-**Items to remove:**
-- `describe "#build_content_units_with_nodes"` and all its contexts
-
-**Prerequisite:** Confirm that each removed test case is covered by a `.format` integration
-test (added in Task 2.36 or Task 2.34).
-
-**Estimate:** 30 minutes
-
-**Dependencies:** Task 2.34, Task 2.36
-
----
-
----
-
-### Task 2.34c: Replace should_add_spacing_between_siblings? unit tests with integration tests
-
-**Purpose:** The unit tests for `#should_add_spacing_between_siblings?` in
-`format_printer_html_helpers_spec.rb` directly exercise a private method with
-`printer.send(...)`. Once `visit_element_children` calls this method as part of the
-normal formatting pipeline (Task 2.34), the spacing decisions become observable through
-`.format` output. At that point, the private-method unit tests are redundant and should
-be replaced with integration tests that verify formatted output.
-
-**Location:** `herb-format/spec/herb/format/format_printer_html_helpers_spec.rb`,
-`herb-format/spec/herb/format/integration/formatting_spec.rb` (or equivalent)
-
-**Items to replace:**
-- Remove `describe "#should_add_spacing_between_siblings?"` and all its contexts from
-  `format_printer_html_helpers_spec.rb`
-- Add equivalent `.format`-based integration tests covering each spacing scenario:
-  - No previous meaningful sibling → no blank line
-  - Mixed content (text + elements) → no blank line
-  - Comment followed by non-comment → blank line only when both multiline
-  - Two consecutive comments → no blank line
-  - Either node is multiline → blank line
-  - Consecutive single-line same-tag siblings (tag groups) → no blank line within group
-  - After last element of a tag group → blank line
-
-**Prerequisite:** Confirm that each removed test case is covered by a `.format` integration
-test before removing.
-
-**Estimate:** 45 minutes
-
-**Dependencies:** Task 2.34, Task 2.36
-
----
-
 **Part F Summary:**
-- **Total Tasks:** 8 tasks (including 2.34b and 2.34c)
+- **Total Tasks:** 6 tasks
 - **Estimate:** 13-15 hours
 - **Difficulty:** Highest (text flow + spacing logic)
 
@@ -1531,6 +1471,62 @@ end
 **Estimate:** 4 hours
 
 **Dependencies:** Task 2.35
+
+---
+
+### Task 2.34b: Remove build_content_units_with_nodes unit tests (superseded by .format integration tests)
+
+**Purpose:** The unit tests added in Task 2.30 for `#build_content_units_with_nodes` and its
+helpers (`process_text_node`, `process_element_node`, etc.) verify internal classification
+logic. Once text flow formatting is exercised end-to-end through `.format` (Task 2.31–2.34),
+the observable outcomes (correct line wrapping, inline element placement, block element
+separation) provide stronger coverage. At that point, the private-method unit tests become
+redundant and should be removed.
+
+**Location:** `herb-format/spec/herb/format/format_printer_html_helpers_spec.rb`
+
+**Items to remove:**
+- `describe "#build_content_units_with_nodes"` and all its contexts
+
+**Prerequisite:** Confirm that each removed test case is covered by a `.format` integration
+test (added in Task 2.36 or Task 2.34).
+
+**Estimate:** 30 minutes
+
+**Dependencies:** Task 2.34, Task 2.36
+
+---
+
+### Task 2.34c: Replace should_add_spacing_between_siblings? unit tests with integration tests
+
+**Purpose:** The unit tests for `#should_add_spacing_between_siblings?` in
+`format_printer_html_helpers_spec.rb` directly exercise a private method with
+`printer.send(...)`. Once `visit_element_children` calls this method as part of the
+normal formatting pipeline (Task 2.34), the spacing decisions become observable through
+`.format` output. At that point, the private-method unit tests are redundant and should
+be replaced with integration tests that verify formatted output.
+
+**Location:** `herb-format/spec/herb/format/format_printer_html_helpers_spec.rb`,
+`herb-format/spec/herb/format/integration/formatting_spec.rb` (or equivalent)
+
+**Items to replace:**
+- Remove `describe "#should_add_spacing_between_siblings?"` and all its contexts from
+  `format_printer_html_helpers_spec.rb`
+- Add equivalent `.format`-based integration tests covering each spacing scenario:
+  - No previous meaningful sibling → no blank line
+  - Mixed content (text + elements) → no blank line
+  - Comment followed by non-comment → blank line only when both multiline
+  - Two consecutive comments → no blank line
+  - Either node is multiline → blank line
+  - Consecutive single-line same-tag siblings (tag groups) → no blank line within group
+  - After last element of a tag group → blank line
+
+**Prerequisite:** Confirm that each removed test case is covered by a `.format` integration
+test before removing.
+
+**Estimate:** 45 minutes
+
+**Dependencies:** Task 2.34, Task 2.36
 
 ---
 
