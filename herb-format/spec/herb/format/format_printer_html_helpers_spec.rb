@@ -253,4 +253,127 @@ RSpec.describe Herb::Format::FormatPrinter do
       end
     end
   end
+
+  describe "#should_add_spacing_between_siblings?" do
+    subject { printer.send(:should_add_spacing_between_siblings?, nil, siblings, current_index) }
+
+    let(:printer) { described_class.new(indent_width:, max_line_length:, format_context:) }
+
+    context "when there is no previous meaningful sibling" do
+      let(:siblings) do
+        Herb.parse("<div></div>", track_whitespace: true).value.children
+            .reject { _1.is_a?(Herb::AST::WhitespaceNode) }
+      end
+      let(:current_index) { 0 }
+
+      it { is_expected.to be false }
+    end
+
+    context "when the previous node is an HTMLDoctypeNode" do
+      let(:siblings) do
+        Herb.parse("<!DOCTYPE html><div></div>", track_whitespace: true).value.children
+            .reject { _1.is_a?(Herb::AST::WhitespaceNode) }
+      end
+      let(:current_index) { 1 }
+
+      it { is_expected.to be true }
+    end
+
+    context "when siblings contain mixed text content" do
+      let(:siblings) do
+        Herb.parse("<p>text <span>inline</span> more</p>", track_whitespace: true)
+            .value.children.first.body
+      end
+      let(:current_index) do
+        siblings.index { _1.is_a?(Herb::AST::HTMLElementNode) }
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context "when both siblings are HTML comments" do
+      let(:siblings) do
+        Herb.parse("<!-- first --><!-- second -->", track_whitespace: true).value.children
+            .reject { _1.is_a?(Herb::AST::WhitespaceNode) }
+      end
+      let(:current_index) { 1 }
+
+      it { is_expected.to be false }
+    end
+
+    context "when the previous sibling is multiline" do
+      let(:siblings) do
+        Herb.parse("<div></div><p></p>", track_whitespace: true).value.children
+            .reject { _1.is_a?(Herb::AST::WhitespaceNode) }
+      end
+      let(:current_index) { 1 }
+
+      before do
+        previous_node = siblings[0]
+        printer.instance_variable_get(:@node_is_multiline)[previous_node] = true
+      end
+
+      it "returns true" do
+        expect(subject).to be true
+      end
+    end
+
+    context "when the current sibling is multiline" do
+      let(:siblings) do
+        Herb.parse("<div></div><p></p>", track_whitespace: true).value.children
+            .reject { _1.is_a?(Herb::AST::WhitespaceNode) }
+      end
+      let(:current_index) { 1 }
+
+      before do
+        current_node = siblings[1]
+        printer.instance_variable_get(:@node_is_multiline)[current_node] = true
+      end
+
+      it "returns true" do
+        expect(subject).to be true
+      end
+    end
+
+    context "when neither sibling is multiline and no special conditions" do
+      let(:siblings) do
+        Herb.parse("<div></div><p></p>", track_whitespace: true).value.children
+            .reject { _1.is_a?(Herb::AST::WhitespaceNode) }
+      end
+      let(:current_index) { 1 }
+
+      it { is_expected.to be false }
+    end
+
+    context "when the previous sibling is a comment and the current is an element" do
+      let(:siblings) do
+        Herb.parse("<!-- comment --><div></div>", track_whitespace: true).value.children
+            .reject { _1.is_a?(Herb::AST::WhitespaceNode) }
+      end
+      let(:current_index) { 1 }
+
+      context "when neither is multiline" do
+        it { is_expected.to be false }
+      end
+
+      context "when only the previous (comment) is multiline" do
+        before do
+          printer.instance_variable_get(:@node_is_multiline)[siblings[0]] = true
+        end
+
+        it { is_expected.to be false }
+      end
+
+      context "when both are multiline" do
+        before do
+          printer.instance_variable_get(:@node_is_multiline)[siblings[0]] = true
+          printer.instance_variable_get(:@node_is_multiline)[siblings[1]] = true
+        end
+
+        it "returns true" do
+          expect(subject).to be true
+        end
+      end
+    end
+  end
 end

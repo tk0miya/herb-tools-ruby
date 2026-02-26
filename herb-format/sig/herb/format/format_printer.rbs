@@ -379,6 +379,21 @@ module Herb
       # @rbs node: Herb::AST::ERBIfNode
       def visit_erb_if_block: (Herb::AST::ERBIfNode node) -> void
 
+      # Should a blank line be added before siblings[current_index]?
+      # Implements a simplified "Rule of Three" spacing heuristic:
+      # 1. Always adds spacing after XML declaration or DOCTYPE.
+      # 2. Suppresses spacing when siblings contain mixed text content.
+      # 3. Comment handling: comment followed by non-comment element adds spacing
+      #    only when BOTH are multiline (treats comment as attached documentation);
+      #    two consecutive comments never get spacing between them.
+      # 4. Adds spacing when either the current or previous node is multiline.
+      # (Tag-group detection is deferred to a later task.)
+      #
+      # @rbs _parent_element: Herb::AST::HTMLElementNode?
+      # @rbs siblings: Array[Herb::AST::Node]
+      # @rbs current_index: Integer
+      def should_add_spacing_between_siblings?: (untyped _parent_element, Array[Herb::AST::Node] siblings, Integer current_index) -> bool
+
       # Check if children form a text flow context.
       # Returns true when: non-empty text content exists, non-text children
       # exist, and all non-text children are inline elements or ERB content nodes.
@@ -473,6 +488,12 @@ module Herb
       # Token-list attributes (e.g., class, data-controller, data-action) separate
       # values with spaces, so ERB conditionals within them need space padding.
       def in_token_list_attribute?: () -> bool
+
+      # Check if a node produced multiline output during formatting.
+      # Uses the @node_is_multiline tracking hash populated by track_boundary.
+      #
+      # @rbs node: Herb::AST::Node
+      def multiline_element?: (Herb::AST::Node node) -> bool
 
       # Format ERB content by normalizing whitespace.
       # Adds a leading space and a trailing space (or newline for heredocs).

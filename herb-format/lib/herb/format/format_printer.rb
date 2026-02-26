@@ -881,6 +881,57 @@ module Herb
         visit(node.end_node) if node.end_node
       end
 
+      # Should a blank line be added before siblings[current_index]?
+      # Implements a simplified "Rule of Three" spacing heuristic:
+      # 1. Always adds spacing after XML declaration or DOCTYPE.
+      # 2. Suppresses spacing when siblings contain mixed text content.
+      # 3. Comment handling: comment followed by non-comment element adds spacing
+      #    only when BOTH are multiline (treats comment as attached documentation);
+      #    two consecutive comments never get spacing between them.
+      # 4. Adds spacing when either the current or previous node is multiline.
+      # (Tag-group detection is deferred to a later task.)
+      #
+      # @rbs _parent_element: Herb::AST::HTMLElementNode?
+      # @rbs siblings: Array[Herb::AST::Node]
+      # @rbs current_index: Integer
+      def should_add_spacing_between_siblings?(_parent_element, siblings, current_index) #: bool # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+        current_node = siblings[current_index]
+        previous_meaningful_index = find_previous_meaningful_sibling(siblings, current_index)
+        previous_node = previous_meaningful_index ? siblings[previous_meaningful_index] : nil
+
+        return false unless previous_node
+
+        # 1. Always add spacing after XML declaration or DOCTYPE
+        if previous_node.is_a?(Herb::AST::XMLDeclarationNode) ||
+           previous_node.is_a?(Herb::AST::HTMLDoctypeNode)
+          return true
+        end
+
+        # 2. No spacing if mixed text content
+        has_mixed_content = siblings.any? do |child|
+          child.is_a?(Herb::AST::HTMLTextNode) && !child.content.strip.empty?
+        end
+        return false if has_mixed_content
+
+        # 3. Comment handling
+        is_current_comment = comment_node?(current_node)
+        is_previous_comment = comment_node?(previous_node)
+        is_current_multiline = multiline_element?(current_node)
+        is_previous_multiline = multiline_element?(previous_node)
+
+        if is_previous_comment && !is_current_comment &&
+           (current_node.is_a?(Herb::AST::HTMLElementNode) || erb_node?(current_node))
+          return is_previous_multiline && is_current_multiline
+        end
+
+        return false if is_previous_comment && is_current_comment
+
+        # 4. Always add spacing when either node is multiline
+        return true if is_current_multiline || is_previous_multiline
+
+        false
+      end
+
       # Check if children form a text flow context.
       # Returns true when: non-empty text content exists, non-text children
       # exist, and all non-text children are inline elements or ERB content nodes.
@@ -1101,6 +1152,14 @@ module Herb
       def in_token_list_attribute? #: bool
         !@current_attribute_name.nil? &&
           FormatHelpers::TOKEN_LIST_ATTRIBUTES.include?(@current_attribute_name)
+      end
+
+      # Check if a node produced multiline output during formatting.
+      # Uses the @node_is_multiline tracking hash populated by track_boundary.
+      #
+      # @rbs node: Herb::AST::Node
+      def multiline_element?(node) #: bool
+        @node_is_multiline[node] || false
       end
 
       # -- ERB Tag Normalization --
