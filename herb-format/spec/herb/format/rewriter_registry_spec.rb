@@ -1,107 +1,26 @@
 # frozen_string_literal: true
 
+require "fileutils"
 require "spec_helper"
 
 RSpec.describe Herb::Format::RewriterRegistry do
   let(:registry) { described_class.new }
 
-  let(:test_rewriter_class) do
-    Class.new(Herb::Format::Rewriters::Base) do
-      def self.rewriter_name = "test-rewriter"
-      def self.description = "Test rewriter"
-      def self.phase = :post
-      def rewrite(ast, _context) = ast
-    end
-  end
-
-  describe "#register" do
-    subject { registry.register(test_rewriter_class) }
-
-    context "with a valid Base subclass" do
-      it "registers the rewriter class" do
-        subject
-        expect(registry.registered?("test-rewriter")).to be true
-      end
-    end
-
-    context "with a non-Base subclass" do
-      let(:test_rewriter_class) { Class.new }
-
-      it "raises RewriterError" do
-        expect { subject }.to raise_error(Herb::Format::Errors::RewriterError, /must inherit/)
-      end
-    end
-
-    context "with a class missing rewriter_name" do
-      let(:test_rewriter_class) { Class.new(Herb::Format::Rewriters::Base) }
-
-      it "raises RewriterError" do
-        expect { subject }.to raise_error(Herb::Format::Errors::RewriterError, /missing required method/)
-      end
-    end
-  end
-
   describe "#get" do
     subject { registry.get(name) }
 
     context "when the rewriter is registered" do
-      let(:name) { "test-rewriter" }
+      let(:name) { "tailwind-class-sorter" }
 
-      before { registry.register(test_rewriter_class) }
+      before { registry.load_builtin_rewriters }
 
-      it { is_expected.to eq(test_rewriter_class) }
+      it { is_expected.to eq(Herb::Format::Rewriters::TailwindClassSorter) }
     end
 
     context "when the rewriter is not registered" do
       let(:name) { "unknown" }
 
       it { is_expected.to be_nil }
-    end
-  end
-
-  describe "#registered?" do
-    subject { registry.registered?(name) }
-
-    context "when the rewriter is registered" do
-      let(:name) { "test-rewriter" }
-
-      before { registry.register(test_rewriter_class) }
-
-      it { is_expected.to be true }
-    end
-
-    context "when the rewriter is not registered" do
-      let(:name) { "unknown" }
-
-      it { is_expected.to be false }
-    end
-  end
-
-  describe "#all" do
-    subject { registry.all }
-
-    context "with registered rewriters" do
-      before { registry.register(test_rewriter_class) }
-
-      it { is_expected.to eq([test_rewriter_class]) }
-    end
-
-    context "with no registered rewriters" do
-      it { is_expected.to eq([]) }
-    end
-  end
-
-  describe "#rewriter_names" do
-    subject { registry.rewriter_names }
-
-    context "with registered rewriters" do
-      before { registry.register(test_rewriter_class) }
-
-      it { is_expected.to eq(["test-rewriter"]) }
-    end
-
-    context "with no registered rewriters" do
-      it { is_expected.to eq([]) }
     end
   end
 
@@ -114,7 +33,61 @@ RSpec.describe Herb::Format::RewriterRegistry do
 
     it "registers TailwindClassSorter" do
       subject
-      expect(registry.registered?("tailwind-class-sorter")).to be true
+      expect(registry.get("tailwind-class-sorter")).to eq(Herb::Format::Rewriters::TailwindClassSorter)
+    end
+  end
+
+  describe "#load_custom_rewriters" do
+    subject { registry.load_custom_rewriters(names) }
+
+    context "with an empty list" do
+      let(:names) { [] }
+
+      it "does not raise an error" do
+        expect { subject }.not_to raise_error
+      end
+
+      it "does not register any rewriters" do
+        subject
+        expect(registry.get("custom-test-rewriter")).to be_nil
+      end
+    end
+
+    context "with a file that defines a valid rewriter subclass" do
+      let(:require_name) { "herb_format_test_custom_rewriter_#{Process.pid}" }
+      let(:names) { [require_name] }
+      let(:temp_dir) { File.join(Dir.tmpdir, "herb_test_custom_rewriters_#{Process.pid}") }
+
+      before do
+        FileUtils.mkdir_p(temp_dir)
+        File.write(File.join(temp_dir, "#{require_name}.rb"), <<~RUBY)
+          class HerbFormatTestCustomRewriter < Herb::Format::Rewriters::Base
+            def self.rewriter_name = "custom-test-rewriter"
+            def self.description = "Test custom rewriter"
+            def self.phase = :post
+            def rewrite(ast, _context) = ast
+          end
+        RUBY
+        $LOAD_PATH.unshift(temp_dir)
+      end
+
+      after do
+        $LOAD_PATH.delete(temp_dir)
+        FileUtils.rm_rf(temp_dir)
+      end
+
+      it "registers the newly loaded rewriter" do
+        subject
+        expect(registry.get("custom-test-rewriter")).not_to be_nil
+      end
+    end
+
+    context "with a require name that does not exist" do
+      let(:names) { ["nonexistent_gem_that_does_not_exist"] }
+
+      it "raises LoadError" do
+        expect { subject }.to raise_error(LoadError)
+      end
     end
   end
 end
