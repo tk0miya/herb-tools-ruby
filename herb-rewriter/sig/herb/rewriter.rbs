@@ -1,0 +1,8 @@
+# Generated from lib/herb/rewriter.rb with RBS::Inline
+
+module Herb
+  module Rewriter
+    class Error < StandardError
+    end
+  end
+end
