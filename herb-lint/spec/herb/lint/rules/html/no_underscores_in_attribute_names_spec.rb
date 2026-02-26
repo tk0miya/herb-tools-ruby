@@ -28,43 +28,68 @@ RSpec.describe Herb::Lint::Rules::Html::NoUnderscoresInAttributeNames do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when attribute names use hyphens" do
-      let(:source) { '<div data-value="foo">' }
+    # Good examples from documentation
+    context "when attribute name uses hyphens (data-user-id)" do
+      let(:source) { '<div data-user-id="123"></div>' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when standard attributes have no underscores" do
-      let(:source) { '<input type="text" name="user" class="form-control">' }
+    context "when attribute name uses hyphens (aria-label)" do
+      let(:source) { '<img aria-label="Close" alt="Close">' }
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when attribute name contains an underscore" do
-      let(:source) { '<div data_value="foo">' }
+    context "when dynamic attribute name uses hyphens" do
+      let(:source) { '<div data-<%= key %>-attribute="value"></div>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "when attribute name contains underscores (data_user_id)" do
+      let(:source) { '<div data_user_id="123"></div>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-no-underscores-in-attribute-names")
         expect(subject.first.message).to eq(
-          "Attribute name 'data_value' should not contain underscores; use hyphens instead"
+          "Attribute `data_user_id` should not contain underscores. Use hyphens (-) instead."
         )
         expect(subject.first.severity).to eq("warning")
       end
     end
 
-    context "when attribute name contains multiple underscores" do
-      let(:source) { '<div my_custom_attr="bar">' }
+    context "when attribute name contains underscores (aria_label)" do
+      let(:source) { '<img aria_label="Close" alt="Close">' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-underscores-in-attribute-names")
         expect(subject.first.message).to eq(
-          "Attribute name 'my_custom_attr' should not contain underscores; use hyphens instead"
+          "Attribute `aria_label` should not contain underscores. Use hyphens (-) instead."
         )
+        expect(subject.first.severity).to eq("warning")
+      end
+    end
+
+    context "when dynamic attribute name has underscore in static suffix" do
+      let(:source) { '<div data-<%= key %>_attribute="value"></div>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-underscores-in-attribute-names")
+        expect(subject.first.message).to eq(
+          "Attribute `data-<%= key %>_attribute` should not contain underscores. Use hyphens (-) instead."
+        )
+        expect(subject.first.severity).to eq("warning")
       end
     end
 
@@ -74,8 +99,8 @@ RSpec.describe Herb::Lint::Rules::Html::NoUnderscoresInAttributeNames do
       it "reports an offense for each" do
         expect(subject.size).to eq(2)
         expect(subject.map(&:message)).to contain_exactly(
-          "Attribute name 'data_value' should not contain underscores; use hyphens instead",
-          "Attribute name 'data_type' should not contain underscores; use hyphens instead"
+          "Attribute `data_value` should not contain underscores. Use hyphens (-) instead.",
+          "Attribute `data_type` should not contain underscores. Use hyphens (-) instead."
         )
       end
     end
@@ -86,7 +111,7 @@ RSpec.describe Herb::Lint::Rules::Html::NoUnderscoresInAttributeNames do
       it "reports offense only for the attribute with underscore" do
         expect(subject.size).to eq(1)
         expect(subject.first.message).to eq(
-          "Attribute name 'data_value' should not contain underscores; use hyphens instead"
+          "Attribute `data_value` should not contain underscores. Use hyphens (-) instead."
         )
       end
     end
@@ -120,7 +145,7 @@ RSpec.describe Herb::Lint::Rules::Html::NoUnderscoresInAttributeNames do
       it "reports offense only for the attribute with underscore" do
         expect(subject.size).to eq(1)
         expect(subject.first.message).to eq(
-          "Attribute name 'data_info' should not contain underscores; use hyphens instead"
+          "Attribute `data_info` should not contain underscores. Use hyphens (-) instead."
         )
         expect(subject.first.line).to eq(2)
       end
@@ -140,7 +165,7 @@ RSpec.describe Herb::Lint::Rules::Html::NoUnderscoresInAttributeNames do
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.message).to eq(
-          "Attribute name 'src_set' should not contain underscores; use hyphens instead"
+          "Attribute `src_set` should not contain underscores. Use hyphens (-) instead."
         )
       end
     end
