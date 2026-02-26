@@ -441,17 +441,22 @@ end
 ### Task 4.11: Move `RewriterRegistry` to `herb-rewriter`
 
 **Location:** `herb-rewriter/lib/herb/rewriter/registry.rb`
-(moved from `herb-format/lib/herb/format/rewriter_registry.rb`)
+(replaces `herb-format/lib/herb/format/rewriter_registry.rb`)
 
-Replace `phase` symbol discrimination with type-based discrimination via inheritance.
+**Design note:** Built-in rewriters are **opt-in only** — the TypeScript implementation
+never auto-applies any rewriter. Built-ins are a static catalog used for name resolution
+when the user lists rewriter names in `.herb.yml`. There is no `load_builtin_rewriters`
+pre-registration step.
 
-- [ ] Move file; rename class `Herb::Rewriter::Registry`
-- [ ] Split internal storage into `@ast_rewriters` and `@string_rewriters`
+- [ ] Create `Herb::Rewriter::Registry` class
+- [ ] Define `BUILTIN_AST_REWRITERS` constant listing built-in AST rewriter classes
+- [ ] Define `BUILTIN_STRING_REWRITERS` constant listing built-in String rewriter classes
+- [ ] Internal storage for custom rewriters: `@custom_ast_rewriters`, `@custom_string_rewriters`
 - [ ] `register(klass)` dispatches via `klass < ASTRewriter` or `klass < StringRewriter`
-- [ ] Add `get_ast_rewriter(name)` and `get_string_rewriter(name)` methods
-- [ ] Add `all_ast_rewriters` and `all_string_rewriters` accessors
-- [ ] `load_builtin_rewriters` registers `BuiltIns::TailwindClassSorter`
-- [ ] Move spec to `herb-rewriter/spec/herb/rewriter/registry_spec.rb`
+- [ ] `get_ast_rewriter(name)` checks custom first, then `BUILTIN_AST_REWRITERS`
+- [ ] `get_string_rewriter(name)` checks custom first, then `BUILTIN_STRING_REWRITERS`
+- [ ] `registered?(name)` delegates to `get_ast_rewriter` / `get_string_rewriter`
+- [ ] Create spec at `herb-rewriter/spec/herb/rewriter/registry_spec.rb`
 - [ ] Delete `herb-format/lib/herb/format/rewriter_registry.rb` and its spec
 
 **Interface:**
@@ -460,46 +465,46 @@ Replace `phase` symbol discrimination with type-based discrimination via inherit
 module Herb
   module Rewriter
     class Registry
+      BUILTIN_AST_REWRITERS = [BuiltIns::TailwindClassSorter].freeze #: Array[singleton(ASTRewriter)]
+      BUILTIN_STRING_REWRITERS = [].freeze                           #: Array[singleton(StringRewriter)]
+
       def initialize #: void
-        @ast_rewriters = {}    #: Hash[String, singleton(ASTRewriter)]
-        @string_rewriters = {} #: Hash[String, singleton(StringRewriter)]
+        @custom_ast_rewriters = {}    #: Hash[String, singleton(ASTRewriter)]
+        @custom_string_rewriters = {} #: Hash[String, singleton(StringRewriter)]
       end
 
+      # Register a custom rewriter class.
       # @rbs klass: singleton(ASTRewriter) | singleton(StringRewriter)
       def register(klass) #: void
         if klass < ASTRewriter
-          @ast_rewriters[klass.rewriter_name] = klass
+          @custom_ast_rewriters[klass.rewriter_name] = klass
         elsif klass < StringRewriter
-          @string_rewriters[klass.rewriter_name] = klass
+          @custom_string_rewriters[klass.rewriter_name] = klass
         else
           raise ArgumentError, "Rewriter must inherit from ASTRewriter or StringRewriter"
         end
       end
 
+      # Resolve a name to an AST rewriter class.
+      # Custom rewriters shadow built-ins of the same name.
+      #
       # @rbs name: String
       def get_ast_rewriter(name) #: singleton(ASTRewriter)?
-        @ast_rewriters[name]
+        @custom_ast_rewriters[name] ||
+          BUILTIN_AST_REWRITERS.find { _1.rewriter_name == name }
       end
 
+      # Resolve a name to a String rewriter class.
+      # Custom rewriters shadow built-ins of the same name.
+      #
       # @rbs name: String
       def get_string_rewriter(name) #: singleton(StringRewriter)?
-        @string_rewriters[name]
-      end
-
-      def all_ast_rewriters #: Array[singleton(ASTRewriter)]
-        @ast_rewriters.values
-      end
-
-      def all_string_rewriters #: Array[singleton(StringRewriter)]
-        @string_rewriters.values
+        @custom_string_rewriters[name] ||
+          BUILTIN_STRING_REWRITERS.find { _1.rewriter_name == name }
       end
 
       def registered?(name) #: bool
-        @ast_rewriters.key?(name) || @string_rewriters.key?(name)
-      end
-
-      def load_builtin_rewriters #: void
-        register(BuiltIns::TailwindClassSorter)
+        !get_ast_rewriter(name).nil? || !get_string_rewriter(name).nil?
       end
     end
   end
@@ -515,15 +520,12 @@ end
 
 **Location:** `herb-format/herb-format.gemspec`, `herb-format/Gemfile`, `herb-format/lib/herb/format.rb`
 
+Note: `require_relative "format/rewriters/base"` and `require_relative "format/rewriters/tailwind_class_sorter"`
+were already removed from `format.rb` in Task 4.9.
+
 - [ ] Add `spec.add_dependency "herb-rewriter"` to `herb-format.gemspec`
 - [ ] Add `gem "herb-rewriter", path: "../herb-rewriter"` to `herb-format/Gemfile` (local path for development)
-- [ ] Add `require "herb/rewriter"` to `herb-format/lib/herb/format.rb`
-- [ ] Remove `require_relative "format/rewriters/base"` (now provided by herb-rewriter)
-- [ ] Remove `require_relative "format/rewriter_registry"` (now provided by herb-rewriter)
-- [ ] Remove `require_relative "format/rewriters/tailwind_class_sorter"` (now in herb-rewriter)
-- [ ] Update any `Herb::Format::Rewriters::ASTRewriter` references to `Herb::Rewriter::ASTRewriter`
-- [ ] Update any `Herb::Format::Rewriters::StringRewriter` references to `Herb::Rewriter::StringRewriter`
-- [ ] Update any `Herb::Format::RewriterRegistry` references to `Herb::Rewriter::Registry`
+- [ ] Replace `require_relative "format/rewriter_registry"` with `require "herb/rewriter"` in `herb-format/lib/herb/format.rb`
 - [ ] Run `cd herb-format && ./bin/bundle install`
 
 **Verification:**
@@ -668,6 +670,6 @@ This task only covers the registry/pipeline integration path.
 - [ ] `cd herb-rewriter && ./bin/rake` — spec, rubocop, and steep all pass
 - [ ] `cd herb-format && ./bin/rake` — spec, rubocop, and steep all pass
 - [ ] Unit tests for `ASTRewriter` and `StringRewriter` pass in `herb-rewriter`
-- [ ] `TailwindClassSorter` is registered as a pre-phase rewriter via `Registry#load_builtin_rewriters`
+- [ ] `Registry.new.get_ast_rewriter("tailwind-class-sorter")` returns `BuiltIns::TailwindClassSorter`
 - [ ] Integration test confirms post-rewriters receive a string in the `Formatter` pipeline
 - [ ] `herb-format` has no direct references to removed classes (`Rewriters::Base`, etc.)

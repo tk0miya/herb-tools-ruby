@@ -13,24 +13,6 @@ RSpec.describe Herb::Format::RewriterRegistry do
 
       it { is_expected.to be_nil }
     end
-
-    context "when load_builtin_rewriters has been called" do
-      let(:name) { "tailwind-class-sorter" }
-
-      before { registry.load_builtin_rewriters }
-
-      it "returns nil (built-ins moved to herb-rewriter gem)" do
-        expect(subject).to be_nil
-      end
-    end
-  end
-
-  describe "#load_builtin_rewriters" do
-    subject { registry.load_builtin_rewriters }
-
-    it "does not raise an error" do
-      expect { subject }.not_to raise_error
-    end
   end
 
   describe "#load_custom_rewriters" do
