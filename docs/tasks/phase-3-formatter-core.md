@@ -570,11 +570,11 @@ end
 
 **Location:** `herb-format/lib/herb/format.rb`
 
-- [ ] Add require_relative for format_ignore
-- [ ] Add require_relative for formatter
-- [ ] Add require_relative for formatter_factory
-- [ ] Run rbs-inline to generate signatures
-- [ ] Run steep check
+- [x] Add require_relative for format_ignore
+- [x] Add require_relative for formatter
+- [x] Add require_relative for formatter_factory
+- [x] Run rbs-inline to generate signatures
+- [x] Run steep check
 
 **Verification:**
 - `cd herb-format && ./bin/steep check` passes
