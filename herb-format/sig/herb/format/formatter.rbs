@@ -1,0 +1,51 @@
+# Generated from lib/herb/format/formatter.rb with RBS::Inline
+
+module Herb
+  module Format
+    # Core single-file formatting implementation.
+    class Formatter
+      attr_reader pre_rewriters: Array[Rewriters::Base]
+
+      attr_reader post_rewriters: Array[Rewriters::Base]
+
+      attr_reader config: Herb::Config::FormatterConfig
+
+      # @rbs pre_rewriters: Array[Rewriters::Base]
+      # @rbs post_rewriters: Array[Rewriters::Base]
+      # @rbs config: Herb::Config::FormatterConfig
+      def initialize: (Array[Rewriters::Base] pre_rewriters, Array[Rewriters::Base] post_rewriters, Herb::Config::FormatterConfig config) -> void
+
+      # Format a single file and return result.
+      #
+      # Processing flow:
+      # 1. Parse ERB template into AST via Herb.parse
+      # 2. If parsing fails, return source unchanged with error
+      # 3. Check for ignore directive via FormatIgnore.ignore? (unless force)
+      # 4. If ignored, return source unchanged with ignored flag
+      # 5. Create Context with source and configuration
+      # 6. Execute pre-rewriters (in order)
+      # 7. Apply formatting via FormatPrinter.format(ast, format_context:)
+      # 8. Return FormatResult with original and formatted content
+      #
+      # @rbs file_path: String
+      # @rbs source: String
+      # @rbs force: bool
+      def format: (String file_path, String source, ?force: bool) -> FormatResult
+
+      private
+
+      # @rbs file_path: String
+      # @rbs source: String
+      # @rbs ast: Herb::AST::DocumentNode
+      # @rbs context: Context
+      def format_with_context: (String file_path, String source, Herb::AST::DocumentNode ast, Context context) -> FormatResult
+
+      # Apply rewriters to AST in order.
+      #
+      # @rbs ast: Herb::AST::DocumentNode
+      # @rbs rewriters: Array[Rewriters::Base]
+      # @rbs context: Context
+      def apply_rewriters: (Herb::AST::DocumentNode ast, Array[Rewriters::Base] rewriters, Context context) -> Herb::AST::DocumentNode
+    end
+  end
+end

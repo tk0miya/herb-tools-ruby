@@ -198,15 +198,15 @@ end
 
 **Location:** `herb-format/lib/herb/format/formatter.rb`
 
-- [ ] Create Formatter class
-- [ ] Add initialize with engine, pre_rewriters, post_rewriters, config
-- [ ] Implement format(file_path, source, force:) method
-- [ ] Handle parse errors gracefully (return source unchanged)
-- [ ] Check for ignore directive (unless force: true)
-- [ ] Apply pre-rewriters, engine, post-rewriters pipeline
-- [ ] Return FormatResult
-- [ ] Add RBS inline type annotations
-- [ ] Create spec file
+- [x] Create Formatter class
+- [x] Add initialize with engine, pre_rewriters, post_rewriters, config
+- [x] Implement format(file_path, source, force:) method
+- [x] Handle parse errors gracefully (return source unchanged)
+- [x] Check for ignore directive (unless force: true)
+- [x] Apply pre-rewriters, engine, post-rewriters pipeline
+- [x] Return FormatResult
+- [x] Add RBS inline type annotations
+- [x] Create spec file
 
 **Interface:**
 ```ruby
