@@ -29,7 +29,7 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 - [ ] Task 2.34c: Replace should_add_spacing_between_siblings? unit tests with integration tests
 
 ### Part G: Integration & Testing (5 tasks)
-- [ ] Task 2.35: Wire Up All Components
+- [x] Task 2.35: Wire Up All Components
 - [x] Task 2.35b: Migrate write-based visitors to push (output unification)
 - [x] Task 2.35c: Migrate visit_erb_if_node tests to use `.format` as entry point
 - [ ] Task 2.36: Integration Tests
@@ -37,7 +37,7 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 - [ ] Task 2.38: Performance & Edge Cases
 - [ ] Task 2.39: Full Verification
 
-**Progress: 12/19 tasks completed**
+**Progress: 13/19 tasks completed**
 
 ---
 
@@ -1212,7 +1212,7 @@ end
 - RBS type checking passes
 
 **Implementation Items:**
-- [ ] Enable `context "with inline element that exceeds max line length"` in
+- [x] Enable `context "with inline element that exceeds max line length"` in
   `element_analyzer_spec.rb`: once all visit methods use `push` (instead of
   writing to `PrintContext`), `capture { visit(element) }` will return actual
   rendered lines and the length check will behave correctly
