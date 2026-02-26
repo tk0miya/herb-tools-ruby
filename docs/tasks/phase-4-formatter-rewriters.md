@@ -394,10 +394,10 @@ Port it to `herb-rewriter` with the renamed class and namespace, then remove it 
 
 **Location:** `herb-rewriter/lib/herb/rewriter/string_rewriter.rb`
 
-- [ ] Create `string_rewriter.rb`; class `Herb::Rewriter::StringRewriter`
-- [ ] Define `rewrite(formatted, context) -> String` as an abstract method
-- [ ] Add RBS inline type annotations
-- [ ] Create spec file
+- [x] Create `string_rewriter.rb`; class `Herb::Rewriter::StringRewriter`
+- [x] Define `rewrite(formatted, context) -> String` as an abstract method
+- [x] Add RBS inline type annotations
+- [x] Create spec file
 
 **Interface:**
 

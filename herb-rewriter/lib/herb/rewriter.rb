@@ -4,6 +4,7 @@ require "herb"
 
 require_relative "rewriter/ast_rewriter"
 require_relative "rewriter/built_ins/tailwind_class_sorter"
+require_relative "rewriter/string_rewriter"
 require_relative "rewriter/version"
 
 module Herb
