@@ -1,0 +1,34 @@
+# Generated from lib/herb/format/formatter_factory.rb with RBS::Inline
+
+module Herb
+  module Format
+    # Creates configured Formatter instances (Factory Pattern).
+    #
+    # Queries a RewriterRegistry to instantiate pre- and post-rewriters by name,
+    # then assembles a Formatter with the resolved instances.
+    class FormatterFactory
+      attr_reader config: Herb::Config::FormatterConfig
+
+      attr_reader rewriter_registry: RewriterRegistry
+
+      # @rbs config: Herb::Config::FormatterConfig
+      # @rbs rewriter_registry: RewriterRegistry
+      def initialize: (Herb::Config::FormatterConfig config, RewriterRegistry rewriter_registry) -> void
+
+      # Create a configured Formatter instance.
+      #
+      # Resolves pre- and post-rewriter names from config via the registry,
+      # then instantiates them and passes the result to Formatter.
+      def create: () -> Formatter
+
+      private
+
+      def build_pre_rewriters: () -> Array[Herb::Rewriter::ASTRewriter]
+
+      def build_post_rewriters: () -> Array[Herb::Rewriter::ASTRewriter]
+
+      # @rbs name: String
+      def instantiate_rewriter: (String name) -> Herb::Rewriter::ASTRewriter?
+    end
+  end
+end
