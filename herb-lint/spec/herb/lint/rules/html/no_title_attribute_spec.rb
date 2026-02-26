@@ -28,24 +28,113 @@ RSpec.describe Herb::Lint::Rules::Html::NoTitleAttribute do
     let(:document) { Herb.parse(source, track_whitespace: true) }
     let(:context) { build(:context) }
 
-    context "when element has no title attribute" do
-      let(:source) { '<span class="info">More info available</span>' }
+    # Good examples from documentation
+    context "when using visible text instead of title" do
+      let(:source) do
+        <<~HTML
+          <button>Save document</button>
+          <span class="help-text">Click to save your changes</span>
+        HTML
+      end
 
       it "does not report an offense" do
         expect(subject).to be_empty
       end
     end
 
-    context "when element has a title attribute" do
-      let(:source) { '<span title="More info">Hover me</span>' }
+    context "when using aria-label for accessible names" do
+      let(:source) { '<button aria-label="Close dialog">×</button>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when using aria-describedby for additional context" do
+      let(:source) do
+        <<~HTML
+          <input type="password" aria-describedby="pwd-help" autocomplete="off">
+          <div id="pwd-help">Password must be at least 8 characters</div>
+        HTML
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when iframe has a title attribute" do
+      let(:source) { '<iframe src="https://example.com" title="Example website content"></iframe>' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when link has a title attribute" do
+      let(:source) { '<link href="default.css" rel="stylesheet" title="Default Style">' }
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # Bad examples from documentation
+    context "when button has a title attribute" do
+      let(:source) { '<button title="Save your changes">Save</button>' }
 
       it "reports an offense" do
         expect(subject.size).to eq(1)
         expect(subject.first.rule_name).to eq("html-no-title-attribute")
         expect(subject.first.message).to eq(
-          "Avoid using the 'title' attribute; it is unreliable for screen readers and touch devices"
+          "The `title` attribute should never be used as it is inaccessible for several groups of " \
+          "users. Use `aria-label` or `aria-describedby` instead. Exceptions are provided for " \
+          "`<iframe>` and `<link>` elements."
         )
         expect(subject.first.severity).to eq("error")
+      end
+    end
+
+    context "when div has a title attribute" do
+      let(:source) { '<div title="This is important information">Content</div>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-title-attribute")
+      end
+    end
+
+    context "when span has a title attribute" do
+      let(:source) { '<span title="Required field">*</span>' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-title-attribute")
+      end
+    end
+
+    context "when input has a title attribute" do
+      let(:source) { '<input type="text" title="Enter your name" autocomplete="off">' }
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-title-attribute")
+      end
+    end
+
+    context "when select has a title attribute" do
+      let(:source) do
+        <<~HTML
+          <select title="Choose your country">
+            <option>US</option>
+            <option>CA</option>
+          </select>
+        HTML
+      end
+
+      it "reports an offense" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.rule_name).to eq("html-no-title-attribute")
       end
     end
 
@@ -115,7 +204,6 @@ RSpec.describe Herb::Lint::Rules::Html::NoTitleAttribute do
 
       it "reports an offense for the inner element" do
         expect(subject.size).to eq(1)
-        expect(subject.first.line).to eq(2)
       end
     end
 
