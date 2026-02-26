@@ -8,6 +8,8 @@ module Herb
     # FormatPrinter to make formatting decisions, analyze nodes, and determine
     # layout strategies.
     module FormatHelpers
+      include Herb::Core::AST
+
       # HTML inline elements that should be kept on the same line when possible.
       # These elements typically don't start on a new line and flow with text.
       INLINE_ELEMENTS: Set[String]
@@ -80,16 +82,6 @@ module Herb
       #
       # @rbs child: Herb::AST::HTMLTextNode
       def non_empty_text_node?: (Herb::AST::HTMLTextNode child) -> bool
-
-      # Check if a node is an ERB node.
-      #
-      # @rbs node: Herb::AST::Node
-      def erb_node?: (Herb::AST::Node node) -> bool
-
-      # Check if a node is an ERB control flow node.
-      #
-      # @rbs node: Herb::AST::Node
-      def erb_control_flow_node?: (Herb::AST::Node node) -> bool
 
       # Check if a node is a herb:disable comment (<%# herb:disable %>).
       # These comments disable formatting for adjacent content.
