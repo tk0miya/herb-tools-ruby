@@ -367,11 +367,10 @@ module Herb
       # flow-breaking properties. Used by build_and_wrap_text_flow (Task 2.31).
       #
       # @rbs children: Array[Herb::AST::Node]
-      def build_content_units_with_nodes: (Array[Herb::AST::Node] children) -> Array[ContentUnitWithNode]
+      def build_content_units_with_nodes: (Array[Herb::AST::Node] children) -> Array[content_unit_with_node]
 
       # Visit children in text flow mode.
-      # Delegates to build_and_wrap_text_flow for inline content wrapping.
-      # Note: Full implementation provided in Task 2.34 (Part F).
+      # Builds content units and wraps text across lines respecting max_line_length.
       #
       # @rbs children: Array[Herb::AST::Node]
       def visit_text_flow_children: (Array[Herb::AST::Node] children) -> void
@@ -383,18 +382,20 @@ module Herb
       # @rbs _parent: Herb::AST::HTMLElementNode?
       def visit_element_children: (Array[Herb::AST::Node] children, untyped _parent) -> void
 
-      # Build a ContentUnitWithNode for a text node.
+      # Build a content unit for a text node.
       #
       # @rbs child: Herb::AST::HTMLTextNode
-      def process_text_node: (Herb::AST::HTMLTextNode child) -> ContentUnitWithNode
+      def process_text_node: (Herb::AST::HTMLTextNode child) -> content_unit_with_node
 
-      # Build a ContentUnitWithNode for an HTML element node.
-      # Inline elements are rendered atomically via capture; block elements break the flow.
+      # Build a content unit for an HTML element node.
+      # Inline elements are rendered atomically via capture in inline mode so that
+      # indentation is not prepended to the captured string.
+      # Block elements break the text flow.
       #
       # @rbs child: Herb::AST::HTMLElementNode
-      def process_element_node: (Herb::AST::HTMLElementNode child) -> ContentUnitWithNode
+      def process_element_node: (Herb::AST::HTMLElementNode child) -> content_unit_with_node
 
-      # Build a ContentUnitWithNode for an ERB content node.
+      # Build a content unit for an ERB content node.
       # Determines is_herb_disable by inspecting the node's comment marker.
       # The _children, _index, and _last_processed_index parameters are reserved
       # for future lookahead processing (e.g. collapsing adjacent ERB nodes).
@@ -403,12 +404,45 @@ module Herb
       # @rbs child: Herb::AST::ERBContentNode
       # @rbs _index: Integer
       # @rbs _last_processed_index: Integer
-      def process_erb_content_node: (untyped _children, Herb::AST::ERBContentNode child, untyped _index, untyped _last_processed_index) -> ContentUnitWithNode
+      def process_erb_content_node: (untyped _children, Herb::AST::ERBContentNode child, untyped _index, untyped _last_processed_index) -> content_unit_with_node
 
       # Render an ERB content node as a formatted string.
       #
       # @rbs node: Herb::AST::ERBContentNode
       def render_erb_as_string: (Herb::AST::ERBContentNode node) -> String
+
+      # Build content units from children and wrap text across lines.
+      # Flow-breaking (block) nodes are flushed and visited separately.
+      # Atomic units (ERB, inline elements) are added to the word buffer as-is.
+      # Text nodes are split into words with space tracking via process_text_unit.
+      #
+      # @rbs children: Array[Herb::AST::Node]
+      def build_and_wrap_text_flow: (Array[Herb::AST::Node] children) -> void
+
+      # Process a text content string into the word accumulator.
+      # Normalizes whitespace runs to single spaces and splits on word boundaries.
+      # Spacing between units is handled entirely by flush_words via needs_space_between?.
+      #
+      # @rbs words: Array[{ word: String, is_herb_disable: bool }]
+      # @rbs text: String
+      def process_text_unit: (Array[{ word: String, is_herb_disable: bool }] words, String text) -> void
+
+      # Flush accumulated words to the output buffer with line-wrapping.
+      # Words are joined with spaces (via needs_space_between?) and wrapped
+      # when the line would exceed wrap_width. herb:disable units are never
+      # used as a wrap point. Clears the words array after flushing.
+      #
+      # @rbs words: Array[{ word: String, is_herb_disable: bool }]
+      def flush_words: (Array[{ word: String, is_herb_disable: bool }] words) -> void
+
+      # Append a word to the current line or wrap to a new line.
+      # Returns the updated current line. When wrapping occurs, the previous
+      # line is pushed to the output buffer and the word starts a new line.
+      #
+      # @rbs current_line: String
+      # @rbs word_hash: { word: String, is_herb_disable: bool }
+      # @rbs wrap_width: Integer
+      def append_word_to_line: (String current_line, { word: String, is_herb_disable: bool } word_hash, Integer wrap_width) -> String
 
       # Check whether the printer is currently rendering inside a token-list attribute.
       # Token-list attributes (e.g., class, data-controller, data-action) separate

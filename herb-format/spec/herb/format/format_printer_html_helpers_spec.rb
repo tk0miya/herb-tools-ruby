@@ -130,7 +130,7 @@ RSpec.describe Herb::Format::FormatPrinter do
 
       it "returns a :text ContentUnit with the text content" do
         expect(subject.length).to eq(1)
-        unit = subject.first.unit
+        unit, = subject.first
         expect(unit.type).to eq(:text)
         expect(unit.content).to eq("Hello world")
         expect(unit.is_atomic).to be(false)
@@ -138,7 +138,8 @@ RSpec.describe Herb::Format::FormatPrinter do
       end
 
       it "associates the original node" do
-        expect(subject.first.node).to be_a(Herb::AST::HTMLTextNode)
+        _, node = subject.first
+        expect(node).to be_a(Herb::AST::HTMLTextNode)
       end
     end
 
@@ -150,7 +151,7 @@ RSpec.describe Herb::Format::FormatPrinter do
 
       it "returns an :erb ContentUnit" do
         expect(subject.length).to eq(1)
-        unit = subject.first.unit
+        unit, = subject.first
         expect(unit.type).to eq(:erb)
         expect(unit.is_atomic).to be(true)
         expect(unit.breaks_flow).to be(false)
@@ -158,11 +159,13 @@ RSpec.describe Herb::Format::FormatPrinter do
       end
 
       it "contains the formatted ERB string" do
-        expect(subject.first.unit.content).to eq("<%= @user.name %>")
+        unit, = subject.first
+        expect(unit.content).to eq("<%= @user.name %>")
       end
 
       it "associates the original node" do
-        expect(subject.first.node).to be_a(Herb::AST::ERBContentNode)
+        _, node = subject.first
+        expect(node).to be_a(Herb::AST::ERBContentNode)
       end
     end
 
@@ -174,7 +177,7 @@ RSpec.describe Herb::Format::FormatPrinter do
 
       it "marks the unit as is_herb_disable" do
         expect(subject.length).to eq(1)
-        unit = subject.first.unit
+        unit, = subject.first
         expect(unit.type).to eq(:erb)
         expect(unit.is_herb_disable).to be(true)
       end
@@ -188,14 +191,15 @@ RSpec.describe Herb::Format::FormatPrinter do
 
       it "returns an :inline ContentUnit that is atomic" do
         expect(subject.length).to eq(1)
-        unit = subject.first.unit
+        unit, = subject.first
         expect(unit.type).to eq(:inline)
         expect(unit.is_atomic).to be(true)
         expect(unit.breaks_flow).to be(false)
       end
 
       it "contains the rendered element string" do
-        expect(subject.first.unit.content).to eq("<span>hello</span>")
+        unit, = subject.first
+        expect(unit.content).to eq("<span>hello</span>")
       end
     end
 
@@ -207,14 +211,15 @@ RSpec.describe Herb::Format::FormatPrinter do
 
       it "returns a :block ContentUnit that breaks flow" do
         expect(subject.length).to eq(1)
-        unit = subject.first.unit
+        unit, = subject.first
         expect(unit.type).to eq(:block)
         expect(unit.is_atomic).to be(true)
         expect(unit.breaks_flow).to be(true)
       end
 
       it "associates the original node for later re-visiting" do
-        expect(subject.first.node).to be_a(Herb::AST::HTMLElementNode)
+        _, node = subject.first
+        expect(node).to be_a(Herb::AST::HTMLElementNode)
       end
     end
 
@@ -227,8 +232,8 @@ RSpec.describe Herb::Format::FormatPrinter do
       it "includes whitespace text as a :text unit (skipping is left to caller)" do
         # WhitespaceNode is skipped, but HTMLTextNode whitespace is included as :text
         # so callers can decide how to handle it
-        subject.each do |uwn|
-          expect(uwn.unit.type).to eq(:text)
+        subject.each do |(unit, _)|
+          expect(unit.type).to eq(:text)
         end
       end
     end
@@ -240,7 +245,7 @@ RSpec.describe Herb::Format::FormatPrinter do
       end
 
       it "classifies each node correctly" do
-        types = subject.map { _1.unit.type }
+        types = subject.map { |(unit, _)| unit.type }
         expect(types).to include(:text)
         expect(types).to include(:inline)
         expect(types).to include(:block)

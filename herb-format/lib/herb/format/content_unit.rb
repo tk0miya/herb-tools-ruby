@@ -2,6 +2,8 @@
 
 module Herb
   module Format
+    # @rbs! type content_unit_with_node = [ContentUnit, Herb::AST::Node | nil]
+
     # Content unit for text flow analysis.
     #
     # Represents a single unit of content when processing text flow in the
@@ -32,15 +34,5 @@ module Herb
         super
       end
     end
-
-    # Content unit paired with its originating AST node.
-    #
-    # Used when building content unit lists from child nodes so that the
-    # original node is available for re-visiting (e.g. block elements that
-    # break the text flow).
-    ContentUnitWithNode = Data.define(
-      :unit,  #: ContentUnit
-      :node   #: Herb::AST::Node?
-    )
   end
 end

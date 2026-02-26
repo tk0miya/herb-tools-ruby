@@ -495,7 +495,82 @@ RSpec.describe Herb::Format::FormatPrinter do
     end
 
     context "with text flow" do
-      pending "Part F: Text Flow & Spacing (Task 2.29-2.34)"
+      # Text flow (build_and_wrap_text_flow) is currently invoked from ERB block nodes
+      # whose body contains a mix of text and inline/ERB children.
+      # Wiring into HTML element bodies (visit_element_body) is Task 2.34.
+      # Basic ERBBlockNode text flow cases are covered in format_printer_erb_visitors_spec.rb.
+
+      context "with ERB block containing text and multiple inline elements" do
+        let(:source) { "<% items.each do |item| %>Click <a>here</a> or <a>there</a>.<% end %>" }
+
+        it "flows all inline content onto one line" do
+          expect(subject).to eq(<<~EXPECTED.chomp)
+            <% items.each do |item| %>
+              Click <a>here</a> or <a>there</a>.
+            <% end %>
+          EXPECTED
+        end
+      end
+
+      context "with ERB block where text flow wraps due to max_line_length" do
+        let(:max_line_length) { 40 }
+        let(:source) do
+          "<% items.each do |item| %>The quick brown fox jumps over <strong>the lazy dog</strong><% end %>"
+        end
+
+        it "wraps long flow content at word boundaries" do
+          expect(subject).to eq(<<~EXPECTED.chomp)
+            <% items.each do |item| %>
+              The quick brown fox jumps over
+              <strong>the lazy dog</strong>
+            <% end %>
+          EXPECTED
+        end
+      end
+
+      context "with ERB block where flow text has extra whitespace" do
+        let(:source) { "<% items.each do |item| %>Hello   <%= item %>   world<% end %>" }
+
+        it "normalizes multiple spaces between words" do
+          expect(subject).to eq(<<~EXPECTED.chomp)
+            <% items.each do |item| %>
+              Hello <%= item %> world
+            <% end %>
+          EXPECTED
+        end
+      end
+
+      context "with ERB block where an ERB expression causes wrapping" do
+        # ERB expressions are atomic (is_atomic: true): they are never split across lines.
+        # When adding the expression would exceed wrap_width, the whole expression
+        # moves to the next line as a single unit.
+        let(:max_line_length) { 30 }
+        let(:source) { "<% items.each do |item| %>See <%= very_long_variable_name %><% end %>" }
+
+        it "wraps the entire ERB expression as a single unit onto the next line" do
+          expect(subject).to eq(<<~EXPECTED.chomp)
+            <% items.each do |item| %>
+              See
+              <%= very_long_variable_name %>
+            <% end %>
+          EXPECTED
+        end
+      end
+
+      context "with ERB block containing a herb:disable comment" do
+        # herb:disable comments (is_herb_disable: true) are never used as wrap points.
+        # They stay appended to the preceding content even if the line exceeds max_line_length.
+        let(:max_line_length) { 40 }
+        let(:source) { "<% items.each do |item| %>Hello world <%# herb:disable rule-name %><% end %>" }
+
+        it "keeps the herb:disable comment on the same line without wrapping" do
+          expect(subject).to eq(<<~EXPECTED.chomp)
+            <% items.each do |item| %>
+              Hello world <%# herb:disable rule-name %>
+            <% end %>
+          EXPECTED
+        end
+      end
     end
   end
 end

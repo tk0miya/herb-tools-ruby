@@ -2,6 +2,8 @@
 
 module Herb
   module Format
+    type content_unit_with_node = [ ContentUnit, Herb::AST::Node | nil ]
+
     # Content unit for text flow analysis.
     #
     # Represents a single unit of content when processing text flow in the
@@ -40,24 +42,6 @@ module Herb
       # @rbs breaks_flow: bool
       # @rbs is_herb_disable: bool
       def initialize: (content: String, ?type: Symbol, ?is_atomic: bool, ?breaks_flow: bool, ?is_herb_disable: bool) -> void
-    end
-
-    # Content unit paired with its originating AST node.
-    #
-    # Used when building content unit lists from child nodes so that the
-    # original node is available for re-visiting (e.g. block elements that
-    # break the text flow).
-    class ContentUnitWithNode < Data
-      attr_reader unit(): ContentUnit
-
-      attr_reader node(): Herb::AST::Node?
-
-      def self.new: (ContentUnit unit, Herb::AST::Node? node) -> instance
-                  | (unit: ContentUnit, node: Herb::AST::Node?) -> instance
-
-      def self.members: () -> [ :unit, :node ]
-
-      def members: () -> [ :unit, :node ]
     end
   end
 end
