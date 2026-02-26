@@ -997,16 +997,20 @@ module Herb
         build_and_wrap_text_flow(children)
       end
 
-      # Visit children as block elements, skipping pure whitespace nodes.
-      # Note: Full implementation provided in Task 2.34 (Part F).
+      # Visit children as block elements.
+      # Adds spacing between siblings when appropriate, preserves user-intentional
+      # blank lines, and skips pure whitespace nodes.
       #
       # @rbs children: Array[Herb::AST::Node]
-      # @rbs _parent: Herb::AST::HTMLElementNode?
-      def visit_element_children(children, _parent) #: void
-        children.each do |child|
-          next if pure_whitespace_node?(child)
-
-          visit(child)
+      # @rbs parent: Herb::AST::HTMLElementNode?
+      def visit_element_children(children, parent) #: void
+        children.each_with_index do |child, index|
+          if pure_whitespace_node?(child)
+            push("") if should_preserve_user_spacing?(child, children, index)
+          else
+            push("") if should_add_spacing_between_siblings?(parent, children, index)
+            visit(child)
+          end
         end
       end
 
