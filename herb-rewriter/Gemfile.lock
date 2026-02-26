@@ -1,4 +1,10 @@
 PATH
+  remote: ../herb-printer
+  specs:
+    herb-printer (0.1.0)
+      herb
+
+PATH
   remote: .
   specs:
     herb-rewriter (0.1.0)
@@ -178,7 +184,6 @@ PLATFORMS
   arm-linux-gnu
   arm-linux-musl
   arm64-darwin
-  ruby
   x86-linux-gnu
   x86-linux-musl
   x86_64-darwin
@@ -186,6 +191,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  herb-printer!
   herb-rewriter!
   irb
   rake

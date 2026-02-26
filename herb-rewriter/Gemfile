@@ -5,6 +5,8 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in herb-rewriter.gemspec
 gemspec
 
+gem "herb-printer", path: "../herb-printer"
+
 gem "irb"
 gem "rake"
 gem "rbs"

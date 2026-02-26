@@ -1,0 +1,40 @@
+# Generated from lib/herb/rewriter/ast_rewriter.rb with RBS::Inline
+
+module Herb
+  module Rewriter
+    # Abstract base class for AST-based pre-format rewriters.
+    #
+    # All AST rewriters must implement:
+    # - self.rewriter_name: () -> String (kebab-case identifier)
+    # - self.description: () -> String (human-readable description)
+    # - rewrite: (Herb::AST::DocumentNode, untyped) -> Herb::AST::DocumentNode
+    #
+    # ASTRewriters run before the FormatPrinter step, receiving and returning
+    # an AST. They can mutate the AST in place or return a modified node.
+    class ASTRewriter
+      attr_reader options: Hash[Symbol, untyped]
+
+      def self.rewriter_name: () -> String
+
+      def self.description: () -> String
+
+      # @rbs options: Hash[Symbol, untyped]
+      def initialize: (?options: Hash[Symbol, untyped]) -> void
+
+      # Transform AST and return modified AST.
+      #
+      # @rbs ast: Herb::AST::DocumentNode
+      # @rbs context: untyped
+      def rewrite: (Herb::AST::DocumentNode ast, untyped context) -> Herb::AST::DocumentNode
+
+      private
+
+      # Traverse AST and apply transformations via block.
+      # The block receives each node and can return a replacement node or nil.
+      #
+      # @rbs node: Herb::AST::Node
+      # @rbs &block: (Herb::AST::Node) -> Herb::AST::Node?
+      def traverse: (Herb::AST::Node node) { (Herb::AST::Node) -> Herb::AST::Node? } -> Herb::AST::Node
+    end
+  end
+end

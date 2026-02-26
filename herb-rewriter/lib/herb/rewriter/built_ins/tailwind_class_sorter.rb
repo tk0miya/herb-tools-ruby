@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Herb
-  module Format
-    module Rewriters
+  module Rewriter
+    module BuiltIns
       # Sort Tailwind CSS classes according to recommended order.
       #
       # This rewriter traverses HTML class attributes and sorts Tailwind CSS
@@ -12,7 +12,7 @@ module Herb
       # Note: Herb AST nodes are immutable. This rewriter defines sorting
       # logic via tailwind_sort_key, which will be connected to AST
       # transformation once mutable AST support is available.
-      class TailwindClassSorter < Base
+      class TailwindClassSorter < ASTRewriter
         # Tailwind CSS class prefix-to-category mapping.
         # Lower numbers sort earlier in the recommended order.
         CLASS_GROUPS = {
@@ -76,8 +76,6 @@ module Herb
         def self.rewriter_name = "tailwind-class-sorter" #: String
 
         def self.description = "Sort Tailwind CSS classes by recommended order" #: String
-
-        def self.phase = :post #: phase
 
         # @rbs override
         def rewrite(ast, _context)

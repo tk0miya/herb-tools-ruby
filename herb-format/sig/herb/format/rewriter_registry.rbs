@@ -3,36 +3,27 @@
 module Herb
   module Format
     # Central registry for rewriter classes (Registry Pattern).
+    #
+    # NOTE: This class will be superseded by Herb::Rewriter::Registry
+    # (from the herb-rewriter gem) in a later task. The built-in rewriter
+    # registration has been moved to herb-rewriter.
     class RewriterRegistry
-      @rewriters: Hash[String, singleton(Rewriters::Base)]
+      @rewriters: Hash[String, Class]
 
       def initialize: () -> void
 
       # Get a rewriter class by name.
       #
       # @rbs name: String
-      def get: (String name) -> singleton(Rewriters::Base)?
+      def get: (String name) -> Class?
 
       # Load built-in rewriters.
+      # Built-in rewriters are now registered via Herb::Rewriter::Registry.
       def load_builtin_rewriters: () -> void
 
-      # Load and register custom rewriters from the given require names.
-      # Each name is passed to Kernel#require. Any newly defined rewriter classes
-      # are automatically discovered via ObjectSpace and registered.
+      # Require rewriter files from the given require names.
       # @rbs names: Array[String] -- require names (gem names or file paths)
       def load_custom_rewriters: (Array[String] names) -> void
-
-      private
-
-      # @rbs rewriter_class: singleton(Rewriters::Base)
-      def register: (singleton(Rewriters::Base) rewriter_class) -> void
-
-      # Returns all currently loaded rewriter subclasses via ObjectSpace.
-      # Used to detect newly defined rewriters after requiring custom rewriter files.
-      def all_rewriter_subclasses: () -> Array[singleton(Rewriters::Base)]
-
-      # @rbs rewriter_class: singleton(Rewriters::Base)
-      def validate_rewriter_class: (singleton(Rewriters::Base) rewriter_class) -> bool
     end
   end
 end
