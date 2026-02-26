@@ -1,0 +1,23 @@
+# Generated from lib/herb/rewriter/string_rewriter.rb with RBS::Inline
+
+module Herb
+  module Rewriter
+    # Abstract base class for string-based post-format rewriters.
+    #
+    # Receives the formatted string output from FormatPrinter and returns
+    # a transformed string. Applied in the post phase of the formatting pipeline.
+    #
+    # Example use cases: ensuring trailing newline, normalizing line endings.
+    class StringRewriter
+      def self.rewriter_name: () -> String
+
+      def self.description: () -> String
+
+      # Transform formatted string and return modified string.
+      #
+      # @rbs formatted: String
+      # @rbs context: untyped
+      def rewrite: (String formatted, untyped context) -> String
+    end
+  end
+end
