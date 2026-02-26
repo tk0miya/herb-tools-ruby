@@ -11,6 +11,7 @@ module Herb
     #
     #   erb_node?(node)           #=> true/false
     #   erb_control_flow_node?(node)  #=> true/false
+    #   comment_node?(node)       #=> true/false
     module AST
       # @rbs! type erb_node = Herb::AST::ERBContentNode
       #   | Herb::AST::ERBYieldNode
@@ -101,6 +102,15 @@ module Herb
       # @rbs node: Herb::AST::Node
       def erb_control_flow_node?(node) #: bool
         ERB_CONTROL_FLOW_TYPES.any? { node.is_a?(_1) }
+      end
+
+      # Check if a node is a comment node (HTML comment or ERB comment).
+      # Returns true for HTMLCommentNode and ERB comment nodes (<%# ... %>).
+      #
+      # @rbs node: Herb::AST::Node
+      def comment_node?(node) #: bool
+        node.is_a?(Herb::AST::HTMLCommentNode) ||
+          (node.is_a?(Herb::AST::ERBContentNode) && node.tag_opening&.value == "<%#")
       end
     end
   end
