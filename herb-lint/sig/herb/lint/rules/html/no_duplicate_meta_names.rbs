@@ -53,7 +53,13 @@ module Herb
 
           def self.unsafe_autofixable?: () -> bool
 
-          @seen_meta_names: Hash[String, Herb::Location]
+          @control_flow_depth: Integer
+
+          @control_flow_metas: Hash[String, Herb::Location]
+
+          @current_branch_metas: Hash[String, Herb::Location]
+
+          @document_metas: Hash[String, Herb::Location]
 
           # @rbs override
           def on_new_investigation: ...
@@ -61,13 +67,44 @@ module Herb
           # @rbs override
           def visit_html_element_node: ...
 
+          # @rbs override
+          def visit_erb_if_node: ...
+
+          # @rbs override
+          def visit_erb_unless_node: ...
+
+          # @rbs override
+          def visit_erb_else_node: ...
+
           private
 
           # @rbs node: Herb::AST::HTMLElementNode
           def meta_element?: (Herb::AST::HTMLElementNode node) -> bool
 
           # @rbs node: Herb::AST::HTMLElementNode
-          def check_duplicate_meta_name: (Herb::AST::HTMLElementNode node) -> void
+          def check_duplicate_meta: (Herb::AST::HTMLElementNode node) -> void
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          # @rbs attr_type: String
+          # @rbs value: String
+          def check_meta_key: (Herb::AST::HTMLElementNode node, String attr_type, String value) -> void
+
+          # @rbs node: Herb::AST::HTMLElementNode
+          # @rbs attr_type: String
+          # @rbs value: String
+          # @rbs key: String
+          def check_meta_key_in_branch: (Herb::AST::HTMLElementNode node, String attr_type, String value, String key) -> void
+
+          # @rbs attr_type: String
+          # @rbs value: String
+          # @rbs context: String?
+          def build_message: (String attr_type, String value, ?String? context) -> String
+
+          def with_conditional: () -> void
+
+          def with_branch: () -> void
+
+          def in_control_flow?: () -> bool
         end
       end
     end
