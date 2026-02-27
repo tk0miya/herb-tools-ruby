@@ -30,14 +30,14 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 - [x] Task 2.35: Wire Up All Components
 - [x] Task 2.35b: Migrate write-based visitors to push (output unification)
 - [x] Task 2.35c: Migrate visit_erb_if_node tests to use `.format` as entry point
-- [ ] Task 2.36: Integration Tests
+- [x] Task 2.36: Integration Tests
 - [ ] Task 2.34b: Remove build_content_units_with_nodes unit tests (superseded by .format integration tests)
 - [ ] Task 2.34c: Replace should_add_spacing_between_siblings? unit tests with integration tests
 - [ ] Task 2.37: TypeScript Output Comparison
 - [ ] Task 2.38: Performance & Edge Cases
 - [ ] Task 2.39: Full Verification
 
-**Progress: 13/19 tasks completed**
+**Progress: 14/19 tasks completed**
 
 ---
 

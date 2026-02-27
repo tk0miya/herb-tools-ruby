@@ -489,7 +489,7 @@ module Herb
       # with increased indentation.
       #
       # @rbs node: Herb::AST::HTMLElementNode
-      def visit_element_body(node) #: void # rubocop:disable Metrics/PerceivedComplexity
+      def visit_element_body(node) #: void # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         tag_name = node.tag_name&.value || ""
 
         if preserved_element?(tag_name)
@@ -504,9 +504,14 @@ module Herb
             # Render inline: visit all children appended to the current line
             with_inline_mode { node.body.each { visit(_1) } }
           else
-            # Block: indent and visit each child on its own line
+            # Block: indent and visit each child on its own line,
+            # delegating to text-flow or element-children visitors based on content.
             with_indent do
-              node.body.each { visit(_1) }
+              if in_text_flow_context?(node, node.body)
+                visit_text_flow_children(node.body)
+              else
+                visit_element_children(node.body, node)
+              end
             end
           end
         end
