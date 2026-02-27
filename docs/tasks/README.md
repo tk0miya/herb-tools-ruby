@@ -37,12 +37,11 @@ Features that exist in the TypeScript reference implementation but are missing i
 | Phase | File | Tasks | Description | Status |
 |-------|------|-------|-------------|--------|
 | Phase 2 | [phase-2.2.md](./phase-2.2.md) | 19 | FormatPrinter Parts E-G (ERB, Text Flow, Integration) | 🚧 |
-| Phase 3 | [phase-3-formatter-core.md](./phase-3-formatter-core.md) | 6 | FormatIgnore, Formatter, FormatterFactory | ✅ 6/6 |
-| Phase 4 | [phase-4-formatter-rewriters.md](./phase-4-formatter-rewriters.md) | 9 | Rewriter system (base, registry, built-ins, custom loader) | 📋 |
+| Phase 4 | [phase-4-formatter-rewriters.md](./phase-4-formatter-rewriters.md) | 9 | herb-rewriter gem, FormatterFactory/Formatter update | 🚧 |
 | Phase 5 | [phase-5-formatter-runner.md](./phase-5-formatter-runner.md) | 4 | Runner and batch file processing | 📋 |
 | Phase 6 | [phase-6-formatter-cli.md](./phase-6-formatter-cli.md) | 9 | CLI (options, --init, --stdin, --check, reporting) | 📋 |
 
-**Total: ~47 tasks**
+**Total: ~41 tasks**
 
 Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
@@ -58,23 +57,13 @@ Parts A-D (FormatHelpers, Core Patterns, ElementAnalyzer, Attribute Formatting) 
 | Part F | 6 | Text flow and spacing (word wrapping, spacing logic) |
 | Part G | 6 | Integration and testing (wire-up, integration tests, verification) |
 
-#### Phase 3: Formatter Core (6 tasks)
-
-| Part | Tasks | Description |
-|------|-------|-------------|
-| Part A | 1 | FormatIgnore module |
-| Part B | 1 | Formatter class |
-| Part C | 1 | FormatterFactory |
-| Part D | 3 | Integration and tests |
-
 #### Phase 4: Rewriters (9 tasks)
 
+Implements `herb-rewriter` gem and updates `herb-format` to use it.
+
 | Part | Tasks | Description |
 |------|-------|-------------|
-| Part A | 2 | Rewriter base class and registry |
-| Part B | 3 | Built-in rewriters (NormalizeAttributes, SortAttributes, TailwindClassSorter) |
-| Part C | 1 | CustomRewriterLoader |
-| Part D | 3 | Integration and tests |
+| Part A-E | 9 | herb-rewriter gem scaffold, ASTRewriter, StringRewriter, Registry, FormatterFactory/Formatter updates |
 
 #### Phase 5: Runner (4 tasks)
 

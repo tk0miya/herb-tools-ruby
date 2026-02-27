@@ -8,15 +8,16 @@ herb-tools-ruby provides Ruby implementations of ERB template linting and format
 
 ## Gem Structure
 
-The project is organized into five gems with clear separation of concerns:
+The project is organized into six gems with clear separation of concerns:
 
 ```
 herb-tools-ruby/
 ├── herb-config/     # Shared: Configuration file management
 ├── herb-core/       # Shared: Common components (file discovery)
 ├── herb-printer/    # Shared: AST-to-source printer
+├── herb-rewriter/   # Shared: AST/string rewriter base classes and registry
 ├── herb-lint/       # Linter
-└── herb-format/     # Formatter (future)
+└── herb-format/     # Formatter
 ```
 
 ## Dependencies
@@ -27,23 +28,29 @@ herb-tools-ruby/
                     │  (parser)   │
                     └──────┬──────┘
                            │
-         ┌─────────────────┼─────────────────┐
-         │                 │                 │
-         ▼                 ▼                 ▼
- ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
- │  herb-config │  │  herb-core   │  │ herb-printer │
- │   (config)   │  │   (shared)   │  │  (printer)   │
- └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
-         │                 │                 │
-         └─────────────────┼─────────────────┘
-                           │
-              ┌────────────┴────────────┐
-              │                         │
-              ▼                         ▼
-      ┌──────────────┐         ┌──────────────┐
-      │  herb-lint   │         │ herb-format  │
-      │  (linter)    │         │ (formatter)  │
-      └──────────────┘         └──────────────┘
+       ┌───────────────────┼──────────────────────┐
+       │                   │                      │
+       ▼                   ▼                      ▼
+┌──────────────┐  ┌──────────────┐       ┌──────────────┐
+│  herb-config │  │  herb-core   │       │ herb-printer │
+│   (config)   │  │   (shared)   │       │  (printer)   │
+└──────┬───────┘  └──────┬───────┘       └──────┬───────┘
+       │                 │                      │
+       │                 │          ┌──────────────────────┐
+       │                 │          │    herb-rewriter      │
+       │                 │          │  (rewriter base/      │
+       │                 │          │   registry)           │
+       │                 │          └──────────┬───────────┘
+       │                 │                     │
+       └─────────────────┼─────────────────────┘
+                         │
+            ┌────────────┴────────────┐
+            │                         │
+            ▼                         ▼
+    ┌──────────────┐         ┌──────────────┐
+    │  herb-lint   │         │ herb-format  │
+    │  (linter)    │         │ (formatter)  │
+    └──────────────┘         └──────────────┘
 ```
 
 ### Dependency Rules
@@ -59,8 +66,9 @@ Dependencies flow in one direction: from tool-specific gems to shared infrastruc
 | herb-config | herb (parser) |
 | herb-core | herb (parser) |
 | herb-printer | herb (parser) |
+| herb-rewriter | herb (parser) |
 | herb-lint | herb-config, herb-core, herb |
-| herb-format | herb-config, herb-core, herb-printer, herb |
+| herb-format | herb-config, herb-core, herb-printer, herb-rewriter, herb |
 
 ## Gem Responsibilities
 
@@ -136,6 +144,31 @@ Herb::Printer
 
 For detailed design, see [Printer Design](./printer-design.md).
 
+### herb-rewriter
+
+**Purpose**: Rewriter base classes and registry, shared by herb-format and user-defined extensions.
+
+**Responsibilities**:
+- Provide abstract base classes for AST-based and string-based rewriters
+- Manage a central registry for built-in and custom rewriter classes
+- Supply built-in rewriter implementations (e.g. TailwindClassSorter)
+
+**Key Components**:
+```
+Herb::Rewriter
+├── ASTRewriter      # Abstract base for AST-to-AST transformations (pre phase)
+├── StringRewriter   # Abstract base for string-to-string transformations (post phase)
+├── Registry         # Rewriter registration, lookup, and auto-discovery
+├── Context          # Rewrite execution context
+└── BuiltIns
+    └── TailwindClassSorter  # Sort Tailwind CSS classes
+```
+
+**Design Decisions**:
+- Mirrors the TypeScript `@herb-tools/rewriter` package as a standalone gem
+- Two distinct rewriter types: `ASTRewriter` (pre-format, receives AST) and `StringRewriter` (post-format, receives formatted string)
+- Registry supports auto-discovery via `require` + `ObjectSpace` for custom rewriters
+
 ### herb-lint
 
 **Purpose**: Static analysis tool for ERB templates, detecting code quality, style, and accessibility issues.
@@ -201,18 +234,26 @@ For detailed design, see [herb-lint Design](./herb-lint-design.md).
 ```
 Herb::Format
 ├── CLI              # Command-line interface
-├── Formatter        # Format workflow orchestration
+├── Runner           # Batch file processing orchestration
+├── Formatter        # Core single-file formatting implementation
+├── FormatterFactory # Formatter instance creation (Factory Pattern)
 ├── FormatPrinter    # AST formatting (extends Printer::Base)
+├── FormatIgnore     # Ignore directive detection (AST-based)
 ├── Context          # Formatting execution context
-├── RewriterRegistry # Rewriter registration and lookup
-├── Rewriters        # Rewriter implementations
-│   └── Base         # Rewriter interface definition
+├── FormatResult     # Single-file formatting result
+├── AggregatedResult # Multi-file aggregated result
 └── Errors           # Custom exceptions
+
+# Rewriter infrastructure lives in herb-rewriter gem:
+Herb::Rewriter
+├── Registry         # Rewriter registration and lookup
+├── ASTRewriter      # Pre-format rewriter base class (AST → AST)
+└── StringRewriter   # Post-format rewriter base class (String → String)
 ```
 
 **Design Decisions**:
-- Mirrors herb-lint architecture for consistency
-- Rewriters operate on AST for reliable transformations
+- Rewriter base classes and registry are in the dedicated `herb-rewriter` gem (mirrors TypeScript `@herb-tools/rewriter` package)
+- Pre-rewriters (ASTRewriter) run before FormatPrinter; post-rewriters (StringRewriter) run after
 - Registry Pattern enables custom rewriter loading
 - Check mode allows CI integration without modification
 
