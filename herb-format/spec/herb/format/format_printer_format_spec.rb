@@ -104,6 +104,20 @@ RSpec.describe Herb::Format::FormatPrinter do
             expect(subject).to eq("<div><span>inline</span></div>")
           end
         end
+
+        context "with multiple blank lines between block children" do
+          let(:source) { "<div>\n  <p>First</p>\n\n\n  <p>Second</p>\n</div>" }
+
+          it "collapses multiple blank lines to a single blank line" do
+            expect(subject).to eq(<<~EXPECTED.chomp)
+              <div>
+                <p>First</p>
+
+                <p>Second</p>
+              </div>
+            EXPECTED
+          end
+        end
       end
     end
 
