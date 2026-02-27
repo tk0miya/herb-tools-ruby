@@ -8,22 +8,11 @@ This directory contains implementation tasks for herb-tools-ruby.
 
 | Phase | File | Tasks | Description | Status |
 |-------|------|-------|-------------|--------|
-| Phase 21 | [phase-21-review-linter-rules.md](./phase-21-review-linter-rules.md) | 413 | Review and update all linter rules | ✅ 413/413 |
 | Phase 25 | [phase-25-linter-missing-features.md](./phase-25-linter-missing-features.md) | TBD | herb-lint missing features implementation | 📋 |
 
 Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
 ### Phase Overview (herb-lint)
-
-#### Phase 21: Review Linter Rules (413 tasks)
-
-| Category | Rules | Tasks per rule |
-|----------|-------|----------------|
-| ERB | 13 | 8 steps each |
-| HERB | 5 | 8 steps each |
-| HTML | 31 | 8 steps each |
-| SVG | 1 | 8 steps each |
-| Parser | 1 | 8 steps each |
 
 #### Phase 25: herb-lint Missing Features
 
