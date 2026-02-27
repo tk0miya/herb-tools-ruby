@@ -26,12 +26,7 @@ herb-format/
 │           ├── format_helpers.rb
 │           ├── element_analysis.rb
 │           ├── element_analyzer.rb
-│           ├── rewriter_registry.rb
-│           ├── custom_rewriter_loader.rb
-│           ├── errors.rb
-│           └── rewriters/
-│               ├── base.rb
-│               └── tailwind_class_sorter.rb
+│           └── errors.rb
 ├── exe/
 │   └── herb-format
 ├── spec/
@@ -43,12 +38,22 @@ herb-format/
 │           ├── format_ignore_spec.rb
 │           ├── context_spec.rb
 │           ├── format_result_spec.rb
-│           ├── format_printer_spec.rb
-│           ├── rewriter_registry_spec.rb
-│           └── rewriters/
-│               └── ...
+│           └── format_printer_spec.rb
 ├── herb-format.gemspec
 └── Gemfile
+
+# Rewriter infrastructure (herb-rewriter gem):
+herb-rewriter/
+└── lib/
+    └── herb/
+        └── rewriter/
+            ├── version.rb
+            ├── ast_rewriter.rb
+            ├── string_rewriter.rb
+            ├── registry.rb
+            ├── context.rb
+            └── built_ins/
+                └── tailwind_class_sorter.rb
 ```
 
 ## Class Design
@@ -57,24 +62,28 @@ herb-format/
 
 ```
 Herb::Format
-├── CLI                  # Command line interface
-├── Runner               # Format execution orchestration
-├── Formatter            # Core formatting implementation
-├── FormatterFactory     # Formatter instance creation (Factory Pattern)
-├── FormatIgnore         # Ignore directive detection (AST-based)
-├── Context              # Format execution context
-├── FormatResult         # Format result for a single file
-├── AggregatedResult     # Aggregated result for multiple files
-├── FormatPrinter        # AST formatting (extends Printer::Base)
-├── FormatHelpers        # Constants and helper functions for formatting decisions
-├── ElementAnalysis      # Data structure for element formatting decisions
-├── ElementAnalyzer      # Analyzes HTMLElementNode to determine inline/block layout
-├── RewriterRegistry     # Rewriter registration and lookup (Registry Pattern)
-├── CustomRewriterLoader # Custom rewriter loading
-├── Errors               # Custom exceptions
-└── Rewriters            # Rewriter implementations
-    ├── Base
-    └── TailwindClassSorter
+├── CLI              # Command line interface
+├── Runner           # Format execution orchestration
+├── Formatter        # Core formatting implementation
+├── FormatterFactory # Formatter instance creation (Factory Pattern)
+├── FormatIgnore     # Ignore directive detection (AST-based)
+├── Context          # Format execution context
+├── FormatResult     # Format result for a single file
+├── AggregatedResult # Aggregated result for multiple files
+├── FormatPrinter    # AST formatting (extends Printer::Base)
+├── FormatHelpers    # Constants and helper functions for formatting decisions
+├── ElementAnalysis  # Data structure for element formatting decisions
+├── ElementAnalyzer  # Analyzes HTMLElementNode to determine inline/block layout
+└── Errors           # Custom exceptions
+
+# Rewriter infrastructure lives in the herb-rewriter gem:
+Herb::Rewriter
+├── ASTRewriter      # Abstract base for pre-format AST-to-AST rewriters
+├── StringRewriter   # Abstract base for post-format string-to-string rewriters
+├── Registry         # Rewriter registration and lookup (Registry Pattern)
+├── Context          # Rewrite execution context
+└── BuiltIns
+    └── TailwindClassSorter  # Sort Tailwind CSS classes
 ```
 
 ## Data Structures
@@ -205,7 +214,7 @@ class Herb::Format::Runner
   @check: bool
   @write: bool
   @force: bool
-  @rewriter_registry: RewriterRegistry
+  @rewriter_registry: Herb::Rewriter::Registry
   @formatter: Formatter
 
   attr_reader config: Herb::Config::FormatterConfig
@@ -232,7 +241,7 @@ end
 ```
 
 **Processing Flow:**
-1. Setup: Load built-in and custom rewriters via RewriterRegistry
+1. Setup: Initialize `Herb::Rewriter::Registry` (includes built-ins; auto-discovers custom rewriters on demand)
 2. File Discovery: Use Herb::Core::FileDiscovery to find target files
 3. Formatter Creation: Build Formatter instance via FormatterFactory
 4. Per-File Processing:
@@ -244,8 +253,7 @@ end
 
 **Dependencies:**
 - `Herb::Config::FormatterConfig` - Configuration
-- `RewriterRegistry` - Rewriter management
-- `CustomRewriterLoader` - Custom rewriter loading
+- `Herb::Rewriter::Registry` - Rewriter management (from herb-rewriter gem)
 - `FormatterFactory` - Formatter instantiation
 - `Herb::Core::FileDiscovery` - File discovery
 
@@ -304,30 +312,30 @@ end
 ```rbs
 class Herb::Format::FormatterFactory
   @config: Herb::Config::FormatterConfig
-  @rewriter_registry: RewriterRegistry
+  @rewriter_registry: Herb::Rewriter::Registry
 
   attr_reader config: Herb::Config::FormatterConfig
-  attr_reader rewriter_registry: RewriterRegistry
+  attr_reader rewriter_registry: Herb::Rewriter::Registry
 
   def initialize: (
     Herb::Config::FormatterConfig config,
-    RewriterRegistry rewriter_registry
+    Herb::Rewriter::Registry rewriter_registry
   ) -> void
 
   def create: () -> Formatter
 
   private
 
-  def build_pre_rewriters: () -> Array[Rewriters::Base]
-  def build_post_rewriters: () -> Array[Rewriters::Base]
-  def instantiate_rewriter: (singleton(Rewriters::Base) rewriter_class) -> Rewriters::Base
+  def build_pre_rewriters: () -> Array[Herb::Rewriter::ASTRewriter]
+  def build_post_rewriters: () -> Array[Herb::Rewriter::StringRewriter]
+  def instantiate_rewriter: (String name) -> Herb::Rewriter::ASTRewriter?
 end
 ```
 
 **Processing:**
-1. Query RewriterRegistry for configured pre-rewriters
-2. Query RewriterRegistry for configured post-rewriters
-3. Instantiate each rewriter
+1. Query `Herb::Rewriter::Registry` for configured pre-rewriters (AST rewriters by name)
+2. Query `Herb::Rewriter::Registry` for configured post-rewriters (String rewriters by name)
+3. Instantiate each rewriter via `registry.resolve_ast_rewriter(name)` / `registry.resolve_string_rewriter(name)`
 4. Create Formatter with rewriters
 
 ### Herb::Format::FormatIgnore
@@ -366,9 +374,9 @@ end
 
 **Detection Algorithm:**
 1. Create `IgnoreDetector` (a `Herb::Visitor` subclass)
-2. Traverse AST via `document.visit(detector)`
+2. Traverse AST via `document.accept(detector)`
 3. For each `ERBContentNode`, check if it is an ERB comment (`<%#`)
-4. If comment content (trimmed) equals `"herb:formatter ignore"`, set flag
+4. If comment content (trimmed) equals `"herb:formatter ignore"`, set flag and stop traversal
 5. Return flag value
 
 ### Herb::Format::Context
@@ -618,99 +626,61 @@ end
    - `element_content_inline`: false unless open tag is inline and all children are inline nodes
    - `close_tag_inline`: mirrors `element_content_inline`
 
-### Herb::Format::RewriterRegistry
+### Herb::Rewriter::Registry
+
+> **Note:** The rewriter registry lives in the `herb-rewriter` gem, not `herb-format`.
+> This follows the TypeScript package boundary where `@herb-tools/rewriter` is a separate package.
 
 **Responsibility:** Central registry for rewriter classes (Registry Pattern).
 
 ```rbs
-class Herb::Format::RewriterRegistry
-  @rewriters: Hash[String, singleton(Rewriters::Base)]
+class Herb::Rewriter::Registry
+  BUILTIN_AST_REWRITERS: Array[singleton(ASTRewriter)]
+  BUILTIN_STRING_REWRITERS: Array[singleton(StringRewriter)]
 
   def initialize: () -> void
 
-  def register: (singleton(Rewriters::Base) rewriter_class) -> void
-  def get: (String name) -> singleton(Rewriters::Base)?
+  def register: (singleton(ASTRewriter) | singleton(StringRewriter) klass) -> void
   def registered?: (String name) -> bool
-  def all: () -> Array[singleton(Rewriters::Base)]
-  def rewriter_names: () -> Array[String]
-  def load_builtin_rewriters: () -> void
-
-  private
-
-  def validate_rewriter_class: (singleton(Rewriters::Base) rewriter_class) -> bool
+  def resolve_ast_rewriter: (String name) -> singleton(ASTRewriter)?
+  def resolve_string_rewriter: (String name) -> singleton(StringRewriter)?
 end
 ```
 
 **Built-in Rewriters:**
 
-| Rewriter | Phase | Description | Status |
-|----------|-------|-------------|--------|
-| `tailwind-class-sorter` | post | Sort Tailwind CSS classes | Planned (Phase 4) |
+| Rewriter | Type | Description |
+|----------|------|-------------|
+| `tailwind-class-sorter` | ASTRewriter (pre) | Sort Tailwind CSS classes |
 
-### Herb::Format::CustomRewriterLoader
+### Herb::Rewriter::Registry (custom rewriter loading)
 
-**Responsibility:** Loads custom rewriter implementations from configured paths.
-
-```rbs
-class Herb::Format::CustomRewriterLoader
-  DEFAULT_PATH: String  # ".herb/rewriters"
-
-  @config: Herb::Config::FormatterConfig
-  @registry: RewriterRegistry
-
-  attr_reader config: Herb::Config::FormatterConfig
-  attr_reader registry: RewriterRegistry
-
-  def initialize: (
-    Herb::Config::FormatterConfig config,
-    RewriterRegistry registry
-  ) -> void
-
-  def load: () -> void
-
-  private
-
-  def load_rewriters_from: (String path) -> void
-  def require_rewriter_file: (String file_path) -> void
-  def auto_register_rewriters: () -> void
-end
-```
+> **Note:** Custom rewriter loading is handled by `Herb::Rewriter::Registry` in the
+> `herb-rewriter` gem via auto-discovery. When `resolve_ast_rewriter(name)` or
+> `resolve_string_rewriter(name)` is called with an unregistered name, the registry
+> attempts to `require` the name and auto-discovers newly loaded subclasses via `ObjectSpace`.
 
 **Processing:**
-1. Reads custom rewriter path (default: `.herb/rewriters/*.rb`)
-2. Requires Ruby files containing rewriter classes
-3. Auto-registers newly loaded rewriter classes with RewriterRegistry
-4. Handles load errors gracefully
+1. `Registry#resolve_ast_rewriter(name)` is called with a rewriter name or file path
+2. If not already registered, attempt `require name`
+3. After require, scan `ObjectSpace` for new `ASTRewriter` or `StringRewriter` subclasses
+4. Register discovered classes and return the matching one
 
-### Herb::Format::Rewriters::Base
+### Herb::Rewriter::ASTRewriter and StringRewriter
 
-**Responsibility:** Abstract base class defining the rewriter interface.
+> **Note:** Rewriter base classes live in the `herb-rewriter` gem.
+
+**Herb::Rewriter::ASTRewriter** — Abstract base for pre-format rewriters.
 
 ```rbs
-# Abstract rewriter interface that all rewriters must implement
-interface _Rewriter
-  # Class methods (must override)
-  def self.rewriter_name: () -> String
-  def self.description: () -> String
-  def self.phase: () -> Symbol
-
-  # Instance interface
-  def initialize: (?options: Hash[Symbol, untyped]) -> void
-  def rewrite: (Herb::AST::Document ast, Context context) -> Herb::AST::Document
-end
-
-# Base class implementation providing common functionality
-class Herb::Format::Rewriters::Base
-  include _Rewriter
-
+class Herb::Rewriter::ASTRewriter
   attr_reader options: Hash[Symbol, untyped]
 
   def self.rewriter_name: () -> String
   def self.description: () -> String
-  def self.phase: () -> Symbol  # :pre or :post
 
   def initialize: (?options: Hash[Symbol, untyped]) -> void
-  def rewrite: (Herb::AST::Document ast, Context context) -> Herb::AST::Document
+  def rewrite: (Herb::AST::DocumentNode ast, untyped context) -> Herb::AST::DocumentNode
 
   private
 
@@ -718,24 +688,36 @@ class Herb::Format::Rewriters::Base
 end
 ```
 
-**Phase Values:**
-- `:pre` - Runs before formatting rules (normalization)
-- `:post` - Runs after formatting rules (final transformations)
+**Herb::Rewriter::StringRewriter** — Abstract base for post-format rewriters.
+
+```rbs
+class Herb::Rewriter::StringRewriter
+  def self.rewriter_name: () -> String
+  def self.description: () -> String
+
+  def rewrite: (String formatted, Herb::Rewriter::Context context) -> String
+end
+```
+
+**Processing phases:**
+- `ASTRewriter` — runs before FormatPrinter (AST → AST transformation)
+- `StringRewriter` — runs after FormatPrinter (String → String transformation)
 
 ## Rewriter Implementation Examples
 
-### Example: Rewriters::TailwindClassSorter
+### Example: Herb::Rewriter::BuiltIns::TailwindClassSorter
+
+> **Note:** Built-in rewriters are in the `herb-rewriter` gem under `Herb::Rewriter::BuiltIns`.
 
 **Purpose:** Sort Tailwind CSS classes according to recommended order.
 
 **Interface:**
 ```rbs
-class Herb::Format::Rewriters::TailwindClassSorter < Base
+class Herb::Rewriter::BuiltIns::TailwindClassSorter < Herb::Rewriter::ASTRewriter
   def self.rewriter_name: () -> String  # "tailwind-class-sorter"
   def self.description: () -> String
-  def self.phase: () -> Symbol  # :post
 
-  def rewrite: (Herb::AST::Document ast, Context context) -> Herb::AST::Document
+  def rewrite: (Herb::AST::DocumentNode ast, untyped context) -> Herb::AST::DocumentNode
 
   private
 
@@ -746,7 +728,7 @@ end
 
 **Responsibilities:**
 - Sort classes in `class` attributes according to Tailwind conventions
-- Run in post phase after formatting
+- Run in the pre phase (before FormatPrinter) as an ASTRewriter
 
 ## Processing Flow
 
@@ -763,8 +745,7 @@ CLI#run
   ├── Config.load (herb-config)
   │
   ├── Runner.new(config)
-  │   ├── RewriterRegistry.load_builtin_rewriters
-  │   └── CustomRewriterLoader.load
+  │   └── Herb::Rewriter::Registry.new  (built-ins pre-registered; custom auto-discovered on demand)
   │
   ├── Runner#run(files)
   │   ├── FileDiscovery.discover (herb-core)
@@ -778,9 +759,9 @@ CLI#run
   │           ├── FormatIgnore.ignore?(ast) (unless --force)
   │           ├── (ignored?) return source unchanged
   │           ├── Context.new
-  │           ├── pre_rewriters.each { |r| r.rewrite(ast, context) }
-  │           ├── FormatPrinter.format(ast, format_context:)
-  │           ├── post_rewriters.each { |r| r.rewrite(ast, context) }
+  │           ├── [pre-rewriters: ASTRewriter[]] ast = r.rewrite(ast, context) for each
+  │           ├── FormatPrinter.format(ast, format_context:)  ← AST/string boundary
+  │           ├── [post-rewriters: StringRewriter[]] formatted = r.rewrite(formatted, context) for each
   │           └── return FormatResult
   │
   ├── (--write mode) Write files
@@ -932,3 +913,4 @@ end
 - [herb-core Design](./herb-core-design.md)
 - [herb-lint Design](./herb-lint-design.md)
 - [Requirements: herb-format](../requirements/herb-format.md)
+- [herb-rewriter gem](../../herb-rewriter/) - Rewriter base classes and registry
