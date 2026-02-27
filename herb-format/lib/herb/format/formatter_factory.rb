@@ -8,10 +8,10 @@ module Herb
     # then assembles a Formatter with the resolved instances.
     class FormatterFactory
       attr_reader :config #: Herb::Config::FormatterConfig
-      attr_reader :rewriter_registry #: RewriterRegistry
+      attr_reader :rewriter_registry #: Herb::Rewriter::Registry
 
       # @rbs config: Herb::Config::FormatterConfig
-      # @rbs rewriter_registry: RewriterRegistry
+      # @rbs rewriter_registry: Herb::Rewriter::Registry
       def initialize(config, rewriter_registry) #: void
         @config = config
         @rewriter_registry = rewriter_registry
@@ -40,7 +40,7 @@ module Herb
 
       # @rbs name: String
       def instantiate_rewriter(name) #: Herb::Rewriter::ASTRewriter?
-        rewriter_class = rewriter_registry.get(name)
+        rewriter_class = rewriter_registry.resolve_ast_rewriter(name)
         return nil unless rewriter_class
 
         rewriter_class.new

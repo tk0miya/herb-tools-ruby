@@ -4,7 +4,7 @@ require "spec_helper"
 
 RSpec.describe Herb::Format::FormatterFactory do
   let(:config) { build(:formatter_config, indent_width: 4, max_line_length: 120) }
-  let(:rewriter_registry) { instance_double(Herb::Format::RewriterRegistry) }
+  let(:rewriter_registry) { instance_double(Herb::Rewriter::Registry) }
   let(:factory) { described_class.new(config, rewriter_registry) }
 
   describe "#initialize" do
@@ -20,7 +20,7 @@ RSpec.describe Herb::Format::FormatterFactory do
     subject { factory.create }
 
     before do
-      allow(rewriter_registry).to receive(:get).and_return(nil)
+      allow(rewriter_registry).to receive(:resolve_ast_rewriter).and_return(nil)
     end
 
     it "creates a Formatter instance" do
@@ -48,7 +48,8 @@ RSpec.describe Herb::Format::FormatterFactory do
       end
 
       before do
-        allow(rewriter_registry).to receive(:get).with("normalize-attributes").and_return(rewriter_class)
+        allow(rewriter_registry).to receive(:resolve_ast_rewriter)
+          .with("normalize-attributes").and_return(rewriter_class)
       end
 
       it "builds the pre-rewriters list" do
@@ -66,7 +67,8 @@ RSpec.describe Herb::Format::FormatterFactory do
       end
 
       before do
-        allow(rewriter_registry).to receive(:get).with("tailwind-class-sorter").and_return(rewriter_class)
+        allow(rewriter_registry).to receive(:resolve_ast_rewriter)
+          .with("tailwind-class-sorter").and_return(rewriter_class)
       end
 
       it "builds the post-rewriters list" do
@@ -83,7 +85,7 @@ RSpec.describe Herb::Format::FormatterFactory do
       end
 
       before do
-        allow(rewriter_registry).to receive(:get).with("unknown-rewriter").and_return(nil)
+        allow(rewriter_registry).to receive(:resolve_ast_rewriter).with("unknown-rewriter").and_return(nil)
       end
 
       it "skips it and returns empty pre-rewriters" do
@@ -107,7 +109,7 @@ RSpec.describe Herb::Format::FormatterFactory do
       end
 
       before do
-        allow(rewriter_registry).to receive(:get).with("broken-rewriter").and_return(rewriter_class)
+        allow(rewriter_registry).to receive(:resolve_ast_rewriter).with("broken-rewriter").and_return(rewriter_class)
       end
 
       it "skips the broken rewriter and warns to stderr" do

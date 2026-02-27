@@ -1,0 +1,74 @@
+# Generated from lib/herb/rewriter/registry.rb with RBS::Inline
+
+module Herb
+  module Rewriter
+    # Central registry for rewriter classes.
+    #
+    # Maintains a catalog of built-in rewriters and allows registration of
+    # custom rewriters. Custom rewriters registered after initialization shadow
+    # built-ins of the same name.
+    #
+    # Built-in rewriters are opt-in only — the formatter never auto-applies
+    # any rewriter. Built-ins are a static catalog used for name resolution
+    # when the user lists rewriter names in .herb.yml.
+    class Registry
+      BUILTIN_AST_REWRITERS: Array[singleton(ASTRewriter)]
+
+      BUILTIN_STRING_REWRITERS: Array[singleton(StringRewriter)]
+
+      @ast_rewriters: Hash[String, singleton(ASTRewriter)]
+
+      @string_rewriters: Hash[String, singleton(StringRewriter)]
+
+      def initialize: () -> void
+
+      # Check whether a rewriter name is registered (built-in or custom).
+      #
+      # @rbs name: String
+      def registered?: (String name) -> bool
+
+      # Resolve an AST rewriter class by name.
+      #
+      # Returns immediately if already registered (built-in or custom).
+      # Otherwise attempts to +require+ the name, auto-discovers any new
+      # ASTRewriter subclasses via ObjectSpace, registers them, and returns
+      # the matching class if found.
+      #
+      # When +name+ is a file path (e.g. <tt>foo_gem/my_rewriter.rb</tt>), the
+      # lookup key is the basename without extension (<tt>my_rewriter</tt>),
+      # matching the convention that a rewriter's +rewriter_name+ equals the
+      # stem of its filename.
+      #
+      # @rbs name: String
+      def resolve_ast_rewriter: (String name) -> singleton(ASTRewriter)?
+
+      # Resolve a String rewriter class by name.
+      #
+      # Returns immediately if already registered (built-in or custom).
+      # Otherwise attempts to +require+ the name, auto-discovers any new
+      # StringRewriter subclasses via ObjectSpace, registers them, and returns
+      # the matching class if found.
+      #
+      # When +name+ is a file path (e.g. <tt>foo_gem/my_rewriter.rb</tt>), the
+      # lookup key is the basename without extension (<tt>my_rewriter</tt>),
+      # matching the convention that a rewriter's +rewriter_name+ equals the
+      # stem of its filename.
+      #
+      # @rbs name: String
+      def resolve_string_rewriter: (String name) -> singleton(StringRewriter)?
+
+      private
+
+      # @rbs klass: singleton(ASTRewriter) | singleton(StringRewriter)
+      def register: (singleton(ASTRewriter) | singleton(StringRewriter) klass) -> void
+
+      # @rbs name: String
+      def normalize_name: (String name) -> String
+
+      # @rbs name: String
+      def auto_discover: (String name) -> bool
+
+      def all_rewriter_subclasses: () -> Array[singleton(ASTRewriter) | singleton(StringRewriter)]
+    end
+  end
+end
