@@ -338,5 +338,124 @@ RSpec.describe Herb::Lint::Rules::Html::NoDuplicateMetaNames do
         )
       end
     end
+
+    context "when same meta name is in different case/when branches" do
+      let(:source) do
+        <<~HTML
+          <head>
+            <% case device_type %>
+            <% when :mobile %>
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <% when :tablet %>
+              <meta name="viewport" content="width=768">
+            <% else %>
+              <meta name="viewport" content="width=1024">
+            <% end %>
+          </head>
+        HTML
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when same meta name appears in different when branches of case/in" do
+      let(:source) do
+        <<~HTML
+          <head>
+            <% case version %>
+            <% in 1 %>
+              <meta name="viewport" content="width=device-width">
+            <% in 2 %>
+              <meta name="viewport" content="width=1024">
+            <% end %>
+          </head>
+        HTML
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    # .each do is ERBBlockNode → CONDITIONAL in TS original
+    context "when same meta name appears twice in the same .each do block" do
+      let(:source) do
+        <<~HTML
+          <head>
+            <% items.each do |item| %>
+              <meta name="description" content="First">
+              <meta name="description" content="Second">
+            <% end %>
+          </head>
+        HTML
+      end
+
+      it "reports an offense with 'within the same control flow branch' (CONDITIONAL path)" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to eq(
+          'Duplicate `<meta>` tag with `name="description"` within the same control flow branch. ' \
+          "Meta names should be unique within the `<head>` section."
+        )
+      end
+    end
+
+    # for/while/until are ERBForNode/ERBWhileNode/ERBUntilNode → LOOP in TS original.
+    # LOOP only checks current loop body; it does NOT check document_metas and does NOT
+    # promote to document_metas on exit.
+    context "when a single meta name appears inside a for loop (LOOP path)" do
+      let(:source) do
+        <<~HTML
+          <head>
+            <% for item in items %>
+              <meta name="description" content="<%= item %>">
+            <% end %>
+          </head>
+        HTML
+      end
+
+      it "does not report an offense" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when the same meta name appears globally and inside a for loop" do
+      let(:source) do
+        <<~HTML
+          <head>
+            <meta name="description" content="Global">
+            <% for item in items %>
+              <meta name="description" content="<%= item %>">
+            <% end %>
+          </head>
+        HTML
+      end
+
+      it "does not report an offense (LOOP path does not check document_metas)" do
+        expect(subject).to be_empty
+      end
+    end
+
+    context "when same meta name appears twice in the same for loop body" do
+      let(:source) do
+        <<~HTML
+          <head>
+            <% for item in items %>
+              <meta name="description" content="First">
+              <meta name="description" content="Second">
+            <% end %>
+          </head>
+        HTML
+      end
+
+      it "reports an offense with 'within the same loop iteration' (LOOP path)" do
+        expect(subject.size).to eq(1)
+        expect(subject.first.message).to eq(
+          'Duplicate `<meta>` tag with `name="description"` within the same loop iteration. ' \
+          "Meta names should be unique within the `<head>` section."
+        )
+      end
+    end
   end
 end
