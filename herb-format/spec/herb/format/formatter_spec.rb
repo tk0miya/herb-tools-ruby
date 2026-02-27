@@ -83,21 +83,5 @@ RSpec.describe Herb::Format::Formatter do
         expect(result.formatted).to include('class="flex p-4 text-sm"')
       end
     end
-
-    context "when FormatPrinter raises an error" do
-      subject { formatter.format("test.erb", source) }
-
-      let(:source) { "<div>test</div>" }
-
-      before do
-        allow(Herb::Format::FormatPrinter).to receive(:format).and_raise(StandardError, "Formatting error")
-      end
-
-      it "returns source unchanged with the raised error" do
-        expect(subject.formatted).to eq(source)
-        expect(subject.error?).to be true
-        expect(subject.error.message).to eq("Formatting error")
-      end
-    end
   end
 end

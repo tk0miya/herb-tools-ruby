@@ -586,10 +586,10 @@ end
 
 **Location:** `herb-format/spec/herb/format/integration_spec.rb`
 
-- [ ] Create integration test file
-- [ ] Test full formatting pipeline (parse → ignore check → format)
-- [ ] Test with various AST structures
-- [ ] Test error handling
+- [x] Create integration test file
+- [x] Test full formatting pipeline (parse → ignore check → format)
+- [x] Test with various AST structures
+- [x] Test error handling
 
 **Example:**
 ```ruby
