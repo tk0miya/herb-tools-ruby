@@ -633,11 +633,11 @@ end
 
 ### Task 3.6: Full Verification
 
-- [ ] Run `cd herb-format && ./bin/rake` -- all checks pass
-- [ ] Verify FormatIgnore detects directives correctly
-- [ ] Verify Formatter handles all code paths (success, ignored, error)
-- [ ] Verify FormatterFactory creates properly configured instances
-- [ ] Verify integration tests pass
+- [x] Run `cd herb-format && ./bin/rake` -- all checks pass
+- [x] Verify FormatIgnore detects directives correctly
+- [x] Verify Formatter handles all code paths (success, ignored, error)
+- [x] Verify FormatterFactory creates properly configured instances
+- [x] Verify integration tests pass
 
 ---
 
