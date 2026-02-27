@@ -225,7 +225,7 @@ end
 | 4.11 | E | Move RewriterRegistry to herb-rewriter | ✅ Done |
 | 4.12 | E | Update herb-format to depend on herb-rewriter | ✅ Done |
 | 4.13 | E | Fix Formatter pipeline (Phase 3 design update) | ✅ Done |
-| 4.14 | E | Update FormatterFactory (Phase 3 design update) | Todo |
+| 4.14 | E | Update FormatterFactory (Phase 3 design update) | ✅ Done |
 | 4.15 | E | StringRewriter integration — end-to-end verification | Todo |
 | 4.16 | E | Update RBS signatures and file layout | Todo |
 | 4.17 | E | Full verification | Todo |
@@ -596,10 +596,10 @@ end
 
 Update `FormatterFactory` to use the `Herb::Rewriter::Registry` API.
 
-- [ ] Change return type of `build_pre_rewriters` to `Array[Herb::Rewriter::ASTRewriter]`
-- [ ] Change return type of `build_post_rewriters` to `Array[Herb::Rewriter::StringRewriter]`
-- [ ] Use `rewriter_registry.get_ast_rewriter(name)` / `get_string_rewriter(name)`
-- [ ] Update RBS type annotations
+- [x] Change return type of `build_pre_rewriters` to `Array[Herb::Rewriter::ASTRewriter]`
+- [x] Change return type of `build_post_rewriters` to `Array[Herb::Rewriter::StringRewriter]`
+- [x] Use `rewriter_registry.get_ast_rewriter(name)` / `get_string_rewriter(name)`
+- [x] Update RBS type annotations
 
 **Updated methods:**
 
