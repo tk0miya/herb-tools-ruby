@@ -794,8 +794,118 @@ RSpec.describe Herb::Format::FormatPrinter do
     context "with element children" do
       # visit_element_children is currently called from visit_erb_block_node.
       # Tests use ERB block nodes to exercise this path.
-      # Sibling spacing (should_add_spacing_between_siblings?) integration tests
-      # are deferred to Task 2.36.
+
+      context "with sibling spacing" do
+        context "when there is no previous meaningful sibling" do
+          let(:source) { "<div><p>only child</p></div>" }
+
+          it "does not insert a blank line before the first child" do
+            expect(subject).to eq(<<~EXPECTED.chomp)
+              <div>
+                <p>only child</p>
+              </div>
+            EXPECTED
+          end
+        end
+
+        context "when siblings contain mixed text content" do
+          let(:source) { "<p>text <span>inline</span> more text</p>" }
+
+          it "does not add blank lines between inline elements and text" do
+            expect(subject).to eq("<p>text <span>inline</span> more text</p>")
+          end
+        end
+
+        context "when two consecutive ERB comments are siblings in a block context" do
+          let(:source) { "<div><p>first</p><%# comment1 %><%# comment2 %><p>second</p></div>" }
+
+          it "does not insert a blank line between the two consecutive comments" do
+            expect(subject).to eq(<<~EXPECTED.chomp)
+              <div>
+                <p>first</p>
+                <%# comment1 %>
+                <%# comment2 %>
+                <p>second</p>
+              </div>
+            EXPECTED
+          end
+        end
+
+        context "when an ERB comment is followed by a block element" do
+          let(:source) { "<div><p>first</p><%# comment %><p>second</p></div>" }
+
+          it "does not insert a blank line between the comment and the element" do
+            expect(subject).to eq(<<~EXPECTED.chomp)
+              <div>
+                <p>first</p>
+                <%# comment %>
+                <p>second</p>
+              </div>
+            EXPECTED
+          end
+        end
+
+        context "when two consecutive block siblings are both single-line" do
+          let(:source) { "<div><p>first</p><p>second</p></div>" }
+
+          it "does not insert a blank line between the two elements" do
+            expect(subject).to eq(<<~EXPECTED.chomp)
+              <div>
+                <p>first</p>
+                <p>second</p>
+              </div>
+            EXPECTED
+          end
+        end
+
+        context "when the previous sibling is multiline" do
+          # An ERB block node that renders a heredoc produces embedded newlines in
+          # a single push, causing @string_line_count to increase inside track_boundary.
+          # This sets @node_is_multiline[block_node] = true for that ERB block, which
+          # triggers a blank line before the following sibling.
+          let(:source) do
+            "<div><% items.each do |item| %><%=<<HEREDOC\ntext\nHEREDOC\n%><% end %><p>after</p></div>"
+          end
+
+          it "inserts a blank line before the sibling that follows the multiline node" do
+            expect(subject).to eq(<<~EXPECTED.chomp)
+              <div>
+                <% items.each do |item| %>
+                  <%= <<HEREDOC
+              text
+              HEREDOC
+              %>
+                <% end %>
+
+                <p>after</p>
+              </div>
+            EXPECTED
+          end
+        end
+
+        context "when the current sibling would be multiline but has not been visited yet" do
+          # visit_element_children checks @node_is_multiline before visiting the current
+          # node, so a node's multiline status can never trigger spacing for itself —
+          # only for its successor.
+          let(:source) do
+            "<div><p>before</p><% items.each do |item| %><%=<<HEREDOC\ntext\nHEREDOC\n%><% end %></div>"
+          end
+
+          it "does not insert a blank line before the (yet-unvisited) multiline node" do
+            expect(subject).to eq(<<~EXPECTED.chomp)
+              <div>
+                <p>before</p>
+                <% items.each do |item| %>
+                  <%= <<HEREDOC
+              text
+              HEREDOC
+              %>
+                <% end %>
+              </div>
+            EXPECTED
+          end
+        end
+      end
 
       context "with whitespace nodes" do
         context "when body has only whitespace around content" do
