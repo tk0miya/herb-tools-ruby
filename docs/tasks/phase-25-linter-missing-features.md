@@ -731,14 +731,14 @@ def render(source_lines, line:, column:, end_line: nil, end_column: nil) #: Stri
 - Handles offense at last line (no lines after)
 
 **Implementation Tasks:**
-- [ ] Create `lib/herb/highlight/diagnostic_renderer.rb`
-- [ ] Implement `initialize(syntax_renderer:, context_lines: 2, tty: true)`
-- [ ] Implement `render(source_lines, line:, column:, end_line: nil, end_column: nil)`
-  - [ ] Context range calculation (clamp to source bounds)
-  - [ ] Line number width calculation
-  - [ ] Per-line rendering: context color vs. offense line color
-  - [ ] Caret row: column offset spacing + `^` * caret_length
-- [ ] Write `spec/herb/highlight/diagnostic_renderer_spec.rb`
+- [x] Create `lib/herb/highlight/diagnostic_renderer.rb`
+- [x] Implement `initialize(syntax_renderer:, context_lines: 2, tty: true)`
+- [x] Implement `render(source_lines, line:, column:, end_line: nil, end_column: nil)`
+  - [x] Context range calculation (clamp to source bounds)
+  - [x] Line number width calculation
+  - [x] Per-line rendering: context color vs. offense line color
+  - [x] Caret row: column offset spacing + `^` * caret_length
+- [x] Write `spec/herb/highlight/diagnostic_renderer_spec.rb`
 
 ---
 
