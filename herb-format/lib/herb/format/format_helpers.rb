@@ -281,7 +281,7 @@ module Herb
       # Check if a single node qualifies as inline for nesting purposes.
       #
       # @rbs child: Herb::AST::Node
-      def nested_inline_node?(child) #: bool # rubocop:disable Metrics/CyclomaticComplexity
+      def nested_inline_node?(child) #: bool
         case child
         when Herb::AST::WhitespaceNode, Herb::AST::HTMLTextNode
           true
@@ -455,7 +455,7 @@ module Herb
       # @rbs child: Herb::AST::Node
       # @rbs siblings: Array[Herb::AST::Node]
       # @rbs index: Integer
-      def should_append_to_last_line?(child, siblings, index) #: bool # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      def should_append_to_last_line?(child, siblings, index) #: bool
         prev_index = find_previous_meaningful_sibling(siblings, index)
         return false unless prev_index
 

@@ -13,28 +13,31 @@ AllCops:
 Layout/LeadingCommentSpace:
   AllowRBSInlineAnnotation: true
 
-Naming/PredicateMethod:
-  AllowedMethods:
-    - autofix
-
 Metrics/AbcSize:
   Max: 20
-
-Metrics/ParameterLists:
-  Max: 10
 
 Metrics/BlockLength:
   Exclude:
     - "spec/**/*"
 
+Metrics/CyclomaticComplexity:
+  Max: 10
+
 Metrics/MethodLength:
   Max: 20
 
+Metrics/ParameterLists:
+  Max: 10
+
+Metrics/PerceivedComplexity:
+  Max: 10
+
+Naming/PredicateMethod:
+  AllowedMethods:
+    - autofix
+
 RSpec/ExampleLength:
   Enabled: false
-
-RSpec/NestedGroups:
-  Max: 6
 
 RSpec/MultipleExpectations:
   Enabled: false
@@ -44,6 +47,9 @@ RSpec/MultipleMemoizedHelpers:
 
 RSpec/NamedSubject:
   Enabled: false
+
+RSpec/NestedGroups:
+  Max: 6
 
 Style/HashSyntax:
   EnforcedShorthandSyntax: always

@@ -302,7 +302,7 @@ module Herb
       # @rbs else_clause: Herb::AST::ERBElseNode? -- override the else clause
       # @rbs ensure_clause: Herb::AST::ERBEnsureNode? -- override the ensure clause
       # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
-      def copy_erb_begin_node( # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      def copy_erb_begin_node(
         node,
         tag_opening: nil,
         content: nil,
@@ -368,7 +368,7 @@ module Herb
       # @rbs conditions: Array[Herb::AST::ERBInNode]? -- override the conditions array
       # @rbs else_clause: Herb::AST::ERBElseNode? -- override the else clause
       # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
-      def copy_erb_case_match_node( # rubocop:disable Metrics/CyclomaticComplexity
+      def copy_erb_case_match_node(
         node,
         tag_opening: nil,
         content: nil,
@@ -403,7 +403,7 @@ module Herb
       # @rbs conditions: Array[Herb::AST::ERBWhenNode]? -- override the conditions array
       # @rbs else_clause: Herb::AST::ERBElseNode? -- override the else clause
       # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
-      def copy_erb_case_node( # rubocop:disable Metrics/CyclomaticComplexity
+      def copy_erb_case_node(
         node,
         tag_opening: nil,
         content: nil,
@@ -557,7 +557,7 @@ module Herb
       # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
       # @rbs subsequent: Herb::AST::Node? -- override the subsequent node (elsif/else)
       # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
-      def copy_erb_if_node( # rubocop:disable Metrics/CyclomaticComplexity
+      def copy_erb_if_node(
         node,
         tag_opening: nil,
         content: nil,
@@ -650,7 +650,7 @@ module Herb
       # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
       # @rbs else_clause: Herb::AST::ERBElseNode? -- override the else clause node
       # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
-      def copy_erb_unless_node( # rubocop:disable Metrics/CyclomaticComplexity
+      def copy_erb_unless_node(
         node,
         tag_opening: nil,
         content: nil,

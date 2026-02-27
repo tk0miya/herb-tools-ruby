@@ -14,7 +14,7 @@ module Herb
       # @rbs bold: bool -- make text bold
       # @rbs dim: bool -- make text dimmed
       # @rbs tty: bool -- whether the output is a TTY
-      def colorize(text, color: nil, bold: false, dim: false, tty: true) #: String # rubocop:disable Metrics/CyclomaticComplexity
+      def colorize(text, color: nil, bold: false, dim: false, tty: true) #: String
         return text unless tty
 
         codes = []

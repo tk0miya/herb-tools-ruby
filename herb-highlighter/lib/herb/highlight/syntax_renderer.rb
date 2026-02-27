@@ -79,7 +79,7 @@ module Herb
       #
       # @rbs state: Hash[Symbol, untyped]
       # @rbs token_type: String
-      def contextual_color(state, token_type) #: String? # rubocop:disable Metrics/CyclomaticComplexity
+      def contextual_color(state, token_type) #: String?
         # Comment content: tokens inside <!-- --> (excluding delimiters and ERB tokens)
         # inherit the comment color.
         if state[:in_comment] && !comment_delimiter?(token_type) && !erb_token?(token_type)

@@ -489,7 +489,7 @@ module Herb
       # with increased indentation.
       #
       # @rbs node: Herb::AST::HTMLElementNode
-      def visit_element_body(node) #: void # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      def visit_element_body(node) #: void # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity
         tag_name = node.tag_name&.value || ""
 
         if preserved_element?(tag_name)
@@ -565,7 +565,7 @@ module Herb
       # @rbs tag_name: String
       # @rbs children: Array[Herb::AST::Node]
       # @rbs is_void: bool
-      def render_multiline_attributes(tag_name, children, is_void) #: void # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      def render_multiline_attributes(tag_name, children, is_void) #: void # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
         opening_line = "<#{tag_name}"
 
         herb_disable_comments = children.select { herb_disable_comment?(_1) }
@@ -712,7 +712,7 @@ module Herb
       # @rbs content: String
       # @rbs open_quote: String
       # @rbs close_quote: String
-      def render_class_attribute(name, content, open_quote, close_quote) #: String # rubocop:disable Metrics/CyclomaticComplexity
+      def render_class_attribute(name, content, open_quote, close_quote) #: String
         normalized_content = content.gsub(/[ \t\n\r]+/, " ").strip
 
         if content.include?("\n") && normalized_content.length > 80
@@ -943,7 +943,7 @@ module Herb
       #
       # @rbs _parent: Herb::AST::Node?
       # @rbs children: Array[Herb::AST::Node]
-      def in_text_flow_context?(_parent, children) #: bool # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      def in_text_flow_context?(_parent, children) #: bool
         has_text_content = children.any? do |child|
           child.is_a?(Herb::AST::HTMLTextNode) && !child.content.strip.empty?
         end
