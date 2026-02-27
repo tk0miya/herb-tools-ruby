@@ -107,6 +107,32 @@ RSpec.describe Herb::Format::FormatPrinter do
           expect(subject).to eq("<span><%= @user.name %></span>")
         end
       end
+
+      context "with punctuation adjacent to ERB expression" do
+        context "with closing punctuation after ERB" do
+          let(:source) { "<p>Hello <%= name %>!</p>" }
+
+          it { is_expected.to eq("<p>Hello <%= name %>!</p>") }
+        end
+
+        context "with possessive apostrophe after ERB" do
+          let(:source) { "<p><%= name %>'s greeting</p>" }
+
+          it { is_expected.to eq("<p><%= name %>'s greeting</p>") }
+        end
+
+        context "with opening symbol directly before ERB" do
+          let(:source) { "<p>Price: $<%= amount %></p>" }
+
+          it { is_expected.to eq("<p>Price: $<%= amount %></p>") }
+        end
+
+        context "with adjacent ERB expressions" do
+          let(:source) { "<p><%= first %><%= second %> items</p>" }
+
+          it { is_expected.to eq("<p><%= first %><%= second %> items</p>") }
+        end
+      end
     end
 
     context "with ERBBlockNode" do
