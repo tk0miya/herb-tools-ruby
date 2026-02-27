@@ -17,7 +17,7 @@ module Herb
       # @rbs ignored_count: Integer -- number of offenses suppressed by directives
       # @rbs parse_result: Herb::ParseResult? -- parsed AST for autofix phase (nil on parse error)
       # @rbs autofixed_offenses: Array[Offense] -- offenses that were automatically fixed
-      def initialize( # rubocop:disable Metrics/ParameterLists
+      def initialize(
         file_path:,
         unfixed_offenses:,
         source:,
