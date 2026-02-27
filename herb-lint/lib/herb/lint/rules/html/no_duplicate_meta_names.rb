@@ -56,7 +56,7 @@ module Herb
           # @rbs @document_metas: Hash[String, Herb::Location]
           # @rbs @current_branch_metas: Hash[String, Herb::Location]
           # @rbs @control_flow_metas: Hash[String, Herb::Location]
-          # @rbs @control_flow_depth: Integer
+          # @rbs @control_flow_stack: Array[Symbol]
 
           # @rbs override
           def on_new_investigation
@@ -64,13 +64,35 @@ module Herb
             @document_metas = {}
             @current_branch_metas = {}
             @control_flow_metas = {}
-            @control_flow_depth = 0
+            @control_flow_stack = []
           end
 
           # @rbs override
           def visit_html_element_node(node)
             check_duplicate_meta(node) if meta_element?(node)
             super
+          end
+
+          # ERBBlockNode (.each do etc.) is CONDITIONAL per TS original
+          # @rbs override
+          def visit_erb_block_node(node)
+            with_conditional { super }
+          end
+
+          # Keyword-form loops are LOOP per TS original
+          # @rbs override
+          def visit_erb_for_node(node)
+            with_loop { super }
+          end
+
+          # @rbs override
+          def visit_erb_while_node(node)
+            with_loop { super }
+          end
+
+          # @rbs override
+          def visit_erb_until_node(node)
+            with_loop { super }
           end
 
           # @rbs override
@@ -84,7 +106,27 @@ module Herb
           end
 
           # @rbs override
+          def visit_erb_case_node(node)
+            with_conditional { super }
+          end
+
+          # @rbs override
+          def visit_erb_case_match_node(node)
+            with_conditional { super }
+          end
+
+          # @rbs override
           def visit_erb_else_node(node)
+            with_branch { super }
+          end
+
+          # @rbs override
+          def visit_erb_when_node(node)
+            with_branch { super }
+          end
+
+          # @rbs override
+          def visit_erb_in_node(node)
             with_branch { super }
           end
 
@@ -116,7 +158,7 @@ module Herb
             key = "#{attr_type}:#{value.downcase}"
 
             if in_control_flow?
-              check_meta_key_in_branch(node, attr_type, value, key)
+              check_meta_key_in_control_flow(node, attr_type, value, key)
             elsif @document_metas.key?(key)
               add_offense(message: build_message(attr_type, value), location: node.location)
             else
@@ -128,7 +170,36 @@ module Herb
           # @rbs attr_type: String
           # @rbs value: String
           # @rbs key: String
-          def check_meta_key_in_branch(node, attr_type, value, key) #: void
+          def check_meta_key_in_control_flow(node, attr_type, value, key) #: void
+            if current_control_flow_type == :loop
+              check_meta_key_in_loop(node, attr_type, value, key)
+            else
+              check_meta_key_in_conditional(node, attr_type, value, key)
+            end
+            @current_branch_metas[key] = node.location
+          end
+
+          # LOOP: only check for same-body duplicates.
+          # Does NOT check document_metas or accumulate into control_flow_metas.
+          # @rbs node: Herb::AST::HTMLElementNode
+          # @rbs attr_type: String
+          # @rbs value: String
+          # @rbs key: String
+          def check_meta_key_in_loop(node, attr_type, value, key) #: void
+            return unless @current_branch_metas.key?(key)
+
+            add_offense(
+              message: build_message(attr_type, value, "within the same loop iteration"),
+              location: node.location
+            )
+          end
+
+          # CONDITIONAL: check both current branch and document-level metas.
+          # @rbs node: Herb::AST::HTMLElementNode
+          # @rbs attr_type: String
+          # @rbs value: String
+          # @rbs key: String
+          def check_meta_key_in_conditional(node, attr_type, value, key) #: void
             if @current_branch_metas.key?(key)
               add_offense(
                 message: build_message(attr_type, value, "within the same control flow branch"),
@@ -140,7 +211,6 @@ module Herb
             else
               @control_flow_metas[key] = node.location
             end
-            @current_branch_metas[key] = node.location
           end
 
           # @rbs attr_type: String
@@ -160,7 +230,7 @@ module Herb
 
           def with_conditional #: void
             was_already_in_control_flow = in_control_flow?
-            @control_flow_depth += 1
+            @control_flow_stack.push(:conditional)
 
             saved_branch_metas = @current_branch_metas
             @current_branch_metas = {}
@@ -173,12 +243,35 @@ module Herb
 
             yield
           ensure
-            @control_flow_depth -= 1
+            @control_flow_stack.pop
 
             unless was_already_in_control_flow
               @document_metas.merge!(@control_flow_metas)
               @control_flow_metas = saved_control_flow_metas || {}
             end
+
+            @current_branch_metas = saved_branch_metas
+          end
+
+          def with_loop #: void
+            was_already_in_control_flow = in_control_flow?
+            @control_flow_stack.push(:loop)
+
+            saved_branch_metas = @current_branch_metas
+            @current_branch_metas = {}
+
+            saved_control_flow_metas = nil
+            unless was_already_in_control_flow
+              saved_control_flow_metas = @control_flow_metas
+              @control_flow_metas = {}
+            end
+
+            yield
+          ensure
+            @control_flow_stack.pop
+
+            # NOTE: Loops do NOT promote control_flow_metas to document_metas
+            @control_flow_metas = saved_control_flow_metas if saved_control_flow_metas
 
             @current_branch_metas = saved_branch_metas
           end
@@ -195,7 +288,11 @@ module Herb
           end
 
           def in_control_flow? #: bool
-            @control_flow_depth.positive?
+            !@control_flow_stack.empty?
+          end
+
+          def current_control_flow_type #: Symbol?
+            @control_flow_stack.last
           end
         end
       end
