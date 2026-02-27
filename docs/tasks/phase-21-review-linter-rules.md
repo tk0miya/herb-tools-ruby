@@ -577,8 +577,8 @@ For each rule, complete the following 8 steps:
 
 ## Progress Tracking
 
-- [ ] ERB rules complete (12/13)
-- [ ] HERB rules complete (0/5)
-- [ ] HTML rules complete (0/31)
-- [ ] SVG rules complete (0/1)
+- [x] ERB rules complete (13/13)
+- [x] HERB rules complete (5/5)
+- [x] HTML rules complete (31/31)
+- [x] SVG rules complete (1/1)
 - [x] Parser rules complete (1/1)
