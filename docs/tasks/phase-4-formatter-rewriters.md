@@ -222,7 +222,7 @@ end
 | 4.8 | E | Scaffold herb-rewriter gem | ✅ Done |
 | 4.9 | E | Implement ASTRewriter + TailwindClassSorter in herb-rewriter | ✅ Done |
 | 4.10 | E | Create StringRewriter in herb-rewriter | Todo |
-| 4.11 | E | Move RewriterRegistry to herb-rewriter | Todo |
+| 4.11 | E | Move RewriterRegistry to herb-rewriter | ✅ Done |
 | 4.12 | E | Update herb-format to depend on herb-rewriter | Todo |
 | 4.13 | E | Fix Formatter pipeline (Phase 3 design update) | Todo |
 | 4.14 | E | Update FormatterFactory (Phase 3 design update) | Todo |
@@ -448,16 +448,16 @@ never auto-applies any rewriter. Built-ins are a static catalog used for name re
 when the user lists rewriter names in `.herb.yml`. There is no `load_builtin_rewriters`
 pre-registration step.
 
-- [ ] Create `Herb::Rewriter::Registry` class
-- [ ] Define `BUILTIN_AST_REWRITERS` constant listing built-in AST rewriter classes
-- [ ] Define `BUILTIN_STRING_REWRITERS` constant listing built-in String rewriter classes
-- [ ] Internal storage for custom rewriters: `@custom_ast_rewriters`, `@custom_string_rewriters`
-- [ ] `register(klass)` dispatches via `klass < ASTRewriter` or `klass < StringRewriter`
-- [ ] `get_ast_rewriter(name)` checks custom first, then `BUILTIN_AST_REWRITERS`
-- [ ] `get_string_rewriter(name)` checks custom first, then `BUILTIN_STRING_REWRITERS`
-- [ ] `registered?(name)` delegates to `get_ast_rewriter` / `get_string_rewriter`
-- [ ] Create spec at `herb-rewriter/spec/herb/rewriter/registry_spec.rb`
-- [ ] Delete `herb-format/lib/herb/format/rewriter_registry.rb` and its spec
+- [x] Create `Herb::Rewriter::Registry` class
+- [x] Define `BUILTIN_AST_REWRITERS` constant listing built-in AST rewriter classes
+- [x] Define `BUILTIN_STRING_REWRITERS` constant listing built-in String rewriter classes
+- [x] Internal storage for custom rewriters: `@custom_ast_rewriters`, `@custom_string_rewriters`
+- [x] `register(klass)` dispatches via `klass < ASTRewriter` or `klass < StringRewriter`
+- [x] `get_ast_rewriter(name)` checks custom first, then `BUILTIN_AST_REWRITERS`
+- [x] `get_string_rewriter(name)` checks custom first, then `BUILTIN_STRING_REWRITERS`
+- [x] `registered?(name)` delegates to `get_ast_rewriter` / `get_string_rewriter`
+- [x] Create spec at `herb-rewriter/spec/herb/rewriter/registry_spec.rb`
+- [x] Delete `herb-format/lib/herb/format/rewriter_registry.rb` and its spec
 
 **Interface:**
 

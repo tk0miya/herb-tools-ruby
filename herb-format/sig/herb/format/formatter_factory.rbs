@@ -9,11 +9,11 @@ module Herb
     class FormatterFactory
       attr_reader config: Herb::Config::FormatterConfig
 
-      attr_reader rewriter_registry: RewriterRegistry
+      attr_reader rewriter_registry: Herb::Rewriter::Registry
 
       # @rbs config: Herb::Config::FormatterConfig
-      # @rbs rewriter_registry: RewriterRegistry
-      def initialize: (Herb::Config::FormatterConfig config, RewriterRegistry rewriter_registry) -> void
+      # @rbs rewriter_registry: Herb::Rewriter::Registry
+      def initialize: (Herb::Config::FormatterConfig config, Herb::Rewriter::Registry rewriter_registry) -> void
 
       # Create a configured Formatter instance.
       #
