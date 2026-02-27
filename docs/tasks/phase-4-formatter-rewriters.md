@@ -221,10 +221,10 @@ end
 | 4.5-4.7 | D | Integration and verification | → superseded by 4.16-4.17 |
 | 4.8 | E | Scaffold herb-rewriter gem | ✅ Done |
 | 4.9 | E | Implement ASTRewriter + TailwindClassSorter in herb-rewriter | ✅ Done |
-| 4.10 | E | Create StringRewriter in herb-rewriter | Todo |
+| 4.10 | E | Create StringRewriter in herb-rewriter | ✅ Done |
 | 4.11 | E | Move RewriterRegistry to herb-rewriter | ✅ Done |
-| 4.12 | E | Update herb-format to depend on herb-rewriter | Todo |
-| 4.13 | E | Fix Formatter pipeline (Phase 3 design update) | Todo |
+| 4.12 | E | Update herb-format to depend on herb-rewriter | ✅ Done |
+| 4.13 | E | Fix Formatter pipeline (Phase 3 design update) | ✅ Done |
 | 4.14 | E | Update FormatterFactory (Phase 3 design update) | Todo |
 | 4.15 | E | StringRewriter integration — end-to-end verification | Todo |
 | 4.16 | E | Update RBS signatures and file layout | Todo |
@@ -523,10 +523,10 @@ end
 Note: `require_relative "format/rewriters/base"` and `require_relative "format/rewriters/tailwind_class_sorter"`
 were already removed from `format.rb` in Task 4.9.
 
-- [ ] Add `spec.add_dependency "herb-rewriter"` to `herb-format.gemspec`
-- [ ] Add `gem "herb-rewriter", path: "../herb-rewriter"` to `herb-format/Gemfile` (local path for development)
-- [ ] Replace `require_relative "format/rewriter_registry"` with `require "herb/rewriter"` in `herb-format/lib/herb/format.rb`
-- [ ] Run `cd herb-format && ./bin/bundle install`
+- [x] Add `spec.add_dependency "herb-rewriter"` to `herb-format.gemspec`
+- [x] Add `gem "herb-rewriter", path: "../herb-rewriter"` to `herb-format/Gemfile` (local path for development)
+- [x] Replace `require_relative "format/rewriter_registry"` with `require "herb/rewriter"` in `herb-format/lib/herb/format.rb`
+- [x] Run `cd herb-format && ./bin/bundle install`
 
 **Verification:**
 - `cd herb-format && ./bin/rspec` — all existing specs still pass
@@ -540,13 +540,13 @@ were already removed from `format.rb` in Task 4.9.
 Update the Phase 3 Formatter design so that post-rewriters receive and return a string,
 using types from `herb-rewriter`.
 
-- [ ] Declare `pre_rewriters` as `Array[Herb::Rewriter::ASTRewriter]`
-- [ ] Declare `post_rewriters` as `Array[Herb::Rewriter::StringRewriter]`
-- [ ] Implement `apply_pre_rewriters(ast, rewriters, context) -> Herb::AST::DocumentNode`
-- [ ] Implement `apply_post_rewriters(formatted, rewriters, context) -> String`
-- [ ] Apply post-rewriters **after** `FormatPrinter.format()` in the `format()` method
-- [ ] Update RBS type annotations
-- [ ] Update Phase 3 spec
+- [x] Declare `pre_rewriters` as `Array[Herb::Rewriter::ASTRewriter]`
+- [x] Declare `post_rewriters` as `Array[Herb::Rewriter::StringRewriter]`
+- [x] Implement `apply_pre_rewriters(ast, rewriters, context) -> Herb::AST::DocumentNode`
+- [x] Implement `apply_post_rewriters(formatted, rewriters, context) -> String`
+- [x] Apply post-rewriters **after** `FormatPrinter.format()` in the `format()` method
+- [x] Update RBS type annotations
+- [x] Update Phase 3 spec
 
 **Corrected format() pipeline:**
 

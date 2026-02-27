@@ -3,6 +3,17 @@
 require "spec_helper"
 
 RSpec.describe Herb::Format::Formatter do
+  let(:upcase_rewriter_class) do
+    Class.new(Herb::Rewriter::StringRewriter) do
+      def self.rewriter_name = "upcase-test"
+      def self.description = "Upcase for testing"
+
+      def rewrite(formatted, _context)
+        formatted.upcase
+      end
+    end
+  end
+
   let(:pre_rewriters) { [] }
   let(:post_rewriters) { [] }
   let(:config) { build(:formatter_config) }
@@ -81,6 +92,72 @@ RSpec.describe Herb::Format::Formatter do
 
         expect(result.error?).to be false
         expect(result.formatted).to include('class="flex p-4 text-sm"')
+      end
+    end
+
+    context "with post-rewriters" do
+      subject { formatter.format("test.erb", source) }
+
+      let(:post_rewriters) { [upcase_rewriter_class.new] }
+      let(:source) { "<div>hello</div>" }
+
+      it "applies post-rewriters to the formatted string" do
+        expect(subject.error?).to be false
+        expect(subject.formatted).to eq("<DIV>HELLO</DIV>")
+      end
+    end
+
+    context "with both pre-rewriters and post-rewriters" do
+      subject { formatter.format("test.erb", source) }
+
+      let(:pre_rewriters) { [Herb::Rewriter::BuiltIns::TailwindClassSorter.new] }
+      let(:post_rewriters) { [upcase_rewriter_class.new] }
+      let(:source) { '<div class="text-sm flex">hello</div>' }
+
+      it "applies pre-rewriters to AST then post-rewriters to formatted string" do
+        expect(subject.error?).to be false
+        expect(subject.formatted).to include('CLASS="FLEX TEXT-SM"')
+        expect(subject.formatted).to include("HELLO")
+      end
+    end
+
+    context "when a post-rewriter raises an error" do
+      subject { formatter.format("test.erb", source) }
+
+      let(:broken_rewriter_class) do
+        Class.new(Herb::Rewriter::StringRewriter) do
+          def self.rewriter_name = "broken-test"
+          def self.description = "Broken for testing"
+
+          def rewrite(_formatted, _context)
+            raise StandardError, "Post-rewriter error"
+          end
+        end
+      end
+
+      let(:post_rewriters) { [broken_rewriter_class.new] }
+      let(:source) { "<div>test</div>" }
+
+      it "returns source unchanged with the raised error" do
+        expect(subject.formatted).to eq(source)
+        expect(subject.error?).to be true
+        expect(subject.error.message).to eq("Post-rewriter error")
+      end
+    end
+
+    context "when FormatPrinter raises an error" do
+      subject { formatter.format("test.erb", source) }
+
+      let(:source) { "<div>test</div>" }
+
+      before do
+        allow(Herb::Format::FormatPrinter).to receive(:format).and_raise(StandardError, "Formatting error")
+      end
+
+      it "returns source unchanged with the raised error" do
+        expect(subject.formatted).to eq(source)
+        expect(subject.error?).to be true
+        expect(subject.error.message).to eq("Formatting error")
       end
     end
   end
