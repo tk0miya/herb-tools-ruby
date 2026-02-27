@@ -25,10 +25,13 @@ module Herb
 
       def build_pre_rewriters: () -> Array[Herb::Rewriter::ASTRewriter]
 
-      def build_post_rewriters: () -> Array[Herb::Rewriter::ASTRewriter]
+      def build_post_rewriters: () -> Array[Herb::Rewriter::StringRewriter]
 
       # @rbs name: String
-      def instantiate_rewriter: (String name) -> Herb::Rewriter::ASTRewriter?
+      def instantiate_ast_rewriter: (String name) -> Herb::Rewriter::ASTRewriter?
+
+      # @rbs name: String
+      def instantiate_string_rewriter: (String name) -> Herb::Rewriter::StringRewriter?
     end
   end
 end

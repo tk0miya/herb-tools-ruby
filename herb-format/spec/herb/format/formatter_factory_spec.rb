@@ -4,7 +4,7 @@ require "spec_helper"
 
 RSpec.describe Herb::Format::FormatterFactory do
   let(:config) { build(:formatter_config, indent_width: 4, max_line_length: 120) }
-  let(:rewriter_registry) { instance_double(Herb::Rewriter::Registry) }
+  let(:rewriter_registry) { Herb::Rewriter::Registry.new }
   let(:factory) { described_class.new(config, rewriter_registry) }
 
   describe "#initialize" do
@@ -18,10 +18,6 @@ RSpec.describe Herb::Format::FormatterFactory do
 
   describe "#create" do
     subject { factory.create }
-
-    before do
-      allow(rewriter_registry).to receive(:resolve_ast_rewriter).and_return(nil)
-    end
 
     it "creates a Formatter instance" do
       expect(subject).to be_a(Herb::Format::Formatter)
@@ -40,36 +36,31 @@ RSpec.describe Herb::Format::FormatterFactory do
     end
 
     context "when config specifies pre-rewriters" do
-      let(:rewriter_class) { Class.new(Herb::Rewriter::ASTRewriter) }
       let(:config) do
         Herb::Config::FormatterConfig.new(
-          "formatter" => { "rewriter" => { "pre" => ["normalize-attributes"] } }
+          "formatter" => { "rewriter" => { "pre" => ["tailwind-class-sorter"] } }
         )
-      end
-
-      before do
-        allow(rewriter_registry).to receive(:resolve_ast_rewriter)
-          .with("normalize-attributes").and_return(rewriter_class)
       end
 
       it "builds the pre-rewriters list" do
         expect(subject.pre_rewriters.size).to eq(1)
-        expect(subject.pre_rewriters.first).to be_a(rewriter_class)
+        expect(subject.pre_rewriters.first).to be_a(Herb::Rewriter::BuiltIns::TailwindClassSorter)
       end
     end
 
     context "when config specifies post-rewriters" do
-      let(:rewriter_class) { Class.new(Herb::Rewriter::ASTRewriter) }
+      let(:rewriter_class) do
+        Class.new(Herb::Rewriter::StringRewriter) do
+          def self.rewriter_name = "custom-string-rewriter"
+        end
+      end
       let(:config) do
         Herb::Config::FormatterConfig.new(
-          "formatter" => { "rewriter" => { "post" => ["tailwind-class-sorter"] } }
+          "formatter" => { "rewriter" => { "post" => ["custom-string-rewriter"] } }
         )
       end
 
-      before do
-        allow(rewriter_registry).to receive(:resolve_ast_rewriter)
-          .with("tailwind-class-sorter").and_return(rewriter_class)
-      end
+      before { rewriter_registry.send(:register, rewriter_class) }
 
       it "builds the post-rewriters list" do
         expect(subject.post_rewriters.size).to eq(1)
@@ -77,25 +68,37 @@ RSpec.describe Herb::Format::FormatterFactory do
       end
     end
 
-    context "when config references an unknown rewriter" do
+    context "when config references an unknown pre-rewriter" do
       let(:config) do
         Herb::Config::FormatterConfig.new(
           "formatter" => { "rewriter" => { "pre" => ["unknown-rewriter"] } }
         )
       end
 
-      before do
-        allow(rewriter_registry).to receive(:resolve_ast_rewriter).with("unknown-rewriter").and_return(nil)
-      end
-
-      it "skips it and returns empty pre-rewriters" do
+      it "skips it, returns empty pre-rewriters, and warns to stderr" do
+        expect { subject }.to output(/Pre-format rewriter 'unknown-rewriter' not found/).to_stderr
         expect(subject.pre_rewriters).to be_empty
       end
     end
 
-    context "when a rewriter raises an error during instantiation" do
+    context "when config references an unknown post-rewriter" do
+      let(:config) do
+        Herb::Config::FormatterConfig.new(
+          "formatter" => { "rewriter" => { "post" => ["unknown-rewriter"] } }
+        )
+      end
+
+      it "skips it, returns empty post-rewriters, and warns to stderr" do
+        expect { subject }.to output(/Post-format rewriter 'unknown-rewriter' not found/).to_stderr
+        expect(subject.post_rewriters).to be_empty
+      end
+    end
+
+    context "when a pre-rewriter raises an error during instantiation" do
       let(:rewriter_class) do
         Class.new(Herb::Rewriter::ASTRewriter) do
+          def self.rewriter_name = "broken-rewriter"
+
           def initialize(options: {})
             super
             raise StandardError, "Initialization failed"
@@ -108,15 +111,36 @@ RSpec.describe Herb::Format::FormatterFactory do
         )
       end
 
-      before do
-        allow(rewriter_registry).to receive(:resolve_ast_rewriter).with("broken-rewriter").and_return(rewriter_class)
-      end
+      before { rewriter_registry.send(:register, rewriter_class) }
 
       it "skips the broken rewriter and warns to stderr" do
-        expect do
-          result = subject
-          expect(result.pre_rewriters).to be_empty
-        end.to output(/Failed to instantiate rewriter/).to_stderr
+        expect { subject }.to output(/Failed to instantiate pre-format rewriter/).to_stderr
+        expect(subject.pre_rewriters).to be_empty
+      end
+    end
+
+    context "when a post-rewriter raises an error during instantiation" do
+      let(:rewriter_class) do
+        Class.new(Herb::Rewriter::StringRewriter) do
+          def self.rewriter_name = "broken-string-rewriter"
+
+          def initialize
+            super
+            raise StandardError, "Initialization failed"
+          end
+        end
+      end
+      let(:config) do
+        Herb::Config::FormatterConfig.new(
+          "formatter" => { "rewriter" => { "post" => ["broken-string-rewriter"] } }
+        )
+      end
+
+      before { rewriter_registry.send(:register, rewriter_class) }
+
+      it "skips the broken rewriter and warns to stderr" do
+        expect { subject }.to output(/Failed to instantiate post-format rewriter/).to_stderr
+        expect(subject.post_rewriters).to be_empty
       end
     end
   end
