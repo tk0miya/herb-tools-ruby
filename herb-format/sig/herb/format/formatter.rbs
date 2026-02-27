@@ -3,17 +3,24 @@
 module Herb
   module Format
     # Core single-file formatting implementation.
+    #
+    # Processing pipeline:
+    #   source (string) -> parse() -> AST
+    #   -> [pre-rewriters: ASTRewriter[]] -> AST
+    #   -> FormatPrinter.format() -> string
+    #   -> [post-rewriters: StringRewriter[]] -> string
+    #   -> FormatResult
     class Formatter
-      attr_reader pre_rewriters: Array[Rewriters::Base]
+      attr_reader pre_rewriters: Array[Herb::Rewriter::ASTRewriter]
 
-      attr_reader post_rewriters: Array[Rewriters::Base]
+      attr_reader post_rewriters: Array[Herb::Rewriter::StringRewriter]
 
       attr_reader config: Herb::Config::FormatterConfig
 
-      # @rbs pre_rewriters: Array[Rewriters::Base]
-      # @rbs post_rewriters: Array[Rewriters::Base]
+      # @rbs pre_rewriters: Array[Herb::Rewriter::ASTRewriter]
+      # @rbs post_rewriters: Array[Herb::Rewriter::StringRewriter]
       # @rbs config: Herb::Config::FormatterConfig
-      def initialize: (Array[Rewriters::Base] pre_rewriters, Array[Rewriters::Base] post_rewriters, Herb::Config::FormatterConfig config) -> void
+      def initialize: (Array[Herb::Rewriter::ASTRewriter] pre_rewriters, Array[Herb::Rewriter::StringRewriter] post_rewriters, Herb::Config::FormatterConfig config) -> void
 
       # Format a single file and return result.
       #
@@ -23,9 +30,10 @@ module Herb
       # 3. Check for ignore directive via FormatIgnore.ignore? (unless force)
       # 4. If ignored, return source unchanged with ignored flag
       # 5. Create Context with source and configuration
-      # 6. Execute pre-rewriters (in order)
+      # 6. Execute pre-rewriters on AST (in order)
       # 7. Apply formatting via FormatPrinter.format(ast, format_context:)
-      # 8. Return FormatResult with original and formatted content
+      # 8. Execute post-rewriters on formatted string (in order)
+      # 9. Return FormatResult with original and formatted content
       #
       # @rbs file_path: String
       # @rbs source: String
@@ -40,12 +48,19 @@ module Herb
       # @rbs context: Context
       def format_with_context: (String file_path, String source, Herb::AST::DocumentNode ast, Context context) -> FormatResult
 
-      # Apply rewriters to AST in order.
+      # Apply AST rewriters in order before formatting.
       #
       # @rbs ast: Herb::AST::DocumentNode
-      # @rbs rewriters: Array[Rewriters::Base]
+      # @rbs rewriters: Array[Herb::Rewriter::ASTRewriter]
       # @rbs context: Context
-      def apply_rewriters: (Herb::AST::DocumentNode ast, Array[Rewriters::Base] rewriters, Context context) -> Herb::AST::DocumentNode
+      def apply_pre_rewriters: (Herb::AST::DocumentNode ast, Array[Herb::Rewriter::ASTRewriter] rewriters, Context context) -> Herb::AST::DocumentNode
+
+      # Apply string rewriters in order after formatting.
+      #
+      # @rbs formatted: String
+      # @rbs rewriters: Array[Herb::Rewriter::StringRewriter]
+      # @rbs context: Context
+      def apply_post_rewriters: (String formatted, Array[Herb::Rewriter::StringRewriter] rewriters, Context context) -> String
     end
   end
 end
