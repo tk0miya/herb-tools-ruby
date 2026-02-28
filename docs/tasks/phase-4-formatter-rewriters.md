@@ -227,7 +227,7 @@ end
 | 4.13 | E | Fix Formatter pipeline (Phase 3 design update) | ✅ Done |
 | 4.14 | E | Update FormatterFactory (Phase 3 design update) | ✅ Done |
 | 4.15 | E | StringRewriter integration — end-to-end verification | ✅ Done |
-| 4.16 | E | Update RBS signatures and file layout | Todo |
+| 4.16 | E | Update RBS signatures and file layout | ✅ Done |
 | 4.17 | E | Full verification | Todo |
 
 ## Design Notes
@@ -654,14 +654,14 @@ This task only covers the registry/pipeline integration path.
 ### Task 4.16: Update RBS signatures and file layout
 
 **herb-rewriter:**
-- [ ] Run `cd herb-rewriter && ./bin/rbs-inline` to generate `sig/`
-- [ ] Confirm `cd herb-rewriter && ./bin/steep check` passes with no errors
+- [x] Run `cd herb-rewriter && ./bin/rbs-inline` to generate `sig/`
+- [x] Confirm `cd herb-rewriter && ./bin/steep check` passes with no errors
 
 **herb-format:**
-- [ ] Confirm `require "herb/rewriter"` is the sole require for rewriter base classes
-- [ ] Remove any lingering `require_relative "format/rewriters/..."` for moved files
-- [ ] Run `cd herb-format && ./bin/rbs-inline` to regenerate signatures
-- [ ] Confirm `cd herb-format && ./bin/steep check` passes with no errors
+- [x] Confirm `require "herb/rewriter"` is the sole require for rewriter base classes
+- [x] Remove any lingering `require_relative "format/rewriters/..."` for moved files
+- [x] Run `cd herb-format && ./bin/rbs-inline` to regenerate signatures
+- [x] Confirm `cd herb-format && ./bin/steep check` passes with no errors
 
 ---
 
