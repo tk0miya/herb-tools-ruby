@@ -80,7 +80,7 @@ module Herb
       #
       # @rbs element: Herb::AST::HTMLElementNode
       # @rbs open_tag_inline: bool
-      def should_render_element_content_inline?(element, open_tag_inline) #: bool # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      def should_render_element_content_inline?(element, open_tag_inline) #: bool # rubocop:disable Metrics/AbcSize
         # Open tag not inline → false
         return false unless open_tag_inline
 

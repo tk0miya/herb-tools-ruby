@@ -154,7 +154,7 @@ module Herb
       # @rbs tag_closing: Herb::Token? -- override the closing token
       # @rbs children: Array[Herb::AST::Node]? -- override the children array
       # @rbs is_void: bool? -- override the is_void flag
-      def copy_html_open_tag_node( # rubocop:disable Metrics/ParameterLists
+      def copy_html_open_tag_node(
         node,
         tag_opening: nil,
         tag_name: nil,
@@ -254,7 +254,7 @@ module Herb
       # @rbs close_tag: Herb::AST::HTMLCloseTagNode? -- override the close tag
       # @rbs is_void: bool? -- override the is_void flag
       # @rbs source: Herb::Token? -- override the source token
-      def copy_html_element_node( # rubocop:disable Metrics/ParameterLists
+      def copy_html_element_node(
         node,
         open_tag: nil,
         tag_name: nil,
@@ -302,7 +302,7 @@ module Herb
       # @rbs else_clause: Herb::AST::ERBElseNode? -- override the else clause
       # @rbs ensure_clause: Herb::AST::ERBEnsureNode? -- override the ensure clause
       # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
-      def copy_erb_begin_node( # rubocop:disable Metrics/CyclomaticComplexity, Metrics/ParameterLists, Metrics/PerceivedComplexity
+      def copy_erb_begin_node(
         node,
         tag_opening: nil,
         content: nil,
@@ -337,7 +337,7 @@ module Herb
       # @rbs tag_closing: Herb::Token? -- override the closing tag token
       # @rbs body: Array[Herb::AST::Node]? -- override the body array
       # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
-      def copy_erb_block_node( # rubocop:disable Metrics/ParameterLists
+      def copy_erb_block_node(
         node,
         tag_opening: nil,
         content: nil,
@@ -368,7 +368,7 @@ module Herb
       # @rbs conditions: Array[Herb::AST::ERBInNode]? -- override the conditions array
       # @rbs else_clause: Herb::AST::ERBElseNode? -- override the else clause
       # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
-      def copy_erb_case_match_node( # rubocop:disable Metrics/CyclomaticComplexity, Metrics/ParameterLists
+      def copy_erb_case_match_node(
         node,
         tag_opening: nil,
         content: nil,
@@ -403,7 +403,7 @@ module Herb
       # @rbs conditions: Array[Herb::AST::ERBWhenNode]? -- override the conditions array
       # @rbs else_clause: Herb::AST::ERBElseNode? -- override the else clause
       # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
-      def copy_erb_case_node( # rubocop:disable Metrics/CyclomaticComplexity, Metrics/ParameterLists
+      def copy_erb_case_node(
         node,
         tag_opening: nil,
         content: nil,
@@ -437,7 +437,7 @@ module Herb
       # @rbs analyzed_ruby: nil -- override the analyzed_ruby attribute
       # @rbs parsed: bool? -- override the parsed flag
       # @rbs valid: bool? -- override the valid flag
-      def copy_erb_content_node( # rubocop:disable Metrics/ParameterLists
+      def copy_erb_content_node(
         node,
         tag_opening: nil,
         content: nil,
@@ -526,7 +526,7 @@ module Herb
       # @rbs tag_closing: Herb::Token? -- override the closing tag token
       # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
       # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
-      def copy_erb_for_node( # rubocop:disable Metrics/ParameterLists
+      def copy_erb_for_node(
         node,
         tag_opening: nil,
         content: nil,
@@ -557,7 +557,7 @@ module Herb
       # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
       # @rbs subsequent: Herb::AST::Node? -- override the subsequent node (elsif/else)
       # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
-      def copy_erb_if_node( # rubocop:disable Metrics/CyclomaticComplexity, Metrics/ParameterLists
+      def copy_erb_if_node(
         node,
         tag_opening: nil,
         content: nil,
@@ -590,7 +590,7 @@ module Herb
       # @rbs tag_closing: Herb::Token? -- override the closing tag token
       # @rbs then_keyword: Herb::Location? -- override the then keyword location
       # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
-      def copy_erb_in_node( # rubocop:disable Metrics/ParameterLists
+      def copy_erb_in_node(
         node,
         tag_opening: nil,
         content: nil,
@@ -619,7 +619,7 @@ module Herb
       # @rbs tag_closing: Herb::Token? -- override the closing tag token
       # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
       # @rbs subsequent: Herb::AST::ERBRescueNode? -- override the subsequent rescue node
-      def copy_erb_rescue_node( # rubocop:disable Metrics/ParameterLists
+      def copy_erb_rescue_node(
         node,
         tag_opening: nil,
         content: nil,
@@ -650,7 +650,7 @@ module Herb
       # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
       # @rbs else_clause: Herb::AST::ERBElseNode? -- override the else clause node
       # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
-      def copy_erb_unless_node( # rubocop:disable Metrics/CyclomaticComplexity, Metrics/ParameterLists
+      def copy_erb_unless_node(
         node,
         tag_opening: nil,
         content: nil,
@@ -683,7 +683,7 @@ module Herb
       # @rbs tag_closing: Herb::Token? -- override the closing tag token
       # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
       # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
-      def copy_erb_until_node( # rubocop:disable Metrics/ParameterLists
+      def copy_erb_until_node(
         node,
         tag_opening: nil,
         content: nil,
@@ -712,7 +712,7 @@ module Herb
       # @rbs tag_closing: Herb::Token? -- override the closing tag token
       # @rbs then_keyword: Herb::Location? -- override the then keyword location
       # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
-      def copy_erb_when_node( # rubocop:disable Metrics/ParameterLists
+      def copy_erb_when_node(
         node,
         tag_opening: nil,
         content: nil,
@@ -741,7 +741,7 @@ module Herb
       # @rbs tag_closing: Herb::Token? -- override the closing tag token
       # @rbs statements: Array[Herb::AST::Node]? -- override the statements array
       # @rbs end_node: Herb::AST::ERBEndNode? -- override the end node
-      def copy_erb_while_node( # rubocop:disable Metrics/ParameterLists
+      def copy_erb_while_node(
         node,
         tag_opening: nil,
         content: nil,

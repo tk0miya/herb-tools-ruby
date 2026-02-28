@@ -19,7 +19,7 @@ module Herb
       # @rbs duration: Integer? -- elapsed time in milliseconds, or nil if not tracked
       # @rbs completed: bool -- false when linting was skipped (e.g. disabled in config)
       # @rbs message: String? -- informational message, present when completed is false
-      def initialize( # rubocop:disable Metrics/ParameterLists
+      def initialize(
         results, rule_count: 0, start_time: nil, duration: nil, completed: true, message: nil
       ) #: void
         @results = results

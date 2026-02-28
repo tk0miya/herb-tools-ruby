@@ -79,7 +79,7 @@ module Herb
           end
 
           # @rbs override
-          def visit_html_element_node(node) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+          def visit_html_element_node(node) # rubocop:disable Metrics/MethodLength
             tag = tag_name(node)
             return super unless tag
 

@@ -22,7 +22,7 @@ module Herb
       # @rbs no_custom_rules: bool -- when true, skip loading from linter.custom_rules
       # @rbs force: bool -- when true, run all rules regardless of enabled/disabled config
       # @rbs rule_registry: RuleRegistry? -- optional custom rule registry (for testing)
-      def initialize( # rubocop:disable Metrics/ParameterLists
+      def initialize(
         config,
         ignore_disable_comments: false,
         autofix: false,
