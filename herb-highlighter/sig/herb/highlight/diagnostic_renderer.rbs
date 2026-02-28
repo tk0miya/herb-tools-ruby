@@ -77,13 +77,13 @@ module Herb
       #
       # @rbs text: String
       # @rbs color: String
-      def tty_colorize: (String text, String color) -> String
+      def colorize: (String text, String color) -> String
 
       # Wraps text in ANSI dim codes if TTY mode is enabled.
       # Simplified version of TypeScript applyDimToStyledText.
       #
       # @rbs text: String
-      def tty_dim: (String text) -> String
+      def dim: (String text) -> String
     end
   end
 end

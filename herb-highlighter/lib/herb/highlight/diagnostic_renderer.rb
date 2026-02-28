@@ -78,15 +78,15 @@ module Herb
       def format_source_line(num, content, offense, width, sev_color) #: String
         highlighted = @syntax_renderer.render(content)
         num_str = num.to_s.rjust(width)
-        sep = tty_colorize("│", "gray")
+        sep = colorize("│", "gray")
 
         if offense
-          prefix = tty_colorize("  → ", sev_color)
-          line_num = tty_colorize(num_str, "bold")
+          prefix = colorize("  → ", sev_color)
+          line_num = colorize(num_str, "bold")
           "#{prefix}#{line_num} #{sep} #{highlighted}\n"
         else
-          line_num = tty_colorize(num_str, "gray")
-          "    #{line_num} #{sep} #{tty_dim(highlighted)}\n"
+          line_num = colorize(num_str, "gray")
+          "    #{line_num} #{sep} #{dim(highlighted)}\n"
         end
       end
 
@@ -97,8 +97,8 @@ module Herb
       # @rbs pointer_len: Integer
       # @rbs sev_color: String
       def render_pointer(width, column, pointer_len, sev_color) #: String
-        sep = tty_colorize("│", "gray")
-        pointer = tty_colorize("~" * pointer_len, sev_color)
+        sep = colorize("│", "gray")
+        pointer = colorize("~" * pointer_len, sev_color)
         "    #{' ' * width} #{sep} #{' ' * [column - 1, 0].max}#{pointer}\n"
       end
 
@@ -121,7 +121,7 @@ module Herb
       #
       # @rbs text: String
       # @rbs color: String
-      def tty_colorize(text, color) #: String
+      def colorize(text, color) #: String
         return text unless @tty
 
         Color.colorize(text, color)
@@ -131,7 +131,7 @@ module Herb
       # Simplified version of TypeScript applyDimToStyledText.
       #
       # @rbs text: String
-      def tty_dim(text) #: String
+      def dim(text) #: String
         return text unless @tty
 
         Color.colorize(text, "dim")

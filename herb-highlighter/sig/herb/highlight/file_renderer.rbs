@@ -1,0 +1,49 @@
+# Generated from lib/herb/highlight/file_renderer.rb with RBS::Inline
+
+module Herb
+  module Highlight
+    # Renders a complete ERB/HTML source file with line numbers and syntax highlighting.
+    # Used by the herb-highlight CLI to display a highlighted file.
+    # Mirrors TypeScript FileRenderer.
+    #
+    # Not used by herb-lint's DetailedFormatter (which uses DiagnosticRenderer instead).
+    class FileRenderer
+      @syntax_renderer: SyntaxRenderer
+
+      @tty: bool
+
+      # @rbs syntax_renderer: SyntaxRenderer
+      # @rbs tty: bool
+      def initialize: (?syntax_renderer: SyntaxRenderer, ?tty: bool) -> void
+
+      # Renders all lines of source with sequential line numbers.
+      # Each line ends with a newline.
+      #
+      # @rbs source: String
+      # @rbs focus_line: Integer? -- 1-based line to render in red+bold (nil = no focus)
+      def render: (String source, ?focus_line: Integer?) -> String
+
+      private
+
+      # Renders a single line with line number prefix.
+      # Focus line uses cyan arrow prefix and bold line number; all other lines use gray and dim.
+      #
+      # @rbs num: Integer
+      # @rbs content: String
+      # @rbs focus_line: Integer?
+      # @rbs width: Integer
+      def render_line: (Integer num, String content, Integer? focus_line, Integer width) -> String
+
+      # Applies color/style if TTY mode is enabled.
+      #
+      # @rbs text: String
+      # @rbs color: String
+      def colorize: (String text, String color) -> String
+
+      # Wraps text in ANSI dim codes if TTY mode is enabled.
+      #
+      # @rbs text: String
+      def dim: (String text) -> String
+    end
+  end
+end
