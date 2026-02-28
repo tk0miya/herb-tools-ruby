@@ -22,6 +22,7 @@ herb-format/
 │           ├── context.rb
 │           ├── format_result.rb
 │           ├── aggregated_result.rb
+│           ├── content_unit.rb
 │           ├── format_printer.rb
 │           ├── format_helpers.rb
 │           ├── element_analysis.rb
@@ -70,6 +71,7 @@ Herb::Format
 ├── Context          # Format execution context
 ├── FormatResult     # Format result for a single file
 ├── AggregatedResult # Aggregated result for multiple files
+├── ContentUnit      # Value object for text flow analysis units
 ├── FormatPrinter    # AST formatting (extends Printer::Base)
 ├── FormatHelpers    # Constants and helper functions for formatting decisions
 ├── ElementAnalysis  # Data structure for element formatting decisions
@@ -134,6 +136,37 @@ class Herb::Format::AggregatedResult
   def to_h: () -> Hash[Symbol, untyped]
 end
 ```
+
+### Herb::Format::ContentUnit
+
+Immutable value object (via `Data.define`) representing a single unit in the text flow analysis pipeline. Used by `FormatPrinter` to classify child nodes before applying word wrapping and spacing decisions.
+
+```rbs
+# Type alias for a pair of ContentUnit and its originating AST node
+type content_unit_with_node = [ContentUnit, Herb::AST::Node | nil]
+
+class Herb::Format::ContentUnit < Data
+  attr_reader content: String        # Rendered string content of this unit
+  attr_reader type: Symbol           # :text | :inline | :erb | :block
+  attr_reader is_atomic: bool        # True if unit must not be split
+  attr_reader breaks_flow: bool      # True if unit breaks inline text flow
+  attr_reader is_herb_disable: bool  # True if unit is a herb:disable comment
+
+  def initialize: (
+    content: String,
+    ?type: Symbol,
+    ?is_atomic: bool,
+    ?breaks_flow: bool,
+    ?is_herb_disable: bool
+  ) -> void
+end
+```
+
+**Types:**
+- `:text` — Plain text, splittable at word boundaries
+- `:inline` — Inline HTML element rendered as an atomic string
+- `:erb` — ERB expression or tag, atomic and does not break flow
+- `:block` — Block-level element, breaks the text flow
 
 ## Component Details
 
@@ -233,15 +266,16 @@ class Herb::Format::Runner
 
   private
 
-  def setup_rewriters: () -> void
+  def build_formatter: () -> Formatter
   def discover_files: (Array[String]? files) -> Array[String]
+  def excluded?: (String file) -> bool
   def format_file: (String file_path) -> FormatResult
   def write_file: (FormatResult result) -> void
 end
 ```
 
 **Processing Flow:**
-1. Setup: Initialize `Herb::Rewriter::Registry` (includes built-ins; auto-discovers custom rewriters on demand)
+1. Setup: Initialize `Herb::Rewriter::Registry` (includes built-ins; custom rewriters auto-discovered on demand via `require`)
 2. File Discovery: Use Herb::Core::FileDiscovery to find target files
 3. Formatter Creation: Build Formatter instance via FormatterFactory
 4. Per-File Processing:
@@ -479,6 +513,12 @@ class Herb::Format::FormatPrinter < Herb::Printer::Base
   def with_indent: () { () -> void } -> void
   def with_inline_mode: () { () -> void } -> void
   def visit_element_body: (Herb::AST::HTMLElementNode node) -> void
+  def visit_element_children: (Array[Herb::AST::Node] children, Herb::AST::HTMLElementNode parent) -> void
+  def visit_text_flow_children: (Array[Herb::AST::Node] children) -> void
+  def build_content_units_with_nodes: (Array[Herb::AST::Node] children) -> Array[content_unit_with_node]
+  def build_and_wrap_text_flow: (Array[Herb::AST::Node] children) -> void
+  def flush_words: (Array[String] words) -> void
+  def should_add_spacing_between_siblings?: (Herb::AST::HTMLElementNode? parent, Array[Herb::AST::Node] siblings, Integer current_index) -> bool
   def indent_string: (?Integer level) -> String
   def void_element?: (String tag_name) -> bool
   def preserved_element?: (String tag_name) -> bool

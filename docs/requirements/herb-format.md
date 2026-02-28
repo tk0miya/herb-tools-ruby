@@ -257,57 +257,63 @@ formatter:
 
 ### Custom Rewriters
 
-Custom rewriters can be loaded from `.herb/rewriters/*.rb`.
+> **Note:** The custom rewriter loading mechanism described here differs from the TypeScript implementation.
+> TypeScript's `CustomRewriterLoader` (in `@herb-tools/rewriter`) auto-discovers rewriter classes by
+> globbing `.herb/rewriters/**/*.mjs` under the project root and dynamically importing each `.mjs` file.
+> The values in `.herb.yml` are then matched against each discovered class's `name` property to select
+> which rewriters to activate.
+> The Ruby implementation replaces this `.mjs` file discovery with `require`-based loading,
+> which allows custom rewriters to be installed as gems or any Ruby require path.
+
+Custom rewriters are specified in `.herb.yml` as gem names or require paths:
+
+```yaml
+formatter:
+  rewriter:
+    pre:
+      - my-custom-rewriter        # gem name or require path
+    post:
+      - tailwind-class-sorter
+```
+
+Custom rewriters are implemented as subclasses of `Herb::Rewriter::ASTRewriter` (pre-phase) or `Herb::Rewriter::StringRewriter` (post-phase) from the `herb-rewriter` gem.
+
+### Rewriter Base Classes
+
+**Pre-phase rewriter (AST → AST):**
 
 ```ruby
-# .herb/rewriters/custom_sorter.rb
-module Herb
-  module Format
-    module Rewriters
-      class CustomSorter < Base
-        def self.rewriter_name
-          "custom-sorter"
-        end
+class MyCustomRewriter < Herb::Rewriter::ASTRewriter
+  def self.rewriter_name
+    "my-custom-rewriter"
+  end
 
-        def self.phase
-          :post
-        end
+  def self.description
+    "Transforms the AST before formatting"
+  end
 
-        def rewrite(ast, context)
-          # Transform and return modified AST
-          ast
-        end
-      end
-    end
+  def rewrite(ast, context)
+    # Transform and return modified AST
+    ast
   end
 end
 ```
 
-### Rewriter Base Class
+**Post-phase rewriter (String → String):**
 
 ```ruby
-module Herb
-  module Format
-    module Rewriters
-      class Base
-        # @return [String] Rewriter identifier (kebab-case)
-        def self.rewriter_name
-          raise NotImplementedError
-        end
+class MyPostRewriter < Herb::Rewriter::StringRewriter
+  def self.rewriter_name
+    "my-post-rewriter"
+  end
 
-        # @return [Symbol] Execution phase (:pre or :post)
-        def self.phase
-          :post
-        end
+  def self.description
+    "Transforms the formatted string after formatting"
+  end
 
-        # @param ast [Herb::AST::Document] The parsed template
-        # @param context [Herb::Format::Context] Formatting context
-        # @return [Herb::AST::Document] Modified AST
-        def rewrite(ast, context)
-          raise NotImplementedError
-        end
-      end
-    end
+  def rewrite(formatted, context)
+    # Transform and return modified string
+    formatted
   end
 end
 ```
