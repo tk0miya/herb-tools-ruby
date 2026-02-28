@@ -226,7 +226,7 @@ end
 | 4.12 | E | Update herb-format to depend on herb-rewriter | ✅ Done |
 | 4.13 | E | Fix Formatter pipeline (Phase 3 design update) | ✅ Done |
 | 4.14 | E | Update FormatterFactory (Phase 3 design update) | ✅ Done |
-| 4.15 | E | StringRewriter integration — end-to-end verification | Todo |
+| 4.15 | E | StringRewriter integration — end-to-end verification | ✅ Done |
 | 4.16 | E | Update RBS signatures and file layout | Todo |
 | 4.17 | E | Full verification | Todo |
 
@@ -635,13 +635,13 @@ integrated into every layer of the formatting pipeline.
 
 **Checklist:**
 
-- [ ] Create a minimal `IdentityStringRewriter` stub (returns source unchanged) in `spec/support/`
+- [x] Create a minimal `IdentityStringRewriter` stub (returns source unchanged) in `spec/support/`
   and confirm it can be registered with `Herb::Rewriter::Registry`
-- [ ] Write an integration spec that runs the full `Formatter` pipeline with the stub registered
+- [x] Write an integration spec that runs the full `Formatter` pipeline with the stub registered
   as a post-rewriter and asserts the output matches expectations
-- [ ] Confirm `Herb::Rewriter::Registry#get_string_rewriter` returns the stub by name
-- [ ] Confirm `FormatterFactory#build_post_rewriters` instantiates it correctly
-- [ ] Remove `# TODO: StringRewriter support` comments added in 4.10–4.14
+- [x] Confirm `Herb::Rewriter::Registry#get_string_rewriter` returns the stub by name
+- [x] Confirm `FormatterFactory#build_post_rewriters` instantiates it correctly
+- [x] Remove `# TODO: StringRewriter support` comments added in 4.10–4.14
 
 **Note:** Auto-registration via `CustomRewriterLoader` is handled in the separate redesign task.
 This task only covers the registry/pipeline integration path.
