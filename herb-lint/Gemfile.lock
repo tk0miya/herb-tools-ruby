@@ -12,6 +12,12 @@ PATH
       herb
 
 PATH
+  remote: ../herb-highlighter
+  specs:
+    herb-highlighter (0.1.0)
+      herb
+
+PATH
   remote: ../herb-printer
   specs:
     herb-printer (0.1.0)
@@ -24,6 +30,7 @@ PATH
       herb
       herb-config (~> 0.1.0)
       herb-core (~> 0.1.0)
+      herb-highlighter (~> 0.1.0)
       herb-printer (~> 0.1.0)
 
 GEM
@@ -223,6 +230,7 @@ DEPENDENCIES
   factory_bot
   herb-config!
   herb-core!
+  herb-highlighter!
   herb-lint!
   herb-printer!
   irb

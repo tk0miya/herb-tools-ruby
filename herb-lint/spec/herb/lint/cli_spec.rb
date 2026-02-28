@@ -318,10 +318,10 @@ RSpec.describe Herb::Lint::CLI do
 
         it "uses DetailedFormatter showing source code context" do
           output = capture_stdout { subject }
-          # DetailedFormatter shows source code lines with line number prefix (e.g., "  1 | <img ...>")
+          # DetailedFormatter shows source code lines with DiagnosticRenderer format (e.g., "  → 1 │ <img ...>")
           # SimpleFormatter does not include source code lines at all
           expect(output).to include("html-img-require-alt")
-          expect(output).to include('  1 | <img src="test.png">')
+          expect(output).to include('  → 1 │ <img src="test.png">')
         end
       end
 
@@ -334,10 +334,10 @@ RSpec.describe Herb::Lint::CLI do
 
         it "outputs detailed format with source code context" do
           output = capture_stdout { subject }
-          # DetailedFormatter shows source code lines with line number prefix (e.g., "  1 | <img ...>")
+          # DetailedFormatter shows source code lines with DiagnosticRenderer format (e.g., "  → 1 │ <img ...>")
           # SimpleFormatter does not include source code lines at all
           expect(output).to include("html-img-require-alt")
-          expect(output).to include('  1 | <img src="test.png">')
+          expect(output).to include('  → 1 │ <img src="test.png">')
         end
       end
 

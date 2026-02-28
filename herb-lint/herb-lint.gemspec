@@ -31,5 +31,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "herb"
   spec.add_dependency "herb-config", "~> 0.1.0"
   spec.add_dependency "herb-core", "~> 0.1.0"
+  spec.add_dependency "herb-highlighter", "~> 0.1.0"
   spec.add_dependency "herb-printer", "~> 0.1.0"
 end

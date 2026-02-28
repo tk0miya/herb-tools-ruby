@@ -12,9 +12,9 @@ module Herb
 
         include StringUtils
 
-        CONTEXT_LINES: ::Integer
-
         @summary_reporter: Herb::Lint::Reporter::SummaryReporter
+
+        @diagnostic_renderer: Herb::Highlight::DiagnosticRenderer
 
         # @rbs io: IO
         # @rbs show_timing: bool -- when false, suppresses timing display
@@ -50,37 +50,6 @@ module Herb
         #
         # @rbs offense: Offense
         def print_offense_header: (Offense offense) -> void
-
-        # Prints source code lines around the offense.
-        #
-        # @rbs offense: Offense
-        # @rbs source_lines: Array[String]
-        def print_source_lines: (Offense offense, Array[String] source_lines) -> void
-
-        # Prints a single source code line with line number and highlighting.
-        #
-        # @rbs line_num: Integer
-        # @rbs content: String
-        # @rbs offense: Offense
-        # @rbs width: Integer
-        def print_source_line: (Integer line_num, String content, Offense offense, Integer width) -> void
-
-        # Prints the column indicator (caret) pointing to the offense location.
-        #
-        # @rbs offense: Offense
-        # @rbs line_num_width: Integer
-        def print_column_indicator: (Offense offense, Integer line_num_width) -> void
-
-        # Calculates the spacing string before the caret.
-        #
-        # @rbs offense: Offense
-        # @rbs line_num_width: Integer
-        def indicator_spacing: (Offense offense, Integer line_num_width) -> String
-
-        # Calculates the caret length based on the offense location range.
-        #
-        # @rbs offense: Offense
-        def indicator_caret_length: (Offense offense) -> Integer
 
         # Returns the colored symbol for a severity level.
         #
