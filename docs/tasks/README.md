@@ -25,7 +25,6 @@ Features that exist in the TypeScript reference implementation but are missing i
 
 | Phase | File | Tasks | Description | Status |
 |-------|------|-------|-------------|--------|
-| Phase 4 | [phase-4-formatter-rewriters.md](./phase-4-formatter-rewriters.md) | 9 | herb-rewriter gem, FormatterFactory/Formatter update | ✅ |
 | Phase 6 | [phase-6-formatter-cli.md](./phase-6-formatter-cli.md) | 9 | CLI (options, --init, --stdin, --check, reporting) | 📋 |
 
 **Total: ~9 tasks**
@@ -33,12 +32,6 @@ Features that exist in the TypeScript reference implementation but are missing i
 Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
 ### Phase Overview (herb-format)
-
-#### Phase 4: Rewriters (9 tasks)
-
-| Part | Tasks | Description |
-|------|-------|-------------|
-| Part A-E | 9 | herb-rewriter gem scaffold, ASTRewriter, StringRewriter, Registry, FormatterFactory/Formatter updates |
 
 #### Phase 6: CLI (9 tasks)
 

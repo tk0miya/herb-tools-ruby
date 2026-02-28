@@ -67,6 +67,18 @@ Detailed design for the herb-printer gem: AST-to-source-code printer infrastruct
 
 **Audience:** Developers implementing printer features, custom printers, or integrating AST serialization into herb-format.
 
+### [herb-rewriter-design.md](./herb-rewriter-design.md)
+Detailed design for the herb-rewriter gem: rewriter base classes and registry.
+
+**Contents:**
+- Component structure (ASTRewriter, StringRewriter, Registry, Context, BuiltIns)
+- Two-phase rewriter model (pre: AST→AST, post: String→String)
+- Registry design: built-in catalog and custom rewriter auto-discovery via `require` + `ObjectSpace`
+- Built-in rewriter implementations (TailwindClassSorter)
+- TypeScript `@herb-tools/rewriter` package parity
+
+**Audience:** Developers implementing rewriter features, custom rewriters, or integrating the rewriter pipeline into herb-format.
+
 ### [herb-lint-autofix-design.md](./herb-lint-autofix-design.md)
 Detailed design for the herb-lint `--fix` / `--fix-unsafely` autofix feature.
 
@@ -86,7 +98,7 @@ Detailed design for the herb-lint `--fix` / `--fix-unsafely` autofix feature.
 Detailed design for the ERB template formatter.
 
 **Contents:**
-- Component structure (CLI, Runner, Formatter, RewriterRegistry, FormatPrinter, Rewriters)
+- Component structure (CLI, Runner, Formatter, FormatterFactory, FormatPrinter, FormatIgnore)
 - Data structures (FormatResult, AggregatedResult)
 - RBS interface definitions for all classes
 - Rewriter implementation patterns (pre/post phases)

@@ -253,7 +253,7 @@ formatter:
 
 | Rewriter | Phase | Description |
 |----------|-------|-------------|
-| `tailwind-class-sorter` | post | Sort Tailwind CSS classes |
+| `tailwind-class-sorter` | pre | Sort Tailwind CSS classes |
 
 ### Custom Rewriters
 
