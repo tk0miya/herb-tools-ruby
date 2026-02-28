@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Herb
-  module Highlight
+  module Highlighter
     # Renders source code context around a single offense.
     # Shows N context lines before and after the offense line, each prefixed
     # with a formatted line number. Appends a pointer (~) row below the offense

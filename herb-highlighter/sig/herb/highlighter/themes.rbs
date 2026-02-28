@@ -1,7 +1,7 @@
-# Generated from lib/herb/highlight/themes.rb with RBS::Inline
+# Generated from lib/herb/highlighter/themes.rb with RBS::Inline
 
 module Herb
-  module Highlight
+  module Highlighter
     # Built-in theme store for syntax highlighting.
     # Supports loading custom themes from JSON files.
     # Mirrors TypeScript themes.ts. All state and methods are class-level (no instances).

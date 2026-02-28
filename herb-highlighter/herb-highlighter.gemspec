@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative "lib/herb/highlight/version"
+require_relative "lib/herb/highlighter/version"
 
 Gem::Specification.new do |spec|
   spec.name = "herb-highlighter"
-  spec.version = Herb::Highlight::VERSION
+  spec.version = Herb::Highlighter::VERSION
   spec.authors = ["Claude"]
   spec.email = ["noreply@anthropic.com"]
 

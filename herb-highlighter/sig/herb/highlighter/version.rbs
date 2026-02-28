@@ -1,0 +1,7 @@
+# Generated from lib/herb/highlighter/version.rb with RBS::Inline
+
+module Herb
+  module Highlighter
+    VERSION: ::String
+  end
+end

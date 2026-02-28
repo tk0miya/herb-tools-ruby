@@ -14,7 +14,7 @@ module Herb
 
         @summary_reporter: Herb::Lint::Reporter::SummaryReporter
 
-        @diagnostic_renderer: Herb::Highlight::DiagnosticRenderer
+        @diagnostic_renderer: Herb::Highlighter::DiagnosticRenderer
 
         # @rbs io: IO
         # @rbs show_timing: bool -- when false, suppresses timing display

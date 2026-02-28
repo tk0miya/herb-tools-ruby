@@ -1,7 +1,7 @@
-# Generated from lib/herb/highlight/file_renderer.rb with RBS::Inline
+# Generated from lib/herb/highlighter/file_renderer.rb with RBS::Inline
 
 module Herb
-  module Highlight
+  module Highlighter
     # Renders a complete ERB/HTML source file with line numbers and syntax highlighting.
     # Used by the herb-highlight CLI to display a highlighted file.
     # Mirrors TypeScript FileRenderer.

@@ -3,7 +3,7 @@
 require "herb"
 
 module Herb
-  module Highlight
+  module Highlighter
     # Token-level ERB/HTML syntax highlighting.
     # Takes a single line of source text, tokenizes it with Herb.lex(), and returns
     # the same text with ANSI codes injected around each token.

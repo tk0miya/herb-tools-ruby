@@ -2,7 +2,7 @@
 
 require "tempfile"
 
-RSpec.describe Herb::Highlight::Themes do
+RSpec.describe Herb::Highlighter::Themes do
   before do
     # Reset to empty state before each test to prevent cross-test contamination
     described_class.instance_variable_set(:@themes, {})

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Herb
-  module Highlight
+  module Highlighter
     # Main orchestrator for the herb-highlighter gem.
     # Creates and wires together SyntaxRenderer, DiagnosticRenderer, and FileRenderer.
     # Provides a simple top-level API for highlighting ERB/HTML source.
