@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Herb::Highlight::DiagnosticRenderer do
+RSpec.describe Herb::Highlighter::DiagnosticRenderer do
   def strip_ansi(str)
     str.gsub(/\e\[[^m]*m/, "")
   end
@@ -18,7 +18,7 @@ RSpec.describe Herb::Highlight::DiagnosticRenderer do
 
   # Mock SyntaxRenderer that passes content through unchanged
   let(:passthrough_renderer) do
-    instance = instance_double(Herb::Highlight::SyntaxRenderer)
+    instance = instance_double(Herb::Highlighter::SyntaxRenderer)
     allow(instance).to receive(:render) { _1 }
     instance
   end
@@ -181,7 +181,7 @@ RSpec.describe Herb::Highlight::DiagnosticRenderer do
       subject { renderer.render(source_lines, line: 1, column: 1) }
 
       let(:coloring_renderer) do
-        instance = instance_double(Herb::Highlight::SyntaxRenderer)
+        instance = instance_double(Herb::Highlighter::SyntaxRenderer)
         allow(instance).to receive(:render) { "HIGHLIGHTED:#{_1}" }
         instance
       end

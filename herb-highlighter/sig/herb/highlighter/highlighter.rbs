@@ -1,7 +1,7 @@
-# Generated from lib/herb/highlight/highlighter.rb with RBS::Inline
+# Generated from lib/herb/highlighter/highlighter.rb with RBS::Inline
 
 module Herb
-  module Highlight
+  module Highlighter
     # Main orchestrator for the herb-highlighter gem.
     # Creates and wires together SyntaxRenderer, DiagnosticRenderer, and FileRenderer.
     # Provides a simple top-level API for highlighting ERB/HTML source.

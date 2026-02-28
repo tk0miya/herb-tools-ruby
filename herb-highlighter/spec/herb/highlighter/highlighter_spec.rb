@@ -1,30 +1,30 @@
 # frozen_string_literal: true
 
-RSpec.describe Herb::Highlight::Highlighter do
-  let(:syntax_renderer) { instance_double(Herb::Highlight::SyntaxRenderer) }
-  let(:file_renderer) { instance_double(Herb::Highlight::FileRenderer) }
-  let(:diagnostic_renderer) { instance_double(Herb::Highlight::DiagnosticRenderer) }
+RSpec.describe Herb::Highlighter::Highlighter do
+  let(:syntax_renderer) { instance_double(Herb::Highlighter::SyntaxRenderer) }
+  let(:file_renderer) { instance_double(Herb::Highlighter::FileRenderer) }
+  let(:diagnostic_renderer) { instance_double(Herb::Highlighter::DiagnosticRenderer) }
 
   before do
-    allow(Herb::Highlight::SyntaxRenderer).to receive(:new).and_return(syntax_renderer)
-    allow(Herb::Highlight::FileRenderer).to receive(:new).and_return(file_renderer)
-    allow(Herb::Highlight::DiagnosticRenderer).to receive(:new).and_return(diagnostic_renderer)
+    allow(Herb::Highlighter::SyntaxRenderer).to receive(:new).and_return(syntax_renderer)
+    allow(Herb::Highlighter::FileRenderer).to receive(:new).and_return(file_renderer)
+    allow(Herb::Highlighter::DiagnosticRenderer).to receive(:new).and_return(diagnostic_renderer)
   end
 
   describe "#initialize" do
     it "creates SyntaxRenderer with the given theme_name" do
       described_class.new(theme_name: "my-theme")
-      expect(Herb::Highlight::SyntaxRenderer).to have_received(:new).with(theme_name: "my-theme")
+      expect(Herb::Highlighter::SyntaxRenderer).to have_received(:new).with(theme_name: "my-theme")
     end
 
     it "creates FileRenderer with the SyntaxRenderer instance and tty" do
       described_class.new(tty: false)
-      expect(Herb::Highlight::FileRenderer).to have_received(:new).with(syntax_renderer:, tty: false)
+      expect(Herb::Highlighter::FileRenderer).to have_received(:new).with(syntax_renderer:, tty: false)
     end
 
     it "creates DiagnosticRenderer with the SyntaxRenderer instance, context_lines, and tty" do
       described_class.new(context_lines: 5, tty: false)
-      expect(Herb::Highlight::DiagnosticRenderer).to have_received(:new)
+      expect(Herb::Highlighter::DiagnosticRenderer).to have_received(:new)
         .with(syntax_renderer:, context_lines: 5, tty: false)
     end
   end

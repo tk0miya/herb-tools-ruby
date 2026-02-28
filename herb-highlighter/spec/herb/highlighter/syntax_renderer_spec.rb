@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Herb::Highlight::SyntaxRenderer do
+RSpec.describe Herb::Highlighter::SyntaxRenderer do
   # Helper to strip ANSI escape sequences from a string
   def strip_ansi(str)
     str.gsub(/\e\[[^m]*m/, "")
@@ -206,7 +206,7 @@ RSpec.describe Herb::Highlight::SyntaxRenderer do
       let(:source) { "<div>" }
 
       before do
-        Herb::Highlight::Themes.register("test-registered", test_theme)
+        Herb::Highlighter::Themes.register("test-registered", test_theme)
       end
 
       it "looks up and applies the registered theme" do

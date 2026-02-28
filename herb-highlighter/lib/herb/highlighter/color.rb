@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Herb
-  module Highlight
+  module Highlighter
     # ANSI color utilities for syntax highlighting.
     # Converts hex/named colors to escape sequences and applies them to text.
     # Mirrors TypeScript color.ts. All methods are module-level (no instances).

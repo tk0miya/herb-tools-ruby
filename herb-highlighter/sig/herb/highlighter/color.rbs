@@ -1,7 +1,7 @@
-# Generated from lib/herb/highlight/color.rb with RBS::Inline
+# Generated from lib/herb/highlighter/color.rb with RBS::Inline
 
 module Herb
-  module Highlight
+  module Highlighter
     # ANSI color utilities for syntax highlighting.
     # Converts hex/named colors to escape sequences and applies them to text.
     # Mirrors TypeScript color.ts. All methods are module-level (no instances).

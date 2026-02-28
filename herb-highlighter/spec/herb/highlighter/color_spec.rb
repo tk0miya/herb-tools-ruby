@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Herb::Highlight::Color do
+RSpec.describe Herb::Highlighter::Color do
   describe ".ansi_code" do
     subject { described_class.ansi_code(color) }
 

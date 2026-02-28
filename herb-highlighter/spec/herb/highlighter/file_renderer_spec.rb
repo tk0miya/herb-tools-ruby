@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-RSpec.describe Herb::Highlight::FileRenderer do
+RSpec.describe Herb::Highlighter::FileRenderer do
   def strip_ansi(str)
     str.gsub(/\e\[[^m]*m/, "")
   end
 
   let(:passthrough_renderer) do
-    instance = instance_double(Herb::Highlight::SyntaxRenderer)
+    instance = instance_double(Herb::Highlighter::SyntaxRenderer)
     allow(instance).to receive(:render) { _1 }
     instance
   end

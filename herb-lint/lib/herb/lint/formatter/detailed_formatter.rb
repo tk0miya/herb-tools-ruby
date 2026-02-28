@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "herb/highlight"
+require "herb/highlighter"
 
 require_relative "base"
 require_relative "../console_utils"
@@ -19,14 +19,14 @@ module Herb
         include StringUtils
 
         # @rbs @summary_reporter: Herb::Lint::Reporter::SummaryReporter
-        # @rbs @diagnostic_renderer: Herb::Highlight::DiagnosticRenderer
+        # @rbs @diagnostic_renderer: Herb::Highlighter::DiagnosticRenderer
 
         # @rbs io: IO
         # @rbs show_timing: bool -- when false, suppresses timing display
         def initialize(io: $stdout, show_timing: true) #: void
           super(io:)
           @summary_reporter = Herb::Lint::Reporter::SummaryReporter.new(io:, show_timing:)
-          @diagnostic_renderer = Herb::Highlight::DiagnosticRenderer.new(tty: io.tty?)
+          @diagnostic_renderer = Herb::Highlighter::DiagnosticRenderer.new(tty: io.tty?)
         end
 
         # Reports the aggregated linting result.

@@ -3,7 +3,7 @@
 require "json"
 
 module Herb
-  module Highlight
+  module Highlighter
     # Built-in theme store for syntax highlighting.
     # Supports loading custom themes from JSON files.
     # Mirrors TypeScript themes.ts. All state and methods are class-level (no instances).

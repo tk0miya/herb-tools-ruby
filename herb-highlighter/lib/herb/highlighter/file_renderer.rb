@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Herb
-  module Highlight
+  module Highlighter
     # Renders a complete ERB/HTML source file with line numbers and syntax highlighting.
     # Used by the herb-highlight CLI to display a highlighted file.
     # Mirrors TypeScript FileRenderer.
