@@ -33,7 +33,7 @@ module Herb
       # @rbs severity: String -- "error", "warning", "info", "hint"
       # @rbs end_line: Integer? -- 1-based end line (nil = same as line)
       # @rbs end_column: Integer? -- 1-based end column (nil = column)
-      def render(source_lines, line:, column:, severity: "error", end_line: nil, end_column: nil) #: String # rubocop:disable Metrics/ParameterLists
+      def render(source_lines, line:, column:, severity: "error", end_line: nil, end_column: nil) #: String
         end_display_line = [source_lines.size, line + @context_lines].min
         start_line = [1, line - @context_lines].max
         width = end_display_line.to_s.length
@@ -58,7 +58,7 @@ module Herb
       # @rbs width: Integer
       # @rbs pointer_len: Integer
       # @rbs sev_color: String
-      def render_line(source_lines, num, offense_line, column, width, pointer_len, sev_color) #: String # rubocop:disable Metrics/ParameterLists
+      def render_line(source_lines, num, offense_line, column, width, pointer_len, sev_color) #: String
         content = (source_lines[num - 1] || "").chomp
         offense = (num == offense_line)
         result = format_source_line(num, content, offense, width, sev_color)
