@@ -25,7 +25,7 @@ Features that exist in the TypeScript reference implementation but are missing i
 
 | Phase | File | Tasks | Description | Status |
 |-------|------|-------|-------------|--------|
-| Phase 2 | [phase-2.2.md](./phase-2.2.md) | 19 | FormatPrinter Parts E-G (ERB, Text Flow, Integration) | 🚧 |
+| Phase 2 | [phase-2.2.md](./phase-2.2.md) | 19 | FormatPrinter Parts E-G (ERB, Text Flow, Integration) | ✅ |
 | Phase 4 | [phase-4-formatter-rewriters.md](./phase-4-formatter-rewriters.md) | 9 | herb-rewriter gem, FormatterFactory/Formatter update | 🚧 |
 | Phase 5 | [phase-5-formatter-runner.md](./phase-5-formatter-runner.md) | 4 | Runner and batch file processing | 📋 |
 | Phase 6 | [phase-6-formatter-cli.md](./phase-6-formatter-cli.md) | 9 | CLI (options, --init, --stdin, --check, reporting) | 📋 |
