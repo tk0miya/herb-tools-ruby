@@ -35,9 +35,9 @@ This document is a continuation of [phase-2.1.md](./phase-2.1.md).
 - [x] Task 2.34c: Replace should_add_spacing_between_siblings? unit tests with integration tests
 - [x] Task 2.37: TypeScript Output Comparison
 - [x] Task 2.38: Performance & Edge Cases
-- [ ] Task 2.39: Full Verification
+- [x] Task 2.39: Full Verification
 
-**Progress: 15/19 tasks completed**
+**Progress: 19/19 tasks completed**
 
 ---
 
@@ -1605,28 +1605,28 @@ end
 
 **Implementation Items:**
 
-- [ ] `cd herb-format && ./bin/rake` - All checks pass
-  - [ ] RSpec tests
-  - [ ] Rubocop
-  - [ ] Steep type checking
-- [ ] Basic formatting works
-  - [ ] Indentation and newlines
-  - [ ] Inline elements on one line
-  - [ ] ERB tag normalization
-- [ ] Attribute formatting
-  - [ ] Inline vs multiline
-  - [ ] Class attribute wrapping
-  - [ ] Quote normalization
-- [ ] ERB formatting
-  - [ ] Control flow (if, unless, each)
-  - [ ] Indentation
-  - [ ] Comments
-- [ ] Special cases
-  - [ ] Content-preserving elements
-  - [ ] User spacing preservation
-  - [ ] herb:disable
-- [ ] TypeScript compatibility
-  - [ ] Same output for sample files
+- [x] `cd herb-format && ./bin/rake` - All checks pass
+  - [x] RSpec tests
+  - [x] Rubocop
+  - [x] Steep type checking
+- [x] Basic formatting works
+  - [x] Indentation and newlines
+  - [x] Inline elements on one line
+  - [x] ERB tag normalization
+- [x] Attribute formatting
+  - [x] Inline vs multiline
+  - [x] Class attribute wrapping
+  - [x] Quote normalization
+- [x] ERB formatting
+  - [x] Control flow (if, unless, each)
+  - [x] Indentation
+  - [x] Comments
+- [x] Special cases
+  - [x] Content-preserving elements
+  - [x] User spacing preservation
+  - [x] herb:disable
+- [x] TypeScript compatibility
+  - [x] Same output for sample files
 
 **Estimate:** 2 hours
 
