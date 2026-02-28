@@ -46,13 +46,13 @@ is responsible for resolving and loading those names before instantiating rewrit
 
 **Location:** `herb-format/lib/herb/format/runner.rb`
 
-- [ ] Create Runner class
-- [ ] Add initialize with config, check, write, force parameters
-- [ ] Create `Herb::Rewriter::Registry` instance and pass to FormatterFactory
-- [ ] Create formatter via FormatterFactory
-- [ ] Implement run(files) method
-- [ ] Add RBS inline type annotations
-- [ ] Create spec file
+- [x] Create Runner class
+- [x] Add initialize with config, check, write, force parameters
+- [x] Create `Herb::Rewriter::Registry` instance and pass to FormatterFactory
+- [x] Create formatter via FormatterFactory
+- [x] Implement run(files) method
+- [x] Add RBS inline type annotations
+- [x] Create spec file
 
 **Interface:**
 ```ruby
