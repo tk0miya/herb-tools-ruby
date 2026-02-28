@@ -339,9 +339,9 @@ end
 
 **Location:** `herb-format/lib/herb/format.rb`
 
-- [ ] Add require_relative for runner
-- [ ] Run rbs-inline to generate signatures
-- [ ] Run steep check
+- [x] Add require_relative for runner
+- [x] Run rbs-inline to generate signatures
+- [x] Run steep check
 
 **Verification:**
 - `cd herb-format && ./bin/steep check` passes
@@ -353,10 +353,10 @@ end
 
 **Location:** `herb-format/spec/herb/format/runner_integration_spec.rb`
 
-- [ ] Create integration test file
-- [ ] Test full workflow with real files
-- [ ] Test batch processing
-- [ ] Test error recovery
+- [x] Create integration test file
+- [x] Test full workflow with real files
+- [x] Test batch processing
+- [x] Test error recovery
 
 **Example:**
 ```ruby
@@ -412,12 +412,12 @@ end
 
 ### Task 5.4: Full Verification
 
-- [ ] Run `cd herb-format && ./bin/rake` -- all checks pass
-- [ ] Verify Runner processes multiple files correctly
-- [ ] Verify file discovery works with patterns
-- [ ] Verify write mode updates files
-- [ ] Verify check mode does not modify files
-- [ ] Verify error handling and recovery
+- [x] Run `cd herb-format && ./bin/rake` -- all checks pass
+- [x] Verify Runner processes multiple files correctly
+- [x] Verify file discovery works with patterns
+- [x] Verify write mode updates files
+- [x] Verify check mode does not modify files
+- [x] Verify error handling and recovery
 
 ---
 

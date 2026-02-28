@@ -61,7 +61,7 @@ RSpec.describe Herb::Format::Runner do
       before { File.write("test.html.erb", "<div><p>Hello</p></div>") }
 
       it "writes changed content to disk" do
-        subject
+        expect(subject.changed_count).to eq(1)
         expect(File.read("test.html.erb")).to eq("<div>\n  <p>Hello</p>\n</div>")
       end
     end
@@ -89,7 +89,7 @@ RSpec.describe Herb::Format::Runner do
       before { File.write("test.html.erb", original_content) }
 
       it "does not write ignored files" do
-        subject
+        expect(subject.ignored_count).to eq(1)
         expect(File.read("test.html.erb")).to eq(original_content)
       end
     end
@@ -103,7 +103,7 @@ RSpec.describe Herb::Format::Runner do
       before { File.write("test.html.erb", original_content) }
 
       it "does not write the errored file" do
-        subject
+        expect(subject.error_count).to eq(1)
         expect(File.read("test.html.erb")).to eq(original_content)
       end
     end
