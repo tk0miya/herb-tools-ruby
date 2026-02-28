@@ -1,0 +1,51 @@
+# Generated from lib/herb/format/runner.rb with RBS::Inline
+
+module Herb
+  module Format
+    # Orchestrates the formatting process across multiple files.
+    class Runner
+      @formatter: Formatter
+
+      @rewriter_registry: Herb::Rewriter::Registry
+
+      attr_reader check: bool
+
+      attr_reader config: Herb::Config::FormatterConfig
+
+      attr_reader force: bool
+
+      attr_reader write: bool
+
+      # @rbs config: Herb::Config::FormatterConfig
+      # @rbs check: bool
+      # @rbs write: bool
+      # @rbs force: bool
+      def initialize: (config: Herb::Config::FormatterConfig, ?check: bool, ?write: bool, ?force: bool) -> void
+
+      # Run formatting on files and return aggregated result.
+      #
+      # @rbs files: Array[String]?
+      def run: (?Array[String]? files) -> AggregatedResult
+
+      private
+
+      def build_formatter: () -> Formatter
+
+      # Discover files to format.
+      # If files is nil or empty, use config include/exclude patterns.
+      # If files is provided, use those paths directly (still respecting exclude).
+      #
+      # @rbs files: Array[String]?
+      def discover_files: (Array[String]? files) -> Array[String]
+
+      # @rbs file: String
+      def excluded?: (String file) -> bool
+
+      # @rbs file_path: String
+      def format_file: (String file_path) -> FormatResult
+
+      # @rbs result: FormatResult
+      def write_file: (FormatResult result) -> void
+    end
+  end
+end
