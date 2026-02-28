@@ -788,13 +788,13 @@ def render(source, focus_line: nil) #: String
 - Single-line source → 1 line output
 
 **Implementation Tasks:**
-- [ ] Create `lib/herb/highlight/file_renderer.rb`
-- [ ] Implement `initialize(syntax_renderer:, tty: true)`
-- [ ] Implement `render(source, focus_line: nil)`
-  - [ ] Split source into lines
-  - [ ] Line number width calculation
-  - [ ] Per-line rendering with optional focus coloring
-- [ ] Write `spec/herb/highlight/file_renderer_spec.rb`
+- [x] Create `lib/herb/highlight/file_renderer.rb`
+- [x] Implement `initialize(syntax_renderer:, tty: true)`
+- [x] Implement `render(source, focus_line: nil)`
+  - [x] Split source into lines
+  - [x] Line number width calculation
+  - [x] Per-line rendering with optional focus coloring
+- [x] Write `spec/herb/highlight/file_renderer_spec.rb`
 
 ---
 
