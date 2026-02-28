@@ -1463,7 +1463,7 @@ end
    >
    ```
 
-- [ ] Review and migrate private method tests in `format_printer_spec.rb`
+- [x] Review and migrate private method tests in `format_printer_spec.rb`
   - Replace `#capture` tests with integration-level coverage (the save/restore semantics are verified via correct formatted output)
   - Replace `push_with_indent` / `push_to_last_line` tests with integration coverage
   - Keep the `#push` newline counting test (`@string_line_count` increments by the number of `\n` characters) — this contract is subtle and not easily observable through formatted output alone
@@ -1605,28 +1605,28 @@ end
 
 **Implementation Items:**
 
-- [ ] `cd herb-format && ./bin/rake` - All checks pass
-  - [ ] RSpec tests
-  - [ ] Rubocop
-  - [ ] Steep type checking
-- [ ] Basic formatting works
-  - [ ] Indentation and newlines
-  - [ ] Inline elements on one line
-  - [ ] ERB tag normalization
-- [ ] Attribute formatting
-  - [ ] Inline vs multiline
-  - [ ] Class attribute wrapping
-  - [ ] Quote normalization
-- [ ] ERB formatting
-  - [ ] Control flow (if, unless, each)
-  - [ ] Indentation
-  - [ ] Comments
-- [ ] Special cases
-  - [ ] Content-preserving elements
-  - [ ] User spacing preservation
-  - [ ] herb:disable
-- [ ] TypeScript compatibility
-  - [ ] Same output for sample files
+- [x] `cd herb-format && ./bin/rake` - All checks pass
+  - [x] RSpec tests
+  - [x] Rubocop
+  - [x] Steep type checking
+- [x] Basic formatting works
+  - [x] Indentation and newlines
+  - [x] Inline elements on one line
+  - [x] ERB tag normalization
+- [x] Attribute formatting
+  - [x] Inline vs multiline
+  - [x] Class attribute wrapping
+  - [x] Quote normalization
+- [x] ERB formatting
+  - [x] Control flow (if, unless, each)
+  - [x] Indentation
+  - [x] Comments
+- [x] Special cases
+  - [x] Content-preserving elements
+  - [x] User spacing preservation
+  - [x] herb:disable
+- [x] TypeScript compatibility
+  - [x] Same output for sample files
 
 **Estimate:** 2 hours
 
