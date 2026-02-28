@@ -228,7 +228,7 @@ end
 | 4.14 | E | Update FormatterFactory (Phase 3 design update) | ✅ Done |
 | 4.15 | E | StringRewriter integration — end-to-end verification | ✅ Done |
 | 4.16 | E | Update RBS signatures and file layout | ✅ Done |
-| 4.17 | E | Full verification | Todo |
+| 4.17 | E | Full verification | ✅ Done |
 
 ## Design Notes
 
@@ -667,9 +667,9 @@ This task only covers the registry/pipeline integration path.
 
 ### Task 4.17: Full verification
 
-- [ ] `cd herb-rewriter && ./bin/rake` — spec, rubocop, and steep all pass
-- [ ] `cd herb-format && ./bin/rake` — spec, rubocop, and steep all pass
-- [ ] Unit tests for `ASTRewriter` and `StringRewriter` pass in `herb-rewriter`
-- [ ] `Registry.new.get_ast_rewriter("tailwind-class-sorter")` returns `BuiltIns::TailwindClassSorter`
-- [ ] Integration test confirms post-rewriters receive a string in the `Formatter` pipeline
-- [ ] `herb-format` has no direct references to removed classes (`Rewriters::Base`, etc.)
+- [x] `cd herb-rewriter && ./bin/rake` — spec, rubocop, and steep all pass
+- [x] `cd herb-format && ./bin/rake` — spec, rubocop, and steep all pass
+- [x] Unit tests for `ASTRewriter` and `StringRewriter` pass in `herb-rewriter`
+- [x] `Registry.new.resolve_ast_rewriter("tailwind-class-sorter")` returns `BuiltIns::TailwindClassSorter`
+- [x] Integration test confirms post-rewriters receive a string in the `Formatter` pipeline
+- [x] `herb-format` has no direct references to removed classes (`Rewriters::Base`, etc.)
