@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require "herb/highlight"
-Herb::Highlight::CLI.start
+require "herb/highlighter"
+require "herb/highlighter/cli"
+
+exit_code = Herb::Highlighter::CLI.new(ARGV).run
+exit exit_code
