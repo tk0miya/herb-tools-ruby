@@ -845,11 +845,11 @@ def render_diagnostic(source_lines, line:, column:, end_line: nil, end_column: n
 - With registered theme → ANSI codes in output
 
 **Implementation Tasks:**
-- [ ] Create `lib/herb/highlight/highlighter.rb`
-- [ ] Implement `initialize(theme_name: nil, context_lines: 2, tty: true)` — wire all components
-- [ ] Implement `highlight_source(source, focus_line: nil)` — delegate to `FileRenderer#render`
-- [ ] Implement `render_diagnostic(source_lines, line:, column:, end_line: nil, end_column: nil)` — delegate to `DiagnosticRenderer#render`
-- [ ] Write `spec/herb/highlight/highlighter_spec.rb`
+- [x] Create `lib/herb/highlight/highlighter.rb`
+- [x] Implement `initialize(theme_name: nil, context_lines: 2, tty: true)` — wire all components
+- [x] Implement `highlight_source(source, focus_line: nil)` — delegate to `FileRenderer#render`
+- [x] Implement `render_diagnostic(source_lines, line:, column:, end_line: nil, end_column: nil)` — delegate to `DiagnosticRenderer#render`
+- [x] Write `spec/herb/highlight/highlighter_spec.rb`
 
 ---
 
