@@ -1,0 +1,35 @@
+# Generated from lib/herb/highlighter/cli.rb with RBS::Inline
+
+module Herb
+  module Highlighter
+    # Command-line interface for herb-highlight.
+    class CLI
+      EXIT_SUCCESS: Integer
+
+      EXIT_ERROR: Integer
+
+      # @rbs argv: Array[String]
+      def initialize: (Array[String] argv) -> void
+
+      def run: () -> Integer
+
+      private
+
+      attr_reader argv: Array[String]
+
+      attr_reader options: Hash[Symbol, untyped]
+
+      attr_reader stdout: IO
+
+      attr_reader stderr: IO
+
+      # @rbs message: String
+      # @rbs backtrace: Array[String]?
+      def handle_error: (String message, ?Array[String]? backtrace) -> Integer
+
+      def execute_highlight: () -> Integer
+
+      def parse_options: () -> void
+    end
+  end
+end

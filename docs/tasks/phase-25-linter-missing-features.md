@@ -909,12 +909,76 @@ def self.start(argv = ARGV) #: void
 - `--focus 2` → highlights line 2
 
 **Implementation Tasks:**
-- [ ] Create `lib/herb/highlight/cli.rb`
-- [ ] Implement `self.start(argv = ARGV)` with `OptionParser`
-- [ ] Implement `--theme`, `--focus`, `--context-lines`, `--version`, `--help` options
-- [ ] Implement file reading and error handling (no file → usage + exit 1; not found → stderr + exit 1)
-- [ ] Make `exe/herb-highlight` executable (`chmod +x`)
-- [ ] Write `spec/herb/highlight/cli_spec.rb`
+- [x] Create `lib/herb/highlight/cli.rb`
+- [x] Implement `self.start(argv = ARGV)` with `OptionParser`
+- [x] Implement `--theme`, `--focus`, `--context-lines`, `--version`, `--help` options
+- [x] Implement file reading and error handling (no file → usage + exit 1; not found → stderr + exit 1)
+- [x] Make `exe/herb-highlight` executable (`chmod +x`)
+- [x] Write `spec/herb/highlight/cli_spec.rb`
+
+---
+
+###### Step 0.8b: `--context-lines` Line Filtering in `FileRenderer`
+
+**Files:** `lib/herb/highlight/file_renderer.rb`, `lib/herb/highlight/highlighter.rb`
+
+**Background — TypeScript behavior:**
+
+In the TypeScript implementation (`file-renderer.ts: renderWithFocusLine`), when `--focus LINE`
+is specified together with `--context-lines N`, only the lines within `[focusLine - N, focusLine + N]`
+are rendered (clamped to the file boundaries). The complete algorithm:
+
+```
+startLine = Math.max(1, focusLine - contextLines)
+endLine   = Math.min(lines.length, focusLine + contextLines)
+# Render only lines startLine..endLine; total = 2*N+1 lines (when not clamped)
+```
+
+The focus line gets the `  → ` marker; context lines are rendered with plain `    ` prefix.
+When `--focus` is **not** specified, `context-lines` has no effect and the whole file is rendered.
+
+**Current Ruby behavior (gap):**
+
+`FileRenderer#render` always renders all lines regardless of `focus_line` or `context_lines`.
+The `context_lines` value is received by `Highlighter#initialize` but only forwarded to
+`DiagnosticRenderer` (for herb-lint); it is never used in `FileRenderer`.
+
+**Required changes:**
+
+1. **`FileRenderer#render`**: When `focus_line` is given, accept `context_lines:` and render only
+   the filtered range. When `focus_line` is nil, render all lines (current behavior).
+
+   ```ruby
+   # @rbs source: String
+   # @rbs focus_line: Integer?
+   # @rbs context_lines: Integer
+   def render(source, focus_line: nil, context_lines: 2) #: String
+   ```
+
+2. **`Highlighter#highlight_source`**: Pass `context_lines` through to `FileRenderer#render`.
+
+   ```ruby
+   def highlight_source(source, focus_line: nil) #: String
+     file_renderer.render(source, focus_line:, context_lines: @context_lines)
+   end
+   ```
+
+   (Store `context_lines` in an instance variable in `Highlighter#initialize`.)
+
+**Tests (`spec/herb/highlight/cli_spec.rb`):**
+
+- `--focus 3 --context-lines 1` on a 5-line file → shows only lines 2, 3, 4; line 3 has `  → ` marker
+- `--focus 1 --context-lines 2` on a 5-line file → start clamped to line 1; shows lines 1, 2, 3
+- `--focus 5 --context-lines 2` on a 5-line file → end clamped to line 5; shows lines 3, 4, 5
+- `--context-lines 5` without `--focus` → all lines rendered (context_lines ignored)
+
+**Implementation Tasks:**
+
+- [ ] Add `context_lines:` parameter to `FileRenderer#render`; filter rendered lines when `focus_line` is set
+- [ ] Store `@context_lines` in `Highlighter#initialize`; pass to `FileRenderer#render` via `highlight_source`
+- [ ] Update `spec/herb/highlight/file_renderer_spec.rb` for the new filtering behavior
+- [ ] Update `spec/herb/highlight/highlighter_spec.rb` for `context_lines` passthrough
+- [ ] Update `spec/herb/highlight/cli_spec.rb` (remove `pending` from the integration tests)
 
 ---
 
