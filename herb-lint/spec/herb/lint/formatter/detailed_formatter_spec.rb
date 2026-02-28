@@ -54,12 +54,12 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
 
         # Source code context (lines 1-5 with line 3 +/- 2 context)
         expected_source_context = [
-          "  1 | <div>",
-          "  2 |   <h1>Title</h1>",
-          "  3 |   <img src=\"photo.jpg\">",
-          "    |   ^",
-          "  4 |   <p>Some text</p>",
-          "  5 | </div>"
+          "    1 │ <div>",
+          "    2 │   <h1>Title</h1>",
+          "  → 3 │   <img src=\"photo.jpg\">",
+          "      │   ~",
+          "    4 │   <p>Some text</p>",
+          "    5 │ </div>"
         ].join("\n")
 
         expect(actual).to include(expected_source_context)
@@ -109,9 +109,9 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
           "",
           "  1:1    ✗ img tag should have an alt attribute (html-img-require-alt)",
           "",
-          "  1 | <img src=\"user.jpg\">",
-          "    | ^",
-          "  2 | <p>Text</p>"
+          "  → 1 │ <img src=\"user.jpg\">",
+          "      │ ~",
+          "    2 │ <p>Text</p>"
         ].join("\n")
 
         expect(actual).to include(first_file_section)
@@ -123,10 +123,10 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
           "",
           "  2:3    ⚠ Attribute value should be quoted (html-attribute-double-quotes)",
           "",
-          "  1 | <div class='container'>",
-          "  2 |   <img src=\"post.jpg\">",
-          "    |   ^",
-          "  3 | </div>"
+          "    1 │ <div class='container'>",
+          "  → 2 │   <img src=\"post.jpg\">",
+          "      │   ~",
+          "    3 │ </div>"
         ].join("\n")
 
         expect(actual).to include(second_file_section)
@@ -173,11 +173,11 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
         error_section = [
           "  2:1    ✗ Error message (test-rule)",
           "",
-          "  1 | <div>",
-          "  2 |   <p>Error line</p>",
-          "    | ^",
-          "  3 |   <p>Warning line</p>",
-          "  4 | </div>"
+          "    1 │ <div>",
+          "  → 2 │   <p>Error line</p>",
+          "      │ ~",
+          "    3 │   <p>Warning line</p>",
+          "    4 │ </div>"
         ].join("\n")
 
         expect(actual).to include(error_section)
@@ -186,11 +186,11 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
         warning_section = [
           "  3:1    ⚠ Warning message (test-rule)",
           "",
-          "  1 | <div>",
-          "  2 |   <p>Error line</p>",
-          "  3 |   <p>Warning line</p>",
-          "    | ^",
-          "  4 | </div>"
+          "    1 │ <div>",
+          "    2 │   <p>Error line</p>",
+          "  → 3 │   <p>Warning line</p>",
+          "      │ ~",
+          "    4 │ </div>"
         ].join("\n")
 
         expect(actual).to include(warning_section)
@@ -286,10 +286,10 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
 
         # Should show lines 1-3 (line 1 + 2 lines after, can't go below line 1)
         expected_context = [
-          "  1 | <img src=\"photo.jpg\">",
-          "    | ^",
-          "  2 | <p>Line 2</p>",
-          "  3 | <p>Line 3</p>"
+          "  → 1 │ <img src=\"photo.jpg\">",
+          "      │ ~",
+          "    2 │ <p>Line 2</p>",
+          "    3 │ <p>Line 3</p>"
         ].join("\n")
 
         expect(actual).to include(expected_context)
@@ -327,10 +327,10 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
 
         # Should show lines 1-3 (2 lines before + line 3, can't go beyond last line)
         expected_context = [
-          "  1 | <p>Line 1</p>",
-          "  2 | <p>Line 2</p>",
-          "  3 | <img src=\"photo.jpg\">",
-          "    | ^"
+          "    1 │ <p>Line 1</p>",
+          "    2 │ <p>Line 2</p>",
+          "  → 3 │ <img src=\"photo.jpg\">",
+          "      │ ~"
         ].join("\n")
 
         expect(actual).to include(expected_context)
@@ -408,11 +408,11 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
         first_offense_section = [
           "  2:3    ✗ First img tag missing alt (html-img-require-alt)",
           "",
-          "  1 | <div>",
-          "  2 |   <img src=\"photo1.jpg\">",
-          "    |   ^",
-          "  3 |   <p>Some text</p>",
-          "  4 |   <img src=\"photo2.jpg\">"
+          "    1 │ <div>",
+          "  → 2 │   <img src=\"photo1.jpg\">",
+          "      │   ~",
+          "    3 │   <p>Some text</p>",
+          "    4 │   <img src=\"photo2.jpg\">"
         ].join("\n")
 
         expect(actual).to include(first_offense_section)
@@ -421,11 +421,11 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
         second_offense_section = [
           "  4:3    ✗ Second img tag missing alt (html-img-require-alt)",
           "",
-          "  2 |   <img src=\"photo1.jpg\">",
-          "  3 |   <p>Some text</p>",
-          "  4 |   <img src=\"photo2.jpg\">",
-          "    |   ^",
-          "  5 | </div>"
+          "    2 │   <img src=\"photo1.jpg\">",
+          "    3 │   <p>Some text</p>",
+          "  → 4 │   <img src=\"photo2.jpg\">",
+          "      │   ~",
+          "    5 │ </div>"
         ].join("\n")
 
         expect(actual).to include(second_offense_section)
@@ -458,17 +458,17 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
         ]
       end
 
-      it "displays multi-character caret to show the full range" do
+      it "displays multi-character pointer to show the full range" do
         subject
 
         actual = strip_colors(output.string)
 
-        # Should show caret spanning from column 3 to 24 (22 characters)
+        # Should show pointer spanning from column 3 to 24 (22 characters)
         expected_context = [
-          "  1 | <div>",
-          "  2 |   <img src=\"photo.jpg\">",
-          "    |   ^^^^^^^^^^^^^^^^^^^^^^",
-          "  3 | </div>"
+          "    1 │ <div>",
+          "  → 2 │   <img src=\"photo.jpg\">",
+          "      │   ~~~~~~~~~~~~~~~~~~~~~~",
+          "    3 │ </div>"
         ].join("\n")
 
         expect(actual).to include(expected_context)

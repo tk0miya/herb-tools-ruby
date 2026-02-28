@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "herb/highlight"
+
 require_relative "base"
 require_relative "../console_utils"
 require_relative "../string_utils"
@@ -16,15 +18,15 @@ module Herb
         include ConsoleUtils
         include StringUtils
 
-        CONTEXT_LINES = 2 # Number of lines to show before and after the offense
-
         # @rbs @summary_reporter: Herb::Lint::Reporter::SummaryReporter
+        # @rbs @diagnostic_renderer: Herb::Highlight::DiagnosticRenderer
 
         # @rbs io: IO
         # @rbs show_timing: bool -- when false, suppresses timing display
         def initialize(io: $stdout, show_timing: true) #: void
           super(io:)
           @summary_reporter = Herb::Lint::Reporter::SummaryReporter.new(io:, show_timing:)
+          @diagnostic_renderer = Herb::Highlight::DiagnosticRenderer.new(tty: io.tty?)
         end
 
         # Reports the aggregated linting result.
@@ -80,11 +82,15 @@ module Herb
         # @rbs offense: Offense
         # @rbs source_lines: Array[String]
         def print_offense(offense, source_lines) #: void
-          # Print offense header
           print_offense_header(offense)
-
-          # Print source code lines
-          print_source_lines(offense, source_lines)
+          io.print @diagnostic_renderer.render(
+            source_lines,
+            line: offense.line,
+            column: offense.column,
+            severity: offense.severity,
+            end_line: offense.location.end.line,
+            end_column: offense.location.end.column
+          )
         end
 
         # Prints the offense header line.
@@ -102,80 +108,6 @@ module Herb
 
           io.puts line
           io.puts
-        end
-
-        # Prints source code lines around the offense.
-        #
-        # @rbs offense: Offense
-        # @rbs source_lines: Array[String]
-        def print_source_lines(offense, source_lines) #: void
-          start_line = [1, offense.line - CONTEXT_LINES].max
-          end_line = [source_lines.size, offense.line + CONTEXT_LINES].min
-
-          max_line_num_width = end_line.to_s.size
-
-          (start_line..end_line).each do |line_num|
-            line_content = source_lines[line_num - 1]&.chomp || ""
-            print_source_line(line_num, line_content, offense, max_line_num_width)
-          end
-        end
-
-        # Prints a single source code line with line number and highlighting.
-        #
-        # @rbs line_num: Integer
-        # @rbs content: String
-        # @rbs offense: Offense
-        # @rbs width: Integer
-        def print_source_line(line_num, content, offense, width) #: void
-          is_offense_line = (line_num == offense.line)
-
-          # Format line number
-          line_num_str = line_num.to_s.rjust(width)
-          if is_offense_line
-            line_num_display = colorize(line_num_str, color: :red, bold: true)
-            separator = colorize(" | ", color: :red, bold: true)
-          else
-            line_num_display = colorize(line_num_str, color: :gray, dim: true)
-            separator = colorize(" | ", color: :gray)
-          end
-
-          io.puts "  #{line_num_display}#{separator}#{content}"
-
-          # Print column indicator for the offense line
-          print_column_indicator(offense, width) if is_offense_line
-        end
-
-        # Prints the column indicator (caret) pointing to the offense location.
-        #
-        # @rbs offense: Offense
-        # @rbs line_num_width: Integer
-        def print_column_indicator(offense, line_num_width) #: void
-          spacing = indicator_spacing(offense, line_num_width)
-          caret = colorize("^" * indicator_caret_length(offense), color: :red, bold: true)
-          io.puts "#{spacing}#{caret}"
-        end
-
-        # Calculates the spacing string before the caret.
-        #
-        # @rbs offense: Offense
-        # @rbs line_num_width: Integer
-        def indicator_spacing(offense, line_num_width) #: String
-          # Use [col - 1, 0].max to handle column 0 (1-based columns minus 1 for offset)
-          column_offset = [offense.column - 1, 0].max
-          "  #{' ' * line_num_width} | #{' ' * column_offset}"
-        end
-
-        # Calculates the caret length based on the offense location range.
-        #
-        # @rbs offense: Offense
-        def indicator_caret_length(offense) #: Integer
-          if offense.location.end.line == offense.line
-            # Multi-column offense on same line
-            [offense.location.end.column - offense.column + 1, 1].max
-          else
-            # Multi-line offense or single character
-            1
-          end
         end
 
         # Returns the colored symbol for a severity level.
