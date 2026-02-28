@@ -297,17 +297,17 @@ end
 
 ```rbs
 class Herb::Format::Formatter
-  @pre_rewriters: Array[Rewriters::Base]
-  @post_rewriters: Array[Rewriters::Base]
+  @pre_rewriters: Array[Herb::Rewriter::ASTRewriter]
+  @post_rewriters: Array[Herb::Rewriter::StringRewriter]
   @config: Herb::Config::FormatterConfig
 
-  attr_reader pre_rewriters: Array[Rewriters::Base]
-  attr_reader post_rewriters: Array[Rewriters::Base]
+  attr_reader pre_rewriters: Array[Herb::Rewriter::ASTRewriter]
+  attr_reader post_rewriters: Array[Herb::Rewriter::StringRewriter]
   attr_reader config: Herb::Config::FormatterConfig
 
   def initialize: (
-    Array[Rewriters::Base] pre_rewriters,
-    Array[Rewriters::Base] post_rewriters,
+    Array[Herb::Rewriter::ASTRewriter] pre_rewriters,
+    Array[Herb::Rewriter::StringRewriter] post_rewriters,
     Herb::Config::FormatterConfig config
   ) -> void
 
@@ -315,7 +315,8 @@ class Herb::Format::Formatter
 
   private
 
-  def apply_rewriters: (Herb::AST::Document ast, Array[Rewriters::Base] rewriters, Context context) -> Herb::AST::Document
+  def apply_pre_rewriters: (Herb::AST::DocumentNode ast, Array[Herb::Rewriter::ASTRewriter] rewriters, Context context) -> Herb::AST::DocumentNode
+  def apply_post_rewriters: (String formatted, Array[Herb::Rewriter::StringRewriter] rewriters, Context context) -> String
 end
 ```
 
@@ -337,7 +338,7 @@ end
 - `Herb.parse` - AST parsing (from herb gem)
 - `Context` - Execution context
 - `FormatPrinter` - AST formatting (extends Printer::Base)
-- `Rewriters::Base` subclasses - Rewriter implementations
+- `Herb::Rewriter::ASTRewriter` / `StringRewriter` subclasses - Rewriter implementations (from herb-rewriter gem)
 
 ### Herb::Format::FormatterFactory
 
