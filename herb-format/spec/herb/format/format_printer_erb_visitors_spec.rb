@@ -165,6 +165,24 @@ RSpec.describe Herb::Format::FormatPrinter do
           end
         end
 
+        context "with nested each and if block" do
+          let(:source) do
+            "<ul><% items.each do |item| %><% if item.active? %><li><%= item.name %></li><% end %><% end %></ul>"
+          end
+
+          it "indents each and if at their respective levels" do
+            expect(subject).to eq(<<~EXPECTED.chomp)
+              <ul>
+                <% items.each do |item| %>
+                  <% if item.active? %>
+                    <li><%= item.name %></li>
+                  <% end %>
+                <% end %>
+              </ul>
+            EXPECTED
+          end
+        end
+
         context "with only whitespace between tags" do
           let(:source) { "<% items.each do |item| %>   <% end %>" }
 

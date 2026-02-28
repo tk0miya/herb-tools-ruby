@@ -27,6 +27,59 @@ RSpec.describe Herb::Format::FormatPrinter do
           expect(subject).to eq("Plain text")
         end
       end
+
+      context "with empty input" do
+        let(:source) { "" }
+
+        it "returns empty string" do
+          expect(subject).to eq("")
+        end
+      end
+
+      context "with whitespace-only input" do
+        let(:source) { "   " }
+
+        it "returns whitespace unchanged" do
+          expect(subject).to eq("   ")
+        end
+      end
+
+      context "with newlines-only input" do
+        let(:source) { "\n\n\n" }
+
+        it "returns newlines unchanged" do
+          expect(subject).to eq("\n\n\n")
+        end
+      end
+
+      context "with Unicode literal content" do
+        context "with multibyte UTF-8 characters" do
+          let(:source) { "\u3053\u3093\u306B\u3061\u306F\u4E16\u754C" }
+
+          it "preserves Japanese text unchanged" do
+            expect(subject).to eq("\u3053\u3093\u306B\u3061\u306F\u4E16\u754C")
+          end
+        end
+
+        context "with emoji characters" do
+          let(:source) { "Hello \u{1F30D} World" }
+
+          it "preserves emoji in text content" do
+            expect(subject).to eq("Hello \u{1F30D} World")
+          end
+        end
+      end
+
+      context "with long text content" do
+        context "with 1000-character text node" do
+          let(:long_content) { "a" * 1000 }
+          let(:source) { long_content }
+
+          it "outputs the content without truncation" do
+            expect(subject).to include(long_content)
+          end
+        end
+      end
     end
 
     context "with HTML elements" do
@@ -116,6 +169,14 @@ RSpec.describe Herb::Format::FormatPrinter do
                 <p>Second</p>
               </div>
             EXPECTED
+          end
+        end
+
+        context "with 20 levels of nesting" do
+          let(:source) { 20.times.reduce("<p>inner</p>") { |inner, _| "<div>#{inner}</div>" } }
+
+          it "formats the innermost element at the correct indentation depth" do
+            expect(subject).to include("#{'  ' * 20}<p>inner</p>")
           end
         end
       end
