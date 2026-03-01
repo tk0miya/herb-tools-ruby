@@ -25,11 +25,11 @@ module Herb
 
         # @rbs io: IO
         # @rbs show_timing: bool -- when false, suppresses timing display
-        # @rbs theme_name: String? -- syntax highlighting theme name; nil = no highlighting
-        def initialize(io: $stdout, show_timing: true, theme_name: nil) #: void
+        # @rbs theme_name: String? -- theme name or path; default = onedark; nil = no highlighting
+        def initialize(io: $stdout, show_timing: true, theme_name: Herb::Highlighter::Themes::DEFAULT_THEME) #: void
           super(io:)
           @summary_reporter = Herb::Lint::Reporter::SummaryReporter.new(io:, show_timing:)
-          syntax_renderer = Herb::Highlighter::SyntaxRenderer.new(theme_name:)
+          syntax_renderer = Herb::Highlighter::SyntaxRenderer.new(theme_name:, tty: io.tty?)
           @diagnostic_renderer = Herb::Highlighter::DiagnosticRenderer.new(
             syntax_renderer:,
             context_lines: CONTEXT_LINES,

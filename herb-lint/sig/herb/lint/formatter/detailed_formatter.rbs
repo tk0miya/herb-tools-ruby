@@ -20,7 +20,7 @@ module Herb
 
         # @rbs io: IO
         # @rbs show_timing: bool -- when false, suppresses timing display
-        # @rbs theme_name: String? -- syntax highlighting theme name; nil = no highlighting
+        # @rbs theme_name: String? -- theme name or path; default = onedark; nil = no highlighting
         def initialize: (?io: IO, ?show_timing: bool, ?theme_name: String?) -> void
 
         # Reports the aggregated linting result.

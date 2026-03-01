@@ -12,9 +12,9 @@ RSpec.describe Herb::Highlighter::Highlighter do
   end
 
   describe "#initialize" do
-    it "creates SyntaxRenderer with the given theme_name" do
-      described_class.new(theme_name: "my-theme")
-      expect(Herb::Highlighter::SyntaxRenderer).to have_received(:new).with(theme_name: "my-theme")
+    it "creates SyntaxRenderer with the given theme_name and tty" do
+      described_class.new(theme_name: "my-theme", tty: false)
+      expect(Herb::Highlighter::SyntaxRenderer).to have_received(:new).with(theme_name: "my-theme", tty: false)
     end
 
     it "creates FileRenderer with the SyntaxRenderer instance and tty" do

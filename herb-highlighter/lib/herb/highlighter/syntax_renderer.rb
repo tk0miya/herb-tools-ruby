@@ -25,9 +25,12 @@ module Herb
 
       # @rbs theme_name: String? -- looked up via Themes; nil = plain text
       # @rbs theme: Hash[String, String?]? -- pre-resolved theme (for testing; takes priority over theme_name)
-      def initialize(theme_name: nil, theme: nil) #: void
+      # @rbs tty: bool -- when false, disables ANSI output regardless of theme
+      def initialize(theme_name: nil, theme: nil, tty: true) #: void
         @theme =
-          if theme
+          if !tty
+            nil
+          elsif theme
             theme
           elsif theme_name
             Themes.names.include?(theme_name) ? Themes.resolve(theme_name) : nil
