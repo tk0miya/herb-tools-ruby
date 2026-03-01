@@ -7,6 +7,8 @@ module Herb
     # Provides a simple top-level API for highlighting ERB/HTML source.
     # Mirrors TypeScript Highlighter.
     class Highlighter
+      private attr_reader context_lines: Integer
+
       private attr_reader diagnostic_renderer: DiagnosticRenderer
 
       private attr_reader file_renderer: FileRenderer

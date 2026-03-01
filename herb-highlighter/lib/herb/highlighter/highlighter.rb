@@ -7,6 +7,7 @@ module Herb
     # Provides a simple top-level API for highlighting ERB/HTML source.
     # Mirrors TypeScript Highlighter.
     class Highlighter
+      private attr_reader :context_lines #: Integer
       private attr_reader :diagnostic_renderer #: DiagnosticRenderer
       private attr_reader :file_renderer #: FileRenderer
       private attr_reader :syntax_renderer #: SyntaxRenderer
@@ -15,6 +16,7 @@ module Herb
       # @rbs context_lines: Integer
       # @rbs tty: bool
       def initialize(theme_name: nil, context_lines: 2, tty: true) #: void
+        @context_lines = context_lines
         @syntax_renderer = SyntaxRenderer.new(theme_name:)
         @file_renderer = FileRenderer.new(syntax_renderer: @syntax_renderer, tty:)
         @diagnostic_renderer = DiagnosticRenderer.new(
@@ -29,7 +31,7 @@ module Herb
       # @rbs source: String
       # @rbs focus_line: Integer?
       def highlight_source(source, focus_line: nil) #: String
-        file_renderer.render(source, focus_line:)
+        file_renderer.render(source, focus_line:, context_lines:)
       end
 
       # Renders source context for a single offense (used when embedding in other tools).
