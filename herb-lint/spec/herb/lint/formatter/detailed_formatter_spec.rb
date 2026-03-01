@@ -6,6 +6,12 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
     text.gsub(/\e\[.*?m/, "")
   end
 
+  describe "CONTEXT_LINES" do
+    it "equals 2" do
+      expect(described_class::CONTEXT_LINES).to eq(2)
+    end
+  end
+
   describe "#report" do
     subject { formatter.report(aggregated_result) }
 
@@ -429,6 +435,65 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
         ].join("\n")
 
         expect(actual).to include(second_offense_section)
+      end
+    end
+
+    context "with TTY output and theme_name:" do
+      # A StringIO with tty? stubbed to true so that DiagnosticRenderer and
+      # SyntaxRenderer both operate in TTY mode.
+      let(:tty_output) do
+        io = StringIO.new
+        allow(io).to receive(:tty?).and_return(true)
+        io
+      end
+      let(:results) do
+        [
+          build(:lint_result,
+                source: "<div>\n  <p>Hello</p>\n</div>\n",
+                unfixed_offenses: [
+                  build(:offense,
+                        severity: "error",
+                        rule_name: "test-rule",
+                        message: "Test error",
+                        start_line: 1,
+                        start_column: 1)
+                ])
+        ]
+      end
+
+      context "when theme_name: nil" do
+        let(:formatter) { described_class.new(io: tty_output, theme_name: nil) }
+
+        it "produces no 24-bit ANSI syntax highlighting codes" do
+          subject
+
+          # DiagnosticRenderer uses named ANSI codes (e.g. \e[90m) for line numbers/arrows.
+          # SyntaxRenderer with a hex-color theme produces \e[38;2;R;G;Bm (24-bit true-color).
+          # With theme_name: nil, no 24-bit codes should appear.
+          expect(tty_output.string).not_to match(/\e\[38;2;/)
+        end
+      end
+
+      context "when theme_name: 'onedark'" do
+        let(:formatter) { described_class.new(io: tty_output, theme_name: "onedark") }
+
+        it "produces 24-bit ANSI syntax highlighting codes" do
+          subject
+
+          # Onedark theme uses hex colors (e.g. #E06C75 for HTML tags), which produce
+          # \e[38;2;R;G;Bm escape codes via Color.colorize.
+          expect(tty_output.string).to match(/\e\[38;2;/)
+        end
+      end
+
+      context "when theme_name: is an unknown name" do
+        let(:formatter) { described_class.new(io: tty_output, theme_name: "unknown-theme") }
+
+        it "does not raise an error and produces no 24-bit ANSI syntax highlighting codes" do
+          expect { subject }.not_to raise_error
+          # Unknown theme falls back to plain text for source content.
+          expect(tty_output.string).not_to match(/\e\[38;2;/)
+        end
       end
     end
 
