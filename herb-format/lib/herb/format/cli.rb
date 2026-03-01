@@ -227,9 +227,6 @@ module Herb
       rescue Herb::Config::Error => e
         stderr.puts "Error: #{e.message}"
         EXIT_RUNTIME_ERROR
-      rescue StandardError => e
-        stderr.puts "Error creating configuration file: #{e.message}"
-        EXIT_RUNTIME_ERROR
       end
 
       # @rbs result: AggregatedResult

@@ -545,10 +545,10 @@ end
 
 **Location:** `herb-format/lib/herb/format/cli.rb`
 
-- [ ] Implement handle_init() method
-- [ ] Generate default .herb.yml file
-- [ ] Handle existing file case
-- [ ] Add tests
+- [x] Implement handle_init() method
+- [x] Generate default .herb.yml file
+- [x] Handle existing file case
+- [x] Add tests
 
 **Implementation:**
 ```ruby

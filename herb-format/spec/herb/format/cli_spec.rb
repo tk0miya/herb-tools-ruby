@@ -48,9 +48,10 @@ RSpec.describe Herb::Format::CLI do
       context "when .herb.yml already exists" do
         before { File.write(".herb.yml", "# existing") }
 
-        it "fails with runtime error" do
+        it "returns EXIT_RUNTIME_ERROR, prints error to stderr, and leaves the file unchanged" do
           expect(subject).to eq(described_class::EXIT_RUNTIME_ERROR)
           expect(stderr.string).to include("already exists")
+          expect(File.read(".herb.yml")).to eq("# existing")
         end
       end
     end
