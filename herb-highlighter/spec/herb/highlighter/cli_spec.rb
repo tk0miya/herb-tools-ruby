@@ -163,9 +163,6 @@ RSpec.describe Herb::Highlighter::CLI do
         end
       end
 
-      # Step 0.8b: FileRenderer line filtering is not yet implemented.
-      # When --focus and --context-lines are combined, only focusLine ± contextLines
-      # lines should be shown.
       context "with --focus and --context-lines filtering (5-line file)" do
         before do
           tempfile.write("line one\nline two\nline three\nline four\nline five\n")
@@ -176,7 +173,6 @@ RSpec.describe Herb::Highlighter::CLI do
           let(:argv) { ["--focus", "3", "--context-lines", "1", tempfile.path] }
 
           it "shows lines 2-4 with arrow on line 3" do
-            pending "Step 0.8b: implement --context-lines line filtering in FileRenderer"
             output = capture_stdout { subject }
             expect(output).to include("  → 3 │")
             expect(output).to include("    2 │")
@@ -190,7 +186,6 @@ RSpec.describe Herb::Highlighter::CLI do
           let(:argv) { ["--focus", "1", "--context-lines", "2", tempfile.path] }
 
           it "shows lines 1-3 with arrow on line 1" do
-            pending "Step 0.8b: implement --context-lines line filtering in FileRenderer"
             output = capture_stdout { subject }
             expect(output).to include("  → 1 │")
             expect(output).to include("    2 │")
@@ -203,7 +198,6 @@ RSpec.describe Herb::Highlighter::CLI do
           let(:argv) { ["--focus", "5", "--context-lines", "2", tempfile.path] }
 
           it "shows lines 3-5 with arrow on line 5" do
-            pending "Step 0.8b: implement --context-lines line filtering in FileRenderer"
             output = capture_stdout { subject }
             expect(output).to include("  → 5 │")
             expect(output).to include("    4 │")

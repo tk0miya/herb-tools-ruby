@@ -34,18 +34,19 @@ RSpec.describe Herb::Highlighter::Highlighter do
 
     before { allow(file_renderer).to receive(:render).and_return("rendered") }
 
-    it "delegates to FileRenderer#render with source and focus_line" do
-      described_class.new.highlight_source(source, focus_line: 2)
-      expect(file_renderer).to have_received(:render).with(source, focus_line: 2)
+    context "with explicit focus_line and context_lines" do
+      it "forwards them to FileRenderer#render" do
+        described_class.new(context_lines: 3).highlight_source(source, focus_line: 2)
+        expect(file_renderer).to have_received(:render).with(source, focus_line: 2, context_lines: 3)
+      end
     end
 
-    it "passes nil focus_line when not specified" do
-      described_class.new.highlight_source(source)
-      expect(file_renderer).to have_received(:render).with(source, focus_line: nil)
-    end
-
-    it "returns the result from FileRenderer#render" do
-      expect(described_class.new.highlight_source(source)).to eq("rendered")
+    context "with default arguments" do
+      it "uses nil focus_line and default context_lines and returns the rendered result" do
+        result = described_class.new.highlight_source(source)
+        expect(file_renderer).to have_received(:render).with(source, focus_line: nil, context_lines: 2)
+        expect(result).to eq("rendered")
+      end
     end
   end
 

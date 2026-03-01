@@ -18,12 +18,23 @@ module Herb
 
       # Renders all lines of source with sequential line numbers.
       # Each line ends with a newline.
+      # When focus_line is given, only renders lines within context_lines of the focus line.
       #
       # @rbs source: String
-      # @rbs focus_line: Integer? -- 1-based line to render in red+bold (nil = no focus)
-      def render: (String source, ?focus_line: Integer?) -> String
+      # @rbs focus_line: Integer? -- 1-based line to render in cyan+bold (nil = no focus, renders all)
+      # @rbs context_lines: Integer -- number of context lines around focus_line (only used when focus_line is set)
+      def render: (String source, ?focus_line: Integer?, ?context_lines: Integer) -> String
 
       private
+
+      # Returns the range of line numbers to render.
+      # When focus_line is set, clamps the window to the file bounds.
+      # When focus_line is nil, returns the full range.
+      #
+      # @rbs total_lines: Integer
+      # @rbs focus_line: Integer?
+      # @rbs context_lines: Integer
+      def render_range: (Integer total_lines, Integer? focus_line, Integer context_lines) -> Range[Integer]
 
       # Renders a single line with line number prefix.
       # Focus line uses cyan arrow prefix and bold line number; all other lines use gray and dim.

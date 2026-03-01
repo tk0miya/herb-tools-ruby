@@ -13,12 +13,13 @@ RSpec.describe Herb::Highlighter::FileRenderer do
 
   describe "#render" do
     subject do
-      described_class.new(syntax_renderer: passthrough_renderer, tty:).render(source, focus_line:)
+      described_class.new(syntax_renderer: passthrough_renderer, tty:).render(source, focus_line:, context_lines:)
     end
 
     let(:source) { "<html>\n<body>\n<div>hello</div>\n</body>\n</html>\n" }
     let(:tty) { true }
     let(:focus_line) { nil }
+    let(:context_lines) { 2 }
 
     context "with a 5-line source and no focus" do
       it "renders all lines with sequential line numbers, each ending with a newline, with gray ANSI codes" do
@@ -91,6 +92,62 @@ RSpec.describe Herb::Highlighter::FileRenderer do
       it "produces no ANSI codes even for the focus line, with arrow prefix on focus line" do
         expect(subject).not_to match(/\e\[[^m]*m/)
         expect(subject).to include("  → 2 │ <body>")
+      end
+    end
+
+    context "with focus_line and context_lines filtering" do
+      let(:source) { "line one\nline two\nline three\nline four\nline five\n" }
+
+      context "with focus within normal range (focus=3, context_lines=1)" do
+        let(:focus_line) { 3 }
+        let(:context_lines) { 1 }
+
+        it "renders only lines 2-4 with arrow on line 3" do
+          plain = strip_ansi(subject)
+          expect(plain).to include("  → 3 │ line three")
+          expect(plain).to include("    2 │ line two")
+          expect(plain).to include("    4 │ line four")
+          expect(plain).not_to include("    1 │")
+          expect(plain).not_to include("    5 │")
+          expect(subject.lines.count).to eq(3)
+        end
+      end
+
+      context "with focus clamped to start (focus=1, context_lines=2)" do
+        let(:focus_line) { 1 }
+        let(:context_lines) { 2 }
+
+        it "renders only lines 1-3 with arrow on line 1" do
+          plain = strip_ansi(subject)
+          expect(plain).to include("  → 1 │ line one")
+          expect(plain).to include("    2 │ line two")
+          expect(plain).to include("    3 │ line three")
+          expect(plain).not_to include("    4 │")
+          expect(subject.lines.count).to eq(3)
+        end
+      end
+
+      context "with focus clamped to end (focus=5, context_lines=2)" do
+        let(:focus_line) { 5 }
+        let(:context_lines) { 2 }
+
+        it "renders only lines 3-5 with arrow on line 5" do
+          plain = strip_ansi(subject)
+          expect(plain).to include("  → 5 │ line five")
+          expect(plain).to include("    4 │ line four")
+          expect(plain).to include("    3 │ line three")
+          expect(plain).not_to include("    2 │")
+          expect(subject.lines.count).to eq(3)
+        end
+      end
+
+      context "without focus_line (context_lines has no filtering effect)" do
+        let(:focus_line) { nil }
+        let(:context_lines) { 1 }
+
+        it "renders all 5 lines" do
+          expect(subject.lines.count).to eq(5)
+        end
       end
     end
   end

@@ -974,11 +974,11 @@ The `context_lines` value is received by `Highlighter#initialize` but only forwa
 
 **Implementation Tasks:**
 
-- [ ] Add `context_lines:` parameter to `FileRenderer#render`; filter rendered lines when `focus_line` is set
-- [ ] Store `@context_lines` in `Highlighter#initialize`; pass to `FileRenderer#render` via `highlight_source`
-- [ ] Update `spec/herb/highlight/file_renderer_spec.rb` for the new filtering behavior
-- [ ] Update `spec/herb/highlight/highlighter_spec.rb` for `context_lines` passthrough
-- [ ] Update `spec/herb/highlight/cli_spec.rb` (remove `pending` from the integration tests)
+- [x] Add `context_lines:` parameter to `FileRenderer#render`; filter rendered lines when `focus_line` is set
+- [x] Store `@context_lines` in `Highlighter#initialize`; pass to `FileRenderer#render` via `highlight_source`
+- [x] Update `spec/herb/highlight/file_renderer_spec.rb` for the new filtering behavior
+- [x] Update `spec/herb/highlight/highlighter_spec.rb` for `context_lines` passthrough
+- [x] Update `spec/herb/highlight/cli_spec.rb` (remove `pending` from the integration tests)
 
 ---
 
