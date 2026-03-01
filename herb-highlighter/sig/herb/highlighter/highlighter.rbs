@@ -13,12 +13,10 @@ module Herb
 
       private attr_reader file_renderer: FileRenderer
 
-      private attr_reader syntax_renderer: SyntaxRenderer
-
-      # @rbs theme_name: String? -- nil = plain text (no highlighting)
+      # @rbs file_renderer: FileRenderer
+      # @rbs diagnostic_renderer: DiagnosticRenderer
       # @rbs context_lines: Integer
-      # @rbs tty: bool
-      def initialize: (?theme_name: String?, ?context_lines: Integer, ?tty: bool) -> void
+      def initialize: (?file_renderer: FileRenderer, ?diagnostic_renderer: DiagnosticRenderer, ?context_lines: Integer) -> void
 
       # Renders a complete source file with line numbers and highlighting.
       #

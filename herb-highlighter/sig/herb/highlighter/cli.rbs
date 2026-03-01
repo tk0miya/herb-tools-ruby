@@ -29,6 +29,8 @@ module Herb
 
       def execute_highlight: () -> Integer
 
+      def build_highlighter: () -> Highlighter
+
       def parse_options: () -> void
     end
   end

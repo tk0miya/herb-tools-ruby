@@ -10,21 +10,14 @@ module Herb
       private attr_reader :context_lines #: Integer
       private attr_reader :diagnostic_renderer #: DiagnosticRenderer
       private attr_reader :file_renderer #: FileRenderer
-      private attr_reader :syntax_renderer #: SyntaxRenderer
 
-      # @rbs theme_name: String? -- nil = plain text (no highlighting)
+      # @rbs file_renderer: FileRenderer
+      # @rbs diagnostic_renderer: DiagnosticRenderer
       # @rbs context_lines: Integer
-      # @rbs tty: bool
-      def initialize(theme_name: nil, context_lines: 2, tty: true) #: void
+      def initialize(file_renderer: FileRenderer.new, diagnostic_renderer: DiagnosticRenderer.new, context_lines: 2) #: void # rubocop:disable Layout/LineLength
         @context_lines = context_lines
-        theme = theme_name && tty ? Themes.resolve(theme_name) : nil
-        @syntax_renderer = SyntaxRenderer.new(theme:)
-        @file_renderer = FileRenderer.new(syntax_renderer: @syntax_renderer, tty:)
-        @diagnostic_renderer = DiagnosticRenderer.new(
-          syntax_renderer: @syntax_renderer,
-          context_lines:,
-          tty:
-        )
+        @file_renderer = file_renderer
+        @diagnostic_renderer = diagnostic_renderer
       end
 
       # Renders a complete source file with line numbers and highlighting.

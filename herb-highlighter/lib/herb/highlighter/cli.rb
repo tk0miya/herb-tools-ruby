@@ -51,20 +51,27 @@ module Herb
           return EXIT_ERROR
         end
 
-        filename = argv.first
-
-        source = File.read(filename)
-        theme_name = options[:theme] || Themes::DEFAULT_THEME
-
-        highlighter = Highlighter.new(
-          theme_name:,
-          context_lines: options[:context_lines] || 2,
-          tty: stdout.tty?
-        )
-
-        result = highlighter.highlight_source(source, focus_line: options[:focus])
+        source = File.read(argv.first)
+        result = build_highlighter.highlight_source(source, focus_line: options[:focus])
         stdout.puts result
         EXIT_SUCCESS
+      end
+
+      def build_highlighter #: Highlighter
+        tty = stdout.tty?
+        theme_name = options[:theme] || Themes::DEFAULT_THEME
+        context_lines = options[:context_lines] || 2
+
+        theme = begin
+          tty ? Themes.resolve(theme_name) : nil
+        rescue RuntimeError
+          nil
+        end
+        syntax_renderer = SyntaxRenderer.new(theme:)
+        file_renderer = FileRenderer.new(syntax_renderer:, tty:)
+        diagnostic_renderer = DiagnosticRenderer.new(syntax_renderer:, context_lines:, tty:)
+
+        Highlighter.new(file_renderer:, diagnostic_renderer:, context_lines:)
       end
 
       def parse_options #: void # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
