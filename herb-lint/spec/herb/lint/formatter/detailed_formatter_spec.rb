@@ -475,4 +475,71 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
       end
     end
   end
+
+  describe "CONTEXT_LINES" do
+    subject { described_class::CONTEXT_LINES }
+
+    it { is_expected.to eq(2) }
+  end
+
+  describe "theme_name: parameter" do
+    subject { formatter.report(aggregated_result) }
+
+    let(:source_code) { "<img src=\"photo.jpg\">\n" }
+    let(:results) do
+      [
+        build(:lint_result,
+              source: source_code,
+              unfixed_offenses: [
+                build(:offense,
+                      severity: "error",
+                      rule_name: "html-img-require-alt",
+                      message: "img tag missing alt",
+                      start_line: 1,
+                      start_column: 1)
+              ])
+      ]
+    end
+    let(:aggregated_result) { Herb::Lint::AggregatedResult.new(results) }
+
+    context "with theme_name: nil (no highlighting)" do
+      let(:output) { StringIO.new }
+      let(:formatter) { described_class.new(io: output, theme_name: nil) }
+
+      it "outputs plain text without ANSI codes" do
+        subject
+
+        expect(output.string).not_to match(/\e\[.*?m/)
+        expect(output.string).to include("img tag missing alt")
+      end
+    end
+
+    context "with theme_name: 'onedark' and TTY-like output" do
+      let(:output) do
+        io = StringIO.new
+        io.define_singleton_method(:tty?) { true }
+        io
+      end
+      let(:formatter) { described_class.new(io: output, theme_name: "onedark") }
+
+      it "outputs ANSI color codes in source context" do
+        subject
+
+        expect(output.string).to match(/\e\[.*?m/)
+        expect(output.string).to include("img tag missing alt")
+      end
+    end
+
+    context "with an unknown theme name" do
+      let(:output) { StringIO.new }
+      let(:formatter) { described_class.new(io: output, theme_name: "unknown") }
+
+      it "does not raise and outputs plain text without ANSI codes" do
+        expect { subject }.not_to raise_error
+
+        expect(output.string).not_to match(/\e\[.*?m/)
+        expect(output.string).to include("img tag missing alt")
+      end
+    end
+  end
 end
