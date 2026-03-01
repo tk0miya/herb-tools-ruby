@@ -9,9 +9,11 @@ module Herb
     # the same text with ANSI codes injected around each token.
     # Mirrors TypeScript SyntaxRenderer.
     #
+    # Accepts a pre-resolved theme hash (color scheme). Theme name resolution
+    # is the caller's responsibility (e.g. Highlighter calls Themes.resolve).
+    #
     # Fallback: returns source unchanged (no ANSI codes) when:
-    # - No theme was given (theme_name: nil and theme: nil)
-    # - Theme name not found in registry
+    # - No theme was given (theme: nil)
     # - Herb.lex(source) result has errors
     class SyntaxRenderer # rubocop:disable Metrics/ClassLength
       # Ruby keywords to highlight specially inside ERB content.
@@ -23,18 +25,9 @@ module Herb
 
       # @rbs @theme: Hash[String, String?]?
 
-      # @rbs theme_name: String? -- looked up via Themes; nil = plain text
-      # @rbs theme: Hash[String, String?]? -- pre-resolved theme (for testing; takes priority over theme_name)
-      # @rbs tty: bool -- when false, disables ANSI output regardless of theme
-      def initialize(theme_name: nil, theme: nil, tty: true) #: void
-        @theme =
-          if !tty
-            nil
-          elsif theme
-            theme
-          elsif theme_name
-            Themes.names.include?(theme_name) ? Themes.resolve(theme_name) : nil
-          end
+      # @rbs theme: Hash[String, String?]? -- pre-resolved color scheme; nil = plain text
+      def initialize(theme: nil) #: void
+        @theme = theme
       end
 
       # Applies syntax highlighting to a single line of ERB/HTML source.

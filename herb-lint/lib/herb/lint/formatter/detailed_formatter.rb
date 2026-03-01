@@ -29,7 +29,8 @@ module Herb
         def initialize(io: $stdout, show_timing: true, theme_name: Herb::Highlighter::Themes::DEFAULT_THEME) #: void
           super(io:)
           @summary_reporter = Herb::Lint::Reporter::SummaryReporter.new(io:, show_timing:)
-          syntax_renderer = Herb::Highlighter::SyntaxRenderer.new(theme_name:, tty: io.tty?)
+          theme = theme_name && io.tty? ? Herb::Highlighter::Themes.resolve(theme_name) : nil
+          syntax_renderer = Herb::Highlighter::SyntaxRenderer.new(theme:)
           @diagnostic_renderer = Herb::Highlighter::DiagnosticRenderer.new(
             syntax_renderer:,
             context_lines: CONTEXT_LINES,
