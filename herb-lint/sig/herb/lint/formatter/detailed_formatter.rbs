@@ -12,13 +12,16 @@ module Herb
 
         include StringUtils
 
+        CONTEXT_LINES: Integer
+
         @summary_reporter: Herb::Lint::Reporter::SummaryReporter
 
         @diagnostic_renderer: Herb::Highlighter::DiagnosticRenderer
 
         # @rbs io: IO
         # @rbs show_timing: bool -- when false, suppresses timing display
-        def initialize: (?io: IO, ?show_timing: bool) -> void
+        # @rbs theme_name: String? -- syntax highlighting theme name; nil = no highlighting
+        def initialize: (?io: IO, ?show_timing: bool, ?theme_name: String?) -> void
 
         # Reports the aggregated linting result.
         # Outputs the disabled message when aggregated_result.completed? is false.
