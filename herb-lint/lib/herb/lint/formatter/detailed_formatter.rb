@@ -29,7 +29,14 @@ module Herb
         def initialize(io: $stdout, show_timing: true, theme_name: Herb::Highlighter::Themes::DEFAULT_THEME) #: void
           super(io:)
           @summary_reporter = Herb::Lint::Reporter::SummaryReporter.new(io:, show_timing:)
-          theme = theme_name && io.tty? ? Herb::Highlighter::Themes.resolve(theme_name) : nil
+          theme =
+            if theme_name && io.tty?
+              begin
+                Herb::Highlighter::Themes.resolve(theme_name)
+              rescue RuntimeError
+                nil
+              end
+            end
           syntax_renderer = Herb::Highlighter::SyntaxRenderer.new(theme:)
           @diagnostic_renderer = Herb::Highlighter::DiagnosticRenderer.new(
             syntax_renderer:,
