@@ -40,13 +40,13 @@ This phase implements the command-line interface for herb-format.
 
 **Location:** `herb-format/lib/herb/format/cli.rb`
 
-- [ ] Create CLI class
-- [ ] Define exit code constants
-- [ ] Add initialize with argv, stdout, stderr, stdin
-- [ ] Add run() method returning exit code
-- [ ] Add private parse_options() method
-- [ ] Add RBS inline type annotations
-- [ ] Create spec file
+- [x] Create CLI class
+- [x] Define exit code constants
+- [x] Add initialize with argv, stdout, stderr, stdin
+- [x] Add run() method returning exit code
+- [x] Add private parse_options() method
+- [x] Add RBS inline type annotations
+- [x] Create spec file
 
 **Interface:**
 ```ruby
@@ -285,6 +285,173 @@ end
 
 **Verification:**
 - `cd herb-format && ./bin/rspec spec/herb/format/cli_spec.rb`
+
+---
+
+### Task 6.1b: Add Missing CLI Options (--config-file, --indent-width, --max-line-length, -c/-v shorthands)
+
+**Location:** `herb-format/lib/herb/format/cli.rb`
+
+Align the CLI options with the TypeScript reference implementation by adding the missing options.
+
+#### TypeScript reference behavior
+
+TypeScript `parseArguments()` registers these options (`javascript/packages/formatter/src/cli.ts`):
+
+```typescript
+const { values, positionals } = parseArgs({
+  args: process.argv.slice(2),
+  options: {
+    help:              { type: "boolean", short: "h" },
+    force:             { type: "boolean" },
+    version:           { type: "boolean", short: "v" },
+    check:             { type: "boolean", short: "c" },
+    init:              { type: "boolean" },
+    "config-file":     { type: "string" },
+    "indent-width":    { type: "string" },   // parsed to positive integer
+    "max-line-length": { type: "string" },   // parsed to positive integer
+  },
+  allowPositionals: true
+})
+```
+
+**`--config-file`** — path to the `.herb.yml` config file. Passed to `Config.loadForCLI(configFile || projectPath, version)`. Equivalent to the Ruby `--config` option (rename required).
+
+**`--indent-width`** — registered as `type: "string"` (parseArgs has no numeric type). After parsing, the CLI validates and converts:
+```typescript
+const parsed = parseInt(values["indent-width"], 10)
+if (isNaN(parsed) || parsed < 1) {
+  console.error(`Invalid indent-width: ${values["indent-width"]}. Must be a positive integer.`)
+  process.exit(1)
+}
+indentWidth = parsed
+```
+Then mutates the in-memory formatter config before creating the formatter:
+```typescript
+if (indentWidth !== undefined) { formatterConfig.indentWidth = indentWidth }
+```
+
+**`--max-line-length`** — same pattern as `--indent-width`:
+```typescript
+if (maxLineLength !== undefined) { formatterConfig.maxLineLength = maxLineLength }
+```
+
+**`-c`** — short form of `--check` (`short: "c"` in TypeScript).
+
+**`-v`** — short form of `--version` (`short: "v"` in TypeScript). Already implemented in Ruby.
+
+#### Changes required
+
+- [ ] Rename `--config PATH` → `--config-file PATH` (option name change only; internal key stays `:config`)
+- [ ] Add `-c` shorthand to `--check`
+- [ ] Add `--indent-width N` option with positive-integer validation (exit with `EXIT_RUNTIME_ERROR` on invalid input)
+- [ ] Add `--max-line-length N` option with positive-integer validation (exit with `EXIT_RUNTIME_ERROR` on invalid input)
+- [ ] Pass `indent_width` and `max_line_length` to `Runner` / `Formatter` so they override config file values
+- [ ] Update `handle_help` text to reflect new option names
+- [ ] Update specs
+
+#### Interface additions
+
+```ruby
+# In parse_options defaults:
+@options = {
+  # ...existing...
+  config: nil,
+  indent_width: nil,     # Integer or nil
+  max_line_length: nil,  # Integer or nil
+}
+
+# New opts.on blocks:
+opts.on("-c", "--check", "Check if files are formatted without modifying them") do
+  options[:check] = true
+end
+
+opts.on("--config-file PATH", "Path to configuration file (default: .herb.yml)") do |path|
+  options[:config] = path
+end
+
+opts.on("--indent-width N", "Indentation width (positive integer, overrides config)") do |n|
+  parsed = Integer(n, 10)
+  stderr.puts "Invalid indent-width: #{n}. Must be a positive integer." and exit(EXIT_RUNTIME_ERROR) if parsed < 1
+  options[:indent_width] = parsed
+rescue ArgumentError
+  stderr.puts "Invalid indent-width: #{n}. Must be a positive integer."
+  exit(EXIT_RUNTIME_ERROR)
+end
+
+opts.on("--max-line-length N", "Maximum line length (positive integer, overrides config)") do |n|
+  parsed = Integer(n, 10)
+  stderr.puts "Invalid max-line-length: #{n}. Must be a positive integer." and exit(EXIT_RUNTIME_ERROR) if parsed < 1
+  options[:max_line_length] = parsed
+rescue ArgumentError
+  stderr.puts "Invalid max-line-length: #{n}. Must be a positive integer."
+  exit(EXIT_RUNTIME_ERROR)
+end
+```
+
+How to thread the values into formatting — override the config object after loading:
+
+```ruby
+def load_config #: Herb::Config::FormatterConfig
+  config_hash = Herb::Config::Loader.load(path: options[:config])
+  config = Herb::Config::FormatterConfig.new(config_hash)
+  config.indent_width    = options[:indent_width]    if options[:indent_width]
+  config.max_line_length = options[:max_line_length] if options[:max_line_length]
+  config
+end
+```
+
+(Confirm that `Herb::Config::FormatterConfig` exposes writable `indent_width=` / `max_line_length=` attributes, or adapt as needed.)
+
+#### Test cases
+
+```ruby
+context "with --config-file" do
+  let(:argv) { ["--config-file", "/path/to/.herb.yml"] }
+  # verify options[:config] == "/path/to/.herb.yml"
+end
+
+context "with -c (shorthand for --check)" do
+  let(:argv) { ["-c", "test.html.erb"] }
+  # verify behaves identically to --check
+end
+
+context "with --indent-width" do
+  context "valid value" do
+    let(:argv) { ["--indent-width", "4", "test.html.erb"] }
+    # verify file is formatted with 4-space indentation
+  end
+
+  context "invalid value (non-integer)" do
+    let(:argv) { ["--indent-width", "foo", "test.html.erb"] }
+    # verify exits with EXIT_RUNTIME_ERROR and stderr includes "Invalid indent-width"
+  end
+
+  context "invalid value (zero)" do
+    let(:argv) { ["--indent-width", "0", "test.html.erb"] }
+    # verify exits with EXIT_RUNTIME_ERROR
+  end
+end
+
+context "with --max-line-length" do
+  context "valid value" do
+    let(:argv) { ["--max-line-length", "100", "test.html.erb"] }
+    # verify accepted without error
+  end
+
+  context "invalid value" do
+    let(:argv) { ["--max-line-length", "bad", "test.html.erb"] }
+    # verify exits with EXIT_RUNTIME_ERROR and stderr includes "Invalid max-line-length"
+  end
+end
+```
+
+**Verification:**
+- `cd herb-format && ./bin/rake` — all checks pass
+- `herb-format --config-file custom.yml` resolves config from the given path
+- `herb-format --indent-width 4 file.html.erb` formats with 4-space indent
+- `herb-format --indent-width 0` exits with code 2 and an error message
+- `herb-format -c file.html.erb` behaves identically to `herb-format --check file.html.erb`
 
 ---
 
@@ -808,13 +975,14 @@ end
 | Task | Part | Description |
 |------|------|-------------|
 | 6.1 | A | CLI class foundation |
+| 6.1b | A | Missing options: --config-file, --indent-width, --max-line-length, -c shorthand |
 | 6.2 | B | --version and --help handlers |
 | 6.3 | B | --init handler |
 | 6.4 | C | --stdin handler |
 | 6.5 | D | Check mode reporting |
 | 6.6-6.9 | E | Executable and integration |
 
-**Total: 9 tasks**
+**Total: 10 tasks**
 
 ## Related Documents
 

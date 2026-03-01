@@ -10,16 +10,13 @@ module Herb
       attr_reader :check  #: bool
       attr_reader :config #: Herb::Config::FormatterConfig
       attr_reader :force  #: bool
-      attr_reader :write  #: bool
 
       # @rbs config: Herb::Config::FormatterConfig
       # @rbs check: bool
-      # @rbs write: bool
       # @rbs force: bool
-      def initialize(config:, check: false, write: true, force: false) #: void
+      def initialize(config:, check: false, force: false) #: void
         @config = config
         @check = check
-        @write = write
         @force = force
         @rewriter_registry = Herb::Rewriter::Registry.new
         @formatter = build_formatter
@@ -33,6 +30,14 @@ module Herb
         results = target_files.map { format_file(_1) }
 
         AggregatedResult.new(results:)
+      end
+
+      # Format source string directly (for stdin mode).
+      #
+      # @rbs source: String
+      # @rbs file_path: String
+      def format_source(source, file_path:) #: FormatResult
+        @formatter.format(file_path, source, force:)
       end
 
       private
@@ -70,7 +75,7 @@ module Herb
         source = File.read(file_path)
         result = @formatter.format(file_path, source, force:)
 
-        write_file(result) if write && !check && result.changed? && !result.ignored? && !result.error?
+        write_file(result) if !check && result.changed? && !result.ignored? && !result.error?
 
         result
       rescue StandardError => e

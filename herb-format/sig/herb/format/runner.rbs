@@ -14,18 +14,21 @@ module Herb
 
       attr_reader force: bool
 
-      attr_reader write: bool
-
       # @rbs config: Herb::Config::FormatterConfig
       # @rbs check: bool
-      # @rbs write: bool
       # @rbs force: bool
-      def initialize: (config: Herb::Config::FormatterConfig, ?check: bool, ?write: bool, ?force: bool) -> void
+      def initialize: (config: Herb::Config::FormatterConfig, ?check: bool, ?force: bool) -> void
 
       # Run formatting on files and return aggregated result.
       #
       # @rbs files: Array[String]?
       def run: (?Array[String]? files) -> AggregatedResult
+
+      # Format source string directly (for stdin mode).
+      #
+      # @rbs source: String
+      # @rbs file_path: String
+      def format_source: (String source, file_path: String) -> FormatResult
 
       private
 
