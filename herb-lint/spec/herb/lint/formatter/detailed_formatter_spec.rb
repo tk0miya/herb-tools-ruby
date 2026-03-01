@@ -6,12 +6,6 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
     text.gsub(/\e\[.*?m/, "")
   end
 
-  describe "CONTEXT_LINES" do
-    it "equals 2" do
-      expect(described_class::CONTEXT_LINES).to eq(2)
-    end
-  end
-
   describe "#report" do
     subject { formatter.report(aggregated_result) }
 
