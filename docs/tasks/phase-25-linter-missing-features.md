@@ -1103,7 +1103,6 @@ now that the `onedark` theme is available and produces observable differences in
 - [x] Verify `theme_name: nil` (default) produces output with no ANSI color codes
 - [x] Verify `theme_name: "onedark"` with a TTY-like output produces ANSI color codes in source context
 - [x] Verify an unknown theme name (`theme_name: "unknown"`) falls back safely and produces no ANSI color codes
-- [ ] Verify `CONTEXT_LINES` constant equals `2`
 
 ---
 
