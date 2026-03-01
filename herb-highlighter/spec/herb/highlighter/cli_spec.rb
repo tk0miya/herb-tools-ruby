@@ -64,9 +64,9 @@ RSpec.describe Herb::Highlighter::CLI do
         after { tempfile.close! }
 
         it "reads the file and prints highlighted content to stdout and returns EXIT_SUCCESS" do
-          output = capture_stdout { subject }
-          expect(output).to include("<div>Hello</div>")
-          expect(output).to include("    1 │")
+          plain = strip_ansi(capture_stdout { subject })
+          expect(plain).to include("<div>Hello</div>")
+          expect(plain).to include("    1 │")
           expect(subject).to eq(described_class::EXIT_SUCCESS)
         end
       end
@@ -85,8 +85,6 @@ RSpec.describe Herb::Highlighter::CLI do
 
       after { tempfile.close! }
 
-      # SyntaxRenderer applies ANSI codes regardless of TTY, so we can verify
-      # that the theme color (cyan = \e[36m) appears around the HTML tag token.
       it "applies the theme colors to the syntax-highlighted output and returns EXIT_SUCCESS" do
         output = capture_stdout { subject }
         expect(output).to include("\e[36m<\e[0m")
@@ -105,13 +103,11 @@ RSpec.describe Herb::Highlighter::CLI do
 
       after { tempfile.close! }
 
-      # FileRenderer renders an arrow marker "  → " on the focus line and
-      # a plain "    " prefix on other lines (colorize is a no-op when tty: false).
       it "marks the focus line with an arrow and renders other lines with plain prefix" do
-        output = capture_stdout { subject }
-        expect(output).to include("    1 │")
-        expect(output).to include("  → 2 │")
-        expect(output).to include("    3 │")
+        plain = strip_ansi(capture_stdout { subject })
+        expect(plain).to include("    1 │")
+        expect(plain).to include("  → 2 │")
+        expect(plain).to include("    3 │")
         expect(subject).to eq(described_class::EXIT_SUCCESS)
       end
 
@@ -140,10 +136,10 @@ RSpec.describe Herb::Highlighter::CLI do
         end
 
         it "shows all lines with plain prefix and returns EXIT_SUCCESS" do
-          output = capture_stdout { subject }
-          expect(output).to include("    1 │")
-          expect(output).to include("    2 │")
-          expect(output).to include("    3 │")
+          plain = strip_ansi(capture_stdout { subject })
+          expect(plain).to include("    1 │")
+          expect(plain).to include("    2 │")
+          expect(plain).to include("    3 │")
           expect(subject).to eq(described_class::EXIT_SUCCESS)
         end
       end
@@ -173,12 +169,12 @@ RSpec.describe Herb::Highlighter::CLI do
           let(:argv) { ["--focus", "3", "--context-lines", "1", tempfile.path] }
 
           it "shows lines 2-4 with arrow on line 3" do
-            output = capture_stdout { subject }
-            expect(output).to include("  → 3 │")
-            expect(output).to include("    2 │")
-            expect(output).to include("    4 │")
-            expect(output).not_to include("    1 │")
-            expect(output).not_to include("    5 │")
+            plain = strip_ansi(capture_stdout { subject })
+            expect(plain).to include("  → 3 │")
+            expect(plain).to include("    2 │")
+            expect(plain).to include("    4 │")
+            expect(plain).not_to include("    1 │")
+            expect(plain).not_to include("    5 │")
           end
         end
 
@@ -186,11 +182,11 @@ RSpec.describe Herb::Highlighter::CLI do
           let(:argv) { ["--focus", "1", "--context-lines", "2", tempfile.path] }
 
           it "shows lines 1-3 with arrow on line 1" do
-            output = capture_stdout { subject }
-            expect(output).to include("  → 1 │")
-            expect(output).to include("    2 │")
-            expect(output).to include("    3 │")
-            expect(output).not_to include("    4 │")
+            plain = strip_ansi(capture_stdout { subject })
+            expect(plain).to include("  → 1 │")
+            expect(plain).to include("    2 │")
+            expect(plain).to include("    3 │")
+            expect(plain).not_to include("    4 │")
           end
         end
 
@@ -198,20 +194,24 @@ RSpec.describe Herb::Highlighter::CLI do
           let(:argv) { ["--focus", "5", "--context-lines", "2", tempfile.path] }
 
           it "shows lines 3-5 with arrow on line 5" do
-            output = capture_stdout { subject }
-            expect(output).to include("  → 5 │")
-            expect(output).to include("    4 │")
-            expect(output).to include("    3 │")
-            expect(output).not_to include("    2 │")
+            plain = strip_ansi(capture_stdout { subject })
+            expect(plain).to include("  → 5 │")
+            expect(plain).to include("    4 │")
+            expect(plain).to include("    3 │")
+            expect(plain).not_to include("    2 │")
           end
         end
       end
     end
   end
 
+  def strip_ansi(str)
+    str.gsub(/\e\[[0-9;]*m/, "")
+  end
+
   def capture_stdout
     original_stdout = $stdout
-    $stdout = StringIO.new
+    $stdout = StringIO.new.tap { _1.define_singleton_method(:tty?) { true } }
     yield
     $stdout.string
   ensure

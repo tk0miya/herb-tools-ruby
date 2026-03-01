@@ -19,7 +19,8 @@ module Herb
 
       # @rbs theme_name: String? -- looked up via Themes; nil = plain text
       # @rbs theme: Hash[String, String?]? -- pre-resolved theme (for testing; takes priority over theme_name)
-      def initialize: (?theme_name: String?, ?theme: Hash[String, String?]?) -> void
+      # @rbs tty: bool -- when false, disables ANSI output regardless of theme
+      def initialize: (?theme_name: String?, ?theme: Hash[String, String?]?, ?tty: bool) -> void
 
       # Applies syntax highlighting to a single line of ERB/HTML source.
       # Returns source unchanged if no theme is set or if lexing fails.

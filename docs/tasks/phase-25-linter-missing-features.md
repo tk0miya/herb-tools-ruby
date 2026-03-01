@@ -1079,14 +1079,14 @@ After this step, `DetailedFormatter` produces colored output by default.
 - `DEFAULT_THEME = "onedark"`
 
 **Implementation Tasks (depends on Step 0):**
-- [ ] Port `onedark` theme into `Herb::Highlight::Themes` using the private `register` method
+- [x] Port `onedark` theme into `Herb::Highlight::Themes` using the private `register` method
   - Use `Themes.send(:register, "onedark", { ... })` at the bottom of `themes.rb` (or in a separate file loaded by `highlight.rb`)
   - Once registered, `Themes.required_keys` returns `onedark`'s keys, activating `load_custom` key validation
-- [ ] Set `onedark` as the default theme in `DetailedFormatter`
-- [ ] Write unit tests for `onedark` theme
-  - [ ] Verify `Themes.valid?("onedark")` returns true
-  - [ ] Verify `Themes.custom?("onedark")` returns false
-  - [ ] Verify `load_custom` raises on a custom theme missing required keys (validation now active)
+- [x] Set `onedark` as the default theme in `DetailedFormatter`
+- [x] Write unit tests for `onedark` theme
+  - [x] Verify `Themes.valid?("onedark")` returns true
+  - [x] Verify `Themes.custom?("onedark")` returns false
+  - [x] Verify `load_custom` raises on a custom theme missing required keys (validation now active)
 
 ---
 

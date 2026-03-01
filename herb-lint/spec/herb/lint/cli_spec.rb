@@ -321,7 +321,7 @@ RSpec.describe Herb::Lint::CLI do
           # DetailedFormatter shows source code lines with DiagnosticRenderer format (e.g., "  → 1 │ <img ...>")
           # SimpleFormatter does not include source code lines at all
           expect(output).to include("html-img-require-alt")
-          expect(output).to include('  → 1 │ <img src="test.png">')
+          expect(strip_ansi(output)).to include('  → 1 │ <img src="test.png">')
         end
       end
 
@@ -337,7 +337,7 @@ RSpec.describe Herb::Lint::CLI do
           # DetailedFormatter shows source code lines with DiagnosticRenderer format (e.g., "  → 1 │ <img ...>")
           # SimpleFormatter does not include source code lines at all
           expect(output).to include("html-img-require-alt")
-          expect(output).to include('  → 1 │ <img src="test.png">')
+          expect(strip_ansi(output)).to include('  → 1 │ <img src="test.png">')
         end
       end
 
@@ -666,10 +666,14 @@ RSpec.describe Herb::Lint::CLI do
     end
   end
 
+  def strip_ansi(str)
+    str.gsub(/\e\[[0-9;]*m/, "")
+  end
+
   # Helper methods for capturing output
   def capture_stdout
     original_stdout = $stdout
-    $stdout = StringIO.new
+    $stdout = StringIO.new.tap { _1.define_singleton_method(:tty?) { true } }
     yield
     $stdout.string
   ensure

@@ -14,6 +14,18 @@ module Herb
       # Returns all built-in theme names.
       def self.names: () -> Array[String]
 
+      # Returns whether name is a registered built-in theme.
+      # Mirrors TypeScript isValidTheme.
+      #
+      # @rbs name: String
+      def self.valid?: (String name) -> bool
+
+      # Returns whether input is NOT a registered built-in theme (i.e. a custom theme path).
+      # Mirrors TypeScript isCustomTheme.
+      #
+      # @rbs input: String
+      def self.custom?: (String input) -> bool
+
       # Resolves a built-in theme name or custom file path to a color mapping.
       # If theme matches a built-in theme name, returns that theme's mapping.
       # Otherwise, attempts to load theme as a file path (raises on error).
@@ -40,3 +52,7 @@ module Herb
     end
   end
 end
+
+# Built-in theme registrations — loaded at require time.
+# JSON files live in herb-highlighter/themes/ (3 directories up from this file).
+THEMES_DIR: String

@@ -136,4 +136,40 @@ RSpec.describe Herb::Highlighter::Themes do
       expect(described_class.names).to include("new-theme")
     end
   end
+
+  describe ".valid?" do
+    subject { described_class.valid?(name) }
+
+    context "with a registered theme" do
+      let(:name) { "onedark" }
+
+      before { described_class.register("onedark", { "TOKEN_ERB_START" => "#BE5046" }) }
+
+      it { is_expected.to be true }
+    end
+
+    context "with an unregistered theme name" do
+      let(:name) { "unknown" }
+
+      it { is_expected.to be false }
+    end
+  end
+
+  describe ".custom?" do
+    subject { described_class.custom?(input) }
+
+    context "with a registered built-in theme name" do
+      let(:input) { "onedark" }
+
+      before { described_class.register("onedark", { "TOKEN_ERB_START" => "#BE5046" }) }
+
+      it { is_expected.to be false }
+    end
+
+    context "with an unregistered name" do
+      let(:input) { "unknown" }
+
+      it { is_expected.to be true }
+    end
+  end
 end

@@ -21,6 +21,22 @@ module Herb
           @themes.keys
         end
 
+        # Returns whether name is a registered built-in theme.
+        # Mirrors TypeScript isValidTheme.
+        #
+        # @rbs name: String
+        def valid?(name) #: bool
+          @themes.key?(name)
+        end
+
+        # Returns whether input is NOT a registered built-in theme (i.e. a custom theme path).
+        # Mirrors TypeScript isCustomTheme.
+        #
+        # @rbs input: String
+        def custom?(input) #: bool
+          !valid?(input)
+        end
+
         # Resolves a built-in theme name or custom file path to a color mapping.
         # If theme matches a built-in theme name, returns that theme's mapping.
         # Otherwise, attempts to load theme as a file path (raises on error).
@@ -66,3 +82,12 @@ module Herb
     end
   end
 end
+
+# Built-in theme registrations — loaded at require time.
+# JSON files live in herb-highlighter/themes/ (3 directories up from this file).
+THEMES_DIR = File.expand_path("../../../themes", __dir__) #: String
+
+Herb::Highlighter::Themes.register(
+  "onedark",
+  JSON.parse(File.read(File.join(THEMES_DIR, "onedark.json")))
+)
