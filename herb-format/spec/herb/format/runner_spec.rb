@@ -53,10 +53,10 @@ RSpec.describe Herb::Format::Runner do
       end
     end
 
-    context "when write: true and check: false" do
+    context "when check: false (default)" do
       subject { runner.run(["test.html.erb"]) }
 
-      let(:runner) { described_class.new(config:, write: true, check: false) }
+      let(:runner) { described_class.new(config:, check: false) }
 
       before { File.write("test.html.erb", "<div><p>Hello</p></div>") }
 
@@ -69,7 +69,7 @@ RSpec.describe Herb::Format::Runner do
     context "when check: true" do
       subject { runner.run(["test.html.erb"]) }
 
-      let(:runner) { described_class.new(config:, check: true, write: false) }
+      let(:runner) { described_class.new(config:, check: true) }
       let(:original_content) { "<div>test</div>" }
 
       before { File.write("test.html.erb", original_content) }
@@ -83,7 +83,7 @@ RSpec.describe Herb::Format::Runner do
     context "when a file has an ignore directive" do
       subject { runner.run(["test.html.erb"]) }
 
-      let(:runner) { described_class.new(config:, write: true, check: false) }
+      let(:runner) { described_class.new(config:, check: false) }
       let(:original_content) { "<%# herb:formatter ignore %>\n<div>test</div>" }
 
       before { File.write("test.html.erb", original_content) }
@@ -97,7 +97,7 @@ RSpec.describe Herb::Format::Runner do
     context "when a file fails to parse" do
       subject { runner.run(["test.html.erb"]) }
 
-      let(:runner) { described_class.new(config:, write: true, check: false) }
+      let(:runner) { described_class.new(config:, check: false) }
       let(:original_content) { "<div><span></div>" }
 
       before { File.write("test.html.erb", original_content) }
@@ -116,6 +116,38 @@ RSpec.describe Herb::Format::Runner do
       it "continues processing remaining files and records the error" do
         expect(subject.file_count).to eq(2)
         expect(subject.error_count).to eq(1)
+      end
+    end
+  end
+
+  describe "#format_source" do
+    subject { runner.format_source(source, file_path:) }
+
+    let(:file_path) { "stdin" }
+
+    context "with valid ERB content" do
+      let(:source) { "<div><p>Hello</p></div>" }
+
+      it "returns a formatted FormatResult without error" do
+        expect(subject).to be_a(Herb::Format::FormatResult)
+        expect(subject.error?).to be false
+        expect(subject.formatted).to eq("<div>\n  <p>Hello</p>\n</div>")
+      end
+    end
+
+    context "with already formatted content" do
+      let(:source) { "<div>\n  <p>Hello</p>\n</div>" }
+
+      it "returns unchanged result" do
+        expect(subject.changed?).to be false
+      end
+    end
+
+    context "with invalid ERB content" do
+      let(:source) { "<div><span></div>" }
+
+      it "returns an error result" do
+        expect(subject.error?).to be true
       end
     end
   end

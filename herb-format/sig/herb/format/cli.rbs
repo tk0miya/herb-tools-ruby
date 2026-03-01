@@ -1,0 +1,82 @@
+# Generated from lib/herb/format/cli.rb with RBS::Inline
+
+module Herb
+  module Format
+    # Command-line interface orchestration.
+    class CLI
+      # rubocop:disable Metrics/ClassLength
+      EXIT_SUCCESS: Integer
+
+      EXIT_FORMAT_NEEDED: Integer
+
+      EXIT_RUNTIME_ERROR: Integer
+
+      # @rbs argv: Array[String]
+      # @rbs stdout: IO
+      # @rbs stderr: IO
+      # @rbs stdin: IO
+      def initialize: (?Array[String] argv, ?stdout: IO, ?stderr: IO, ?stdin: IO) -> void
+
+      # Run CLI and return exit code.
+      #
+      # Processing flow:
+      # 1. Parse command-line options
+      # 2. Handle special flags (--init, --version, --help)
+      # 3. Load configuration via Herb::Config::Loader
+      # 4. Create and run Runner (stdin or file mode)
+      # 5. Report results (diff output in check mode)
+      # 6. Determine exit code based on formatting results
+      def run: () -> Integer
+
+      private
+
+      attr_reader argv: Array[String]
+
+      attr_reader options: Hash[Symbol, untyped]
+
+      attr_reader stdout: IO
+
+      attr_reader stderr: IO
+
+      attr_reader stdin: IO
+
+      # @rbs message: String
+      def handle_error: (String message) -> Integer
+
+      def parse_options: () -> void
+
+      def execute_format: () -> Integer
+
+      # @rbs runner: Runner
+      def format_stdin: (Runner runner) -> Integer
+
+      # @rbs runner: Runner
+      # @rbs files: Array[String]
+      def format_files: (Runner runner, Array[String] files) -> Integer
+
+      def load_config: () -> Herb::Config::FormatterConfig
+
+      # @rbs result: AggregatedResult
+      def report_results: (AggregatedResult result) -> void
+
+      # @rbs result: AggregatedResult
+      # @rbs check_mode: bool
+      def determine_exit_code: (AggregatedResult result, bool check_mode) -> Integer
+
+      def handle_version: () -> Integer
+
+      def handle_help: () -> Integer
+
+      def handle_init: () -> Integer
+
+      # @rbs result: AggregatedResult
+      def report_check_results: (AggregatedResult result) -> void
+
+      # @rbs result: AggregatedResult
+      def report_format_results: (AggregatedResult result) -> void
+
+      # @rbs str: String
+      def ensure_newline: (String str) -> String
+    end
+  end
+end

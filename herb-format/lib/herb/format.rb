@@ -7,6 +7,7 @@ require "herb/printer"
 require "herb/rewriter"
 
 require_relative "format/aggregated_result"
+require_relative "format/cli"
 require_relative "format/context"
 require_relative "format/content_unit"
 require_relative "format/element_analysis"
