@@ -342,13 +342,13 @@ if (maxLineLength !== undefined) { formatterConfig.maxLineLength = maxLineLength
 
 #### Changes required
 
-- [ ] Rename `--config PATH` → `--config-file PATH` (option name change only; internal key stays `:config`)
-- [ ] Add `-c` shorthand to `--check`
-- [ ] Add `--indent-width N` option with positive-integer validation (exit with `EXIT_RUNTIME_ERROR` on invalid input)
-- [ ] Add `--max-line-length N` option with positive-integer validation (exit with `EXIT_RUNTIME_ERROR` on invalid input)
-- [ ] Pass `indent_width` and `max_line_length` to `Runner` / `Formatter` so they override config file values
-- [ ] Update `handle_help` text to reflect new option names
-- [ ] Update specs
+- [x] Rename `--config PATH` → `--config-file PATH` (option name change only; internal key stays `:config`)
+- [x] Add `-c` shorthand to `--check`
+- [x] Add `--indent-width N` option with positive-integer validation (exit with `EXIT_RUNTIME_ERROR` on invalid input)
+- [x] Add `--max-line-length N` option with positive-integer validation (exit with `EXIT_RUNTIME_ERROR` on invalid input)
+- [x] Pass `indent_width` and `max_line_length` to `Runner` / `Formatter` so they override config file values
+- [x] Update `handle_help` text to reflect new option names
+- [x] Update specs
 
 #### Interface additions
 
