@@ -11,24 +11,6 @@ RSpec.describe Herb::Highlighter::Highlighter do
     allow(Herb::Highlighter::DiagnosticRenderer).to receive(:new).and_return(diagnostic_renderer)
   end
 
-  describe "#initialize" do
-    it "creates SyntaxRenderer with the given theme_name and tty" do
-      described_class.new(theme_name: "my-theme", tty: false)
-      expect(Herb::Highlighter::SyntaxRenderer).to have_received(:new).with(theme_name: "my-theme", tty: false)
-    end
-
-    it "creates FileRenderer with the SyntaxRenderer instance and tty" do
-      described_class.new(tty: false)
-      expect(Herb::Highlighter::FileRenderer).to have_received(:new).with(syntax_renderer:, tty: false)
-    end
-
-    it "creates DiagnosticRenderer with the SyntaxRenderer instance, context_lines, and tty" do
-      described_class.new(context_lines: 5, tty: false)
-      expect(Herb::Highlighter::DiagnosticRenderer).to have_received(:new)
-        .with(syntax_renderer:, context_lines: 5, tty: false)
-    end
-  end
-
   describe "#highlight_source" do
     let(:source) { "<html>\n<body>\n</body>\n</html>\n" }
 

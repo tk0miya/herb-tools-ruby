@@ -17,7 +17,8 @@ module Herb
       # @rbs tty: bool
       def initialize(theme_name: nil, context_lines: 2, tty: true) #: void
         @context_lines = context_lines
-        @syntax_renderer = SyntaxRenderer.new(theme_name:, tty:)
+        theme = theme_name && tty ? Themes.resolve(theme_name) : nil
+        @syntax_renderer = SyntaxRenderer.new(theme:)
         @file_renderer = FileRenderer.new(syntax_renderer: @syntax_renderer, tty:)
         @diagnostic_renderer = DiagnosticRenderer.new(
           syntax_renderer: @syntax_renderer,

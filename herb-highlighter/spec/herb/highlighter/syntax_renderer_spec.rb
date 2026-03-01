@@ -28,16 +28,9 @@ RSpec.describe Herb::Highlighter::SyntaxRenderer do
   describe "#render" do
     subject { syntax_renderer.render(source) }
 
-    context "with nil theme (no theme_name, no theme)" do
+    context "with no theme (default)" do
       let(:syntax_renderer) { described_class.new }
       let(:source) { "<div>hello</div>" }
-
-      it { is_expected.to eq(source) }
-    end
-
-    context "with unregistered theme_name" do
-      let(:syntax_renderer) { described_class.new(theme_name: "nonexistent-theme") }
-      let(:source) { "<span>text</span>" }
 
       it { is_expected.to eq(source) }
     end
@@ -198,19 +191,6 @@ RSpec.describe Herb::Highlighter::SyntaxRenderer do
           # 'cyan' → \e[36m
           expect(subject).to include("\e[36m<\e[0m")
         end
-      end
-    end
-
-    context "with a registered theme_name" do
-      let(:syntax_renderer) { described_class.new(theme_name: "test-registered") }
-      let(:source) { "<div>" }
-
-      before do
-        Herb::Highlighter::Themes.register("test-registered", test_theme)
-      end
-
-      it "looks up and applies the registered theme" do
-        expect(subject).to include("\e[38;2;255;0;0m<\e[0m")
       end
     end
   end
