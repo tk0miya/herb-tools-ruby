@@ -18,15 +18,23 @@ module Herb
         include ConsoleUtils
         include StringUtils
 
+        CONTEXT_LINES = 2 #: Integer
+
         # @rbs @summary_reporter: Herb::Lint::Reporter::SummaryReporter
         # @rbs @diagnostic_renderer: Herb::Highlighter::DiagnosticRenderer
 
         # @rbs io: IO
         # @rbs show_timing: bool -- when false, suppresses timing display
-        def initialize(io: $stdout, show_timing: true) #: void
+        # @rbs theme_name: String? -- syntax highlighting theme name; nil = no highlighting
+        def initialize(io: $stdout, show_timing: true, theme_name: nil) #: void
           super(io:)
           @summary_reporter = Herb::Lint::Reporter::SummaryReporter.new(io:, show_timing:)
-          @diagnostic_renderer = Herb::Highlighter::DiagnosticRenderer.new(tty: io.tty?)
+          syntax_renderer = Herb::Highlighter::SyntaxRenderer.new(theme_name:)
+          @diagnostic_renderer = Herb::Highlighter::DiagnosticRenderer.new(
+            syntax_renderer:,
+            context_lines: CONTEXT_LINES,
+            tty: io.tty?
+          )
         end
 
         # Reports the aggregated linting result.

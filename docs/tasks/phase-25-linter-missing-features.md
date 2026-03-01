@@ -1056,16 +1056,16 @@ require_relative "lint/themes"
 ```
 
 **Implementation Tasks:**
-- [ ] Delete `lib/herb/lint/highlighter.rb` and related sig/spec files
-- [ ] Delete `lib/herb/lint/themes.rb` and related sig file
-- [ ] Add `herb-highlighter` dependency to `herb-lint.gemspec`
-- [ ] Add `require "herb/highlight"` to `detailed_formatter.rb`; remove `require_relative "../highlighter"`
-- [ ] Update `lib/herb/lint.rb` (remove the two require_relative lines)
-- [ ] Add `theme_name: nil` to `DetailedFormatter#initialize`; wire `DiagnosticRenderer` with `SyntaxRenderer`
-- [ ] Replace `print_source_lines` body with `@diagnostic_renderer.render(...)` delegation
-- [ ] Delete `print_source_line` and `print_column_indicator` private methods
-- [ ] Update RBS signature for `detailed_formatter.rbs` (`@diagnostic_renderer` type)
-- [ ] Verify `herb-lint` test suite passes
+- [x] Delete `lib/herb/lint/highlighter.rb` and related sig/spec files
+- [x] Delete `lib/herb/lint/themes.rb` and related sig file
+- [x] Add `herb-highlighter` dependency to `herb-lint.gemspec`
+- [x] Add `require "herb/highlight"` to `detailed_formatter.rb`; remove `require_relative "../highlighter"`
+- [x] Update `lib/herb/lint.rb` (remove the two require_relative lines)
+- [x] Add `theme_name: nil` to `DetailedFormatter#initialize`; wire `DiagnosticRenderer` with `SyntaxRenderer`
+- [x] Replace `print_source_lines` body with `@diagnostic_renderer.render(...)` delegation
+- [x] Delete `print_source_line` and `print_column_indicator` private methods
+- [x] Update RBS signature for `detailed_formatter.rbs` (`@diagnostic_renderer` type)
+- [x] Verify `herb-lint` test suite passes
 
 ---
 
@@ -1087,6 +1087,23 @@ After this step, `DetailedFormatter` produces colored output by default.
   - [ ] Verify `Themes.valid?("onedark")` returns true
   - [ ] Verify `Themes.custom?("onedark")` returns false
   - [ ] Verify `load_custom` raises on a custom theme missing required keys (validation now active)
+
+---
+
+##### Step 2b: `DetailedFormatter` `theme_name:` Tests (depends on Step 2)
+
+Adds tests for the `theme_name:` parameter and `CONTEXT_LINES` constant introduced in Step 1,
+now that the `onedark` theme is available and produces observable differences in output.
+
+**Background:**
+- At the end of Step 1, `onedark` is not yet registered, so `theme_name: "onedark"` and `theme_name: nil` produce identical output
+- Step 2 is a prerequisite: only after `onedark` is registered does a TTY formatter emit ANSI color codes
+
+**Implementation Tasks (depends on Step 2):**
+- [ ] Verify `theme_name: nil` (default) produces output with no ANSI color codes
+- [ ] Verify `theme_name: "onedark"` with a TTY-like output produces ANSI color codes in source context
+- [ ] Verify an unknown theme name (`theme_name: "unknown"`) falls back safely and produces no ANSI color codes
+- [ ] Verify `CONTEXT_LINES` constant equals `2`
 
 ---
 
