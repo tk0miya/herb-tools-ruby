@@ -11,6 +11,9 @@ module Herb
       EXIT_FORMAT_NEEDED = 1 #: Integer
       EXIT_RUNTIME_ERROR = 2 #: Integer
 
+      # Raised when a CLI option value fails validation (e.g. non-integer indent-width).
+      class OptionError < StandardError; end
+
       # @rbs argv: Array[String]
       # @rbs stdout: IO
       # @rbs stderr: IO
@@ -39,6 +42,9 @@ module Herb
         return handle_init if options[:init]
 
         execute_format
+      rescue OptionError => e
+        stderr.puts e.message
+        EXIT_RUNTIME_ERROR
       rescue Herb::Config::Error => e
         handle_error("Configuration error: #{e.message}")
       rescue StandardError => e
@@ -62,21 +68,23 @@ module Herb
       def parse_options #: void # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         @options = {
           check: false,
-          force: false,
           config: nil,
-          version: false,
+          files: [],
+          force: false,
           help: false,
-          files: []
+          indent_width: nil,
+          max_line_length: nil,
+          version: false
         }
 
         OptionParser.new do |opts|
           opts.banner = "Usage: herb-format [options] [files...]"
 
-          opts.on("--check", "Check if files are formatted without modifying them") do
+          opts.on("-c", "--check", "Check if files are formatted without modifying them") do
             options[:check] = true
           end
 
-          opts.on("--config PATH", "Path to configuration file (default: .herb.yml)") do |path|
+          opts.on("--config-file PATH", "Path to configuration file (default: .herb.yml)") do |path|
             options[:config] = path
           end
 
@@ -88,8 +96,16 @@ module Herb
             options[:help] = true
           end
 
+          opts.on("--indent-width N", "Indentation width (positive integer, overrides config)") do |n|
+            options[:indent_width] = validate_positive_integer(n, "indent-width")
+          end
+
           opts.on("--init", "Generate a default .herb.yml configuration file") do
             options[:init] = true
+          end
+
+          opts.on("--max-line-length N", "Maximum line length (positive integer, overrides config)") do |n|
+            options[:max_line_length] = validate_positive_integer(n, "max-line-length")
           end
 
           opts.on("-v", "--version", "Show version number") do
@@ -139,6 +155,9 @@ module Herb
 
       def load_config #: Herb::Config::FormatterConfig
         config_hash = Herb::Config::Loader.load(path: options[:config])
+        config_hash["formatter"] ||= {}
+        config_hash["formatter"]["indentWidth"] = options[:indent_width] if options[:indent_width]
+        config_hash["formatter"]["maxLineLength"] = options[:max_line_length] if options[:max_line_length]
         Herb::Config::FormatterConfig.new(config_hash)
       end
 
@@ -165,16 +184,18 @@ module Herb
         EXIT_SUCCESS
       end
 
-      def handle_help #: Integer
+      def handle_help #: Integer # rubocop:disable Metrics/MethodLength
         stdout.puts <<~HELP
           Usage: herb-format [options] [files...]
 
           Options:
-            --check                   Check if files are formatted without modifying them
-            --config PATH             Path to configuration file (default: .herb.yml)
+            -c, --check               Check if files are formatted without modifying them
+            --config-file PATH        Path to configuration file (default: .herb.yml)
             --force                   Override inline ignore directives
             -h, --help                Show this help message
+            --indent-width N          Indentation width (positive integer, overrides config)
             --init                    Generate a default .herb.yml configuration file
+            --max-line-length N       Maximum line length (positive integer, overrides config)
             -v, --version             Show version number
 
           Examples:
@@ -251,6 +272,17 @@ module Herb
       # @rbs str: String
       def ensure_newline(str) #: String
         str.end_with?("\n") ? str : "#{str}\n"
+      end
+
+      # @rbs value: String
+      # @rbs option_name: String
+      def validate_positive_integer(value, option_name) #: Integer
+        parsed = Integer(value, 10)
+        raise OptionError, "Invalid #{option_name}: #{value}. Must be a positive integer." unless parsed >= 1
+
+        parsed
+      rescue ArgumentError
+        raise OptionError, "Invalid #{option_name}: #{value}. Must be a positive integer."
       end
     end
   end

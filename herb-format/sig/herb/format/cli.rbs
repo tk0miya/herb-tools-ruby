@@ -11,6 +11,10 @@ module Herb
 
       EXIT_RUNTIME_ERROR: Integer
 
+      # Raised when a CLI option value fails validation (e.g. non-integer indent-width).
+      class OptionError < StandardError
+      end
+
       # @rbs argv: Array[String]
       # @rbs stdout: IO
       # @rbs stderr: IO
@@ -77,6 +81,10 @@ module Herb
 
       # @rbs str: String
       def ensure_newline: (String str) -> String
+
+      # @rbs value: String
+      # @rbs option_name: String
+      def validate_positive_integer: (String value, String option_name) -> Integer
     end
   end
 end
