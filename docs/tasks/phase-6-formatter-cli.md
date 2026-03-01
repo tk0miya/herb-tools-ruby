@@ -461,9 +461,9 @@ end
 
 **Location:** `herb-format/lib/herb/format/cli.rb`
 
-- [ ] Implement handle_version() method
-- [ ] Implement handle_help() method
-- [ ] Add tests
+- [x] Implement handle_version() method
+- [x] Implement handle_help() method
+- [x] Add tests
 
 **Implementation:**
 ```ruby
