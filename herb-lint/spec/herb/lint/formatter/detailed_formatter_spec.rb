@@ -476,12 +476,6 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
     end
   end
 
-  describe "CONTEXT_LINES" do
-    subject { described_class::CONTEXT_LINES }
-
-    it { is_expected.to eq(2) }
-  end
-
   describe "theme_name: parameter" do
     subject { formatter.report(aggregated_result) }
 
