@@ -66,6 +66,15 @@ module Herb
         # @rbs bold: bool
         # @rbs dim: bool
         def colorize: (String text, ?color: color?, ?bold: bool, ?dim: bool) -> String
+
+        # Resolves a theme name to a color mapping hash.
+        # Returns nil when theme_name is nil, io is non-TTY, or resolution fails.
+        # Graceful fallback: unknown/invalid theme names produce no syntax highlighting
+        # rather than crashing. CLI validation (Step 4) handles user-facing errors.
+        #
+        # @rbs theme_name: String?
+        # @rbs io: IO
+        def resolve_theme: (String? theme_name, IO io) -> Hash[String, String?]?
       end
     end
   end
