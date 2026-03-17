@@ -9,9 +9,9 @@ This directory contains implementation tasks for herb-tools-ruby.
 | Phase | File | Tasks | Description | Status |
 |-------|------|-------|-------------|--------|
 | Phase 25 | [phase-25-linter-missing-features.md](./phase-25-linter-missing-features.md) | 8 | herb-lint missing features implementation | 📋 |
-| Phase 26 | [phase-26-herb-09-compatibility.md](./phase-26-herb-09-compatibility.md) | 5 | herb gem 0.9.0 互換性対応（破壊的変更・AST 変更） | 📋 |
-| Phase 27 | [phase-27-new-linter-rules.md](./phase-27-new-linter-rules.md) | 23 | herb-lint 新規ルール実装（v0.9.0 追加分） | 📋 |
-| Phase 28 | [phase-28-parallel-processing.md](./phase-28-parallel-processing.md) | 3 | herb-lint 並列ファイル処理（--jobs オプション） | 📋 |
+| Phase 26 | [phase-26-herb-09-compatibility.md](./phase-26-herb-09-compatibility.md) | 6 | herb gem 0.9.0 compatibility (breaking changes, AST changes) | 📋 |
+| Phase 27 | [phase-27-new-linter-rules.md](./phase-27-new-linter-rules.md) | 23 | New herb-lint rules (v0.9.0 additions) | 📋 |
+| Phase 28 | [phase-28-parallel-processing.md](./phase-28-parallel-processing.md) | 3 | herb-lint parallel file processing (--jobs option) | 📋 |
 
 Legend: ✅ Complete | 🚧 In Progress | 📋 Planned
 
@@ -24,30 +24,31 @@ Features that exist in the TypeScript reference implementation but are missing i
 - `DetailedFormatter` (default output format with syntax highlighting and code snippets)
 - Additional missing features from TypeScript analysis
 
-#### Phase 26: herb gem 0.9.0 互換性対応（優先度: High）
+#### Phase 26: herb gem 0.9.0 Compatibility (Priority: High)
 
-herb gem v0.9.0 の破壊的変更への対応:
+Address breaking changes in herb gem v0.9.0:
 
-- `HTMLElementNode#source` → `#element_source` フィールドリネーム
-- `strict: true` デフォルト化への対応
-- 新 AST ノード 7 種への Visitor 対応
-- アクセシビリティルール 14 個の severity 変更（error → warning）
-- `html-anchor-require-href` ルールの拡張（Action View ヘルパー対応、新違反パターン）
+- `HTMLElementNode#source` → `#element_source` field rename
+- Adapt to `strict: true` becoming the default
+- Add Visitor support for 7 new AST node types
+- Change 14 accessibility rule severities from `"error"` to `"warning"`
+- Expand `html-anchor-require-href` (Action View helper support, new offense patterns)
+- Per-rule `parser_options` API (rules declare required parser options; Linter merges them)
 
-#### Phase 27: 新規リンタールール（優先度: Medium）
+#### Phase 27: New Linter Rules (Priority: Medium)
 
-TypeScript v0.9.0 で追加された 23 の新ルールを Ruby 版に移植:
+Port 23 new rules added in TypeScript v0.9.0 to the Ruby implementation:
 
-- ERB ルール: 条件付き HTML 要素、属性・出力関連、安全性、パーシャル・ヘルパー関連（17 ルール）
-- HTML ルール: script type、details/summary、ARIA、closing tags（5 ルール）
-- Turbo ルール: turbo-permanent-require-id（1 ルール）
+- ERB rules: conditional HTML elements, attribute/output, security, partials/helpers (17 rules)
+- HTML rules: script type, details/summary, ARIA, closing tags (5 rules)
+- Turbo rules: turbo-permanent-require-id (1 rule)
 
-#### Phase 28: 並列処理（優先度: Low）
+#### Phase 28: Parallel Processing (Priority: Low)
 
-TypeScript v0.9.0 で導入された Worker ベースの並列ファイル処理を Ruby で実装:
+Implement the worker-based parallel file processing introduced in TypeScript v0.9.0:
 
-- `--jobs` / `-j` CLI オプション
-- `Thread` + `Queue` による並列ファイル処理
+- `--jobs` / `-j` CLI option
+- Parallel file processing using `Thread` + `Queue`
 
 ## herb-format Implementation Phases
 

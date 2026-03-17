@@ -1,104 +1,109 @@
-# Phase 26: herb gem 0.9.0 互換性対応
+# Phase 26: herb gem 0.9.0 Compatibility
 
-herb gem が v0.8.9 から v0.9.0 に更新されたことによる破壊的変更への対応と、
-既存コードのアップデートを行う。
+Address breaking changes introduced by upgrading herb gem from v0.8.9 to v0.9.0
+and update existing code accordingly.
 
 **Status**: Not Started
-**Priority**: High（破壊的変更を含むため最優先）
+**Priority**: High (contains breaking changes, highest priority)
 **Dependencies**: None
 
 ## Overview
 
-herb 0.9.0 では AST フィールドのリネーム、`strict: true` のデフォルト化、
-アクセシビリティルールの severity 変更、`html-anchor-require-href` ルールの拡張など、
-Ruby 実装に直接影響する変更が複数ある。
+herb 0.9.0 introduces several changes that directly affect the Ruby implementation:
+AST field renames, `strict: true` becoming the default, accessibility rule severity
+changes, and expansion of the `html-anchor-require-href` rule.
 
 ## Implementation Checklist
 
-### Task 26.1: `HTMLElementNode#source` → `#element_source` フィールドリネーム対応
+### Task 26.1: `HTMLElementNode#source` → `#element_source` Field Rename
 
-herb 0.9.0 で `HTMLElementNode` の `source` フィールドが `element_source` に**リネーム**された（破壊的変更）。
+In herb 0.9.0, the `source` field on `HTMLElementNode` was **renamed** to
+`element_source` (breaking change).
 
-**影響範囲の調査と修正:**
-- [ ] `herb-core` の AST ノードヘルパーで `source` を参照している箇所を確認・修正
-- [ ] `herb-printer` で `HTMLElementNode#source` を参照している箇所を確認・修正
-- [ ] `herb-lint` で `HTMLElementNode#source` を参照している箇所を確認・修正
-- [ ] `herb-format` で `HTMLElementNode#source` を参照している箇所を確認・修正
-- [ ] 各 gem のテストで `HTMLElementNode#source` を使用している箇所を確認・修正
-- [ ] 修正後に全 gem のテストスイートが通ることを確認
+**Audit and fix all affected gems:**
+- [ ] Audit `herb-core` for any references to `HTMLElementNode#source` and fix
+- [ ] Audit `herb-printer` for any references to `HTMLElementNode#source` and fix
+- [ ] Audit `herb-lint` for any references to `HTMLElementNode#source` and fix
+- [ ] Audit `herb-format` for any references to `HTMLElementNode#source` and fix
+- [ ] Audit specs across all gems for any references to `HTMLElementNode#source` and fix
+- [ ] Verify all gem test suites pass after fixes
 
-**検証方法:**
+**Verification:**
 ```bash
-# source フィールドへの参照がないことを確認（element_source に移行済み）
+# Confirm no remaining references to the old .source field (migrated to element_source)
 grep -rn "\.source\b" herb-*/lib herb-*/spec 2>/dev/null | grep -v "element_source\|source_location\|source_line\|source_file\|source_path\|source_range\|source_rule\|source_code\|context\.source\|autofix.*source\|parse_result.*source"
 ```
 
 ---
 
-### Task 26.2: `strict: true` デフォルト化への対応
+### Task 26.2: Adapt to `strict: true` Becoming the Default
 
-herb 0.9.0 から `Herb.parse` のデフォルトが `strict: true` になった。
-これにより `<p>` や `<li>` などの省略可能な閉じタグを持つ HTML を解析すると
-`OmittedClosingTagError` が返るようになり、既存テストが壊れる可能性がある。
+As of herb 0.9.0, `Herb.parse` defaults to `strict: true`. This means HTML with
+optional closing tags (e.g. `<p>`, `<li>`) now produces `OmittedClosingTagError`,
+which may break existing tests.
 
-**調査:**
-- [ ] `herb-lint` の `Herb.parse` 呼び出し箇所を全件確認（`herb-lint/lib/herb/lint/linter.rb` 等）
-- [ ] `herb-format` の `Herb.parse` 呼び出し箇所を全件確認
-- [ ] 全 gem のテストスイートを実行し、`OmittedClosingTagError` で壊れるテストを特定
+**Investigation:**
+- [ ] Audit all `Herb.parse` call sites in `herb-lint` (e.g. `herb-lint/lib/herb/lint/linter.rb`)
+- [ ] Audit all `Herb.parse` call sites in `herb-format`
+- [ ] Run all gem test suites and identify tests broken by `OmittedClosingTagError`
 
-**対応方針の選択（どちらかを採用）:**
+**Choose one approach and implement:**
 
-オプション A: 既存の呼び出しに `strict: false` を明示して後方互換性を維持する
+Option A: Pass `strict: false` explicitly to preserve backward compatibility
 ```ruby
 Herb.parse(source, track_whitespace: true, strict: false)
 ```
 
-オプション B: `strict: true` のデフォルトを受け入れ、テストを新しい挙動に合わせて更新する
-（ユーザーが省略タグのあるテンプレートを扱う場合は `strict: false` をオプションで渡せるようにする）
+Option B: Accept `strict: true` as the new default and update tests to match the
+new behavior (expose `strict:` as an option for callers that need to handle
+templates with omitted closing tags)
 
-- [ ] 採用するオプションを決定し、実装する
-- [ ] 修正後に全 gem のテストスイートが通ることを確認
-
----
-
-### Task 26.3: 新 AST ノード 7 種への Visitor 対応
-
-herb 0.9.0 で以下の 7 ノードが新規追加された。
-Visitor パターンを使う herb-printer・herb-lint が対応していないと `NoMethodError` が発生する。
-
-| ノード名 | 説明 |
-|---------|------|
-| `HTMLConditionalOpenTagNode` | `<% if %>` で囲まれた条件付き開きタグ |
-| `HTMLConditionalElementNode` | 条件付き HTML 要素全体 |
-| `HTMLOmittedCloseTagNode` | 省略された閉じタグ（`<p>` 等） |
-| `HTMLVirtualCloseTagNode` | 内部的に補完される仮想閉じタグ |
-| `ERBOpenTagNode` | ERB 開きタグノード（Action View ヘルパー検出で導入） |
-| `RubyLiteralNode` | Ruby リテラル |
-| `RubyHTMLAttributesSplatNode` | `**attrs` スタイルの属性スプラット |
-
-**herb-printer 対応:**
-- [ ] `herb-printer/lib/herb/printer/identity_printer.rb` に 7 ノードの `visit_*` メソッドを追加
-- [ ] 各ノードの子ノード構造を herb AST リファレンスで確認し、適切な子ノード訪問を実装
-- [ ] `herb-printer` のテストスイートが通ることを確認
-
-**herb-lint 対応:**
-- [ ] `herb-lint/lib/herb/lint/rules/visitor_rule.rb` に 7 ノードのデフォルト訪問メソッドを追加（デフォルトは子ノードを再帰的に訪問）
-- [ ] `herb-lint` のテストスイートが通ることを確認
-
-**herb-core 対応（Visitor 基底クラスがあれば）:**
-- [ ] `herb-core` に Visitor 基底クラスがある場合は同様に対応
+- [ ] Decide on an approach and implement it
+- [ ] Verify all gem test suites pass after the fix
 
 ---
 
-### Task 26.4: アクセシビリティルール 14 個の severity 変更（error → warning）
+### Task 26.3: Add Visitor Support for 7 New AST Node Types
 
-TypeScript v0.9.0 でアクセシビリティ関連ルール 14 個の `defaultSeverity` が
-`"error"` から `"warning"` に変更された。Ruby 実装でも合わせる。
+herb 0.9.0 introduces the following 7 new node types. Without `visit_*` methods
+for these nodes, `herb-printer` and `herb-lint` will raise `NoMethodError` when
+encountering them.
 
-**変更対象ルール（すべて `def self.default_severity = "error"` → `"warning"` に変更）:**
+| Node name | Description |
+|-----------|-------------|
+| `HTMLConditionalOpenTagNode` | Conditional open tag wrapped in `<% if %>` |
+| `HTMLConditionalElementNode` | Entire conditional HTML element |
+| `HTMLOmittedCloseTagNode` | Omitted close tag (e.g. for `<p>`) |
+| `HTMLVirtualCloseTagNode` | Virtual close tag inserted internally by the parser |
+| `ERBOpenTagNode` | ERB open tag node (introduced for Action View helper detection) |
+| `RubyLiteralNode` | Ruby literal node |
+| `RubyHTMLAttributesSplatNode` | Attribute splat node (`**attrs` style) |
 
-| ルール名 | Rubyファイル |
-|---------|------------|
+**herb-printer:**
+- [ ] Add `visit_*` methods for all 7 nodes in `herb-printer/lib/herb/printer/identity_printer.rb`
+- [ ] Verify each node's children structure in the herb AST reference and implement
+  appropriate child visitation
+- [ ] Verify `herb-printer` test suite passes
+
+**herb-lint:**
+- [ ] Add default visit methods for all 7 nodes in `herb-lint/lib/herb/lint/rules/visitor_rule.rb`
+  (default behavior: recursively visit children)
+- [ ] Verify `herb-lint` test suite passes
+
+**herb-core (if a Visitor base class exists):**
+- [ ] Apply the same changes to any Visitor base class in `herb-core`
+
+---
+
+### Task 26.4: Change severity of 14 Accessibility Rules from `"error"` to `"warning"`
+
+In TypeScript v0.9.0, the `defaultSeverity` of 14 accessibility-related rules was
+changed from `"error"` to `"warning"`. Update the Ruby implementation to match.
+
+**Rules to update (change `def self.default_severity` from `"error"` to `"warning"`):**
+
+| Rule name | Ruby file |
+|-----------|-----------|
 | `html-aria-attribute-must-be-valid` | `rules/html/aria_attribute_must_be_valid.rb` |
 | `html-aria-label-is-well-formatted` | `rules/html/aria_label_is_well_formatted.rb` |
 | `html-aria-level-must-be-valid` | `rules/html/aria_level_must_be_valid.rb` |
@@ -114,32 +119,67 @@ TypeScript v0.9.0 でアクセシビリティ関連ルール 14 個の `defaultS
 | `html-no-positive-tab-index` | `rules/html/no_positive_tab_index.rb` |
 | `html-no-title-attribute` | `rules/html/no_title_attribute.rb` |
 
-**実装手順:**
-- [ ] 上記 14 ファイルの `def self.default_severity` を `"error"` から `"warning"` に変更
-- [ ] 各ルールのスペックで severity のアサーションを `"warning"` に更新
-- [ ] `(cd herb-lint && ./bin/rspec)` が通ることを確認
+**Steps:**
+- [ ] Update `def self.default_severity` from `"error"` to `"warning"` in all 14 files above
+- [ ] Update severity assertions in each rule's spec to expect `"warning"`
+- [ ] Verify `(cd herb-lint && ./bin/rspec)` passes
 
 ---
 
-### Task 26.5: `html-anchor-require-href` ルールの拡張
+### Task 26.5: Expand `html-anchor-require-href` Rule
 
-TypeScript v0.9.0 で `html-anchor-require-href` ルールが大幅に拡張された。
+The `html-anchor-require-href` rule was significantly expanded in TypeScript v0.9.0.
 
-**変更点:**
-1. 訪問対象が `visit_html_open_tag_node` → `visit_html_element_node` に変更
-2. 新しい違反パターン 3 種が追加:
-   - `href="#"` — ページトップスクロールは不適切
-   - `href="javascript:void(0)"` / `javascript:void` で始まる値 — `<button>` を使うべき
-   - `href` の値が `url_for(nil)` を含む（`link_to nil` 相当）
-3. `ERBOpenTagNode` を使った Action View ヘルパー (`link_to` 等) の `href` 属性も検査
-4. タイポ修正: `AnchorRechireHrefVisitor` → `AnchorRequireHrefVisitor`（Ruby 版では該当なし）
+**Changes:**
+1. Visit target changed from `visit_html_open_tag_node` to `visit_html_element_node`
+2. Three new offense patterns added:
+   - `href="#"` — scrolls to page top, which is inappropriate
+   - `href="javascript:void(0)"` / values starting with `javascript:void` — use `<button>` instead
+   - `href` value containing `url_for(nil)` (equivalent to `link_to nil`)
+3. Inspect `href` on Action View helpers (e.g. `link_to`) via `ERBOpenTagNode`
+4. Typo fixed in TypeScript: `AnchorRechireHrefVisitor` → `AnchorRequireHrefVisitor`
+   (no equivalent in the Ruby implementation)
 
-**実装手順:**
-- [ ] `herb-lint/lib/herb/lint/rules/html/anchor_require_href.rb` を TypeScript 実装と照合
-- [ ] `visit_html_open_tag_node` → `visit_html_element_node` に変更
-- [ ] `href="#"` の検出を追加
-- [ ] `href="javascript:void..."` の検出を追加
-- [ ] `href` の値が `url_for(nil)` を含む場合の検出を追加
-- [ ] `ERBOpenTagNode` からの `href` 属性取得ロジックを追加（`ERBOpenTagNode` が利用可能になった場合）
-- [ ] スペックに新しい違反パターンのテストケースを追加
-- [ ] `(cd herb-lint && ./bin/rspec)` が通ることを確認
+**Steps:**
+- [ ] Compare `herb-lint/lib/herb/lint/rules/html/anchor_require_href.rb` against
+  the TypeScript implementation
+- [ ] Change `visit_html_open_tag_node` to `visit_html_element_node`
+- [ ] Add detection for `href="#"`
+- [ ] Add detection for `href="javascript:void..."` values
+- [ ] Add detection for `href` values containing `url_for(nil)`
+- [ ] Add logic to extract `href` from `ERBOpenTagNode` (once Task 26.3 is complete)
+- [ ] Add test cases for all new offense patterns to the spec
+- [ ] Verify `(cd herb-lint && ./bin/rspec)` passes
+
+---
+
+### Task 26.6: Per-rule `parser_options` API
+
+In TypeScript v0.9.0, rules can declare `get parserOptions()` to request specific
+parser options for their analysis (e.g. `{ action_view_helpers: true }`). The
+`Linter` collects these declarations from all enabled rules and merges the options
+before calling `Herb.parse`.
+
+Without this mechanism, rules that require special parser options (such as
+`html-anchor-require-href` which needs Action View helper recognition) will not
+work correctly.
+
+**TypeScript pattern:**
+```typescript
+// In a rule class
+get parserOptions(): Partial<ParserOptions> {
+  return { action_view_helpers: true }
+}
+```
+The Linter then merges options from all active rules before parsing.
+
+**Steps:**
+- [ ] Add an optional `parser_options` class method to the rule base class
+  (default returns `{}`)
+- [ ] Update rules that require specific parser options to override `parser_options`
+  (at minimum `html-anchor-require-href` needs `{ action_view_helpers: true }`)
+- [ ] Update `Herb::Lint::Linter` to collect `parser_options` from all enabled
+  rules and merge them before calling `Herb.parse`
+- [ ] Verify that `html-anchor-require-href` correctly inspects Action View helper
+  elements after this change
+- [ ] Verify `(cd herb-lint && ./bin/rspec)` passes
