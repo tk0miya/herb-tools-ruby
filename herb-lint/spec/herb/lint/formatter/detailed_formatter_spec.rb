@@ -474,31 +474,23 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
         expect(actual).to include(expected_context)
       end
     end
-  end
-
-  describe "theme_name: parameter" do
-    subject { formatter.report(aggregated_result) }
-
-    let(:source_code) { "<img src=\"photo.jpg\">\n" }
-    let(:results) do
-      [
-        build(:lint_result,
-              source: source_code,
-              unfixed_offenses: [
-                build(:offense,
-                      severity: "error",
-                      rule_name: "html-img-require-alt",
-                      message: "img tag missing alt",
-                      start_line: 1,
-                      start_column: 1)
-              ])
-      ]
-    end
-    let(:aggregated_result) { Herb::Lint::AggregatedResult.new(results) }
 
     context "with theme_name: nil (no highlighting)" do
-      let(:output) { StringIO.new }
       let(:formatter) { described_class.new(io: output, theme_name: nil) }
+      let(:results) do
+        [
+          build(:lint_result,
+                source: "<img src=\"photo.jpg\">\n",
+                unfixed_offenses: [
+                  build(:offense,
+                        severity: "error",
+                        rule_name: "html-img-require-alt",
+                        message: "img tag missing alt",
+                        start_line: 1,
+                        start_column: 1)
+                ])
+        ]
+      end
 
       it "outputs plain text without ANSI codes" do
         subject
@@ -515,6 +507,20 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
         io
       end
       let(:formatter) { described_class.new(io: output, theme_name: "onedark") }
+      let(:results) do
+        [
+          build(:lint_result,
+                source: "<img src=\"photo.jpg\">\n",
+                unfixed_offenses: [
+                  build(:offense,
+                        severity: "error",
+                        rule_name: "html-img-require-alt",
+                        message: "img tag missing alt",
+                        start_line: 1,
+                        start_column: 1)
+                ])
+        ]
+      end
 
       it "outputs ANSI color codes in source context" do
         subject
@@ -525,8 +531,21 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
     end
 
     context "with an unknown theme name" do
-      let(:output) { StringIO.new }
       let(:formatter) { described_class.new(io: output, theme_name: "unknown") }
+      let(:results) do
+        [
+          build(:lint_result,
+                source: "<img src=\"photo.jpg\">\n",
+                unfixed_offenses: [
+                  build(:offense,
+                        severity: "error",
+                        rule_name: "html-img-require-alt",
+                        message: "img tag missing alt",
+                        start_line: 1,
+                        start_column: 1)
+                ])
+        ]
+      end
 
       it "does not raise and outputs plain text without ANSI codes" do
         expect { subject }.not_to raise_error
