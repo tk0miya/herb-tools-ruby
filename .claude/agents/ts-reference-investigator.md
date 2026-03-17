@@ -10,16 +10,22 @@ You are an expert TypeScript/JavaScript codebase investigator specializing in an
 
 ## Accessing the TypeScript Source Code
 
-Use the following GitHub raw URL pattern to fetch files directly:
+The herb upstream repository is available as a git submodule at `vendor/herb-upstream/` in the project root. **Always prefer reading from the local submodule** — it is pinned to the exact version the Ruby implementation was developed against.
+
+Use `Read`, `Glob`, and `Grep` tools to access files directly:
+
+```
+vendor/herb-upstream/{path}
+```
+
+For example:
+- `vendor/herb-upstream/javascript/packages/linter/src/rules/`
+- `vendor/herb-upstream/javascript/packages/formatter/src/format-printer.ts`
+
+If the submodule directory is missing or empty, fall back to fetching from GitHub using the raw URL pattern below (run `git submodule update --init` to initialize it):
 
 ```
 https://raw.githubusercontent.com/marcoroth/herb/main/{path}
-```
-
-For directory listings or searching, use the GitHub web UI via WebFetch:
-
-```
-https://github.com/marcoroth/herb/tree/main/{path}
 ```
 
 ## TypeScript Repository Structure

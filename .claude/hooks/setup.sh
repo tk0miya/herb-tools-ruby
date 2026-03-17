@@ -3,6 +3,9 @@
 # Initialize rbenv for Claude Code on the Web
 eval "$(rbenv init -)"
 
+# Initialize git submodules (e.g. vendor/herb-upstream)
+git submodule update --init
+
 # Install dependencies
 # Note: Bundler 4.0.3 has a bug with Ruby 3.3.x causing CGI class variable errors.
 # Install and use Bundler 2.x to avoid this issue.
