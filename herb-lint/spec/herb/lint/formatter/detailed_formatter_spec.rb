@@ -474,5 +474,85 @@ RSpec.describe Herb::Lint::Formatter::DetailedFormatter do
         expect(actual).to include(expected_context)
       end
     end
+
+    context "with theme_name: nil (no highlighting)" do
+      let(:formatter) { described_class.new(io: output, theme_name: nil) }
+      let(:results) do
+        [
+          build(:lint_result,
+                source: "<img src=\"photo.jpg\">\n",
+                unfixed_offenses: [
+                  build(:offense,
+                        severity: "error",
+                        rule_name: "html-img-require-alt",
+                        message: "img tag missing alt",
+                        start_line: 1,
+                        start_column: 1)
+                ])
+        ]
+      end
+
+      it "outputs plain text without ANSI codes" do
+        subject
+
+        expect(output.string).not_to match(/\e\[.*?m/)
+        expect(output.string).to include("img tag missing alt")
+      end
+    end
+
+    context "with theme_name: 'onedark' and TTY-like output" do
+      let(:output) do
+        io = StringIO.new
+        io.define_singleton_method(:tty?) { true }
+        io
+      end
+      let(:formatter) { described_class.new(io: output, theme_name: "onedark") }
+      let(:results) do
+        [
+          build(:lint_result,
+                source: "<img src=\"photo.jpg\">\n",
+                unfixed_offenses: [
+                  build(:offense,
+                        severity: "error",
+                        rule_name: "html-img-require-alt",
+                        message: "img tag missing alt",
+                        start_line: 1,
+                        start_column: 1)
+                ])
+        ]
+      end
+
+      it "outputs ANSI color codes in source context" do
+        subject
+
+        expect(output.string).to match(/\e\[.*?m/)
+        expect(output.string).to include("img tag missing alt")
+      end
+    end
+
+    context "with an unknown theme name" do
+      let(:formatter) { described_class.new(io: output, theme_name: "unknown") }
+      let(:results) do
+        [
+          build(:lint_result,
+                source: "<img src=\"photo.jpg\">\n",
+                unfixed_offenses: [
+                  build(:offense,
+                        severity: "error",
+                        rule_name: "html-img-require-alt",
+                        message: "img tag missing alt",
+                        start_line: 1,
+                        start_column: 1)
+                ])
+        ]
+      end
+
+      it "does not raise and outputs plain text without ANSI codes" do
+        expect { subject }.not_to raise_error
+
+        expect(output.string).not_to match(/\e\[.*?m/)
+        expect(output.string).to include("img tag missing alt")
+      end
+    end
   end
 end

@@ -29,7 +29,7 @@ module Herb
         def initialize(io: $stdout, show_timing: true, theme_name: Herb::Highlighter::Themes::DEFAULT_THEME) #: void
           super(io:)
           @summary_reporter = Herb::Lint::Reporter::SummaryReporter.new(io:, show_timing:)
-          theme = theme_name && io.tty? ? Herb::Highlighter::Themes.resolve(theme_name) : nil
+          theme = resolve_theme(theme_name, io)
           syntax_renderer = Herb::Highlighter::SyntaxRenderer.new(theme:)
           @diagnostic_renderer = Herb::Highlighter::DiagnosticRenderer.new(
             syntax_renderer:,
@@ -141,6 +141,21 @@ module Herb
         # @rbs dim: bool
         def colorize(text, color: nil, bold: false, dim: false) #: String
           super(text, color:, bold:, dim:, tty: io.tty?)
+        end
+
+        # Resolves a theme name to a color mapping hash.
+        # Returns nil when theme_name is nil, io is non-TTY, or resolution fails.
+        # Graceful fallback: unknown/invalid theme names produce no syntax highlighting
+        # rather than crashing. CLI validation (Step 4) handles user-facing errors.
+        #
+        # @rbs theme_name: String?
+        # @rbs io: IO
+        def resolve_theme(theme_name, io) #: Hash[String, String?]?
+          return nil unless theme_name && io.tty?
+
+          Herb::Highlighter::Themes.resolve(theme_name)
+        rescue StandardError
+          nil
         end
       end
     end
