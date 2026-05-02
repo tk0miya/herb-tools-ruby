@@ -14,7 +14,7 @@ jobs:
         working-directory: herb-config
     steps:
       - uses: actions/checkout@v6
-      - uses: ruby/setup-ruby@v1.305.0
+      - uses: ruby/setup-ruby@v1.306.0
         with:
           ruby-version: '4.0'
           bundler-cache: true
@@ -29,7 +29,7 @@ jobs:
         working-directory: herb-core
     steps:
       - uses: actions/checkout@v6
-      - uses: ruby/setup-ruby@v1.305.0
+      - uses: ruby/setup-ruby@v1.306.0
         with:
           ruby-version: '4.0'
           bundler-cache: true
@@ -44,7 +44,7 @@ jobs:
         working-directory: herb-printer
     steps:
       - uses: actions/checkout@v6
-      - uses: ruby/setup-ruby@v1.305.0
+      - uses: ruby/setup-ruby@v1.306.0
         with:
           ruby-version: '4.0'
           bundler-cache: true
@@ -59,7 +59,7 @@ jobs:
         working-directory: herb-lint
     steps:
       - uses: actions/checkout@v6
-      - uses: ruby/setup-ruby@v1.305.0
+      - uses: ruby/setup-ruby@v1.306.0
         with:
           ruby-version: '4.0'
           bundler-cache: true
@@ -74,7 +74,7 @@ jobs:
         working-directory: herb-format
     steps:
       - uses: actions/checkout@v6
-      - uses: ruby/setup-ruby@v1.305.0
+      - uses: ruby/setup-ruby@v1.306.0
         with:
           ruby-version: '4.0'
           bundler-cache: true
@@ -89,7 +89,7 @@ jobs:
         working-directory: herb-highlighter
     steps:
       - uses: actions/checkout@v6
-      - uses: ruby/setup-ruby@v1.305.0
+      - uses: ruby/setup-ruby@v1.306.0
         with:
           ruby-version: '4.0'
           bundler-cache: true
