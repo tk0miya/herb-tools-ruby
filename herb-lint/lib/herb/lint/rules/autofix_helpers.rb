@@ -826,7 +826,7 @@ module Herb
       #: (Herb::AST::HTMLOpenTagNode node, ?tag_opening: Herb::Token?, ?tag_name: Herb::Token?, ?tag_closing: Herb::Token?, ?children: Array[Herb::AST::Node]?, ?is_void: bool?) -> Herb::AST::HTMLOpenTagNode
       #: (Herb::AST::HTMLCloseTagNode node, ?tag_opening: Herb::Token?, ?tag_name: Herb::Token?, ?children: Array[Herb::AST::Node]?, ?tag_closing: Herb::Token?) -> Herb::AST::HTMLCloseTagNode
       # rubocop:enable Layout/LineLength
-      def copy_erb_node(node, **overrides) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
+      def copy_erb_node(node, **overrides) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
         case node
         when Herb::AST::ERBBeginNode     then copy_erb_begin_node(node, **overrides)
         when Herb::AST::ERBBlockNode     then copy_erb_block_node(node, **overrides)

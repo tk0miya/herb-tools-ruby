@@ -99,7 +99,7 @@ module Herb
       def render_pointer(width, column, pointer_len, sev_color) #: String
         sep = colorize("│", "gray")
         pointer = colorize("~" * pointer_len, sev_color)
-        "    #{' ' * width} #{sep} #{' ' * [column - 1, 0].max}#{pointer}\n"
+        "    #{" " * width} #{sep} #{" " * [column - 1, 0].max}#{pointer}\n"
       end
 
       # Computes the pointer length based on offense location.

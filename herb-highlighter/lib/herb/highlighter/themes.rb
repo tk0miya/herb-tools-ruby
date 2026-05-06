@@ -67,7 +67,7 @@ module Herb
           custom_theme = JSON.parse(content)
 
           missing = required_keys - custom_theme.keys
-          raise "Custom theme is missing required properties: #{missing.join(', ')}" if missing.any?
+          raise "Custom theme is missing required properties: #{missing.join(", ")}" if missing.any?
 
           custom_theme
         rescue StandardError => e

@@ -61,7 +61,7 @@ module Herb
           line = "  #{location.ljust(6)} #{symbol} #{offense.message} #{rule_code}"
 
           # Append [Correctable] label for autofixable offenses
-          line += " #{colorize('[Correctable]', color: :green, bold: true)}" if offense.autofixable?
+          line += " #{colorize("[Correctable]", color: :green, bold: true)}" if offense.autofixable?
 
           io.puts line
         end

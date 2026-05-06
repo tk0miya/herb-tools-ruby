@@ -46,7 +46,7 @@ module Herb
         def print_checked_line(aggregated_result) #: void
           file_count = aggregated_result.file_count
           file_word = pluralize(file_count, "file")
-          io.puts " #{pad_label('Checked')} #{colorize("#{file_count} #{file_word}", color: :cyan)}"
+          io.puts " #{pad_label("Checked")} #{colorize("#{file_count} #{file_word}", color: :cyan)}"
         end
 
         # Prints the "Files" line showing clean vs files with offenses.
@@ -61,11 +61,11 @@ module Herb
             with_offenses = colorize("#{files_with_offenses} with offenses", color: :red, bold: true)
             clean = colorize("#{clean_files} clean", color: :green, bold: true)
             total = colorize("(#{total_files} total)", color: :gray, dim: true)
-            io.puts " #{pad_label('Files')} #{with_offenses} | #{clean} #{total}"
+            io.puts " #{pad_label("Files")} #{with_offenses} | #{clean} #{total}"
           else
             clean = colorize("#{total_files} clean", color: :green, bold: true)
             total = colorize("(#{total_files} total)", color: :gray, dim: true)
-            line = " #{pad_label('Files')} #{clean} #{total}"
+            line = " #{pad_label("Files")} #{clean} #{total}"
             io.puts colorize(line, dim: true)
           end
         end
@@ -73,7 +73,7 @@ module Herb
         # Prints the "Offenses" line showing error/warning breakdown.
         #
         # @rbs aggregated_result: AggregatedResult
-        def print_offenses_line(aggregated_result) #: void # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+        def print_offenses_line(aggregated_result) #: void # rubocop:disable Metrics/AbcSize
           errors = aggregated_result.error_count
           warnings = aggregated_result.warning_count
           total = aggregated_result.offense_count
@@ -83,25 +83,25 @@ module Herb
             summary = colorize("0 offenses", color: :green, bold: true)
           else
             parts = []
-            parts << colorize("#{errors} #{pluralize(errors, 'error')}", color: :red, bold: true) if errors.positive?
+            parts << colorize("#{errors} #{pluralize(errors, "error")}", color: :red, bold: true) if errors.positive?
 
             if warnings.positive?
-              parts << colorize("#{warnings} #{pluralize(warnings, 'warning')}", color: :yellow, bold: true)
+              parts << colorize("#{warnings} #{pluralize(warnings, "warning")}", color: :yellow, bold: true)
             elsif errors.positive?
-              parts << colorize("#{warnings} #{pluralize(warnings, 'warning')}", color: :green, bold: true)
+              parts << colorize("#{warnings} #{pluralize(warnings, "warning")}", color: :green, bold: true)
             end
 
             summary = parts.join(" | ")
 
             if files_with_offenses.positive?
-              offense_text = "#{total} #{pluralize(total, 'offense')}"
-              file_text = "#{files_with_offenses} #{pluralize(files_with_offenses, 'file')}"
+              offense_text = "#{total} #{pluralize(total, "offense")}"
+              file_text = "#{files_with_offenses} #{pluralize(files_with_offenses, "file")}"
               detail = colorize("(#{offense_text} across #{file_text})", color: :gray, dim: true)
               summary += " #{detail}"
             end
           end
 
-          io.puts " #{pad_label('Offenses')} #{summary}"
+          io.puts " #{pad_label("Offenses")} #{summary}"
         end
 
         # Prints the "Fixable" line showing autocorrectable offenses.
@@ -113,13 +113,13 @@ module Herb
 
           return if total.zero? && fixable.zero?
 
-          total_part = colorize("#{total} #{pluralize(total, 'offense')}", color: :red, bold: true)
+          total_part = colorize("#{total} #{pluralize(total, "offense")}", color: :red, bold: true)
 
           if fixable.positive?
             fixable_part = colorize("#{fixable} autocorrectable using `--fix`", color: :green, bold: true)
-            io.puts " #{pad_label('Fixable')} #{total_part} | #{fixable_part}"
+            io.puts " #{pad_label("Fixable")} #{total_part} | #{fixable_part}"
           else
-            io.puts " #{pad_label('Fixable')} #{total_part}"
+            io.puts " #{pad_label("Fixable")} #{total_part}"
           end
         end
 
@@ -135,10 +135,10 @@ module Herb
                                        .sort_by { |_, count| -count }
                                        .first(5)
 
-          io.puts " #{pad_label('Top Rules')}"
+          io.puts " #{pad_label("Top Rules")}"
           top_rules.each do |rule_name, count|
             rule = colorize(rule_name, color: :cyan)
-            count_str = colorize("#{count} #{pluralize(count, 'offense')}", color: :red, bold: true)
+            count_str = colorize("#{count} #{pluralize(count, "offense")}", color: :red, bold: true)
             io.puts "   #{rule}: #{count_str}"
           end
         end
@@ -151,12 +151,12 @@ module Herb
 
           if aggregated_result.start_time
             time_str = aggregated_result.start_time.strftime("%H:%M:%S")
-            io.puts " #{pad_label('Start at')} #{colorize(time_str, color: :cyan)}"
+            io.puts " #{pad_label("Start at")} #{colorize(time_str, color: :cyan)}"
           end
 
           rule_count = aggregated_result.rule_count
-          rule_str = colorize("(#{rule_count} #{pluralize(rule_count, 'rule')})", color: :gray, dim: true)
-          io.puts " #{pad_label('Duration')} #{colorize("#{aggregated_result.duration}ms", color: :cyan)} #{rule_str}"
+          rule_str = colorize("(#{rule_count} #{pluralize(rule_count, "rule")})", color: :gray, dim: true)
+          io.puts " #{pad_label("Duration")} #{colorize("#{aggregated_result.duration}ms", color: :cyan)} #{rule_str}"
         end
 
         # Prints success message if all files are clean.
