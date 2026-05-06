@@ -1,0 +1,74 @@
+name: RBS collection
+
+on:
+  schedule:
+    - cron: '00 8 * * MON'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/create-github-app-token@v3
+      id: app-token
+      with:
+        app-id: ${{ vars.REPO_HOUSEKEEPER_APP_ID }}
+        private-key: ${{ secrets.REPO_HOUSEKEEPER_PRIVATE_KEY }}
+    - uses: actions/checkout@v6
+    - name: Set up Ruby (herb-config)
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ruby
+        bundler-cache: true
+        working-directory: herb-config
+    - name: Set up Ruby (herb-core)
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ruby
+        bundler-cache: true
+        working-directory: herb-core
+    - name: Set up Ruby (herb-printer)
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ruby
+        bundler-cache: true
+        working-directory: herb-printer
+    - name: Set up Ruby (herb-lint)
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ruby
+        bundler-cache: true
+        working-directory: herb-lint
+    - name: Set up Ruby (herb-format)
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ruby
+        bundler-cache: true
+        working-directory: herb-format
+    - name: Set up Ruby (herb-highlighter)
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ruby
+        bundler-cache: true
+        working-directory: herb-highlighter
+    - name: Update rbs collection
+      run: |
+        for gem_dir in herb-config herb-core herb-printer herb-lint herb-format herb-highlighter; do
+          (cd "$gem_dir" && bundle exec rbs collection update)
+        done
+    - name: Create a pull request
+      uses: peter-evans/create-pull-request@v8
+      with:
+        add-paths: |
+          herb-config/rbs_collection.lock.yaml
+          herb-core/rbs_collection.lock.yaml
+          herb-printer/rbs_collection.lock.yaml
+          herb-lint/rbs_collection.lock.yaml
+          herb-format/rbs_collection.lock.yaml
+          herb-highlighter/rbs_collection.lock.yaml
+        commit-message: 'rbs: Update RBS collection'
+        branch: bot/rbs-collection
+        title: 'rbs: Update RBS collection'
+        labels: auto-merge
+        token: ${{ steps.app-token.outputs.token }}
