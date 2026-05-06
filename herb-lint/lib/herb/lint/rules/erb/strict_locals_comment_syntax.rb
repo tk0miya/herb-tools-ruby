@@ -85,7 +85,7 @@ module Herb
 
           # Check an ERB comment tag (`<%# ... %>`) for locals declarations.
           # @rbs node: Herb::AST::ERBContentNode
-          def check_comment_tag(node) #: void # rubocop:disable Metrics/MethodLength
+          def check_comment_tag(node) #: void
             content = node.content&.value
             return if content.nil?
 

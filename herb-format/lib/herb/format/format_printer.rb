@@ -806,7 +806,7 @@ module Herb
       # and closing %> on its own line.
       #
       # @rbs node: Herb::AST::ERBContentNode
-      def visit_erb_comment_node(node) #: void # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+      def visit_erb_comment_node(node) #: void # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         content = token_value(node.content)
         content_trimmed_lines = content.split("\n").map(&:strip).reject(&:empty?)
 
@@ -819,7 +819,7 @@ module Herb
           @inline_mode ? push_to_last_line(formatted) : push_with_indent(formatted)
         else
           if @inline_mode
-            push_to_last_line("<%# #{content_trimmed_lines.join(' ')} %>")
+            push_to_last_line("<%# #{content_trimmed_lines.join(" ")} %>")
           else
             content_lines = content.split("\n")
             first_line_empty = content_lines.first&.strip&.empty?
@@ -899,7 +899,7 @@ module Herb
       # @rbs _parent_element: Herb::AST::HTMLElementNode?
       # @rbs siblings: Array[Herb::AST::Node]
       # @rbs current_index: Integer
-      def should_add_spacing_between_siblings?(_parent_element, siblings, current_index) #: bool # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+      def should_add_spacing_between_siblings?(_parent_element, siblings, current_index) #: bool # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         current_node = siblings[current_index]
         previous_meaningful_index = find_previous_meaningful_sibling(siblings, current_index)
         previous_node = previous_meaningful_index ? siblings[previous_meaningful_index] : nil

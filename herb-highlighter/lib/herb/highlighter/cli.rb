@@ -67,7 +67,7 @@ module Herb
         EXIT_SUCCESS
       end
 
-      def parse_options #: void # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      def parse_options #: void # rubocop:disable Metrics/AbcSize
         parser = OptionParser.new do |opts|
           opts.banner = "Usage: herb-highlight [options] FILE"
 

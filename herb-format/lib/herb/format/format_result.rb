@@ -45,7 +45,7 @@ module Herb
 
       private
 
-      def generate_unified_diff #: String # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      def generate_unified_diff #: String # rubocop:disable Metrics/AbcSize
         original_lines = original.lines
         formatted_lines = formatted.lines
 

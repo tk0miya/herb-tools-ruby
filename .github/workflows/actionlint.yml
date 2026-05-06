@@ -4,15 +4,16 @@ on:
   push:
     branches:
       - main
+
   pull_request:
 
 jobs:
-  lint:
+  actionlint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - name: Run actionlint
-        shell: bash
-        run: |
-          bash <(curl -L https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
-          ./actionlint -color
+    - uses: actions/checkout@v6
+    - name: Run actionlint
+      shell: bash
+      run: |
+        bash <(curl -L https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+        ./actionlint -color

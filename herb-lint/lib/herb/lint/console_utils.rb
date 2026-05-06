@@ -36,7 +36,7 @@ module Herb
 
         return text if codes.empty?
 
-        "\e[#{codes.join(';')}m#{text}\e[0m"
+        "\e[#{codes.join(";")}m#{text}\e[0m"
       end
     end
   end

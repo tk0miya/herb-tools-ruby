@@ -184,7 +184,7 @@ module Herb
         EXIT_SUCCESS
       end
 
-      def handle_help #: Integer # rubocop:disable Metrics/MethodLength
+      def handle_help #: Integer
         stdout.puts <<~HELP
           Usage: herb-format [options] [files...]
 

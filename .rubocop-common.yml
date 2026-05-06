@@ -12,6 +12,10 @@ AllCops:
 
 Layout/LeadingCommentSpace:
   AllowRBSInlineAnnotation: true
+  AllowSteepAnnotation: true
+
+Layout/LineLength:
+  Max: 120
 
 Metrics/AbcSize:
   Max: 20
@@ -24,7 +28,7 @@ Metrics/CyclomaticComplexity:
   Max: 10
 
 Metrics/MethodLength:
-  Max: 20
+  Max: 30
 
 Metrics/ParameterLists:
   Max: 10
@@ -51,6 +55,9 @@ RSpec/NamedSubject:
 RSpec/NestedGroups:
   Max: 6
 
+Style/Documentation:
+  Enabled: false
+
 Style/HashSyntax:
   EnforcedShorthandSyntax: always
 
@@ -59,8 +66,14 @@ Style/RbsInline/MissingTypeAnnotation:
   Exclude:
     - "**/spec/**/*.rb"
 
+Style/RbsInline/RedundantTypeAnnotation:
+  EnforcedStyle: doc_style_and_return_annotation
+
 Style/RbsInline/RequireRbsInlineComment:
   EnforcedStyle: never
 
 Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes

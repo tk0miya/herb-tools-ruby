@@ -176,7 +176,7 @@ RSpec.describe Herb::Format::FormatPrinter do
           let(:source) { 20.times.reduce("<p>inner</p>") { |inner, _| "<div>#{inner}</div>" } }
 
           it "formats the innermost element at the correct indentation depth" do
-            expect(subject).to include("#{'  ' * 20}<p>inner</p>")
+            expect(subject).to include("#{"  " * 20}<p>inner</p>")
           end
         end
       end
@@ -380,10 +380,10 @@ RSpec.describe Herb::Format::FormatPrinter do
 
         context "when normalized content exceeds 60 chars but has no spaces (single unsplittable token)" do
           let(:max_line_length) { 60 }
-          let(:source) { "<div class=\"#{'a' * 65}\">content</div>" }
+          let(:source) { "<div class=\"#{"a" * 65}\">content</div>" }
 
           it "does not wrap" do
-            expect(subject).to eq("<div class=\"#{'a' * 65}\">content</div>")
+            expect(subject).to eq("<div class=\"#{"a" * 65}\">content</div>")
           end
         end
       end
