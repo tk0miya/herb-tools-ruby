@@ -13,10 +13,10 @@ jobs:
       run:
         working-directory: herb-config
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
-      - uses: ruby/setup-ruby@v1.305.0
+      - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735 # v1.305.0
         with:
           ruby-version: '4.0'
           bundler-cache: true
@@ -30,10 +30,10 @@ jobs:
       run:
         working-directory: herb-core
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
-      - uses: ruby/setup-ruby@v1.305.0
+      - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735 # v1.305.0
         with:
           ruby-version: '4.0'
           bundler-cache: true
@@ -47,10 +47,10 @@ jobs:
       run:
         working-directory: herb-printer
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
-      - uses: ruby/setup-ruby@v1.305.0
+      - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735 # v1.305.0
         with:
           ruby-version: '4.0'
           bundler-cache: true
@@ -64,10 +64,10 @@ jobs:
       run:
         working-directory: herb-lint
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
-      - uses: ruby/setup-ruby@v1.305.0
+      - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735 # v1.305.0
         with:
           ruby-version: '4.0'
           bundler-cache: true
@@ -81,10 +81,10 @@ jobs:
       run:
         working-directory: herb-format
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
-      - uses: ruby/setup-ruby@v1.305.0
+      - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735 # v1.305.0
         with:
           ruby-version: '4.0'
           bundler-cache: true
@@ -98,10 +98,10 @@ jobs:
       run:
         working-directory: herb-highlighter
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
-      - uses: ruby/setup-ruby@v1.305.0
+      - uses: ruby/setup-ruby@0cb964fd540e0a24c900370abf38a33466142735 # v1.305.0
         with:
           ruby-version: '4.0'
           bundler-cache: true
