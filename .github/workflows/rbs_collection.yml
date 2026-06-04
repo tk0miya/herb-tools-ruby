@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+    - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
       id: app-token
       with:
         app-id: ${{ vars.REPO_HOUSEKEEPER_APP_ID }}
@@ -21,41 +21,41 @@ jobs:
         permission-contents: write
         permission-pull-requests: write
         permission-issues: write
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         persist-credentials: false
     - name: Set up Ruby (herb-config)
-      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1
+      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1.310.0
       with:
         ruby-version: ruby
         bundler-cache: true
         working-directory: herb-config
     - name: Set up Ruby (herb-core)
-      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1
+      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1.310.0
       with:
         ruby-version: ruby
         bundler-cache: true
         working-directory: herb-core
     - name: Set up Ruby (herb-printer)
-      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1
+      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1.310.0
       with:
         ruby-version: ruby
         bundler-cache: true
         working-directory: herb-printer
     - name: Set up Ruby (herb-lint)
-      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1
+      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1.310.0
       with:
         ruby-version: ruby
         bundler-cache: true
         working-directory: herb-lint
     - name: Set up Ruby (herb-format)
-      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1
+      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1.310.0
       with:
         ruby-version: ruby
         bundler-cache: true
         working-directory: herb-format
     - name: Set up Ruby (herb-highlighter)
-      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1
+      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1.310.0
       with:
         ruby-version: ruby
         bundler-cache: true
@@ -66,7 +66,7 @@ jobs:
           (cd "$gem_dir" && bundle exec rbs collection update)
         done
     - name: Create a pull request
-      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8
+      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
       with:
         add-paths: |
           herb-config/rbs_collection.lock.yaml
