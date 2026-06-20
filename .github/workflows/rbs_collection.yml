@@ -24,37 +24,37 @@ jobs:
       with:
         persist-credentials: false
     - name: Set up Ruby (herb-config)
-      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1.310.0
+      uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af # v1.313.0
       with:
         ruby-version: ruby
         bundler-cache: true
         working-directory: herb-config
     - name: Set up Ruby (herb-core)
-      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1.310.0
+      uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af # v1.313.0
       with:
         ruby-version: ruby
         bundler-cache: true
         working-directory: herb-core
     - name: Set up Ruby (herb-printer)
-      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1.310.0
+      uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af # v1.313.0
       with:
         ruby-version: ruby
         bundler-cache: true
         working-directory: herb-printer
     - name: Set up Ruby (herb-lint)
-      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1.310.0
+      uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af # v1.313.0
       with:
         ruby-version: ruby
         bundler-cache: true
         working-directory: herb-lint
     - name: Set up Ruby (herb-format)
-      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1.310.0
+      uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af # v1.313.0
       with:
         ruby-version: ruby
         bundler-cache: true
         working-directory: herb-format
     - name: Set up Ruby (herb-highlighter)
-      uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1.310.0
+      uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af # v1.313.0
       with:
         ruby-version: ruby
         bundler-cache: true
