@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-source "https://rubygems.org"
+source "https://rubygems.org", cooldown: 7
 
 # Development tools shared across all gems.
 # Binstubs are generated in bin/ for environments where bundle exec is unavailable.
